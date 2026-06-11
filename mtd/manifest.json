@@ -1,0 +1,11 @@
+{
+  "name": "MTD Goals — Goettl Las Vegas",
+  "short_name": "MTD Goals",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#003963",
+  "theme_color": "#003963",
+  "icons": [
+    { "src": "../apple-touch-icon.png", "sizes": "180x180", "type": "image/png" }
+  ]
+}
