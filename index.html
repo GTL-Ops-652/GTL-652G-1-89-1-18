@@ -177,8 +177,8 @@ tbody tr.rowact td{background:#f3edff}                 /* actual labor exceeded 
  <button class="tab" data-t="paste">Paste Import</button>
  <button class="tab" data-t="help">Notes &amp; Method</button>
  <span style="margin-left:auto;display:inline-flex;gap:6px;align-items:center">
-   <button class="btn sm" id="wbSaveTop" title="Save the whole workbook to a file for SharePoint">⬇ Save</button>
-   <button class="btn ghost sm" id="wbOpenTop" title="Open a saved workbook file">⬆ Open</button>
+   <span id="liveDot" title="Connected to the shared live board — changes save automatically" style="font-size:12px;font-weight:700;color:var(--green)">🟢 Live · auto-saving</span>
+   <span style="display:none"><button id="wbSaveTop"></button><button id="wbOpenTop"></button></span>
  </span>
 </div>
 <!-- ===== JOB COSTING PANEL ===== -->
@@ -314,16 +314,13 @@ tbody tr.rowact td{background:#f3edff}                 /* actual labor exceeded 
    </div>
   </details>
  </div>
- <div class="vcard" style="max-width:1180px;border:2px solid var(--lblue)"><h3>Auto-Save &nbsp;<span style="font-size:11px;font-weight:400;color:#7a8a96">(offline / single-user fallback — only if you're NOT using the shared board above)</span></h3>
-  <div class="note"><b>One file. No JSON.</b> Click <b>Set Up Auto-Save</b> and save a file named <b>Job Coster — SAVED.html</b> <b>inside your OneDrive-synced SharePoint folder</b>. From then on, <b>every paste and every reviewed job updates that HTML file automatically</b> — your data is baked right into the HTML. <b>Next time, just open <i>Job Coster — SAVED.html</i> in Chrome</b> and your work is already there. OneDrive syncs it to SharePoint so the next manager opens the same file and sees everything.<br><span style="color:#9aa7b1">Use desktop <b>Chrome or Edge</b>. On first reopen Chrome may ask once to allow editing the file — click Allow (only needed for it to keep auto-saving; your data shows regardless). Safari/iPhone: data still shows when you open the saved HTML, but it won't auto-save (view-only).</span></div>
-  <div style="display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap">
-    <button class="btn" id="wbSetup">⚙ Set Up Auto-Save</button>
-    <button class="btn ghost" id="wbSave">⬇ Save Now</button>
-    <button class="btn ghost" id="wbOpenBtn">⬆ Open a Different File</button>
-    <input type="file" id="wbFile" accept=".json,application/json" style="display:none">
+ <div class="vcard" style="max-width:1180px;border:2px solid var(--green)"><h3>💾 Saving &nbsp;<span style="font-size:11px;font-weight:400;color:#7a8a96">(nothing to do — it's automatic)</span></h3>
+  <div class="note"><b>There is no save button — and you don't need one.</b> Because this is the shared live board, every paste and every reviewed job is saved to the shared database <b>instantly</b>. When you or any manager reopens the link, the most recent data loads automatically. Just paste your data and work; it's always current for everyone. <span id="wbMsg" style="font-size:12px;color:#7a8a96"></span></div>
+  <!-- hidden stubs: kept so legacy file-save wiring stays harmless when shared mode is on -->
+  <div style="display:none">
+    <button id="wbSetup"></button><button id="wbSave"></button><button id="wbOpenBtn"></button>
+    <input type="file" id="wbFile"><span id="wbLinkState"></span>
   </div>
-  <div style="margin-top:8px"><span id="wbLinkState" style="font-size:12px;font-weight:700"></span></div>
-  <div id="wbMsg" style="font-size:12px;color:#7a8a96;margin-top:4px"></div>
  </div>
  <div class="vcard" style="max-width:1180px"><h3>Paste the ServiceTitan export &nbsp;<span style="font-size:11px;font-weight:400;color:#7a8a96">("Job Costing w/ Project info")</span></h3>
   <div class="note">In Excel, select the whole sheet <b>including column A</b> (the <code>Project Number:</code> grouping rows must come along), copy, and paste below. The tool reads the header row by name, filters to <b>LAS HVAC</b>, rolls projects to one line, and rebuilds the Job Costing tab. <b>Reviewed exceptions are preserved</b> — if the new data moves a reviewed job by more than the re-verify threshold, it gets a <span style="color:var(--red);font-weight:700">Re-verify</span> double-flag.</div>
@@ -1683,6 +1680,7 @@ async function sbConnect(typedPass){
     const lib=await loadSupabaseLib();
     SB=lib.createClient(SB_CONFIG.url, SB_CONFIG.anonKey, { realtime:{ params:{ eventsPerSecond:5 } } });
     SB_READY=true;
+    { const d=$('liveDot'); if(d){ d.textContent='🟢 Live · auto-saving'; d.style.color='var(--green)'; } }
     sessionStorage.setItem('sb_ok','1');     // remember within this tab so refresh doesn't re-prompt
     await sbPull();
     sbSubscribe();
@@ -1855,9 +1853,11 @@ function bootEmbedded(){
 }
 /* hash helper for setup + mode status line */
 if($('sbHashBtn')) $('sbHashBtn').onclick=async()=>{ const v=($('sbPassMaker')&&$('sbPassMaker').value)||''; if(!v){ $('sbHashOut').textContent='(type a password first)'; return;} $('sbHashOut').textContent=await sha256hex(v); };
-(function(){ const s=$('sbState2'), m=$('sbModeMsg');
-  if(sbEnabled()){ if(s){s.textContent='Shared mode ON — connected via team password.'; s.style.color='var(--green)';} if(m) m.textContent='Shared mode is ON.'; }
-  else { if(s){s.textContent='Not set up yet — currently in single-file mode. Do the one-time setup to go live.'; s.style.color='#b8860b';} if(m) m.textContent='Shared mode is OFF (single-file mode).'; }
+(function(){ const s=$('sbState2'), m=$('sbModeMsg'), d=$('liveDot');
+  if(sbEnabled()){ if(s){s.textContent='Shared mode ON — connected via team password.'; s.style.color='var(--green)';} if(m) m.textContent='Shared mode is ON.';
+    if(d){ d.textContent='🔓 enter password'; d.style.color='#b8860b'; } }   // turns green once connected
+  else { if(s){s.textContent='Not set up yet — currently in single-file mode. Do the one-time setup to go live.'; s.style.color='#b8860b';} if(m) m.textContent='Shared mode is OFF (single-file mode).';
+    if(d){ d.style.display='none'; } }
 })();
 
 /* ---- Boot: shared (Supabase) mode takes priority; otherwise fall back to file mode ---- */
