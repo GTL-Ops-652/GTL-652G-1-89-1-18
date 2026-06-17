@@ -1793,6 +1793,11 @@ function loadWorkbook(obj){
   PAY = obj.PAY||{}; DISC = obj.DISC||{};
   CFG = obj.CFG||CFG; BANDS = obj.BANDS||BANDS;
   OVR = obj.OVR||{}; REVIEWED = obj.REVIEWED||{}; REVERIFY = obj.REVERIFY||{}; EXPANDED = obj.EXPANDED||{};
+  // CRITICAL: re-attach the real pay + discount/finance layers onto the restored items. Without this,
+  // reopening shows the items but WITHOUT real installer pay → labor too low → margin too high and the
+  // "actual labor over plan" exceptions vanish (Stephen, Jun 2026: 199→109 exceptions on reopen).
+  if(PAY && Object.keys(PAY).length){ CFG.real_install=true; attachPay && attachPay(); }
+  if(DISC && Object.keys(DISC).length){ attachDisc && attachDisc(); }
   // reset views/filters to a clean full sheet
   EXCSEL=new Set(); CATSEL=new Set(); ETSEL=new Set(); EXCETSEL=new Set(); COLF={}; EXCCOLF={}; state.page=0;
   if($('fflag'))$('fflag').checked=false; if($('fneg'))$('fneg').checked=false; if($('search'))$('search').value='';
