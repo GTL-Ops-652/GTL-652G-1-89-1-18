@@ -212,7 +212,7 @@ tbody tr.rowact td{background:#f3edff}                 /* actual labor exceeded 
    <th data-k="rev">Revenue</th>
    <th data-k="disc" title="Discount % = discount $ ÷ book price, where book = sold + discount $. Discount $ = sum of real negative line items from the Invoice Item Detail paste (excludes RepairCredit, Rebate, Retail-Special, Sadie). Falls back to ServiceTitan Price Variation if no item detail is loaded.">Disc %</th>
    <th data-k="finfeep" title="Finance Fee % of revenue — the FinDealerFee from the Invoice Item Detail paste, pulled out of Purchases into its own line. Still subtracted in Gross Profit, so GM is unchanged.">Fin Fee %</th>
-   <th data-k="exclDol" title="Excluded Credits — negative line items NOT counted as discount (RepairCredit, NV.ReplacementRebate, Retail-Special, Smart Sadie). Hover a row's value for the itemized breakdown.">Excl. Credits</th>
+   <th data-k="exclDol" title="Benign Credits — negative line items NOT counted in the discount % (loyalty, RepairCredit, rebate, Retail-Special, Sadie), so they don't dock commission alone. They ARE already netted out of Jobs Total Revenue, so they DO reduce gross margin. Hover a value for the breakdown.">Excl. Credits</th>
    <th data-k="mat" class="secstart" title="Purchases — $ and % of revenue">Purchases</th>
    <th data-k="ret">Returns</th>
    <th data-k="netpur" class="colpur" title="Net Purchases — the flagged purchase outcome. $ and % of revenue.">Net Purch.</th>
@@ -422,7 +422,10 @@ function discTip(c){
       `  Real discount: ${money(c.discDol)} (${p1(c.realDisc)})\n`+
       `  + Benign credit(s): ${money(c.exclDol)}\n`+
       `  = Combined: ${money(c.discDol+c.exclDol)} ÷ book ${money(c.book)} = ${p1(c.combinedDisc)}\n`+
-      `  Margin still uses the real discount only; commission tier uses the combined %.`;
+      `  COMMISSION tier uses the combined %.\n`+
+      `  MARGIN: every credit — real discount AND benign — is already taken out of Jobs Total Revenue,\n`+
+      `  so all of it reduces gross margin. The real-vs-benign split only affects the commission tier,\n`+
+      `  never whether the dollars hit margin (they always do).`;
     if(c.discItems&&c.discItems.length) s+=`\n\nReal discount lines:\n`+c.discItems.map(x=>`  • ${x.name} (${x.code}): ${money(x.amt)}`).join('\n');
     if(c.exclItems&&c.exclItems.length) s+=`\nBenign credit lines:\n`+c.exclItems.map(x=>`  • ${x.name} (${x.code}): ${money(x.amt)}`).join('\n');
     return tipEsc(s);
@@ -436,7 +439,10 @@ function discTip(c){
 }
 function exclTip(items){
   const lines=items.map(x=>`• ${tipEsc(x.name)} (${tipEsc(x.code)}): ${money(x.amt)}`);
-  return `Excluded credits (NOT counted as discount):\n`+lines.join('\n');
+  const tot=items.reduce((s,x)=>s+x.amt,0);
+  return `Benign credits — ${money(tot)} total.\n`+
+    `NOT counted in the discount % (so they don't dock commission on their own), BUT they ARE taken\n`+
+    `out of Jobs Total Revenue, so they fully reduce gross margin like any other dollar off the job.\n\n`+lines.join('\n');
 }
 // ---- "how this number was reached" tooltips (Stephen, Jun 2026) ----
 const p1=x=>`${(x*100).toFixed(1)}%`;
