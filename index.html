@@ -444,7 +444,7 @@ function labAssumedTip(c){
   let s=`ASSUMED LABOR (the plan) = ${money(c.assumedLab)}, ${p1(c.rev?c.assumedLab/c.rev:0)} of revenue\n`+
     `  Hourly: ${money(c.hrly)}\n`+
     `  + Selling commission (tech ${p1(c.tTech)} + SM ${p1(c.tSm)}): ${money(c.sellPerf)}\n`+
-    `  + Install ${c.instReal?'(real, from pay file)':'(assumed '+p1(c.instPct)+')'}: ${money(c.instPerf)}\n`;
+    `  + Install (assumed ${p1(c.instPct)}): ${money(c.instPerf)}\n`;
   if(c.n30>0) s+=`  + $${c.fee30} fee × ${c.n30} maint/warranty job(s): ${money(c.fee30*c.n30)}\n`;
   s+=`  = Assumed Labor: ${money(c.assumedLab)}`;
   if(c.alab===c.realLab && c.realLab>c.assumedLab) s+=`\n\n(Margin uses ACTUAL ${money(c.realLab)} — it exceeds assumed.)`;
@@ -587,13 +587,14 @@ function compute(it){
   const bandIt=BANDS[it.jt];
   const instPct=instRate(it.fam, rev, bandIt);
   const t=tier(disc);
-  // Selling commission (tech+SM) is always assumed. Install pay is REAL (from the pay file) when
-  // real_install is on; jobs with no install pay line get $0 install (Stephen, May 2026 R3).
-  // Falls back to assumed install% only when real_install is off.
+  // ASSUMED pay is always the plan — selling commission (tech+SM, tiered) + ASSUMED install %
+  // (8% / job-type rate) + $30 maint/warranty fee. It NEVER uses real pay: assumed = what we expected
+  // before the work is done, so we can cost the job until actuals post. Real install pay only ever
+  // affects ACTUAL labor, never assumed (Stephen, Jun 2026).
   const sellPerf=(t.tech+t.sm)*rev;
   const realInst=(it.payInstall||0);
   const instReal=!!CFG.real_install;
-  const instPerf=instReal?realInst:(instPct*rev);
+  const instPerf=instPct*rev;                 // ALWAYS the assumed install %, never real pay
   const aPerf=sellPerf + instPerf + CFG.fee30*it.n30;
   // real pay breakdown (summed across member jobs) — display columns. Direct Adjustments are
   // folded into Install/Comm/Misc by their paycode (human fixes for non-triggered config pay).
