@@ -216,7 +216,8 @@ tbody tr.rowact td{background:#f3edff}                 /* actual labor exceeded 
    <th data-k="payInstall" class="secstart" title="Real installer / task flat pay (COMUT), incl. COMUT-coded adjustments, summed across member jobs">Install Pay</th>
    <th data-k="payComm" title="Real commissions (COM) tech+SM, incl. COM-coded adjustments, summed across member jobs. Flags ⚑ when >3% over the assumed plan.">Comm</th>
    <th data-k="payMisc" title="Misc / Bonus: BON, Smart Sadie, $30, training, + other-coded adjustments">Misc/Bonus</th>
-   <th data-k="payTotal">Pay Total</th>
+   <th data-k="hrly" title="Hourly wages on this job (from the Job Costing report's Labor Pay). A non-zero figure here means an hourly person was on the job — handy for spotting hourly coverage.">Hourly</th>
+   <th data-k="payTotalAll" title="Pay Total = Install + Comm + Misc/Bonus + Hourly. This now equals ACTUAL LABOR (all real pay on the job). It won't always equal Assumed Labor — that's the plan, not real pay. Hover any cell for the breakdown.">Pay Total</th>
    <th data-k="perf" class="sep">Actual Perf</th>
    <th data-k="varc">Pay Var</th>
    <th data-k="fl">Flag</th>
@@ -464,6 +465,22 @@ function labActualTip(c){
   if(c.labFlag==='red') s+=`\n  ⚑ OVER labor cap`;
   return tipEsc(s);
 }
+function payTotalTip(c){
+  // Pay Total = real performance pay only (install + comm + misc). NOT hourly. This is why it
+  // matches neither labor column: Actual Labor = Pay Total + hourly; Assumed Labor = the plan + hourly.
+  let s=`PAY TOTAL (all real pay on the job) = ${money(c.payTotalAll)}, ${p1(c.rev?c.payTotalAll/c.rev:0)} of revenue\n`+
+    `  Install pay: ${money(c.payInstall)}\n`+
+    `  + Commission (tech+SM): ${money(c.payComm)}\n`+
+    `  + Misc / bonus: ${money(c.payMisc)}\n`+
+    `  + Hourly wages: ${money(c.hrly)}\n`+
+    `  = Pay Total: ${money(c.payTotalAll)}\n`+
+    `\nThis now INCLUDES hourly, so it equals ACTUAL LABOR:\n`+
+    `  • Actual Labor = ${money(c.realLab)}  ✓ matches Pay Total\n`+
+    `  • Assumed Labor (the plan) = ${money(c.assumedLab)}  — differs when real pay ≠ plan\n`;
+  if(c.hrly>0) s+=`\n⏱ Hourly pay present (${money(c.hrly)}) — an hourly tech was on this job.`;
+  if(!c.payMatched) s+=`\n\n(No pay file matched — performance pay is $0; Pay Total here is just hourly.)`;
+  return tipEsc(s);
+}
 // Custom floating tooltip for the Excl. Credits cells — the native title tooltip was not
 // rendering reliably (cursor changed to help-? but no detail appeared), so cells carry a
 // data-extip attribute and this div renders the itemized breakdown on hover instead.
@@ -671,7 +688,7 @@ function compute(it){
   return {rev,mat:matNoFin,matRaw:mat,finfee,finfeep,ret,hrly,perf,disc,discDol,book,discMatched:it.discMatched,exclDol:(it.exclDollars||0),aPerf,sellPerf,instPerf,assumedLab,realLab,alab,aclab,netpur,netpurp,burden,ccfin,gp,gm,varc,purp,labp,alabp,burdenp,ccfinp,band,labFlag,purFlag,rowColor,flagged,
           tTech:t.tech,tSm:t.sm,instPct,n30:it.n30,fee30:CFG.fee30,instReal,tax:CFG.cost.tax,scrap:(CFG.cost.scrap||0),rebate:(CFG.cost.rebate||0),
           excLaborOver,excLaborFloor,excPurchase,excComm,excActualOver,excTypes,
-          payInstall,payComm,payMisc,payTotal,payMatched,instMissing,
+          payInstall,payComm,payMisc,payTotal,payTotalAll:(payTotal+hrly),payMatched,instMissing,
           useActual,actualOver,actualOverAmt,assumedComm,commOver,commOverAmt,commCause};
 }
 
@@ -879,23 +896,24 @@ function render(){
       <td class="secstart" style="${c.instMissing?'color:var(--amber);font-weight:700':''}" ${c.instMissing?'title="No real install pay line yet — install assumed $0 (not-yet-paid exception)"':''}>${dpct(c.payInstall, c.rev?c.payInstall/c.rev:0)}${c.instMissing?' ⚠':''}</td>
       <td ${c.commOver?'class="cellred" ':''}title="${commTip(c)}">${dpct(c.payComm, c.rev?c.payComm/c.rev:0)}${c.commOver?' ⚑':''}</td>
       <td>${dpct(c.payMisc, c.rev?c.payMisc/c.rev:0)}</td>
-      <td><b>${money(c.payTotal)}</b><span class="subpct">${pct(c.rev?c.payTotal/c.rev:0)}</span></td>
+      <td style="${c.hrly>0?'color:var(--mblue);font-weight:700':''}" title="${c.hrly>0?'Hourly wages on this job — an hourly tech was on it':'No hourly pay on this job'}">${dpct(c.hrly, c.rev?c.hrly/c.rev:0)}</td>
+      <td style="cursor:help" data-extip="${payTotalTip(c)}"><b>${money(c.payTotalAll)}</b><span class="subpct">${pct(c.rev?c.payTotalAll/c.rev:0)}</span></td>
       <td class="sep">${dpct(c.perf, c.rev?c.perf/c.rev:0)}</td>
       <td style="color:${c.varc>0?'var(--red)':'inherit'}">${dpct(c.varc, c.rev?c.varc/c.rev:0)}</td>
       <td>${c.rowColor==='red'?'<span style="color:var(--red);font-weight:800">●</span>':c.rowColor==='amb'?'<span style="color:var(--amber);font-weight:800">●</span>':c.rowColor==='act'?'<span style="color:#5b2bb0;font-weight:800">●</span>':''}${c.actualOver?' <span class="tag-flag act" title="Actual > assumed by '+money(c.actualOverAmt)+'">Actual&gt;Assumed</span>':''}${c.commOver?' <span class="tag-flag comm" title="'+c.commCause+'">Comm over plan</span>':''}${REVERIFY[it.idx]?' <span class="tag-flag red" title="New pasted data moved this reviewed job by '+(REVERIFY[it.idx].pct*100).toFixed(0)+'% — re-verify">⟳ Re-verify</span>':''}</td></tr>`;
     if(isProj && EXPANDED[it.idx]){
       if(jl){
-        html+=`<tr class="subrow"><td class="l" colspan="24">Member jobs (${jl.length}): ${jl.join(',  ')}</td></tr>`;
+        html+=`<tr class="subrow"><td class="l" colspan="25">Member jobs (${jl.length}): ${jl.join(',  ')}</td></tr>`;
       } else {
-        html+=`<tr class="subrow"><td class="l" colspan="24">${it.n} member job(s) — individual job numbers will populate on the next run from the ServiceTitan export.</td></tr>`;
+        html+=`<tr class="subrow"><td class="l" colspan="25">${it.n} member job(s) — individual job numbers will populate on the next run from the ServiceTitan export.</td></tr>`;
       }
     }
   });
   $('rows').innerHTML=html;
   // totals
-  let R=0,NP=0,AL=0,ACL=0,ASL=0,BU=0,CF=0,GP=0,PERF=0,MAT=0,RET=0,PIN=0,PCO=0,PMI=0,PTO=0,FIN=0;
+  let R=0,NP=0,AL=0,ACL=0,ASL=0,BU=0,CF=0,GP=0,PERF=0,MAT=0,RET=0,PIN=0,PCO=0,PMI=0,PTO=0,HRL=0,FIN=0;
   arr.forEach(x=>{const c=x.c;R+=c.rev;NP+=c.netpur;AL+=c.alab;ACL+=c.realLab;ASL+=c.assumedLab;BU+=c.burden;CF+=c.ccfin;GP+=c.gp;PERF+=c.perf;MAT+=c.mat;RET+=c.ret;FIN+=c.finfee;
-    PIN+=c.payInstall;PCO+=c.payComm;PMI+=c.payMisc;PTO+=c.payTotal;});
+    PIN+=c.payInstall;PCO+=c.payComm;PMI+=c.payMisc;PTO+=c.payTotal;HRL+=c.hrly;});
   const rp=v=>R?pct(v/R):'';
   $('foot').innerHTML=`<tr style="background:#eef6fb;font-weight:700">
     <td class="l" colspan="3">TOTAL (${arr.length})</td><td>${dpct(R,R?1:0)}</td><td></td>
@@ -906,7 +924,7 @@ function render(){
     <td class="collab">${dpct(ASL,R?ASL/R:0)}</td><td class="colact">${dpct(ACL,R?ACL/R:0)}</td>
     <td class="secstart">${dpct(BU,R?BU/R:0)}</td><td>${dpct(CF,R?CF/R:0)}</td>
     <td class="colgm">${money(GP)}<span class="subpct">${rp(GP)}</span></td><td class="colgm gm ${R?gmBand(GP/R):''}">${rp(GP)}</td>
-    <td class="secstart">${dpct(PIN,R?PIN/R:0)}</td><td>${dpct(PCO,R?PCO/R:0)}</td><td>${dpct(PMI,R?PMI/R:0)}</td><td>${dpct(PTO,R?PTO/R:0)}</td>
+    <td class="secstart">${dpct(PIN,R?PIN/R:0)}</td><td>${dpct(PCO,R?PCO/R:0)}</td><td>${dpct(PMI,R?PMI/R:0)}</td><td>${dpct(HRL,R?HRL/R:0)}</td><td>${dpct(PTO+HRL,R?(PTO+HRL)/R:0)}</td>
     <td class="sep">${dpct(PERF,R?PERF/R:0)}</td><td>${(()=>{const v=PERF-(AL-arr.reduce((s,x)=>s+x.c.hrly,0));return dpct(v,R?v/R:0);})()}</td><td></td></tr>`;
   $('showing').textContent=`Showing ${slice.length?state.page*state.per+1:0}–${state.page*state.per+slice.length} of ${arr.length}`;
   $('pgn').textContent=` ${state.page+1} / ${pages} `;
@@ -1095,7 +1113,7 @@ document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{
   if(t.dataset.t==='exc')renderExc(); if(t.dataset.t==='vars')renderVars();
 });
 // Numeric (filterable) columns per grid + which are percent-typed
-const NUMKEYS_MAIN=['rev','disc','finfeep','exclDol','mat','ret','netpur','alab','aclab','burden','ccfin','gp','gm','payInstall','payComm','payMisc','payTotal','perf','varc'];
+const NUMKEYS_MAIN=['rev','disc','finfeep','exclDol','mat','ret','netpur','alab','aclab','burden','ccfin','gp','gm','payInstall','payComm','payMisc','hrly','payTotalAll','perf','varc'];
 const NUMKEYS_EXC=['rev','disc','finfeep','mat','netpurp','alab','payInstall','payComm','perf','aclab','labp','gm'];
 
 // Sort: clicking the label sorts; clicking the filter icon opens the popup.
