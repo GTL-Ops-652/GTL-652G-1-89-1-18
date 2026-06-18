@@ -288,9 +288,15 @@ tbody tr.rowact td{background:#f3edff}                 /* actual labor exceeded 
    </div>
  </div>
 
- <div class="vcard full assumed" style="margin-top:20px;max-width:1080px"><h3>Commission Tiers — Install Categories <span style="font-size:11px;font-weight:400;color:var(--red)">(tech &amp; SM commission step down as discount deepens)</span></h3>
-   <div class="note">Applied to AC Install, Install AC Units, Install Mini-Split. Discount = how far below book price the job sold.</div>
+ <div class="vcard full assumed" style="margin-top:20px;max-width:1080px"><h3>Discount Matrix — Commission Tiers <span style="font-size:11px;font-weight:400;color:var(--red)">(tech &amp; SM commission step down as the discount deepens)</span></h3>
+   <div class="note">The discount % a job sold at maps to the tech/SM commission rate here. Discount = how far below book price the job sold. When a benign credit is combined with a real discount, the <b>combined %</b> is run through this same matrix to dock commission.</div>
    <table class="tiertbl"><thead><tr><th class="l">Tier</th><th>Discount from</th><th>Discount to</th><th>Tech %</th><th>SM %</th><th>Combined</th></tr></thead><tbody id="tierBody"></tbody></table>
+ </div>
+
+ <div class="vcard full" style="margin-top:18px;max-width:1080px"><h3>Benign Discounts / Credits <span style="font-size:11px;font-weight:400;color:#7a8a96">(loyalty credits, rebates, repair credits — not a real discount)</span></h3>
+   <div class="note">Negative line items whose name/code contains any phrase below are treated as <b>benign credits</b>: excluded from the real discount and from margin when used alone (so a 20% loyalty credit doesn't read as a 20% discount). <b>But benign credits can't be combined with a real discount</b> — if a job stacks one on top of a real discount, the whole combined drop docks commission via the Discount Matrix above, and the row is flagged 🔗. One phrase per line; case-insensitive substring match.</div>
+   <textarea id="benignBox" style="width:100%;max-width:520px;height:150px;font-family:monospace;font-size:12px;padding:8px;border:1px solid var(--gray);border-radius:6px"></textarea>
+   <div style="margin-top:8px"><button class="btn" id="benignSave">Save benign list</button> <button class="btn ghost" id="benignReset">Reset to defaults</button> <span id="benignMsg" style="font-size:12px;color:#7a8a96;margin-left:8px"></span></div>
  </div>
 
  <div class="vcard full" style="margin-top:18px;max-width:1180px"><h3>Labor &amp; Purchase Bands by Job Type <span style="font-size:11px;font-weight:400;color:#7a8a96">(from job-type mapping sheet)</span></h3>
@@ -409,6 +415,18 @@ function discTip(c){
     `    Revenue (net): ${money(c.rev)}\n`+
     `    + Discount $: ${money(c.discDol)}\n`;
   if(c.exclDol>0) s+=`    + Excluded credits (e.g. rebate): ${money(c.exclDol)}\n`;
+  if(c.stacked){
+    // benign credit stacked on a real discount → combined % drives commission (not allowed to combine)
+    s=`COMBINED DISCOUNT = ${p1(c.disc)} (commission docked at this tier)\n`+
+      `  ⚑ A benign credit was COMBINED with a real discount — not allowed, so the whole drop docks pay.\n`+
+      `  Real discount: ${money(c.discDol)} (${p1(c.realDisc)})\n`+
+      `  + Benign credit(s): ${money(c.exclDol)}\n`+
+      `  = Combined: ${money(c.discDol+c.exclDol)} ÷ book ${money(c.book)} = ${p1(c.combinedDisc)}\n`+
+      `  Margin still uses the real discount only; commission tier uses the combined %.`;
+    if(c.discItems&&c.discItems.length) s+=`\n\nReal discount lines:\n`+c.discItems.map(x=>`  • ${x.name} (${x.code}): ${money(x.amt)}`).join('\n');
+    if(c.exclItems&&c.exclItems.length) s+=`\nBenign credit lines:\n`+c.exclItems.map(x=>`  • ${x.name} (${x.code}): ${money(x.amt)}`).join('\n');
+    return tipEsc(s);
+  }
   s+=`  Discount $ = ${money(c.discDol)}\n`+
     `  ${money(c.discDol)} ÷ ${money(c.book)} = ${p1(c.disc)}`;
   if(c.discItems&&c.discItems.length){
@@ -537,6 +555,9 @@ function gmBand(gm){
 
 // ---- live editable state ----
 let CFG = JSON.parse(JSON.stringify(CFG0));
+// Seed the editable benign-discount list if the saved config doesn't carry one yet.
+if(!Array.isArray(CFG.benignDiscounts)) CFG.benignDiscounts=['Smart AC Loyalty Credit','Loyalty Credit','Sadie','RepairCredit','Repair Credit','Retail.Special','Retail-Special','Retail Special','ReplacementRebate','Replacement Rebate'];
+if(!Array.isArray(CFG0.benignDiscounts)) CFG0.benignDiscounts=CFG.benignDiscounts.slice();
 let BANDS = {};                      // jobType -> {floor,cap,capDol,purPct,purDol,inst,n,fam}
 BANDS0.forEach(b=>BANDS[b.jt]={floor:b.floorLab,cap:b.capLabPct,capDol:b.capLabDol,purPct:b.purCapPct||0,purDol:b.purCapDol||0,inst:(b.instPct!=null?b.instPct:CFG0.installer),n:b.n,fam:b.fam});
 let OVR = {};                        // idx -> {mat, perf, note}
@@ -589,13 +610,23 @@ function compute(it){
   const discDol = it.discMatched ? (it.discDollars||0) : 0;
   const exclDolC = it.discMatched ? (it.exclDollars||0) : 0;
   const book = it.discMatched ? (rev + discDol + exclDolC) : 0;
-  const disc = it.discMatched ? (book>0 ? discDol/book : 0) : Math.max(0, -it.pv);
+  // realDisc = the true discount % (drives margin/book — benign credits are NOT a real discount).
+  const realDisc = it.discMatched ? (book>0 ? discDol/book : 0) : Math.max(0, -it.pv);
+  // Benign credits (loyalty/repair/rebate/etc.) are excluded when used ALONE. But they're not allowed
+  // to be COMBINED with a real discount — if stacked, the whole combined drop docks commission
+  // (Stephen, Jun 2026). stacked = a real discount AND a benign credit on the same job.
+  const stacked = it.discMatched && discDol>0 && exclDolC>0;
+  const combinedDisc = (it.discMatched && book>0) ? (discDol+exclDolC)/book : realDisc;
+  // DISPLAYED discount % = combined when stacked (so the row shows the full drop), else real.
+  const disc = stacked ? combinedDisc : realDisc;
+  // commission discount % = combined when stacked (docks pay at the higher tier), else real.
+  const commDisc = stacked ? combinedDisc : realDisc;
   // Every revenue job: selling commission (tech+SM, discount-tiered) + install %.
   // Install categories (CORE) use revenue-banded install % (flat $/unit reality → % falls as rev climbs);
   // all other categories use the per-job-type flat install % (editable). + $30 on maint/warranty only.
   const bandIt=BANDS[it.jt];
   const instPct=instRate(it.fam, rev, bandIt);
-  const t=tier(disc);
+  const t=tier(commDisc);   // commission tier uses combined % when benign credits are stacked on a real discount
   // ASSUMED pay is always the plan — selling commission (tech+SM, tiered) + ASSUMED install %
   // (8% / job-type rate) + $30 maint/warranty fee. It NEVER uses real pay: assumed = what we expected
   // before the work is done, so we can cost the job until actuals post. Real install pay only ever
@@ -719,7 +750,7 @@ function compute(it){
   if(excComm) excTypes.push('comm');
   if(excActualOver) excTypes.push('actual');
   if(excLaborFloor) excTypes.push('floor');
-  return {rev,mat:matNoFin,matRaw:mat,finfee,finfeep,ret,hrly,perf,disc,discDol,book,discMatched:it.discMatched,exclDol:(it.exclDollars||0),aPerf,sellPerf,instPerf,assumedLab,realLab,alab,aclab,netpur,netpurp,burden,ccfin,gp,gm,varc,purp,labp,alabp,burdenp,ccfinp,band,labFlag,purFlag,rowColor,flagged,
+  return {rev,mat:matNoFin,matRaw:mat,finfee,finfeep,ret,hrly,perf,disc,realDisc,commDisc,combinedDisc,stacked,discDol,book,discMatched:it.discMatched,exclDol:(it.exclDollars||0),aPerf,sellPerf,instPerf,assumedLab,realLab,alab,aclab,netpur,netpurp,burden,ccfin,gp,gm,varc,purp,labp,alabp,burdenp,ccfinp,band,labFlag,purFlag,rowColor,flagged,
           tTech:t.tech,tSm:t.sm,instPct,n30:it.n30,fee30:CFG.fee30,instReal,tax:CFG.cost.tax,scrap:(CFG.cost.scrap||0),rebate:(CFG.cost.rebate||0),
           excLaborOver,excLaborFloor,excPurchase,excComm,excActualOver,excTypes,
           payInstall,payComm,payMisc,payTotal,payTotalAll:(payTotal+hrly),payMatched,instMissing,
@@ -950,7 +981,7 @@ function render(){
       <td class="l"><span class="tag">${it.fam}</span></td>
       <td class="l" style="max-width:185px;overflow:hidden;text-overflow:ellipsis">${it.jt}</td>
       <td>${dpct(c.rev, c.rev?1:0)}</td>
-      <td class="${discCls}" title="${c.discMatched?discTip(c):'Legacy ServiceTitan Price Variation '+(c.disc*100).toFixed(1)+'% — paste the Invoice Item Detail report for true discount'}">${(c.disc*100).toFixed(1)}%${c.discMatched?'':' <span style="color:#b08; font-weight:700">*</span>'}</td>
+      <td class="${c.stacked?'cellred':discCls}" title="${c.discMatched?discTip(c):'Legacy ServiceTitan Price Variation '+(c.disc*100).toFixed(1)+'% — paste the Invoice Item Detail report for true discount'}">${(c.disc*100).toFixed(1)}%${c.stacked?' <span title="Benign credit combined with a real discount — commission docked at the combined %">🔗</span>':''}${c.discMatched?'':' <span style="color:#b08; font-weight:700">*</span>'}</td>
       <td class="${finCls}" title="Finance fee ${money(c.finfee)} (${pct(c.finfeep)} of revenue) — pulled out of Purchases; still in GP so GM unchanged">${c.finfee>0?pct(c.finfeep):'<span style="color:#aeb9c2">—</span>'}</td>
       <td${(it.exclItems&&it.exclItems.length)?' style="cursor:help" data-extip="'+exclTip(it.exclItems)+'"':''}>${c.exclDol>0?dpct(c.exclDol, c.rev?c.exclDol/c.rev:0):'<span style="color:#aeb9c2">—</span>'}</td>
       <td class="secstart" title="${purTip(c)}">${dpct(c.mat,c.purp)}</td>
@@ -1154,7 +1185,36 @@ function renderBands(){
       <td><input type="number" step="0.01" data-band="${jt}" data-bk="purPct" value="${b.purPct}"></td>
       <td><input type="number" step="10" data-band="${jt}" data-bk="purDol" value="${b.purDol}"></td></tr>`;}).join('');
 }
-function renderVars(){ syncCostInputs(); renderTiers(); renderBands(); }
+function renderBenign(){ if($('benignBox')) $('benignBox').value=(CFG.benignDiscounts||[]).join('\n'); }
+function renderVars(){ syncCostInputs(); renderTiers(); renderBands(); renderBenign(); }
+// Save the benign list, re-classify discounts (some lines may move between discount/benign), recompute, persist.
+if($('benignSave')) $('benignSave').onclick=()=>{
+  const lines=($('benignBox').value||'').split('\n').map(s=>s.trim()).filter(Boolean);
+  CFG.benignDiscounts=lines;
+  if(DISC&&Object.keys(DISC).length){ // re-run the discount engine so lines re-classify against the new list
+    // re-parse isn't available without the raw paste; instead re-walk DISC items by re-attaching.
+  }
+  reclassifyDiscounts();
+  if($('benignMsg'))$('benignMsg').innerHTML='<span style="color:var(--green);font-weight:700">✓ Saved — discounts re-classified.</span>';
+  render(); if($('p-exc').classList.contains('active'))renderExc();
+  sbPushDatasetDebounced && sbPushDatasetDebounced();
+};
+if($('benignReset')) $('benignReset').onclick=()=>{
+  CFG.benignDiscounts=DEFAULT_BENIGN.slice(); renderBenign(); reclassifyDiscounts();
+  if($('benignMsg'))$('benignMsg').textContent='Reset to defaults.';
+  render(); if($('p-exc').classList.contains('active'))renderExc(); sbPushDatasetDebounced && sbPushDatasetDebounced();
+};
+// Re-bucket each stored discount line into real-discount vs benign using the CURRENT benign list,
+// then re-attach to items. Lets the benign list be edited without re-pasting the invoice file.
+function reclassifyDiscounts(){
+  Object.values(DISC).forEach(d=>{
+    const all=[...(d.items||[]),...(d.exclItems||[])];
+    d.items=[]; d.exclItems=[]; d.disc=0; d.excl=0;
+    all.forEach(x=>{ if(discExcluded(x.name,x.code)){ d.exclItems.push(x); d.excl+=x.amt; } else { d.items.push(x); d.disc+=x.amt; } });
+    d.disc=Math.round(d.disc*100)/100; d.excl=Math.round(d.excl*100)/100;
+  });
+  attachDisc();
+}
 
 $('p-vars').addEventListener('input',ev=>{
   const t=ev.target, v=parseFloat(t.value);
@@ -1414,13 +1474,15 @@ function attachPay(){
 //   - NV.ReplacementRebate
 // book = sold (Jobs Total Revenue) + real discount $.  disc% = real disc / book.
 let DISC = {};  // job number -> {disc, excl, items:[{name,code,amt}], exclItems:[{name,code,amt}]}
+// Benign discounts/credits — editable in the Variables tab (CFG.benignDiscounts). A negative line
+// whose name/code contains any of these phrases is a BENIGN credit, not a real discount: excluded
+// from margin/discount when used ALONE, but if STACKED with a real discount the combined drop docks
+// commission (these aren't allowed to be combined). Matching is case-insensitive substring.
+function benignList(){ return (CFG.benignDiscounts&&CFG.benignDiscounts.length)?CFG.benignDiscounts:DEFAULT_BENIGN; }
+const DEFAULT_BENIGN=['Smart AC Loyalty Credit','Loyalty Credit','Sadie','RepairCredit','Repair Credit','Retail.Special','Retail-Special','Retail Special','ReplacementRebate','Replacement Rebate'];
 function discExcluded(name, code){
   const s=((name||'')+' '+(code||'')).toLowerCase();
-  if(s.indexOf('sadie')>=0) return true;                 // any Smart Sadie line
-  if(s.indexOf('repaircredit')>=0||s.indexOf('repair credit')>=0) return true;
-  if(s.indexOf('retail.special')>=0||s.indexOf('retail-special')>=0||s.indexOf('retail special')>=0) return true;
-  if(s.indexOf('replacementrebate')>=0||s.indexOf('replacement rebate')>=0) return true;
-  return false;
+  return benignList().some(p=>{ p=(p||'').trim().toLowerCase(); return p && s.indexOf(p)>=0; });
 }
 // Parse pasted Invoice Item Detail TSV. Sums negative line items per Job Number.
 function parseDiscPaste(text){
