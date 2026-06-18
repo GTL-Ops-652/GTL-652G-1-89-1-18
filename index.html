@@ -73,6 +73,7 @@ tbody tr.dblflag td:last-child{box-shadow:inset -2px 0 0 var(--red),inset 0 2px 
 tbody tr.dblflag td:first-child::after{content:" ⟳ re-verify";color:var(--red);font-weight:800;font-size:9px}
 td.cellred{background:var(--redcell)!important;outline:2px solid var(--red);outline-offset:-2px;font-weight:700;color:#7a0d0d}
 td.cellamb{background:var(--ambcell)!important;outline:2px solid var(--amber);outline-offset:-2px;font-weight:700;color:#6b4d00}
+td.cellpink{background:#ffe0ec!important;outline:2px solid #e87aa6;outline-offset:-2px;font-weight:700;color:#8a1f4d}
 tbody tr.neg td.gm{font-weight:700}
 /* GM% color bands (R5) — override neutral/neg so the band always reads */
 td.gm.gm-dg{background:#1e7a44!important;color:#fff!important;font-weight:700}
@@ -463,6 +464,15 @@ function labActualTip(c){
       `  Hourly ${money(c.hrly)} + Actual Perf ${money(c.perf)}`;
   }
   if(c.labFlag==='red') s+=`\n  ⚑ OVER labor cap`;
+  // append (never overwrite) the over-plan reason so it's visible on hover
+  if(c.actualOver){
+    s+=`\n\n— EXCEPTION: Actual comm+install ${money(c.actualPerfPay)} > plan ${money(c.assumedPerfPay)} by ${money(c.actualOverAmt)} (>10%). Real performance pay over plan.`;
+  } else if(c.benignOver){
+    const who = c.overByHourly && c.overByMisc ? 'hourly wages + Misc/Bonus spiffs'
+              : c.overByHourly ? 'hourly wages (likely a training tech)'
+              : 'Misc/Bonus (Sadie / review / training / $30 spiffs)';
+    s+=`\n\n— Over plan by ${money(c.benignAmt)}, BUT comm+install are within the barrier. Driven by ${who}. Not flagged (benign) — cell highlighted pink.`;
+  }
   return tipEsc(s);
 }
 function payTotalTip(c){
@@ -663,11 +673,27 @@ function compute(it){
     if(pCap!=null && netpur>pCap) purFlag='red';
   }
   // ---- pay-vs-plan flags (independent of bands) ----
-  // actualOver: real labor beat the assumed plan by more than a 10% buffer → flag it. Margin still
-  // uses the higher actual whenever it's higher (useActual, above); only the EXCEPTION needs the
-  // 10% cushion so small overages don't clutter the list (Stephen, Jun 2026).
-  const actualOver = payMatched && realLab > assumedLab*1.10;
-  const actualOverAmt = actualOver ? realLab-assumedLab : 0;
+  // actualOver: real labor beat the assumed plan by more than a 10% buffer. BUT only flag it as a
+  // real exception when the PERFORMANCE pay that matters — commission + installer pay — is itself
+  // over the plan. If the overage is driven only by "benign" pay (hourly wages for a training tech,
+  // the $30 maint/warranty fee, Sadie spiff, review/MEET/TRAIN spiffs — i.e. anything in Hourly or
+  // the Misc/Bonus bucket), do NOT flag it; instead just pink the bucket(s) that caused it so it's
+  // visible without cluttering exceptions (Stephen, Jun 2026).
+  const laborOverall = payMatched && realLab > assumedLab*1.10;     // total labor over the 10% barrier (the trigger)
+  // performance pay that "counts": actual comm + actual install vs the planned comm + planned install
+  const actualPerfPay  = payComm + payInstall;
+  const assumedPerfPay = sellPerf + instPerf;                       // the plan (excludes hourly, $30 fee, misc)
+  const perfOver = actualPerfPay > assumedPerfPay*1.10;
+  // Trigger is total labor over plan. THEN: real exception only if comm+install are ALSO over;
+  // otherwise the overage is benign (hourly/misc) and we don't flag — just pink the cause.
+  const actualOver = laborOverall && perfOver;
+  const actualOverAmt = actualOver ? (actualPerfPay-assumedPerfPay) : 0;
+  // benign overage: total labor cleared the barrier but comm+install did NOT — caused by hourly/misc
+  const benignOver = laborOverall && !perfOver;
+  // which benign bucket(s) pushed it over → drive the light-pink highlight on those exact cells
+  const overByHourly = benignOver && hrly>0;
+  const overByMisc   = benignOver && payMisc>0;
+  const benignAmt    = benignOver ? (realLab-assumedLab) : 0;
   // red dominates; band-red and comm-over are red, actual-over is its own purple class but also flags the row
   const rowColor = (labFlag==='red'||purFlag==='red'||commOver) ? 'red'
                  : actualOver ? 'act'
@@ -689,7 +715,8 @@ function compute(it){
           tTech:t.tech,tSm:t.sm,instPct,n30:it.n30,fee30:CFG.fee30,instReal,tax:CFG.cost.tax,scrap:(CFG.cost.scrap||0),rebate:(CFG.cost.rebate||0),
           excLaborOver,excLaborFloor,excPurchase,excComm,excActualOver,excTypes,
           payInstall,payComm,payMisc,payTotal,payTotalAll:(payTotal+hrly),payMatched,instMissing,
-          useActual,actualOver,actualOverAmt,assumedComm,commOver,commOverAmt,commCause};
+          useActual,actualOver,actualOverAmt,assumedComm,commOver,commOverAmt,commCause,
+          actualPerfPay,assumedPerfPay,perfOver,benignOver,overByHourly,overByMisc,benignAmt};
 }
 
 let state={sort:'rev',dir:-1,page:0,per:60};
@@ -895,12 +922,12 @@ function render(){
       <td class="colgm"><b>${money(c.gp)}</b><span class="subpct">${pct(c.gm)}</span></td><td class="colgm gm ${gmBand(c.gm)}">${pct(c.gm)}</td>
       <td class="secstart" style="${c.instMissing?'color:var(--amber);font-weight:700':''}" ${c.instMissing?'title="No real install pay line yet — install assumed $0 (not-yet-paid exception)"':''}>${dpct(c.payInstall, c.rev?c.payInstall/c.rev:0)}${c.instMissing?' ⚠':''}</td>
       <td ${c.commOver?'class="cellred" ':''}title="${commTip(c)}">${dpct(c.payComm, c.rev?c.payComm/c.rev:0)}${c.commOver?' ⚑':''}</td>
-      <td>${dpct(c.payMisc, c.rev?c.payMisc/c.rev:0)}</td>
-      <td style="${c.hrly>0?'color:var(--mblue);font-weight:700':''}" title="${c.hrly>0?'Hourly wages on this job — an hourly tech was on it':'No hourly pay on this job'}">${dpct(c.hrly, c.rev?c.hrly/c.rev:0)}</td>
+      <td ${c.overByMisc?'class="cellpink" ':''}title="${c.overByMisc?'Benign overage: total labor is over the plan, but commission + installer pay are within the barrier — the overage is from Misc/Bonus (Sadie / review / training / $30 spiffs). Not flagged as an exception.':'Misc / bonus pay'}">${dpct(c.payMisc, c.rev?c.payMisc/c.rev:0)}</td>
+      <td ${c.overByHourly?'class="cellpink" ':''}style="${(!c.overByHourly&&c.hrly>0)?'color:var(--mblue);font-weight:700':''}" title="${c.overByHourly?'Benign overage: total labor is over the plan, but commission + installer pay are within the barrier — the overage is from HOURLY wages (likely a training tech on the job). Not flagged as an exception.':(c.hrly>0?'Hourly wages on this job — an hourly tech was on it':'No hourly pay on this job')}">${dpct(c.hrly, c.rev?c.hrly/c.rev:0)}</td>
       <td style="cursor:help" data-extip="${payTotalTip(c)}"><b>${money(c.payTotalAll)}</b><span class="subpct">${pct(c.rev?c.payTotalAll/c.rev:0)}</span></td>
       <td class="sep">${dpct(c.perf, c.rev?c.perf/c.rev:0)}</td>
       <td style="color:${c.varc>0?'var(--red)':'inherit'}">${dpct(c.varc, c.rev?c.varc/c.rev:0)}</td>
-      <td>${c.rowColor==='red'?'<span style="color:var(--red);font-weight:800">●</span>':c.rowColor==='amb'?'<span style="color:var(--amber);font-weight:800">●</span>':c.rowColor==='act'?'<span style="color:#5b2bb0;font-weight:800">●</span>':''}${c.actualOver?' <span class="tag-flag act" title="Actual > assumed by '+money(c.actualOverAmt)+'">Actual&gt;Assumed</span>':''}${c.commOver?' <span class="tag-flag comm" title="'+c.commCause+'">Comm over plan</span>':''}${REVERIFY[it.idx]?' <span class="tag-flag red" title="New pasted data moved this reviewed job by '+(REVERIFY[it.idx].pct*100).toFixed(0)+'% — re-verify">⟳ Re-verify</span>':''}</td></tr>`;
+      <td>${c.rowColor==='red'?'<span style="color:var(--red);font-weight:800">●</span>':c.rowColor==='amb'?'<span style="color:var(--amber);font-weight:800">●</span>':c.rowColor==='act'?'<span style="color:#5b2bb0;font-weight:800">●</span>':''}${c.actualOver?' <span class="tag-flag act" title="EXCEPTION REASON: Actual commission + installer pay ('+money(c.actualPerfPay)+') exceeds the plan ('+money(c.assumedPerfPay)+') by '+money(c.actualOverAmt)+' (>10%). This is real performance-pay over plan — hourly, $30 fee, Sadie/review/training spiffs are excluded from this test.">Actual&gt;Assumed</span>':''}${c.commOver?' <span class="tag-flag comm" title="'+c.commCause+'">Comm over plan</span>':''}${REVERIFY[it.idx]?' <span class="tag-flag red" title="New pasted data moved this reviewed job by '+(REVERIFY[it.idx].pct*100).toFixed(0)+'% — re-verify">⟳ Re-verify</span>':''}</td></tr>`;
     if(isProj && EXPANDED[it.idx]){
       if(jl){
         html+=`<tr class="subrow"><td class="l" colspan="25">Member jobs (${jl.length}): ${jl.join(',  ')}</td></tr>`;
