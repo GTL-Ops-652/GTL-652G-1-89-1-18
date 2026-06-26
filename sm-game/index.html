@@ -235,7 +235,7 @@ function reset(trade){
  const pool=(trade==='HVAC'?HVAC:PLUMB).map(j=>({...j}));
  for(let i=pool.length-1;i>0;i--){const k=Math.random()*(i+1)|0;[pool[i],pool[k]]=[pool[k],pool[i]];}
  S={trade,jobs:pool.slice(0,10),idx:0,demandOffered:0,demandClosed:0,revenue:0,ticketsCount:0,
-    classCorrect:0,classTotal:0,badSells:0,cur:{},tmp:{}};
+    maintRevenue:0,maintUpsells:0,classCorrect:0,classTotal:0,badSells:0,cur:{},tmp:{}};
 }
 const app=()=>document.getElementById('app');
 const render=h=>app().innerHTML=h;
@@ -248,15 +248,15 @@ function start(){
    <p>Calls come in pre-booked — but the booking is often wrong. You read what's in front of you on site, decide what (if anything) to sell, work the close, and file each job in the right bucket.</p>
    <h3>The four buckets</h3>
    <div class="legend">
-     <b>Demand</b> — a real equipment fault we diagnose and repair/replace. Drives close rate & ticket.<br>
+     <b>Demand</b> — the customer knew about a problem up front (reported at booking, or flagged on arrival). Drives close rate & avg ticket.<br>
      <b>Warranty</b> — covered by our workmanship, the manufacturer, or a recall. No charge.<br>
-     <b>Maintenance</b> — a real service the customer wants or is owed (tune-up, flush, inspection), or a job where the equipment turned out healthy and you just serviced it.<br>
+     <b>Maintenance</b> — the customer just wanted service and the system was performing. Stays Maintenance even if you find something and upsell — upselling a maintenance is fair game.<br>
      <b>Service Exception</b> — a call we should never have booked: out of scope, or a favor (a reset, programming, a hand with something).
    </div>
    <h3>How you win</h3>
    <p>📈 <b>Demand close rate ≥ 90%</b> · 💵 <b>avg ticket above target</b> · 🚫 <b>zero bad sells</b>. All three.</p>
    <h3>The trap</h3>
-   <p>What you find on site is what it is — no second-guessing the diagnosis. The skill is doing right by that find: a healthy unit is <b>Maintenance</b>, not a sale; a call we shouldn't have run is a <b>Service Exception</b>. Don't inflate Demand.</p>
+   <p>The deciding question for the bucket isn't what you find or sell — it's <b>did the customer know about a problem up front?</b> A maintenance call on a unit that's running stays Maintenance even if you sell an upgrade. But if they say "it hasn't been working well," that's now Demand. Read the customer, not just the equipment.</p>
    <button class="btn center" onclick="go('HVAC')">🔥 Run HVAC</button>
    <button class="btn center red" onclick="go('Plumbing')">💧 Run Plumbing</button>
   </div>`);
@@ -278,16 +278,51 @@ function nextJob(){
  if(S.idx>=10)return endGame();
  S.cur=S.jobs[S.idx];S.tmp={};
  const j=S.cur;
+ if(j.booked==='Maintenance'){ return arrivalGate(); }
+ showFinds();
+}
+
+/* For maintenance bookings: the customer's stated condition on arrival decides
+   the bucket. If they say it hasn't been performing => a known issue => Demand
+   path. If it's running fine => stays Maintenance no matter what we find/sell. */
+function arrivalGate(){
+ const j=S.cur;
+ const perfWord = S.trade==='HVAC' ? 'heating &amp; cooling properly' : 'running properly';
+ render(bar()+`
+  <div class="card">
+   <span class="tag">DISPATCH</span>
+   <div class="booking"><div><div class="lbl">Booked as</div><div class="bk">${j.booked}</div></div>
+     <div style="text-align:right"><div class="lbl">Complaint</div><div class="bk" style="font-size:14px;max-width:380px">${j.complaint}</div></div></div>
+   <h2>You arrive. What does the customer say?</h2>
+   <p class="muted">This is a maintenance booking. What the customer tells you on arrival sets the bucket — listen first.</p>
+   <button class="btn" onclick="gate('fine')">"It's working fine — just here for the service."</button>
+   <button class="btn" onclick="gate('issue')">"Actually, now that you're here — it hasn't been working well."</button>
+  </div>`);
+}
+function gate(v){
+ SFX.click();
+ S.tmp.knownIssue = (v==='issue');   // issue stated up front => Demand
+ showFinds();
+}
+
+function showFinds(){
+ S.cur=S.jobs[S.idx];
+ const j=S.cur;
  const finds=j.finds.map((f,i)=>({...f,i}));
  for(let i=finds.length-1;i>0;i--){const k=Math.random()*(i+1)|0;[finds[i],finds[k]]=[finds[k],finds[i]];}
  S.tmp.finds=finds;
+ const sub = j.booked==='Maintenance' && !S.tmp.knownIssue
+   ? 'Customer reports no problem. Anything you sell here is a maintenance upsell.'
+   : (j.booked==='Maintenance' && S.tmp.knownIssue
+       ? 'Customer flagged a problem on arrival — this is now a demand situation.'
+       : 'Whatever you find is what it is. Your call on how to handle it.');
  render(bar()+`
   <div class="card">
    <span class="tag">DISPATCH</span>
    <div class="booking"><div><div class="lbl">Booked as</div><div class="bk">${j.booked}</div></div>
      <div style="text-align:right"><div class="lbl">Complaint</div><div class="bk" style="font-size:14px;max-width:380px">${j.complaint}</div></div></div>
    <h2>You're on site. What did you find?</h2>
-   <p class="muted">Whatever you find is what it is. Your call on how to handle it.</p>
+   <p class="muted">${sub}</p>
    ${finds.map((o,idx)=>`<button class="btn" onclick="pickFind(${idx})">${o.f}</button>`).join('')}
   </div>`);
 }
@@ -299,15 +334,26 @@ function pickFind(idx){
  const fb=`<div class="feedback info">🔧 On site you found: ${fnd.f}</div>`;
  if(fnd.outcome==='sell'){ S.tmp.selected={}; renderOptions(fb); return; }
 
+ // Maintenance (healthy equipment): do the service, and an upsell here is legitimate.
+ if(fnd.outcome==='maint'){
+   render(bar()+`
+    <div class="card">
+     <span class="tag">HEALTHY EQUIPMENT</span><h2>System Is Performing</h2>${fb}
+     <div class="client"><b>Customer:</b> "Glad it's all good — appreciate you checking it."</div>
+     <h3>Your move</h3>
+     <p class="muted">It's working and they didn't report a problem, so this is a Maintenance job. You can complete it as-is, or offer a legitimate upgrade — an upsell on a maintenance is fair game and still files as Maintenance.</p>
+     <button class="btn" onclick="didMaint()">Complete the maintenance, no upsell</button>
+     <button class="btn red" onclick="maintUpsell()">Offer a maintenance upgrade (IAQ, surge, capacitor, etc.)</button>
+    </div>`);
+   return;
+ }
+
+ // Warranty or Service Exception: no real fault to sell against; selling = bad sell.
  let tag,head,clientLine,rightLabel,rightFn;
  if(fnd.outcome==='warranty'){
    tag='WARRANTY';head='Covered Work';
    clientLine='"This is covered under what you did, right?"';
    rightLabel='Handle it under warranty, no charge';rightFn='rightThing';
- }else if(fnd.outcome==='maint'){
-   tag='HEALTHY EQUIPMENT';head='No Fault Found';
-   clientLine='"So... it\'s not actually broken?"';
-   rightLabel='Perform the maintenance, no repair sale';rightFn='didMaint';
  }else{
    tag='OUT OF SCOPE / FAVOR';head='Not a Job We Should Sell';
    clientLine='"Can you just take care of it for me?"';
@@ -318,10 +364,49 @@ function pickFind(idx){
    <span class="tag">${tag}</span><h2>${head}</h2>${fb}
    <div class="client"><b>Customer:</b> ${clientLine}</div>
    <h3>Your move</h3>
-   <p class="muted">There's no real fault to sell against here. Do it the right way.</p>
+   <p class="muted">There's no real fault to sell a repair against here. Do it the right way.</p>
    <button class="btn" onclick="${rightFn}()">${rightLabel}</button>
    <button class="btn red" onclick="oversell()">Push a paid repair package anyway</button>
   </div>`);
+}
+
+/* Legitimate maintenance upsell — files as Maintenance, feeds maint revenue, NOT a bad sell */
+function maintUpsell(){
+ SFX.click();
+ const ups=[
+   {n:'IAQ / air-scrubber add-on',v:780},
+   {n:'Surge protector + hard-start kit',v:420},
+   {n:'Proactive capacitor + contactor replacement',v:340},
+   {n:'Duct sanitization package',v:560}
+ ];
+ S.tmp.upOpts=ups;
+ render(bar()+`
+  <div class="card"><span class="tag">MAINTENANCE UPSELL</span><h2>Offer an Upgrade</h2>
+   <p class="muted">Pick what to offer. This is a legitimate maintenance upsell — it files as Maintenance.</p>
+   ${ups.map((u,i)=>`<button class="btn" onclick="doMaintUpsell(${i})">${u.n} — $${u.v}</button>`).join('')}
+   <button class="btn" onclick="didMaint()">On second thought, no upsell</button>
+  </div>`);
+}
+function doMaintUpsell(i){
+ const u=S.tmp.upOpts[i];
+ const accept=Math.random()<0.7;
+ if(accept){
+   SFX.cash();
+   S.tmp.closed=false;S.tmp.finalTicket=u.v;S.tmp.didRight=true;S.tmp.didMaintFlag=true;S.tmp.maintSale=true;
+   render(bar()+`
+    <div class="card"><span class="tag">UPSELL CLOSED</span><h2>${u.n}</h2>
+     <div class="client"><b>Customer:</b> "Sure, that sounds worth it."</div>
+     <div class="feedback good">💵 Maintenance upsell: <b>$${u.v.toLocaleString()}</b>. Counts as maintenance revenue.</div>
+     <button class="btn center" onclick="toClassify()">Continue →</button></div>`);
+ }else{
+   SFX.deny();
+   S.tmp.closed=false;S.tmp.finalTicket=0;S.tmp.didRight=true;S.tmp.didMaintFlag=true;
+   render(bar()+`
+    <div class="card"><span class="tag">UPSELL DECLINED</span><h2>${u.n}</h2>
+     <div class="client"><b>Customer:</b> "I'll pass for now, thanks."</div>
+     <div class="feedback warn">No upsell this time — maintenance still completed correctly.</div>
+     <button class="btn center" onclick="toClassify()">Continue →</button></div>`);
+ }
 }
 
 /* ---- option selection (sell path) ---- */
@@ -447,28 +532,48 @@ function toClassify(){
    ${opts.map(b=>`<button class="btn" onclick="pickBucket('${b}')">${b}</button>`).join('')}
   </div>`);
 }
+/* Compute the CORRECT bucket from context, not just the find. */
+function correctBucket(){
+ const j=S.cur, fnd=S.tmp.find;
+ if(fnd.outcome==='warranty') return 'Warranty';
+ if(fnd.outcome==='except')   return 'Service Exception';
+ if(fnd.outcome==='maint')    return 'Maintenance';
+ // outcome==='sell' (a real fault we sold against)
+ if(j.booked==='Maintenance' && !S.tmp.knownIssue) return 'Maintenance'; // was performing -> upsell stays maint
+ return 'Demand'; // known issue up front (demand booking, or maint w/ flagged issue)
+}
+
 function pickBucket(b){
- SFX.click();const fnd=S.tmp.find,correct=fnd.bucket,right=b===correct;
+ SFX.click();const fnd=S.tmp.find,correct=correctBucket(),right=b===correct;
  S.classTotal++;if(right)S.classCorrect++;
  const isDemand=correct==='Demand';
+ // Demand close rate: only demand jobs feed it
  if(isDemand){S.demandOffered++;if(S.tmp.closed&&right)S.demandClosed++;}
- if(S.tmp.finalTicket>0){S.revenue+=S.tmp.finalTicket;S.ticketsCount++;}
+ // Revenue routing: demand sales feed avg ticket; maintenance sales tracked separately
+ if(S.tmp.finalTicket>0){
+   if(correct==='Maintenance'){
+     S.maintRevenue+=S.tmp.finalTicket; S.maintUpsells++;
+   }else{
+     S.revenue+=S.tmp.finalTicket; S.ticketsCount++;
+   }
+ }
  right?SFX.good():SFX.bad();
  let extra='';
  if(!right){
-   if(isDemand)extra=' A real demand job misfiled = a lost demand close.';
-   else if(correct==='Maintenance'&&b==='Demand')extra=' Healthy equipment isn\'t demand — that\'s how demand gets inflated.';
+   if(isDemand)extra=' A known issue up front makes this Demand — misfiling it = a lost demand close.';
+   else if(correct==='Maintenance'&&b==='Demand')extra=' It was performing and the customer reported no problem — a sale here is a maintenance upsell, not demand.';
    else if(correct==='Service Exception')extra=' This one should never have driven a demand number.';
+   else if(correct==='Warranty')extra=' Covered work — not a demand sale.';
  }
  const fb=right
-  ?`<div class="feedback good">✅ Correct: <b>${b}</b>.</div>`
+  ?`<div class="feedback good">✅ Correct: <b>${b}</b>.${(correct==='Maintenance'&&S.tmp.finalTicket>0)?' Nice maintenance upsell.':''}</div>`
   :`<div class="feedback bad">❌ Wrong bucket. Correct: <b>${correct}</b>.${extra}</div>`;
  S.idx++;
  render(bar()+`
   <div class="card"><span class="tag">JOB CLOSED OUT</span><h2>Job ${S.idx}/10 Complete</h2>${fb}
    <div class="statgrid">
      <div class="stat"><div class="n">${S.demandOffered?Math.round(S.demandClosed/S.demandOffered*100):0}%</div><div class="l">Demand Close</div></div>
-     <div class="stat"><div class="n">$${S.ticketsCount?Math.round(S.revenue/S.ticketsCount).toLocaleString():0}</div><div class="l">Avg Ticket</div></div></div>
+     <div class="stat"><div class="n">$${S.ticketsCount?Math.round(S.revenue/S.ticketsCount).toLocaleString():0}</div><div class="l">Avg Demand Ticket</div></div></div>
    <button class="btn center red" onclick="nextJob()">${S.idx>=10?'See Final Score →':'Next Job →'}</button></div>`);
 }
 
@@ -489,8 +594,10 @@ function endGame(){
      <div class="stat"><div class="n">${classPct}%</div><div class="l">Classification Accuracy</div></div>
      <div class="stat"><div class="n">${S.badSells}</div><div class="l">Bad Sells (need 0)</div></div></div>
    ${S.badSells>0?`<div class="feedback bad">⚠ ${S.badSells} bad sell${S.badSells>1?'s':''} — you charged for work where there was no real fault. That alone disqualifies a winning day.</div>`:''}
-   <h3>Total Revenue Booked</h3>
-   <p style="font-family:Georgia,serif;font-size:28px;color:var(--dark-blue)">$${S.revenue.toLocaleString()}</p>
+   <h3>Revenue</h3>
+   <p style="font-family:Georgia,serif;font-size:24px;color:var(--dark-blue);margin-bottom:2px">Demand: $${S.revenue.toLocaleString()}</p>
+   <p style="font-family:Georgia,serif;font-size:18px;color:var(--med-blue);margin-bottom:2px">Maintenance: $${S.maintRevenue.toLocaleString()} <span style="font-size:12px">(${S.maintUpsells} upsell${S.maintUpsells===1?'':'s'})</span></p>
+   <p style="font-family:Georgia,serif;font-size:18px;color:var(--dark-blue)">Total booked: $${(S.revenue+S.maintRevenue).toLocaleString()}</p>
    <h3>Coaching</h3><p>${coach(closeOK,avgOK,classPct)}</p>
    <button class="btn center red" onclick="start()">Play Again 🔄</button></div>`);
 }
