@@ -1141,6 +1141,18 @@ function nameMatch(a,b){a=nmKey(a);b=nmKey(b);return !!a && a===b;}
 var PV_DISP={};
 function regName(raw){var k=nmKey(raw); if(k && !(k in PV_DISP)) PV_DISP[k]=(raw||"").trim(); return k;}
 function dispName(k){return PV_DISP[k]||k;}
+// Payroll-ID registry: nmKey(person) → ServiceTitan Payroll ID (aka EmployeeId).
+// Populated from the Master Pay File's "Payroll ID" column when present; cached in
+// localStorage so IDs survive across sessions and pastes that omit the column.
+// Latest value seen wins (IDs are stable in ST, so this only matters on corrections).
+var PV_PID_KEY="goettl_lv_payroll_ids_v1";
+var PV_PID=(function(){try{return JSON.parse(localStorage.getItem(PV_PID_KEY)||"{}");}catch(e){return {};}})();
+function regPid(nameKey,pid){
+  pid=(pid==null?"":String(pid)).trim();
+  if(!nameKey||!pid)return;
+  if(PV_PID[nameKey]!==pid){PV_PID[nameKey]=pid;try{localStorage.setItem(PV_PID_KEY,JSON.stringify(PV_PID));}catch(e){}}
+}
+function pidFor(person){return PV_PID[nmKey(person||"")]||"";}
 // Build a role index from actual commission ACTIVITY lines (non-adjustment) so a
 // Direct Adjustment can be placed on the payee's REAL role even when their base line
 // falls in a different pay period than the adjustment — or on a different job entirely.
@@ -1196,7 +1208,8 @@ function parsePayfileEntries(txt){
       iPC=headerIndex(h,["pay code"]),
       iGross=headerIndex(h,["gross pay","gross"]),
       iJob=headerIndex(h,["job number","job #","job"]),
-      iDate=headerIndex(h,["date"]);
+      iDate=headerIndex(h,["date"]),
+      iPID=headerIndex(h,["payroll id","employee id"]);
   if(iAct<0||iPC<0||iGross<0||iJob<0) return {entries:[], err:"headers"};
   var out=[];
   for(var i=1;i<rows.length;i++){
@@ -1204,6 +1217,7 @@ function parsePayfileEntries(txt){
     var pc=(r[iPC]||"").trim().toUpperCase(); if(pc!=="COM")continue;
     var act=(r[iAct]||""), role=activityRole(act);
     if(!role) continue;                                  // non-commission COM activity
+    if(iPID>=0) regPid(nmKey(r[iName]||""), r[iPID]);     // cache ST Payroll ID for the export
     out.push({
       job: njob(r[iJob]),
       person: (r[iName]||"").trim(),
@@ -1457,7 +1471,8 @@ function runPayrollCheck(){
       iAct=headerIndex(h,["activity"]),
       iPC=headerIndex(h,["pay code"]),
       iGross=headerIndex(h,["gross pay","gross"]),
-      iJob=headerIndex(h,["job number","job #","job"]);
+      iJob=headerIndex(h,["job number","job #","job"]),
+      iPID=headerIndex(h,["payroll id","employee id"]);
   if(iAct<0||iPC<0||iGross<0||iJob<0){statusEl.textContent="Pay file headers not recognized. Need Employee Name, Activity, Pay Code, Gross Pay, Job Number.";return;}
   // Build per-job buckets: {sm:{name:amt}, tech:{name:amt}, adj:{name:amt}}
   var byJob={};
@@ -1471,6 +1486,7 @@ function runPayrollCheck(){
     var b=byJob[jb]||(byJob[jb]={sm:{},tech:{},adj:{}});
     var role=activityRole(act);
     var pk=regName(name);                                 // normalized person key, display registered
+    if(iPID>=0) regPid(pk, r[iPID]);                      // cache ST Payroll ID for the export
     if(role==="SM")        b.sm[pk]=(b.sm[pk]||0)+gross;
     else if(role==="Tech") b.tech[pk]=(b.tech[pk]||0)+gross;
     else if(role==="ADJ")  b.adj[pk]=(b.adj[pk]||0)+gross;
@@ -1678,8 +1694,9 @@ function renderPayroll(results, payfileJobCount, noBasisCount, appendInfo){
 // (Settings > Tools > Import/Export Data > Payroll Adjustments):
 //   Sheet "Payroll Adjustments" — one row per adjustment:
 //     EmployeeId | Employee Name | Date | Amount | Memo | Job Number
-//   EmployeeId is exported BLANK — the Master Pay File carries no ST EmployeeId, so
-//   complete it from the idNameReference tab of a blank template export before importing.
+//   EmployeeId is filled from the Master Pay File's "Payroll ID" column (cached
+//   name→ID registry, localStorage). Rows whose person has no cached ID export
+//   blank — complete those few from the idNameReference tab before importing.
 //   Amount = −variance overage (claws back the overpay; ST adjustments are signed).
 // SKIPPED rows: anything the user clicked Ignore on, and all NEEDS-REVIEW rows
 // (role split across 2+ people — the overage is unassigned, no valid payee to adjust).
@@ -1694,11 +1711,14 @@ function exportPayrollVariances(){
   var today=new Date();
   var dstr=(today.getMonth()+1)+"/"+today.getDate()+"/"+today.getFullYear();
   var adj=[["EmployeeId","Employee Name","Date","Amount","Memo","Job Number"]];
+  var noPid=0;
   rows.forEach(function(r){
     var amt=round2(-Math.max(0,(r.cum||0)-(r.should||0)));   // signed claw-back of the overage
     var memo=(r.noBasis?"No commission basis — pay-file job absent from Commission data. ":"Commission overpay claw-back. ")+
       r.role+" paid "+usd(r.cum)+" cumulative vs should-pay "+usd(r.should)+" (Comm Calculator "+dstr+").";
-    adj.push(["", r.person||"", dstr, amt, memo, r.job]);
+    var pid=pidFor(r.person);
+    if(!pid) noPid++;
+    adj.push([pid, r.person||"", dstr, amt, memo, r.job]);
   });
   var wsA=XLSX.utils.aoa_to_sheet(adj);
   wsA["!cols"]=[{wch:12},{wch:24},{wch:11},{wch:11},{wch:80},{wch:12}];
@@ -1716,7 +1736,8 @@ function exportPayrollVariances(){
   var skipped=PV_RESULTS.length-rows.length;
   document.getElementById("payrollStatus").textContent="Exported "+rows.length+" adjustment row"+(rows.length===1?"":"s")+
     (skipped?" ("+skipped+" skipped: ignored / needs-review)":"")+
-    ". EmployeeId is blank — fill from ST's idNameReference tab before importing.";
+    ". EmployeeId filled from the pay file's Payroll ID column"+
+    (noPid?" — "+noPid+" row"+(noPid===1?"":"s")+" had no ID on file; fill those from ST's idNameReference tab before importing.":".");
 }
 function round2(v){return Math.round(v*100)/100;}
 
