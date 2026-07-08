@@ -152,7 +152,8 @@ table.xl tbody td[title]{cursor:help;}
         <b>Commission is paid on the gross after ALL discounts are removed</b> — counting and benign both — because we
         collect on what we actually collected. Benign credits don't hurt the tier, but we don't pay on them either.
         <b>Non-commissionable revenue tasks</b> (e.g. Smart Sadie) count as revenue but earn zero commission and are
-        also excluded from the pay base.
+        also excluded from the pay base — <b>unless</b> a matching credit line on the same invoice already zeroed the
+        task out (net-net $0). In that case the discount already removed it from the sold price, so it is not carved out again.
       </p>
       <table>
         <thead>
@@ -176,6 +177,11 @@ table.xl tbody td[title]{cursor:help;}
       <div class="callout">
         <b>How it works:</b> The deeper the discount, the lower the commission rate for both the tech and the SM.
         Commission steps <b>down</b> as the discount deepens. Combined % shown is the blended Tech + SM payout for that tier.
+      </div>
+      <div class="callout">
+        <b>SM sub-$3,000 rule:</b> When a job's <b>book price is under $3,000</b>, the SM is paid a <b>flat 2%</b> of pay base —
+        the discount tier is irrelevant to the SM on these jobs (even a zero-discount Tier&nbsp;1 job pays the SM 2%, not 3%).
+        Jobs at $3,000 book and above use the standard tier SM rate. The <b>tech side is never affected</b> by this rule.
       </div>
     </section>
   </div>
@@ -248,7 +254,7 @@ table.xl tbody td[title]{cursor:help;}
           <tr>
             <td>Any task containing <b>"Smart Sadie"</b></td>
             <td class="center"><span class="pill" style="background:var(--goettl-medium-blue)">NO COMMISSION</span></td>
-            <td class="rulecell">Counts as revenue. Excluded from the commission pay base — tech and SM are paid $0 on it.</td>
+            <td class="rulecell">Counts as revenue. Excluded from the commission pay base — tech and SM are paid $0 on it. <b>Exception:</b> if a matching credit at the same price zeroed the task out on the invoice, it is NOT carved out again (the credit already removed it).</td>
           </tr>
         </tbody>
       </table>
@@ -256,6 +262,9 @@ table.xl tbody td[title]{cursor:help;}
         <b>Smart Sadie, two ways:</b> the Smart Sadie <i>task</i> (revenue) earns no commission and sits in this list.
         The Smart Sadie <i>complimentary membership discount</i> is benign <b>only when</b> a matching Smart Sadie task at the
         same price is on the job (the comp nets to zero). Without a matching task, that discount <b>counts</b>.
+        <b>And the pair nets clean:</b> when task + matching credit are both on the invoice, the credit removes the $ from
+        the sold price and the task is <b>not</b> carved out again — commission is paid on everything else. Example: job 547023,
+        sold price $7,570 with a $155 Sadie task offset by its −$155 comp discount → pay base $7,570, not $7,415.
       </div>
     </section>
   </div>
@@ -396,17 +405,17 @@ table.xl tbody td[title]{cursor:help;}
       </div>
       <div class="toolbar">
         <button class="btn" onclick="runPayrollCheck()">Check Payroll</button>
-        <button class="btn ghost" onclick="exportPayrollVariances()" id="pvExportBtn" disabled>Export Variances to Excel</button>
+        <button class="btn ghost" onclick="exportPayrollVariances()" id="pvExportBtn" disabled>Export ST Payroll Adjustment Template</button>
         <span class="savebar" id="payrollStatus"></span>
       </div>
       <div id="payrollSummary" class="callout" style="display:none;"></div>
       <div class="grid-wrap">
         <table class="xl" id="pvGrid" style="display:none;">
           <colgroup>
-            <col style="width:8%"><col style="width:6%">
-            <col style="width:9%"><col style="width:9%"><col style="width:8%"><col style="width:9%"><col style="width:8%">
-            <col style="width:8%"><col style="width:8%"><col style="width:8%">
-            <col style="width:11%">
+            <col style="width:7%"><col style="width:5%">
+            <col style="width:8%"><col style="width:8%"><col style="width:7%"><col style="width:8%"><col style="width:7%">
+            <col style="width:7%"><col style="width:7%"><col style="width:8%">
+            <col style="width:10%"><col style="width:7%">
           </colgroup>
           <thead>
             <tr>
@@ -421,6 +430,7 @@ table.xl tbody td[title]{cursor:help;}
               <th class="num">Pay Base $</th>
               <th>Person (Pay File)</th>
               <th class="lcol">Why</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody id="pvBody"></tbody>
@@ -559,7 +569,8 @@ const countingDiscounts = [
   {name:"Discount", def:"209.7"},
   {name:"10% Off Tankless Water Heater", def:"0.1"},
   {name:"KR Discount", def:"10512"},
-  {name:"Discount", def:"4452"}
+  {name:"Discount", def:"4452"},
+  {name:"R32Promo", def:"-1"}
 ];
 
 function buildRows(){
@@ -619,6 +630,9 @@ function isNonComm(name){var n=(name||"").toLowerCase();return nonCommRevenue.so
 //    minus any non-commissionable revenue tasks. Benign do NOT hurt the % tier
 //    but we do not pay on them.
 //  - The % tier is set by counting discounts only (+ finance-fee overage), unchanged.
+//  - SM SUB-$3K RULE: when BOOK PRICE < $3,000 the SM rate is a flat 2% of pay base,
+//    regardless of discount tier (tier is irrelevant to the SM under $3k — even Tier 1).
+//    Book >= $3,000 uses the standard tier SM rate. Tech side is NEVER affected.
 function recompute(o, skipReclass, hasReplaceEstimate){
   var rev = o.income_items||[];
   // Re-classify every discount/benign line through the catalog so logic changes
@@ -634,13 +648,31 @@ function recompute(o, skipReclass, hasReplaceEstimate){
     var allCredits = (o.disc_items||[]).concat(o.benign_items||[]);
     var dsc=[], ben=[];
     allCredits.forEach(function(it){
-      if(isBenign(it.name, sadiePrices, Math.abs(it.amt||0), hasReplaceEstimate)) ben.push(it); else dsc.push(it);
+      if(isBenign(it.name, sadiePrices, Math.abs(it.amt||0), hasReplaceEstimate, it.code)) ben.push(it); else dsc.push(it);
     });
     o.disc_items=dsc; o.benign_items=ben;
   }
   var dsc=o.disc_items||[], ben=o.benign_items||[];
   var revSum = rev.reduce(function(a,b){return a+(b.amt||0);},0);
-  var nonComm = rev.filter(function(it){return isNonComm(it.name);});
+  // NON-COMM CARVE-OUT — OFFSET NETTING (Stephen ruling 07/08/26): when a
+  // non-commissionable task is already zeroed out net-net by a matching credit
+  // line on the invoice (e.g. Smart Sadie task +$155 paired with the Smart Sadie
+  // comp membership discount −$155), its dollars never survive into the sold
+  // price — carving it out again would remove the same $ twice. One credit
+  // offsets one task at the same price; unmatched non-comm tasks are carved out
+  // as before. Validated: job 547023 (task+comp pair → pay on full $7,570 sold).
+  var nonCommAll = rev.filter(function(it){return isNonComm(it.name);});
+  var offsetPool = dsc.concat(ben).filter(function(it){
+    var n=(it.name||"").toLowerCase();
+    return isNonComm(n) || n.indexOf("complimentary membership discount")>=0;
+  }).map(function(it){return Math.abs(it.amt||0);});
+  var nonComm = nonCommAll.filter(function(it){
+    var a=Math.abs(it.amt||0);
+    for(var oi=0;oi<offsetPool.length;oi++){
+      if(Math.abs(offsetPool[oi]-a)<0.01){offsetPool.splice(oi,1);return false;} // netted to $0 — already out of sold price
+    }
+    return true;
+  });
   var nonCommSum = nonComm.reduce(function(a,b){return a+(b.amt||0);},0);
   var discSum = dsc.reduce(function(a,b){return a+(b.amt||0);},0);
   var benSum  = ben.reduce(function(a,b){return a+(b.amt||0);},0);
@@ -650,6 +682,9 @@ function recompute(o, skipReclass, hasReplaceEstimate){
   var feePct  = revSum>0 ? feeSum/revSum : 0;
   var comb = discPct + Math.max(0, feePct - 0.051);
   var r = tierRates(comb);
+  // SM sub-$3k rule: book price under $3,000 → SM is a flat 2% (discount/tier irrelevant to SM).
+  var smRate = (book < 3000) ? 0.02 : r[1];
+  var smFlat = (book < 3000);
   // SOLD PRICE = what we actually collected = book − counting discounts − benign credits.
   var sold = book - discSum - benSum;
   if(sold < 0) sold = 0;
@@ -669,9 +704,10 @@ function recompute(o, skipReclass, hasReplaceEstimate){
   o.noncomm_items  = nonComm;
   o.commBase   = r2(commBase);
   o.tech_pct   = r[0];
-  o.sm_pct     = r[1];
+  o.sm_pct     = smRate;
+  o.sm_flat    = smFlat;                   // true when the sub-$3k flat 2% SM rule applied
   o.tech_comm  = r2(commBase * r[0]);
-  o.sm_comm    = r2(commBase * r[1]);
+  o.sm_comm    = r2(commBase * smRate);
   return o;
 }
 // Apply the core engine to every loaded project + member job at startup,
@@ -698,9 +734,20 @@ function recomputeAll(list){
   });
   return list;
 }
-var BENIGN=["smart ac loyalty credit","loyalty credit","sadie","repair credit","replacement rebate","hvac repair credit","plumb repair credit","nv.replacementrebate","free duct cleaning","tune up credit","plumbing tune up credit","hvac - ac tune up credit","hvac - furnace tune up credit","club membership declined payment discount","nv ductseal rebate","nv insulation rebate"];
-function isBenign(n,sadieTaskPrices,discAmt,hasReplaceEstimate){n=(n||"").toLowerCase().trim();
-  if(n.indexOf("complimentary membership discount")>=0||(n.indexOf("sadie")>=0&&n.indexOf("discount")>=0)){
+var BENIGN=["smart ac loyalty credit","loyalty credit","repair credit","replacement rebate","hvac repair credit","plumb repair credit","nv.replacementrebate","free duct cleaning","tune up credit","plumbing tune up credit","hvac - ac tune up credit","hvac - furnace tune up credit","club membership declined payment discount","nv ductseal rebate","nv insulation rebate"];
+// R32Promo discount: matches when code OR name contains both "r32" and "promo".
+function isR32Promo(name, code){
+  var s=((name||"")+" "+(code||"")).toLowerCase();
+  return s.indexOf("r32")>=0 && s.indexOf("promo")>=0;
+}
+function isBenign(n,sadieTaskPrices,discAmt,hasReplaceEstimate,code){var raw=n||"";n=(n||"").toLowerCase().trim();
+  // SMART SADIE — CONDITIONAL (Stephen ruling 07/01/26): ANY Sadie credit line (the comp
+  // membership discount OR a negative/reversed Sadie TASK) is benign ONLY when the same job
+  // carries a positive Sadie task at the SAME price — net-net: we don't pay commission on it
+  // (the positive task is carved out as non-commissionable) and it doesn't erode the tier.
+  // Unpaired Sadie credit = the discount was used with no task to zero it out = manipulation,
+  // so it COUNTS. Validated: 544579 (paired comp discount), 544586 (paired reversed task).
+  if(n.indexOf("sadie")>=0||n.indexOf("complimentary membership discount")>=0){
     if(sadieTaskPrices&&discAmt!=null){return sadieTaskPrices.some(function(p){return Math.abs(p-discAmt)<0.01;});}
     return false;
   }
@@ -708,6 +755,11 @@ function isBenign(n,sadieTaskPrices,discAmt,hasReplaceEstimate){n=(n||"").toLowe
   // (authorized through the estimate process). Otherwise it COUNTS.
   if(n.indexOf("special hvac system winter discount")>=0||n.indexOf("retail special")>=0){
     return hasReplaceEstimate===true;
+  }
+  // R32Promo: ALWAYS counts against commission. No exceptions. (Confirmed by Stephen 07/01/26 —
+  // it is never benign; do not add pairing conditions.)
+  if(isR32Promo(raw, code)){
+    return false;
   }
   if(BENIGN.indexOf(n)>=0)return true;if(n.indexOf("repair credit")>=0)return true;if(n.indexOf("replacementrebate")>=0||n.indexOf("replacement rebate")>=0)return true;if(n.indexOf("loyalty credit")>=0)return true;return false;}
 var REVK=["replacement","installation","hvac- service","plum- service","maintenance","sewer","water purity","iaq","drain","revenue","sales","income"];
@@ -733,7 +785,8 @@ function incomeTip(o){
   L.push("BOOK PRICE (revenue tasks): "+usd(o.book));
   L.push("");
   L.push("Revenue tasks ("+rev.length+"):");
-  rev.forEach(function(it){var nm=it.code&&it.code!==it.name?(it.code+" — "+it.name):it.name;L.push("  • "+nm+":  "+usd(it.amt)+(isNonComm(it.name)?"   (non-commissionable)":""));});
+  var carved=o.noncomm_items||[];
+  rev.forEach(function(it){var nm=it.code&&it.code!==it.name?(it.code+" — "+it.name):it.name;var tag=isNonComm(it.name)?(carved.indexOf(it)>=0?"   (non-commissionable)":"   (non-commissionable — offset by matching credit, $0 net)"):"";L.push("  • "+nm+":  "+usd(it.amt)+tag);});
   if(dsc.length){
     L.push("");
     L.push("Less counting discounts ("+dsc.length+"):  -"+usd(o.disc));
@@ -761,7 +814,7 @@ function techTip(o){
   var feeOver=Math.max(0,o.fee_pct-0.051), comb=o.disc_pct+feeOver;
   return "Tech Comm = "+pct(o.tech_pct)+" × pay base "+usd(o.commBase)+" = "+usd(o.tech_comm)+"\nPay base = sold price "+usd(o.sold)+" − non-commissionable revenue"+(o.noncomm>0?" "+usd(o.noncomm):" $0")+"\nTier from combined discount "+pct(comb)+" (disc "+pct(o.disc_pct)+" + fee overage "+pct(feeOver)+")";
 }
-function smTip(o){ return "SM Comm = "+pct(o.sm_pct)+" × pay base "+usd(o.commBase)+" = "+usd(o.sm_comm); }
+function smTip(o){ return "SM Comm = "+pct(o.sm_pct)+" × pay base "+usd(o.commBase)+" = "+usd(o.sm_comm)+(o.sm_flat?"\n(Flat 2% — book price under $3,000, discount irrelevant to SM)":""); }
 function rowCells(o,isJob){
   var dCls=o.disc>0?" docked":"";
   var fCls=o.fee>0?" docked":"";
@@ -779,9 +832,9 @@ function rowCells(o,isJob){
   var tTech=techTip(o);
   var tTechPct="Tech % = "+pct(o.tech_pct)+" — tier from combined discount "+pct(comb)+" (0.1% buffer at each ceiling)";
   var tSm=smTip(o);
-  var tSmPct="SM % = "+pct(o.sm_pct)+" — tier from combined discount "+pct(comb);
-  var tNonComm = (o.noncomm>0?itemList(o.noncomm_items,"Non-commissionable revenue tasks"):"No non-commissionable revenue tasks on this "+(isJob?"job":"project")+".")+"\n\nThese count as revenue but earn ZERO commission.";
-  var tBase = "COMMISSION PAY BASE = "+usd(o.commBase)+"\n= sold price "+usd(o.sold)+" − non-commissionable "+usd(o.noncomm)+"\n\nSold price already has counting + benign discounts removed; non-commissionable tasks (e.g. Smart Sadie) are also carved out. We pay on this.";
+  var tSmPct=o.sm_flat ? "SM % = 2% flat — book price under $3,000 (discount/tier irrelevant to SM)" : "SM % = "+pct(o.sm_pct)+" — tier from combined discount "+pct(comb);
+  var tNonComm = (o.noncomm>0?itemList(o.noncomm_items,"Non-commissionable revenue tasks"):"No non-commissionable revenue carved out of this "+(isJob?"job":"project")+".")+"\n\nThese count as revenue but earn ZERO commission. A non-comm task already zeroed out by a matching credit on the invoice is NOT carved out again — the credit removed it.";
+  var tBase = "COMMISSION PAY BASE = "+usd(o.commBase)+"\n= sold price "+usd(o.sold)+" − non-commissionable "+usd(o.noncomm)+"\n\nSold price already has counting + benign discounts removed; non-commissionable tasks (e.g. Smart Sadie) are also carved out — unless a matching credit already zeroed them out (no double removal). We pay on this.";
   function td(cls,val,tip){return "<td class='"+cls+"' title=\""+tip.replace(/"/g,"&quot;")+"\">"+val+"</td>";}
   return td("num",usd(o.book),tIncome)+
     td("num",usd(o.sold),tSold)+
@@ -940,10 +993,15 @@ function buildFromPaste(){
   function cell(pn,jb){if(!proj[pn])proj[pn]={};if(!proj[pn][jb])proj[pn][jb]={income:0,disc:0,benign:0,fee:0,disc_items:[],benign_items:[],fee_items:[],income_items:[]};return proj[pn][jb];}
   // pre-pass: per-job positive-price Smart Sadie TASK prices (for comp-membership benign pairing)
   var sadieTasks={};
+  // pre-pass: per-job flag for a 5-Star revenue task (Item Code prefix "5STAR", price > 0)
+  // — used to verify R32Promo pairing on the same job/invoice.
+  var star5Jobs={};
   for(var s=1;s<ccRows.length;s++){
     var rr=ccRows[s];if(!rr[ciJob]||!rr[ciName])continue;
     var nmL=(rr[ciName]||"").toLowerCase(),prc=num(rr[ciPrice]);
     if(nmL.indexOf("sadie")>=0&&nmL.indexOf("discount")<0&&prc>0){var jk=njob(rr[ciJob]);(sadieTasks[jk]=sadieTasks[jk]||[]).push(prc);}
+    var cdL=(ciCode>=0?(rr[ciCode]||""):"").toLowerCase().trim();
+    if(cdL.indexOf("5star")===0 && prc>0){ star5Jobs[njob(rr[ciJob])]=true; }
   }
   for(var i=1;i<ccRows.length;i++){
     var r=ccRows[i];if(!r[ciJob]||!r[ciName])continue;
@@ -955,7 +1013,7 @@ function buildFromPaste(){
     var cl=cell(pn,jb);
     if(isFee(name,code)){cl.fee+=qty;cl.fee_items.push({code:code,name:name,amt:Math.round(qty*100)/100});}
     else if(isDiscount(name,code,price)){var a=Math.abs(ext);
-      if(isBenign(name,sadieTasks[jb],a,!!projHasEst[pn])){cl.benign+=a;cl.benign_items.push({code:code,name:name,amt:Math.round(a*100)/100});}
+      if(isBenign(name,sadieTasks[jb],a,!!projHasEst[pn],code,!!star5Jobs[jb])){cl.benign+=a;cl.benign_items.push({code:code,name:name,amt:Math.round(a*100)/100});}
       else{cl.disc+=a;cl.disc_items.push({code:code,name:name,amt:Math.round(a*100)/100});}}
     else if(ext>0){cl.income+=ext;cl.income_items.push({code:code,name:name,amt:Math.round(ext*100)/100});}
   }
@@ -980,6 +1038,7 @@ function buildFromPaste(){
   });
   data.sort(function(a,b){return b.income-a.income;});
   PROJECTS=data;
+  PROJECTS_SOURCE="paste";
   document.getElementById("importStatus").textContent="Built "+data.length+" projects from pasted reports.";
   renderGrid();
   document.querySelector(".tab-btn[data-tab=projects]").click();
@@ -988,7 +1047,12 @@ function r2(v){return Math.round(v*100)/100;}
 recomputeAll(PROJECTS);                 // apply core commission engine to pre-loaded data
 PROJECTS.sort(function(a,b){return b.income-a.income;});
 var LIVE=JSON.parse(JSON.stringify(PROJECTS));
-function loadLiveData(){PROJECTS=JSON.parse(JSON.stringify(LIVE));document.getElementById("importStatus").textContent="Reloaded · "+PROJECTS.length+" projects";renderGrid();}
+// Where the Commission data came from: "baked" = the built-in snapshot shipped in this
+// file (a PAST period), "paste" = fresh reports dropped this session. The Payroll
+// Checker warns when it runs against the baked snapshot — checking a new week's pay
+// file against last period's baked data is the known cause of false anomaly flags.
+var PROJECTS_SOURCE="baked";
+function loadLiveData(){PROJECTS=JSON.parse(JSON.stringify(LIVE));PROJECTS_SOURCE="baked";document.getElementById("importStatus").textContent="Reloaded · "+PROJECTS.length+" projects";renderGrid();}
 
 // ===== PAYROLL HISTORY — CUMULATIVE LEDGER =====
 // Persistent, browser-local ledger of every COM commission line, keyed by
@@ -1039,6 +1103,83 @@ function saveLedger(){
   try{ localStorage.setItem(LEDGER_KEY, JSON.stringify(LEDGER)); }
   catch(e){ /* quota or disabled storage — surface in status where called */ }
 }
+// Single source of truth for mapping a pay-file Activity string to a role.
+// SM    = "Sales SM ..." lines.
+// Tech  = "Commissions ...", "Plumb Commissions ...", and "WT/FT S-Incentives ..."
+//         (tech incentive) lines.
+// ADJ   = "Direct Adjustment" — resolved to the person's actual role on the job later.
+// null  = not a commission line we score.
+function activityRole(act){
+  act=act||"";
+  if(act.indexOf("Sales SM")>=0)            return "SM";
+  if(act.indexOf("Direct Adjustment")>=0)   return "ADJ";
+  if(act.indexOf("Commissions")>=0)         return "Tech";   // incl. "Plumb Commissions"
+  if(act.indexOf("S-Incentives")>=0)        return "Tech";   // WT/FT tech incentive
+  return null;
+}
+// Resolve which role a PERSON holds on a given job from the Job/Project mapping.
+// IMPORTANT role model (verified against the master pay file): commission role is set by
+// the pay ACTIVITY, not the mapping. "Commissions ..."/"S-Incentives" = Tech; "Sales SM" = SM.
+// In the Job/Project report the "Sold By" person is the one paid the TECH "Commissions"
+// line (2988/2989 matches), NOT an SM. The actual SM (the "Sales SM" payee) is NEVER in the
+// mapping (0 matches on either column). So the mapping can only ever place a payee on the
+// TECH side; SM adjustments must be resolved from activity evidence (see foldAdjustments).
+// This is a LAST-resort fallback used only when activity evidence is unavailable.
+function personRoleOnJob(jobObj, person){
+  if(!jobObj||!person) return null;
+  if(nameMatch(person, jobObj.sold_by)) return "Tech";   // Sold By = the "Commissions" (tech) payee
+  if(nameMatch(person, jobObj.tech))    return "Tech";    // Primary Technician also tech-side (rare)
+  return null;                                            // real SM is never in the mapping
+}
+// Lenient name compare: trims, lowercases, collapses whitespace. Exact after that.
+function nmKey(a){return (a||"").toLowerCase().replace(/\s+/g," ").trim();}
+function nameMatch(a,b){a=nmKey(a);b=nmKey(b);return !!a && a===b;}
+// Display-name registry: payroll buckets are keyed by nmKey (so "JOHN SMITH" in one
+// period and "John Smith" in another are the SAME person — a raw-key split would
+// fake a 2-person role and fire a false NEEDS-REVIEW). First raw spelling seen wins
+// for display.
+var PV_DISP={};
+function regName(raw){var k=nmKey(raw); if(k && !(k in PV_DISP)) PV_DISP[k]=(raw||"").trim(); return k;}
+function dispName(k){return PV_DISP[k]||k;}
+// Build a role index from actual commission ACTIVITY lines (non-adjustment) so a
+// Direct Adjustment can be placed on the payee's REAL role even when their base line
+// falls in a different pay period than the adjustment — or on a different job entirely.
+// Evidence spans the FULL ledger (the seeded 6-month history) plus this week:
+//   jobPersonRole["job|person"] -> role the person is paid on THAT job (any period)
+//   personRole["person"]        -> the person's role globally across every job
+// A person's role never changes mid-history, but the rare person who is paid under both
+// activities over time (e.g. a tech promoted to SM) is resolved to their MOST RECENT
+// role by date (latest Sales-SM vs latest Commissions line wins).
+function buildRoleIndex(weekEntries){
+  var jobPersonRole={}, latest={};   // latest[person] = {SM:"date", Tech:"date", SM_n, Tech_n}
+  function add(e){
+    if(e.role!=="SM" && e.role!=="Tech") return;         // only true activity lines are evidence
+    var pk=nmKey(e.person), jk=e.job+"|"+pk;
+    if(!jobPersonRole[jk]) jobPersonRole[jk]=e.role;
+    else if(jobPersonRole[jk]!==e.role) jobPersonRole[jk]="BOTH";
+    var L=latest[pk]||(latest[pk]={});
+    var d=e.date||"";                                     // "YYYY-MM-DD"; blank sorts oldest
+    if(!(e.role in L) || d>=L[e.role]) L[e.role]=d;       // keep most-recent date seen per role
+    L[e.role+"_n"]=(L[e.role+"_n"]||0)+1;
+  }
+  (LEDGER||[]).forEach(add);
+  (weekEntries||[]).forEach(add);
+  var personRole={};
+  Object.keys(latest).forEach(function(p){
+    var L=latest[p], hasSM=("SM" in L), hasTech=("Tech" in L);
+    if(hasSM && !hasTech)      personRole[p]="SM";
+    else if(hasTech && !hasSM) personRole[p]="Tech";
+    else if(hasSM && hasTech){                            // dual-role over time -> most recent wins
+      if(L.SM>L.Tech)       personRole[p]="SM";
+      else if(L.Tech>L.SM)  personRole[p]="Tech";
+      else {                                              // same latest date -> higher volume, else defer
+        var sn=L.SM_n||0, tn=L.Tech_n||0;
+        personRole[p]= sn>tn?"SM": tn>sn?"Tech":"BOTH";
+      }
+    }
+  });
+  return {jobPersonRole:jobPersonRole, personRole:personRole};
+}
 // Parse a Master Pay File paste into ledger rows. Direct Adjustments stay role "ADJ"
 // here; they are resolved to Tech/SM at variance time the same way the checker does.
 function parsePayfileEntries(txt){
@@ -1061,11 +1202,8 @@ function parsePayfileEntries(txt){
   for(var i=1;i<rows.length;i++){
     var r=rows[i]; if(!r[iJob])continue;
     var pc=(r[iPC]||"").trim().toUpperCase(); if(pc!=="COM")continue;
-    var act=(r[iAct]||""), role=null;
-    if(act.indexOf("Sales SM")>=0)            role="SM";
-    else if(act.indexOf("Commissions")>=0)    role="Tech";
-    else if(act.indexOf("Direct Adjustment")>=0) role="ADJ";
-    else continue;                                  // non-commission COM activity
+    var act=(r[iAct]||""), role=activityRole(act);
+    if(!role) continue;                                  // non-commission COM activity
     out.push({
       job: njob(r[iJob]),
       person: (r[iName]||"").trim(),
@@ -1082,28 +1220,55 @@ function parsePayfileEntries(txt){
 // (e.g. the seed file overlaps the week being checked), so it must NOT be counted as a
 // prior period — it's counted via the week's own total instead. Count-aware so a
 // legitimate identical pair in history (seed x2, week x1) still contributes one prior.
-function ledgerCumulative(skipCounts){
+function ledgerCumulative(skipCounts, jobs, roleIdx){
   var byJob={};
   LEDGER.forEach(function(e){
     if(skipCounts){
       var hk=e.job+"|"+e.person+"|"+e.role+"|"+e.date+"|"+r2(e.amt);
       if(skipCounts[hk]>0){ skipCounts[hk]--; return; }   // this row is this-week's payment, not prior
     }
+    var pk=regName(e.person);                             // normalized person key, display registered
     var b=byJob[e.job]||(byJob[e.job]={sm:{},tech:{},adj:{}});
-    if(e.role==="SM")        b.sm[e.person]=(b.sm[e.person]||0)+e.amt;
-    else if(e.role==="Tech") b.tech[e.person]=(b.tech[e.person]||0)+e.amt;
-    else if(e.role==="ADJ")  b.adj[e.person]=(b.adj[e.person]||0)+e.amt;
+    if(e.role==="SM")        b.sm[pk]=(b.sm[pk]||0)+e.amt;
+    else if(e.role==="Tech") b.tech[pk]=(b.tech[pk]||0)+e.amt;
+    else if(e.role==="ADJ")  b.adj[pk]=(b.adj[pk]||0)+e.amt;
   });
   Object.keys(byJob).forEach(function(jb){
-    var b=byJob[jb];
-    Object.keys(b.adj).forEach(function(nm){
-      var a=b.adj[nm];
-      if(nm in b.sm)        b.sm[nm]+=a;
-      else if(nm in b.tech) b.tech[nm]+=a;
-      else                  b.tech[nm]=(b.tech[nm]||0)+a;   // adjustment-only → tech
-    });
+    foldAdjustments(byJob[jb], jobs?jobs[jb]:null, roleIdx, jb);
   });
   return byJob;
+}
+// Fold a job's Direct Adjustments onto the correct person+role.
+// Resolution order (so one person's $ never lands in another person's role, even across
+// pay periods — the root cause of the "multiple people in a role" false flag):
+//   1) person already has an SM base line in THIS bucket   -> SM
+//   2) person already has a Tech base line in THIS bucket  -> Tech
+//   3) person's role on THIS job from activity evidence across ALL periods (roleIdx) -> that side
+//   4) person's GLOBAL activity role (roleIdx), if unambiguous -> that side
+//   5) Job/Project mapping (Sold By = the tech "Commissions" payee) -> Tech
+//   6) last resort, no basis to place it -> Tech, and mark adjUnplaced for review
+function foldAdjustments(b, jobObj, roleIdx, jb){
+  Object.keys(b.adj).forEach(function(nm){
+    var a=b.adj[nm];
+    if(nm in b.sm)        { b.sm[nm]+=a; return; }               // 1
+    if(nm in b.tech)      { b.tech[nm]+=a; return; }             // 2
+    var pk=nmKey(nm);
+    if(roleIdx && jb!=null){                                     // 3 — same-job activity evidence
+      var jr=roleIdx.jobPersonRole[jb+"|"+pk];
+      if(jr==="SM")       { b.sm[nm]=(b.sm[nm]||0)+a; return; }
+      if(jr==="Tech")     { b.tech[nm]=(b.tech[nm]||0)+a; return; }
+    }
+    if(roleIdx){                                                 // 4 — global activity role
+      var pr=roleIdx.personRole[pk];
+      if(pr==="SM")       { b.sm[nm]=(b.sm[nm]||0)+a; return; }
+      if(pr==="Tech")     { b.tech[nm]=(b.tech[nm]||0)+a; return; }
+    }
+    var role=personRoleOnJob(jobObj, nm);                        // 5 — mapping (Tech only)
+    if(role==="Tech")     { b.tech[nm]=(b.tech[nm]||0)+a; return; }
+    if(role==="SM")       { b.sm[nm]=(b.sm[nm]||0)+a; return; }
+    b.tech[nm]=(b.tech[nm]||0)+a;            // 6 — unresolved adjustment-only
+    b.adjUnplaced=true;
+  });
 }
 // Build a {hash: count} multiset from a set of parsed week entries.
 function hashCounts(entries){
@@ -1143,13 +1308,19 @@ function loadSeedHistory(){
 // dropping legitimate same-day split payments of different amounts.
 function appendToLedger(entries){
   if(!entries||!entries.length) return {added:0, skipped:0};
-  var existing={};
-  LEDGER.forEach(function(e){ existing[e.job+"|"+e.person+"|"+e.role+"|"+e.date+"|"+r2(e.amt)]=true; });
+  // COUNT-AWARE dedupe (mirrors the checker's skip-hash): a re-paste of the same
+  // file adds 0 lines, but a week that legitimately contains TWO identical COM
+  // lines (same job|person|role|date|amount) keeps both. Key-exists dedupe would
+  // silently drop the second copy and under-count the cumulative ledger.
+  var have={};
+  LEDGER.forEach(function(e){ var k=e.job+"|"+e.person+"|"+e.role+"|"+e.date+"|"+r2(e.amt); have[k]=(have[k]||0)+1; });
+  var seen={};
   var added=0, skipped=0;
   entries.forEach(function(e){
     var k=e.job+"|"+e.person+"|"+e.role+"|"+e.date+"|"+r2(e.amt);
-    if(existing[k]){ skipped++; return; }
-    existing[k]=true; LEDGER.push(e); added++;
+    seen[k]=(seen[k]||0)+1;
+    if(seen[k] <= (have[k]||0)){ skipped++; return; }   // ledger already holds this copy
+    LEDGER.push(e); added++;
   });
   if(added){ LEDGER=pruneLedger(LEDGER); saveLedger(); }
   return {added:added, skipped:skipped};
@@ -1298,39 +1469,41 @@ function runPayrollCheck(){
     var act=(r[iAct]||"");
     var gross=num(r[iGross]);
     var b=byJob[jb]||(byJob[jb]={sm:{},tech:{},adj:{}});
-    if(act.indexOf("Sales SM")>=0)      b.sm[name]=(b.sm[name]||0)+gross;
-    else if(act.indexOf("Commissions")>=0) b.tech[name]=(b.tech[name]||0)+gross;
-    else if(act.indexOf("Direct Adjustment")>=0) b.adj[name]=(b.adj[name]||0)+gross;
+    var role=activityRole(act);
+    var pk=regName(name);                                 // normalized person key, display registered
+    if(role==="SM")        b.sm[pk]=(b.sm[pk]||0)+gross;
+    else if(role==="Tech") b.tech[pk]=(b.tech[pk]||0)+gross;
+    else if(role==="ADJ")  b.adj[pk]=(b.adj[pk]||0)+gross;
   }
-  // Fold Direct Adjustments into the matching side by person name.
-  // If the person has no commission line on this job (adjustment-only job),
-  // attribute the adjustment to the TECH side so it still surfaces with the
-  // name and dollar amount instead of vanishing.
+  // Resolve ledger (prior periods) and the Commission tab up front so Direct
+  // Adjustments can be placed on the payee's ACTUAL role (tech vs sold-by), never
+  // leaked onto a different person's side.
+  loadLedger();                                  // prune + refresh from storage
+  var jobs=jobLookup();
+  var weekParse=parsePayfileEntries(document.getElementById("mpfPaste").value||"");
+  var skip=hashCounts(weekParse.entries);        // this week's payments, by content hash
+  // Activity-based role index (this week + full ledger) so Direct Adjustments resolve to the
+  // payee's REAL role even when their base commission line is in a different pay period.
+  var roleIdx=buildRoleIndex(weekParse.entries);
+  var prior=ledgerCumulative(skip, jobs, roleIdx);  // prior periods only (this-week dupes removed)
+  // Fold THIS WEEK's Direct Adjustments onto the correct person+role using the same
+  // person-aware resolver the ledger uses, then build per-role totals AND per-person maps.
   Object.keys(byJob).forEach(function(jb){
     var b=byJob[jb];
-    Object.keys(b.adj).forEach(function(nm){
-      var a=b.adj[nm];
-      if(nm in b.sm)        b.sm[nm]+=a;
-      else if(nm in b.tech) b.tech[nm]+=a;
-      else                  b.tech[nm]=(b.tech[nm]||0)+a;   // adjustment-only → tech side
-    });
+    foldAdjustments(b, jobs[jb], roleIdx, jb);
     b.smTotal=Object.keys(b.sm).reduce(function(s,k){return s+b.sm[k];},0);
     b.techTotal=Object.keys(b.tech).reduce(function(s,k){return s+b.tech[k];},0);
-    b.smName=Object.keys(b.sm).join(", ");
-    b.techName=Object.keys(b.tech).join(", ");
+    b.smName=Object.keys(b.sm).map(dispName).join(", ");
+    b.techName=Object.keys(b.tech).map(dispName).join(", ");
   });
   // Compare against what the Commission tab says we should pay, job by job.
   // CUMULATIVE variance: prior payments from the ledger (earlier pay periods) are
   // folded in, so a job paid across several periods only flags if the RUNNING total
   // exceeds the full should-pay. true variance = should − (priorLedger + thisWeek).
-  // SAME-PERIOD GUARD: if the ledger already contains THIS week's exact payments
-  // (e.g. the seed file overlaps the week being checked), those are excluded from the
-  // "prior" total so they aren't double-counted against this week's paste.
-  loadLedger();                                  // prune + refresh from storage
-  var weekParse=parsePayfileEntries(document.getElementById("mpfPaste").value||"");
-  var skip=hashCounts(weekParse.entries);        // this week's payments, by content hash
-  var prior=ledgerCumulative(skip);              // prior periods only (this-week dupes removed)
-  var jobs=jobLookup();
+  // PER-ROLE CEILING: a role's pay can never exceed that role's should-pay, no matter
+  // how many people are assigned. When 2+ DISTINCT people are paid in one role and the
+  // role's cumulative total goes over, we do NOT pin the overage on any one person —
+  // the row is flagged for human review instead.
   var results=[];
   var noBasis=0;                          // pay-file jobs paying $ with no commission basis in the tool
   Object.keys(byJob).forEach(function(jb){
@@ -1350,16 +1523,10 @@ function runPayrollCheck(){
       }
       return;
     }
-    var shouldTech=j.tech_comm, shouldSm=j.sm_comm;
-    var priorTech=priorPaid(prior,jb,"Tech"), priorSm=priorPaid(prior,jb,"SM");
-    var cumTech=(b.techTotal||0)+priorTech, cumSm=(b.smTotal||0)+priorSm;
-    // Overpay only: flag when CUMULATIVE pay (prior + this week) exceeds should-pay.
-    if(cumTech-shouldTech>EPS){
-      results.push(mkVar(jb,"Tech",shouldTech,b.techTotal||0,j,b.techName,false,null,priorTech));
-    }
-    if(cumSm-shouldSm>EPS){
-      results.push(mkVar(jb,"SM",shouldSm,b.smTotal||0,j,b.smName,false,null,priorSm));
-    }
+    var pj=prior[jb]||{sm:{},tech:{}};
+    var adjFlag = !!(b.adjUnplaced || pj.adjUnplaced);   // step-6 unresolved Direct Adjustment present
+    evalRole(results, jb, "Tech", j.tech_comm, b.tech, pj.tech, j, adjFlag);
+    evalRole(results, jb, "SM",   j.sm_comm,   b.sm,   pj.sm,   j, adjFlag);
   });
   results.sort(function(a,b){return Math.abs(b.variance)-Math.abs(a.variance);});
   PV_RESULTS=results;
@@ -1372,8 +1539,8 @@ function runPayrollCheck(){
   renderPayroll(results, compared, noBasis, appendInfo);
   renderHistory();
 }
-function mkVar(jb,role,should,paid,j,person,notInTool,whyOverride,prior){
-  prior=prior||0;
+function mkVar(jb,role,should,paid,j,person,notInTool,whyOverride,prior,opts){
+  prior=prior||0; opts=opts||{};
   var cum=(paid||0)+prior;
   var why;
   if(whyOverride) why=whyOverride;
@@ -1382,23 +1549,82 @@ function mkVar(jb,role,should,paid,j,person,notInTool,whyOverride,prior){
     why=(role==="Tech"?techTip(j):smTip(j))+
       "\n\nThis week "+role+": "+usd(paid)+
       (prior>EPS||prior<-EPS? "  ·  Prior periods (ledger): "+usd(prior)+"  ·  Cumulative paid: "+usd(cum) : "")+
-      "\nVariance (should − cumulative): "+usd((should||0)-cum);
+      "\nVariance (should − cumulative): "+usd((should||0)-cum)+
+      (opts.adjNote||"");
   }
+  if(opts.review) why=opts.reviewWhy||why;
   return {job:jb, role:role, should:should||0, paid:paid||0, prior:prior, cum:cum,
     variance:(should||0)-cum,
     tier: j? (role==="SM"?pct(j.sm_pct):pct(j.tech_pct)) : "—",
     base: j? usd(j.commBase) : "—",
-    person: person||"", why:why, noBasis: !!notInTool};
+    person: person||"", why:why, noBasis: !!notInTool, review: !!opts.review, people: opts.people||0};
 }
+// Evaluate one role (Tech or SM) on a job against its should-pay ceiling, cumulatively.
+//  thisWk / priorMap = {personName: amount} for this paste and for prior ledger periods.
+// Rules:
+//  - The role's CUMULATIVE total (everyone, prior + this week) can never exceed should.
+//  - 1 person over            -> normal overpay variance, attributed to that person.
+//  - 2+ distinct people, over -> RED review row; overage is NOT pinned to anyone.
+//  - At or under should-pay    -> no flag (matches / underpays are suppressed).
+function evalRole(results, jb, role, should, thisWk, priorMap, j, adjFlag){
+  thisWk=thisWk||{}; priorMap=priorMap||{};
+  should=should||0;
+  var wkTotal=Object.keys(thisWk).reduce(function(s,k){return s+thisWk[k];},0);
+  var priorTotal=Object.keys(priorMap).reduce(function(s,k){return s+priorMap[k];},0);
+  var cum=wkTotal+priorTotal;
+  if(cum-should<=EPS) return;                 // within the ceiling — nothing to flag
+  // who has been paid in this role (this week and/or prior), distinct normalized people
+  var ppl={};
+  Object.keys(thisWk).forEach(function(n){ppl[n]=1;});
+  Object.keys(priorMap).forEach(function(n){ppl[n]=1;});
+  var names=Object.keys(ppl).map(dispName);
+  var nameStr=names.join(", ");
+  var adjNote = adjFlag? "\n\n⚠ Includes a Direct Adjustment that could not be tied to a person's role from activity history or the job mapping (defaulted to Tech) — verify the adjustment's intended side." : "";
+  if(names.length>=2){
+    // Multiple people in one role pushed the role over its max — human review.
+    var rw="NEEDS REVIEW — "+names.length+" people paid in the "+role+" role on this job and the "+
+      "combined pay ("+usd(cum)+") exceeds the "+role+" max ("+usd(should)+") by "+usd(cum-should)+". "+
+      "When a role is split across multiple people, the overage is not assigned to any one person — "+
+      "investigate who should be paid.\n\nPay this week ("+role+"): "+usd(wkTotal)+
+      (priorTotal>EPS||priorTotal<-EPS?"  ·  Prior periods (ledger): "+usd(priorTotal):"")+
+      "  ·  Cumulative: "+usd(cum)+"  ·  "+role+" max: "+usd(should)+
+      "\nPeople: "+nameStr+adjNote;
+    results.push(mkVar(jb, role, should, wkTotal, j, nameStr, false, null, priorTotal,
+      {review:true, reviewWhy:rw, people:names.length}));
+    return;
+  }
+  // Single person over the ceiling — standard cumulative overpay variance.
+  results.push(mkVar(jb, role, should, wkTotal, j, nameStr, false, null, priorTotal, {people:1, adjNote:adjNote}));
+}
+// ===== IGNORE / RESTORE — per-variance-row exclusion from the export =====
+// Session-persistent (sessionStorage): survives re-runs within the browser session,
+// resets when the tab closes. Keyed by job|role|person so the same variance stays
+// ignored across repeated Check Payroll runs in one sitting.
+var PV_IGNORE_KEY="goettl_lv_pv_ignored_v1";
+function pvKey(r){return r.job+"|"+r.role+"|"+nmKey(r.person||"");}
+function loadIgnored(){try{return JSON.parse(sessionStorage.getItem(PV_IGNORE_KEY)||"{}");}catch(e){return {};}}
+function saveIgnored(m){try{sessionStorage.setItem(PV_IGNORE_KEY,JSON.stringify(m));}catch(e){}}
+function toggleIgnore(idx){
+  var r=PV_RESULTS[idx]; if(!r)return;
+  var m=loadIgnored(); var k=pvKey(r);
+  if(m[k]) delete m[k]; else m[k]=1;
+  saveIgnored(m);
+  renderPayroll(PV_RESULTS, PV_LAST_META.jobCount, PV_LAST_META.noBasis, null);   // re-render, keep status text
+}
+var PV_LAST_META={jobCount:0,noBasis:0};
 function renderPayroll(results, payfileJobCount, noBasisCount, appendInfo){
   var grid=document.getElementById("pvGrid"),body=document.getElementById("pvBody"),
       empty=document.getElementById("pvEmptyNote"),summary=document.getElementById("payrollSummary"),
       btn=document.getElementById("pvExportBtn"),status=document.getElementById("payrollStatus");
   body.innerHTML="";
+  PV_LAST_META={jobCount:payfileJobCount,noBasis:noBasisCount};
+  var IGN=loadIgnored();
   var ledgerMsg="";
   if(appendInfo){ ledgerMsg=" · Ledger: +"+appendInfo.added+" line(s) added"+(appendInfo.skipped?", "+appendInfo.skipped+" duplicate(s) skipped":"")+"."; }
-  status.textContent="Compared "+payfileJobCount+" job(s) present in both the pay file and the Commission tab"+
-    " (cumulative vs ledger)."+ledgerMsg;
+  var staleMsg = (typeof PROJECTS_SOURCE!=="undefined" && PROJECTS_SOURCE==="baked")?
+    "⚠ CHECKING AGAINST THE BUILT-IN SNAPSHOT (a past period). Drop this period's Comm Calculator + Job/Project reports on the Report Import tab first — stale data causes false anomalies. · " : "";
+  if(appendInfo!==null){ status.textContent=staleMsg+"Compared "+payfileJobCount+" job(s) present in both the pay file and the Commission tab"+
+    " (cumulative vs ledger)."+ledgerMsg; }
   var net=results.reduce(function(s,r){return s+r.variance;},0);
   if(!results.length){
     grid.style.display="none"; empty.style.display="block"; summary.style.display="none";
@@ -1406,46 +1632,91 @@ function renderPayroll(results, payfileJobCount, noBasisCount, appendInfo){
   }
   empty.style.display="none"; grid.style.display=""; summary.style.display="block";
   var multi=results.filter(function(r){return r.prior>EPS||r.prior<-EPS;}).length;
+  var reviewCount=results.filter(function(r){return r.review;}).length;
+  var ignoredCount=results.filter(function(r){return IGN[pvKey(r)];}).length;
+  var exportable=results.filter(function(r){return !IGN[pvKey(r)] && !r.review;}).length;
   summary.innerHTML="<b>"+results.length+" variance"+(results.length>1?"s":"")+"</b> found · net difference owed "+
     "<b>"+usd(net)+"</b> ("+(net>0?"pay file is UNDERPAYING vs the tool — top-up owed":"pay file is OVERPAYING vs the tool — claw-back")+")."+
     (multi?" <b>"+multi+"</b> account for prior-period payments from the ledger (cumulative).":"")+
-    (noBasisCount?" <b style='color:var(--goettl-red)'>"+noBasisCount+" highlighted row"+(noBasisCount>1?"s":"")+" are on the pay file but NOT in the loaded Commission data</b> — a different kind of anomaly; verify separately.":"");
-  results.forEach(function(r){
+    (reviewCount?" <b style='color:var(--goettl-red)'>"+reviewCount+" row"+(reviewCount>1?"s":"")+" NEED REVIEW</b> — multiple people split one role over its max; overage not assigned.":"")+
+    (noBasisCount?" <b style='color:var(--goettl-red)'>"+noBasisCount+" highlighted row"+(noBasisCount>1?"s":"")+" are on the pay file but NOT in the loaded Commission data</b> — a different kind of anomaly; verify separately.":"")+
+    " · <b>"+exportable+"</b> row"+(exportable===1?"":"s")+" will export to the ST Adjustment Template"+
+    (ignoredCount?" (<b>"+ignoredCount+"</b> ignored":"")+((ignoredCount&&reviewCount)?", ":"")+((!ignoredCount&&reviewCount)?" (":"")+
+    (reviewCount?reviewCount+" NEEDS-REVIEW auto-skipped":"")+((ignoredCount||reviewCount)?")":"")+".";
+  results.forEach(function(r,idx){
+    var ignored=!!IGN[pvKey(r)];
     var vcls=r.variance>0?"pv-pos":"pv-neg";
     var tr=document.createElement("tr");
-    if(r.noBasis){tr.style.background="#fdf0f0";tr.style.borderLeft="4px solid var(--goettl-red)";}
+    if(ignored){tr.style.opacity="0.45";tr.style.textDecoration="line-through";tr.style.background="#f4f4f4";}
+    else if(r.noBasis){tr.style.background="#fdf0f0";tr.style.borderLeft="4px solid var(--goettl-red)";}
+    else if(r.review){tr.style.background="#fdeaea";tr.style.borderLeft="4px solid var(--goettl-red)";tr.style.fontWeight="600";}
     var priorCell=(r.prior>EPS||r.prior<-EPS)? "<b>"+usd(r.prior)+"</b>" : usd(r.prior||0);
-    tr.innerHTML="<td class='lcol'>"+(r.noBasis?"⚠ ":"")+r.job+"</td>"+
-      "<td>"+r.role+"</td>"+
+    var flag=r.noBasis?"⚠ ":(r.review?"⚑ ":"");
+    var roleCell=r.review? r.role+" <span style='color:var(--goettl-red);font-size:11px;'>("+r.people+" people — review)</span>" : r.role;
+    var varCell=r.review? "<span style='color:var(--goettl-red);'>REVIEW</span>" : (r.variance>0?"+":"")+usd(r.variance);
+    var actBtn=ignored?
+      "<button class='btn ghost' style='padding:2px 10px;font-size:11px;text-decoration:none;' onclick='toggleIgnore("+idx+")'>Restore</button>":
+      "<button class='btn ghost' style='padding:2px 10px;font-size:11px;' onclick='toggleIgnore("+idx+")'>Ignore</button>";
+    tr.innerHTML="<td class='lcol'>"+flag+r.job+"</td>"+
+      "<td>"+roleCell+"</td>"+
       "<td class='num'>"+usd(r.should)+"</td>"+
       "<td class='num'>"+usd(r.paid)+"</td>"+
       "<td class='num'>"+priorCell+"</td>"+
       "<td class='num'>"+usd(r.cum)+"</td>"+
-      "<td class='num "+vcls+"'>"+(r.variance>0?"+":"")+usd(r.variance)+"</td>"+
+      "<td class='num "+(r.review?"":vcls)+"'>"+varCell+"</td>"+
       "<td class='num'>"+r.tier+"</td>"+
       "<td class='num'>"+r.base+"</td>"+
       "<td>"+(r.person||"—")+"</td>"+
-      "<td class='lcol' title=\""+r.why.replace(/"/g,"&quot;")+"\" style='cursor:help;'>"+r.why.split("\n")[0].slice(0,60)+(r.why.length>60?"…":"")+"</td>";
+      "<td class='lcol' title=\""+r.why.replace(/"/g,"&quot;")+"\" style='cursor:help;'>"+r.why.split("\n")[0].slice(0,60)+(r.why.length>60?"…":"")+"</td>"+
+      "<td style='text-decoration:none;'>"+actBtn+"</td>";
     body.appendChild(tr);
   });
-  btn.disabled=false;
+  btn.disabled=(exportable===0);
 }
+// ===== EXPORT — SERVICETITAN PAYROLL ADJUSTMENT TEMPLATE =====
+// Emits the exact sheet layout ServiceTitan's bulk Payroll Adjustment import expects
+// (Settings > Tools > Import/Export Data > Payroll Adjustments):
+//   Sheet "Payroll Adjustments" — one row per adjustment:
+//     EmployeeId | Employee Name | Date | Amount | Memo | Job Number
+//   EmployeeId is exported BLANK — the Master Pay File carries no ST EmployeeId, so
+//   complete it from the idNameReference tab of a blank template export before importing.
+//   Amount = −variance overage (claws back the overpay; ST adjustments are signed).
+// SKIPPED rows: anything the user clicked Ignore on, and all NEEDS-REVIEW rows
+// (role split across 2+ people — the overage is unassigned, no valid payee to adjust).
+// A second sheet "Variance Detail (reference)" keeps the full audit trail; ST ignores
+// extra sheets on import.
 function exportPayrollVariances(){
   if(!PV_RESULTS.length){return;}
   if(typeof XLSX==="undefined"){document.getElementById("payrollStatus").textContent="Excel library didn't load (check connection); can't export.";return;}
-  var aoa=[["Job #","Role","Should Pay","This Week Pays","Prior (Ledger)","Cumulative Paid","Variance","Tier %","Pay Base","Person (Pay File)","Why / Commission Basis"]];
-  PV_RESULTS.forEach(function(r){
-    aoa.push([r.job, r.role, round2(r.should), round2(r.paid), round2(r.prior||0), round2(r.cum), round2(r.variance),
-      r.tier, r.base, r.person, r.why]);
+  var IGN=loadIgnored();
+  var rows=PV_RESULTS.filter(function(r){return !IGN[pvKey(r)] && !r.review;});
+  if(!rows.length){document.getElementById("payrollStatus").textContent="Nothing to export — every variance row is ignored or needs review.";return;}
+  var today=new Date();
+  var dstr=(today.getMonth()+1)+"/"+today.getDate()+"/"+today.getFullYear();
+  var adj=[["EmployeeId","Employee Name","Date","Amount","Memo","Job Number"]];
+  rows.forEach(function(r){
+    var amt=round2(-Math.max(0,(r.cum||0)-(r.should||0)));   // signed claw-back of the overage
+    var memo=(r.noBasis?"No commission basis — pay-file job absent from Commission data. ":"Commission overpay claw-back. ")+
+      r.role+" paid "+usd(r.cum)+" cumulative vs should-pay "+usd(r.should)+" (Comm Calculator "+dstr+").";
+    adj.push(["", r.person||"", dstr, amt, memo, r.job]);
   });
-  var ws=XLSX.utils.aoa_to_sheet(aoa);
-  ws["!cols"]=[{wch:10},{wch:8},{wch:12},{wch:13},{wch:13},{wch:14},{wch:11},{wch:8},{wch:12},{wch:22},{wch:80}];
-  // wrap the Why column
-  var range=XLSX.utils.decode_range(ws["!ref"]);
-  for(var R=1;R<=range.e.r;R++){var c=XLSX.utils.encode_cell({r:R,c:10});if(ws[c])ws[c].s={alignment:{wrapText:true,vertical:"top"}};}
+  var wsA=XLSX.utils.aoa_to_sheet(adj);
+  wsA["!cols"]=[{wch:12},{wch:24},{wch:11},{wch:11},{wch:80},{wch:12}];
+  var det=[["Job #","Role","Status","Should Pay","This Week Pays","Prior (Ledger)","Cumulative Paid","Variance","Tier %","Pay Base","Person (Pay File)","Why / Commission Basis"]];
+  rows.forEach(function(r){
+    det.push([r.job, r.role, r.noBasis?"ANOMALY (no basis)":"Overpay", round2(r.should), round2(r.paid), round2(r.prior||0), round2(r.cum),
+      round2(r.variance), r.tier, r.base, r.person, r.why]);
+  });
+  var wsD=XLSX.utils.aoa_to_sheet(det);
+  wsD["!cols"]=[{wch:10},{wch:8},{wch:16},{wch:12},{wch:13},{wch:13},{wch:14},{wch:11},{wch:8},{wch:12},{wch:22},{wch:80}];
   var wb=XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb,ws,"Commission Variances");
-  XLSX.writeFile(wb,"Goettl_LV_Commission_Variances.xlsx");
+  XLSX.utils.book_append_sheet(wb,wsA,"Payroll Adjustments");
+  XLSX.utils.book_append_sheet(wb,wsD,"Variance Detail (reference)");
+  XLSX.writeFile(wb,"Goettl_LV_ST_Payroll_Adjustments.xlsx");
+  var skipped=PV_RESULTS.length-rows.length;
+  document.getElementById("payrollStatus").textContent="Exported "+rows.length+" adjustment row"+(rows.length===1?"":"s")+
+    (skipped?" ("+skipped+" skipped: ignored / needs-review)":"")+
+    ". EmployeeId is blank — fill from ST's idNameReference tab before importing.";
 }
 function round2(v){return Math.round(v*100)/100;}
 
