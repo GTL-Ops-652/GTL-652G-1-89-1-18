@@ -1,0 +1,21 @@
+{
+ "label": "06/01/26 - 06/30/26",
+ "windowEnd": "2026-06-30",
+ "builtAt": 1784153143758,
+ "builtAtIso": "2026-07-15T15:05:43-07:00",
+ "maxSrcMtime": 1784152976.972001,
+ "files": {
+  "inv": "Inventory - Profit Planner_Dated 06_01_26 - 06_30_26 (1).xlsx",
+  "pay": "Real Installer Pay_Dated 06_01_26 - 06_30_26 (3).xlsx",
+  "jobs": "Job Costing w_ Project info_Dated 06_01_26 - 06_30_26 (1).xlsx",
+  "disc": "Real Discounts_Dated 06_01_26 - 06_30_26 (2).xlsx"
+ },
+ "jobs": 3902,
+ "payLines": 8490,
+ "subPOs": 93,
+ "permitPOs": 167,
+ "reflagged": [],
+ "approved": 2,
+ "watch": 0,
+ "flags": []
+}
