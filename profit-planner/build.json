@@ -1,9 +1,9 @@
 {
  "label": "06/01/26 - 06/30/26",
  "windowEnd": "2026-06-30",
- "builtAt": 1784153143758,
- "builtAtIso": "2026-07-15T15:05:43-07:00",
- "maxSrcMtime": 1784152976.972001,
+ "builtAt": 1784153937536,
+ "builtAtIso": "2026-07-15T15:18:57-07:00",
+ "maxSrcMtime": 1784153931.7680016,
  "files": {
   "inv": "Inventory - Profit Planner_Dated 06_01_26 - 06_30_26 (1).xlsx",
   "pay": "Real Installer Pay_Dated 06_01_26 - 06_30_26 (3).xlsx",
@@ -15,7 +15,7 @@
  "subPOs": 93,
  "permitPOs": 167,
  "reflagged": [],
- "approved": 2,
- "watch": 0,
+ "approved": 5,
+ "watch": 1,
  "flags": []
 }
