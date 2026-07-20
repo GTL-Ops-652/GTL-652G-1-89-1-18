@@ -1,0 +1,7 @@
+{
+ "design_v": "7_4_4",
+ "frozen": "2026-07-20",
+ "plaintext_sha256": "606318b58e8419c646f0df10ce7a3783afd533ff9c333e9a43b9a4a78970e808",
+ "data_markers": 16,
+ "notes": "v7_4_4 engine (Watch List KPI filter w/ actual-score pills, WGATE unified volume gates, tie-inclusion at bottom-third cutoff, inline tech scorecards) + 2026-07-20 membership-conversion fix (Vitals conv sourced from ST Tech Membership report MEM rollup, FIN memWk removed). Baseline data consts = 2026-07-19 window. Template is StatiCrypt-encrypted with the shared hub login. Nightly run MUST fetch this template + verify this manifest before splicing; NEVER rebuild the hub from project knowledge, skill-folder copies, or memory."
+}
