@@ -1,13 +1,26 @@
 {
- "engine_v": "R31",
- "frozen": "2026-07-26",
- "plaintext_sha256": "5c9a4b712e943c821abdc8aeab33cda1863893d0ecd255b9d71b30e837f0fc9b",
- "plaintext_bytes": 179808,
+ "engine_v": "R32",
+ "frozen": "2026-07-27",
+ "plaintext_sha256": "7a0c6abe19dc792653c9e31f1b9ec05be45e620db052f71d001d35d1b0c41b7f",
+ "plaintext_bytes": 181298,
  "markers": 7,
- "marker_names": ["CFG","GOALS","HANDOFF","RAW","SAGEH","STATE","VARS"],
+ "marker_names": [
+  "CFG",
+  "GOALS",
+  "HANDOFF",
+  "RAW",
+  "SAGEH",
+  "STATE",
+  "VARS"
+ ],
  "sageh_prebaked": true,
  "sageh_months": 24,
  "sageh_range": "2024-07..2026-06",
- "june_parity": {"jobs": 3902, "revenue": 6087636, "gm": "55.3%", "window": "06/01/26 - 06/30/26"},
- "notes": "R31 = R30 plus the Trends tab rebuilt around the current month (P&L spine rows, MTD Pace / Last Month anchor toggle, Sage-GL comparison columns, sticky header). Engine byte-identical to R30: no parser, no computeAll, no job-level math, no flags, no review/re-flag, no Handoff, no marker touched; build.js and close.js run VERBATIM. PP_SAGEH is PRE-BAKED inside this template (24 months, mandatory - the prior-year column reads index c-12); the nightly NEVER splices Sage history and needs no sageh.json. Nightly run MUST fetch this template from the repo and pass all three integrity gates before building; NEVER build from skill-folder copies, project knowledge, SharePoint, an older published index.html, or memory. Verified 2026-07-26 through the template's own ingest path in jsdom against the real June 2026 exports: 3,902 jobs / $6,087,636 / GM 55.3% / gates 6/6 / zero engine errors."
+ "june_parity": {
+  "jobs": 3902,
+  "revenue": 6087636,
+  "gm": "55.3%",
+  "window": "06/01/26 - 06/30/26"
+ },
+ "notes": "R32 = R31 with the Trends anchor placed by its real month offset from the last closed Sage month. R31 clamped the anchor to the end of the SAGEH array, so any data month two or more months past the Sage close silently reused the last-closed baseline set (an Aug-26 pace compared against PY Jul-25). R32 walks LM / PY / 3M with the calendar, ends the 3M window and sparkline on the last closed month, and labels a non-adjacent LM in the header. Verified 2026-07-27 in jsdom: 36 clean renders (6 data months x 3 scopes x 2 anchors), blank template still paints with the pace pill disabled, and May/Jun/Jul-26 output is IDENTICAL to R31 - only Aug-26 onward changes. Diff vs R31 is 4 sites: header stamp, footer stamp + changelog, the anchor math plus a new monOffset helper, and the baseline reads/labels - all inside renderTrends. Engine byte-identical: parseJobs / parsePay / computeAll / buildSaveHtml / handoffCompute / stubWindow / MATDEF / MATSPLIT_DEF / COMDEF / PP_SAGEH all verified unchanged; build.js and close.js run VERBATIM. PP_SAGEH is PRE-BAKED (24 months, mandatory - the PY column reads index c-12); the nightly NEVER splices Sage history. Nightly MUST fetch this template from the repo and pass all three g0 gates before building - in Cowork api.github.com is unreachable (HTTP 000), so the authenticated git clone is the PRIMARY fetch path."
 }
