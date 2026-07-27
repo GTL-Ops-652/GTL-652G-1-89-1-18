@@ -1,0 +1,13 @@
+{
+ "engine_v": "R31",
+ "frozen": "2026-07-26",
+ "plaintext_sha256": "5c9a4b712e943c821abdc8aeab33cda1863893d0ecd255b9d71b30e837f0fc9b",
+ "plaintext_bytes": 179808,
+ "markers": 7,
+ "marker_names": ["CFG","GOALS","HANDOFF","RAW","SAGEH","STATE","VARS"],
+ "sageh_prebaked": true,
+ "sageh_months": 24,
+ "sageh_range": "2024-07..2026-06",
+ "june_parity": {"jobs": 3902, "revenue": 6087636, "gm": "55.3%", "window": "06/01/26 - 06/30/26"},
+ "notes": "R31 = R30 plus the Trends tab rebuilt around the current month (P&L spine rows, MTD Pace / Last Month anchor toggle, Sage-GL comparison columns, sticky header). Engine byte-identical to R30: no parser, no computeAll, no job-level math, no flags, no review/re-flag, no Handoff, no marker touched; build.js and close.js run VERBATIM. PP_SAGEH is PRE-BAKED inside this template (24 months, mandatory - the prior-year column reads index c-12); the nightly NEVER splices Sage history and needs no sageh.json. Nightly run MUST fetch this template from the repo and pass all three integrity gates before building; NEVER build from skill-folder copies, project knowledge, SharePoint, an older published index.html, or memory. Verified 2026-07-26 through the template's own ingest path in jsdom against the real June 2026 exports: 3,902 jobs / $6,087,636 / GM 55.3% / gates 6/6 / zero engine errors."
+}
