@@ -1,8 +1,9 @@
 {
- "engine_v": "R32",
- "frozen": "2026-07-27",
- "plaintext_sha256": "7a0c6abe19dc792653c9e31f1b9ec05be45e620db052f71d001d35d1b0c41b7f",
- "plaintext_bytes": 181298,
+ "engine_v": "R34",
+ "frozen": "2026-07-28",
+ "plaintext_sha256": "264f14a3f136d8c97435018c4597a89828619ac7394e2dd9400e85b3effe81f9",
+ "plaintext_utf8_bytes": 184591,
+ "plaintext_chars": 183654,
  "markers": 7,
  "marker_names": [
   "CFG",
@@ -13,14 +14,17 @@
   "STATE",
   "VARS"
  ],
- "sageh_prebaked": true,
- "sageh_months": 24,
- "sageh_range": "2024-07..2026-06",
+ "sageh": {
+  "baked_fallback": true,
+  "nightly_splices_fresh": true,
+  "source": "Yearly Goals.xlsx 'Sage GL History' tab — read fresh every run per SKILL.md §2c; the baked payload is only the fallback when the tab is unreadable (never splice null)"
+ },
  "june_parity": {
   "jobs": 3902,
   "revenue": 6087636,
   "gm": "55.3%",
   "window": "06/01/26 - 06/30/26"
  },
- "notes": "R32 = R31 with the Trends anchor placed by its real month offset from the last closed Sage month. R31 clamped the anchor to the end of the SAGEH array, so any data month two or more months past the Sage close silently reused the last-closed baseline set (an Aug-26 pace compared against PY Jul-25). R32 walks LM / PY / 3M with the calendar, ends the 3M window and sparkline on the last closed month, and labels a non-adjacent LM in the header. Verified 2026-07-27 in jsdom: 36 clean renders (6 data months x 3 scopes x 2 anchors), blank template still paints with the pace pill disabled, and May/Jun/Jul-26 output is IDENTICAL to R31 - only Aug-26 onward changes. Diff vs R31 is 4 sites: header stamp, footer stamp + changelog, the anchor math plus a new monOffset helper, and the baseline reads/labels - all inside renderTrends. Engine byte-identical: parseJobs / parsePay / computeAll / buildSaveHtml / handoffCompute / stubWindow / MATDEF / MATSPLIT_DEF / COMDEF / PP_SAGEH all verified unchanged; build.js and close.js run VERBATIM. PP_SAGEH is PRE-BAKED (24 months, mandatory - the PY column reads index c-12); the nightly NEVER splices Sage history. Nightly MUST fetch this template from the repo and pass all three g0 gates before building - in Cowork api.github.com is unreachable (HTTP 000), so the authenticated git clone is the PRIMARY fetch path."
+ "release_rule": "A template revision is NOT released until, in the SAME session: (1) this template.html + manifest are re-frozen in the repo, (2) the skill bundle is re-saved with the matching pp_template.html and SKILL.md, (3) the nightly task prompt carries no stale revision facts. Nightly: if the skill folder SKILL.md states a HIGHER revision than this manifest, that is a broken release — STOP and report; never silently publish the older engine.",
+ "notes": "R33 (2026-07-27): SAGEH sources from the Sage GL History tab of Yearly Goals.xlsx (LVP001 export pipeline + gen_sageh.py RETIRED — sageh_prebaked:true era manifests are obsolete); calendar-aware Trends anchor (unclosed prior month blanks vs-LM, PY stays true calendar month, 3M averages the closed months, labeled); Sage/Landed toggle removed — Sage view only (viewAdj/landed branches inert). R34 (2026-07-27): display-only — Trends ratio rows render the anchor $ first with % beside it ($ = % x anchor revenue, reconciles on screen); comparison columns, sparklines, deltas, parsers, P&L math untouched. Verified in jsdom A/B vs R33: delta cells byte-identical, 4 intended hunks. June invariants unchanged. build.js and close.js run VERBATIM. Fetch path: api.github.com unreachable in Cowork (HTTP 000) — authenticated git clone is the PRIMARY fetch path; decrypt+gate via tpl_fetch.js (ships in the skill folder and in repo Profit-Planner/)."
 }
