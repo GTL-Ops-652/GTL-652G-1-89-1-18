@@ -1,9 +1,9 @@
 {
- "engine_v": "R36",
+ "engine_v": "R37",
  "frozen": "2026-07-30",
- "plaintext_sha256": "63acb759d16039b9ba55e4f2875a8e78a322f40429a9377a53eb0bdccc38b602",
- "plaintext_utf8_bytes": 200191,
- "plaintext_chars": 199116,
+ "plaintext_sha256": "e6ff4a2cf4d7012cf1979c388ec23f3949b98773472cc1074c5d08292a27baba",
+ "plaintext_utf8_bytes": 198597,
+ "plaintext_chars": 197510,
  "markers": 7,
  "marker_names": [
   "CFG",
@@ -17,7 +17,7 @@
  "sageh": {
   "baked_fallback": true,
   "nightly_splices_fresh": true,
-  "source": "Yearly Goals.xlsx 'Sage GL History' tab — read fresh every run per SKILL.md §2c; the baked payload is only the fallback when the tab is unreadable (never splice null). R35: optional disc ($, GL-negative) + gross series from the tab's Discount % column. R36: optional nrEro / cbEro / wtyEro series (dollars, positive = loss; blank → 0; all three to BOTH trades or to neither) from the Non-Rev / Callback / Warranty Erosion columns — the Trends Erosion section hides when a payload lacks them"
+  "source": "Yearly Goals.xlsx 'Sage GL History' tab — read fresh every run per SKILL.md §2c; baked payload is only the fallback (never splice null). R35: optional disc ($, GL-negative) + gross series from the Discount % column. R37: optional nrMgn / cbMgn / wtyMgn series — the Non-Rev / Callback / Warranty Margin columns, dollars exactly as the Summary card's Margin row (negative = loss; blank → 0; all three to BOTH trades or to neither). The R36 nrEro/cbEro/wtyEro keys are RETIRED — no Excel column ever carried them. The Trends margin section hides when a payload lacks the keys"
  },
  "june_parity": {
   "jobs": 3902,
@@ -26,5 +26,5 @@
   "window": "06/01/26 - 06/30/26"
  },
  "release_rule": "A template revision is NOT released until, in the SAME session: (1) this template.html + manifest are re-frozen in the repo, (2) the skill bundle is re-saved with the matching pp_template.html and SKILL.md, (3) the nightly task prompt carries no stale revision facts. Nightly: if the skill folder SKILL.md states a HIGHER revision than this manifest, that is a broken release — STOP and report; never silently publish the older engine.",
- "notes": "R36 (2026-07-30): Non-Revenue & Erosion. (1) deptOfBU goes three-way — Non-Revenue = the Misc Service + Indirect BUs, carved OUT of Service; the Summary dept card gains the third column and Service + Install + Non-Revenue still reconciles to the P&L job-attributed labor and purchases. (2) New Summary card 'Non-Revenue · Callback · Warranty — Cost & Erosion': Callback/Warranty match on JOB TYPE across every BU (ILIKE callback / warranty, per the KPI map), Non-Revenue = Misc/Indirect BUs excluding those job types — disjoint buckets; cost = job labor + job purchases + revenue-share invBurn − revenue-share rebate; Erosion = cost − revenue; % Loss = erosion ÷ scope net revenue. (3) Trends Erosion section (Non-Rev / Callback / Warranty / Total $ + % of revenue, g:-1, nosm, MTD-Pace aware via paceVals) fed by the optional SAGEH nrEro/cbEro/wtyEro keys; hardening: rawSeries null-guards absent series, the insights smoothing loop honors live(), and Trends group headers emit lazily so an all-hidden section leaves no dangling header (all three no-ops on R35-shaped payloads). Verified 2026-07-30 jsdom A/B vs R35 on the July 07/01-07/29 exports (3,689 jobs, $5,427,932, gates 6/6 both builds, builtAt equalized): every pre-existing summary key identical in all three scopes, Trends innerHTML byte-identical across both anchors and all scopes, RAW identical; dept split reconciles (A.Svc = B.Svc + B.NR exactly; Svc+Inst+NR labor = jobLabor); erosion buckets disjoint and Tot = sum; synthetic-payload forward test renders all 5 rows in all 6 combos with the pace column reconciling exactly. Parsers, job-level math, GM/CP, flags, accrual, Handoff and review machinery untouched — June invariants unaffected. build.js and close.js run VERBATIM."
+ "notes": "R37 (2026-07-30, same-day rework of R36 per Stephen's design review): bucket classification moves from business unit to JOB TYPE (BUs are unreliable — jobs land in the wrong BU). bucketOfJT order: Callback → Warranty → Non-Revenue (qci|service exception|permit|smart sadie) → Install (^(h|p)-install) → Service (everything else). The two R36 Summary cards merge into ONE approved card — columns Service / Install / Non-Revenue / Callback / Warranty; rows Jobs / Revenue / Labor (% of column revenue) / Purchases (%) / Margin ($ + %) / Erosion (= margin lost when a bucket runs negative, $0 otherwise, with % of scope net revenue; — on Service and Install). Labor + purchases are pure job-attributed sums — the invBurn/rebate revenue-share allocation is dropped from the card (both remain in the P&L); the five columns partition ALL jobs and sum to the P&L job-attributed totals. Negative dollars and percentages render red. Trends: the R36 erosion rows are REPLACED by a 'Non-Revenue · Callback · Warranty — Margin' section (nrMgn / cbMgn / wtyMgn / combined CB+WTY row; money, g:1, nosm, MTD-Pace aware via paceVals nrMgn/cbMgn/wtyMgn/cbwtMgn). Verified 2026-07-30 jsdom A/B vs R36 on the July 07/01-07/29 exports (3,689 jobs, $5,427,932, gates 6/6 both, builtAt equalized): every summary key identical except dept (redefined) and ero (removed); Trends innerHTML byte-identical (margin section hidden — no Excel columns yet); RAW identical; card values match Stephen's approved mockup to the dollar (Branch Svc 2,194/$603,726 · Inst 708/$4,732,464 · NR 379/$56,280 · CB 124/−$9,732 · WT 284/−$27,537; erosion $0/$9,732/$27,537); buckets partition all jobs, labor sums to jobLabor; synthetic-payload forward test renders the margin section in all 6 anchor×scope combos with pace reconciling exactly. Parsers, job-level math, GM/CP, flags, accrual, Handoff and review machinery untouched — June invariants unaffected. build.js and close.js run VERBATIM."
 }
