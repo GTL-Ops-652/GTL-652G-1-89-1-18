@@ -1,9 +1,9 @@
 {
- "engine_v": "R37",
+ "engine_v": "R38",
  "frozen": "2026-07-30",
- "plaintext_sha256": "e6ff4a2cf4d7012cf1979c388ec23f3949b98773472cc1074c5d08292a27baba",
- "plaintext_utf8_bytes": 198597,
- "plaintext_chars": 197510,
+ "plaintext_sha256": "24463a20fc81564152655392cbbdf62d095f22683c4c1cfb75d3f809fd65bafd",
+ "plaintext_utf8_bytes": 203188,
+ "plaintext_chars": 202064,
  "markers": 7,
  "marker_names": [
   "CFG",
@@ -17,14 +17,20 @@
  "sageh": {
   "baked_fallback": true,
   "nightly_splices_fresh": true,
-  "source": "Yearly Goals.xlsx 'Sage GL History' tab — read fresh every run per SKILL.md §2c; baked payload is only the fallback (never splice null). R35: optional disc ($, GL-negative) + gross series from the Discount % column. R37: optional nrMgn / cbMgn / wtyMgn series — the Non-Rev / Callback / Warranty Margin columns, dollars exactly as the Summary card's Margin row (negative = loss; blank → 0; all three to BOTH trades or to neither). The R36 nrEro/cbEro/wtyEro keys are RETIRED — no Excel column ever carried them. The Trends margin section hides when a payload lacks the keys"
+  "source": "Yearly Goals.xlsx 'Sage GL History' tab \u2014 read fresh every run per SKILL.md \u00a72c; baked payload is only the fallback (never splice null). R35: optional disc ($, GL-negative) + gross series from the Discount % column. R37: optional nrMgn / cbMgn / wtyMgn series \u2014 the Non-Rev / Callback / Warranty Margin columns, dollars exactly as the Summary card's Margin row (negative = loss; blank \u2192 0; all three to BOTH trades or to neither). The R36 nrEro/cbEro/wtyEro keys are RETIRED \u2014 no Excel column ever carried them. The Trends margin section hides when a payload lacks the keys"
  },
  "june_parity": {
   "jobs": 3902,
   "revenue": 6087636,
   "gm": "55.3%",
-  "window": "06/01/26 - 06/30/26"
+  "window": "06/01/26 - 06/30/26",
+  "caveat": "R38: membership revenue moves revenue/GM whenever goals.json carries mem keys \u2014 June parity holds ONLY when the goals payload has no mem block (mem absent \u2192 byte-identical to R37, verified)."
  },
- "release_rule": "A template revision is NOT released until, in the SAME session: (1) this template.html + manifest are re-frozen in the repo, (2) the skill bundle is re-saved with the matching pp_template.html and SKILL.md, (3) the nightly task prompt carries no stale revision facts. Nightly: if the skill folder SKILL.md states a HIGHER revision than this manifest, that is a broken release — STOP and report; never silently publish the older engine.",
- "notes": "R37 (2026-07-30, same-day rework of R36 per Stephen's design review): bucket classification moves from business unit to JOB TYPE (BUs are unreliable — jobs land in the wrong BU). bucketOfJT order: Callback → Warranty → Non-Revenue (qci|service exception|permit|smart sadie) → Install (^(h|p)-install) → Service (everything else). The two R36 Summary cards merge into ONE approved card — columns Service / Install / Non-Revenue / Callback / Warranty; rows Jobs / Revenue / Labor (% of column revenue) / Purchases (%) / Margin ($ + %) / Erosion (= margin lost when a bucket runs negative, $0 otherwise, with % of scope net revenue; — on Service and Install). Labor + purchases are pure job-attributed sums — the invBurn/rebate revenue-share allocation is dropped from the card (both remain in the P&L); the five columns partition ALL jobs and sum to the P&L job-attributed totals. Negative dollars and percentages render red. Trends: the R36 erosion rows are REPLACED by a 'Non-Revenue · Callback · Warranty — Margin' section (nrMgn / cbMgn / wtyMgn / combined CB+WTY row; money, g:1, nosm, MTD-Pace aware via paceVals nrMgn/cbMgn/wtyMgn/cbwtMgn). Verified 2026-07-30 jsdom A/B vs R36 on the July 07/01-07/29 exports (3,689 jobs, $5,427,932, gates 6/6 both, builtAt equalized): every summary key identical except dept (redefined) and ero (removed); Trends innerHTML byte-identical (margin section hidden — no Excel columns yet); RAW identical; card values match Stephen's approved mockup to the dollar (Branch Svc 2,194/$603,726 · Inst 708/$4,732,464 · NR 379/$56,280 · CB 124/−$9,732 · WT 284/−$27,537; erosion $0/$9,732/$27,537); buckets partition all jobs, labor sums to jobLabor; synthetic-payload forward test renders the margin section in all 6 anchor×scope combos with pace reconciling exactly. Parsers, job-level math, GM/CP, flags, accrual, Handoff and review machinery untouched — June invariants unaffected. build.js and close.js run VERBATIM."
+ "release_rule": "A template revision is NOT released until, in the SAME session: (1) this template.html + manifest are re-frozen in the repo, (2) the skill bundle is re-saved with the matching pp_template.html and SKILL.md, (3) the nightly task prompt carries no stale revision facts. Nightly: if the skill folder SKILL.md states a HIGHER revision than this manifest, that is a broken release \u2014 STOP and report; never silently publish the older engine.",
+ "notes": "R38 (2026-07-30): Membership revenue \u2014 non-job club-membership revenue + material cost join the P&L. Build splices full-month branch totals from the 'Other Revenue' block of the Yearly Goals Excel (Margin Variables tab), split 94/6 HVAC/Plumb into PP_GOALS[trade].mem (read at boot like maturity \u2014 no localStorage, no UI dial; saved copies inherit via embedded PP_GOALS). computeAll: rev=revJob+memRev (MTD = monthly x calendar elapsedFrac \u2014 rev/elapsedFrac paces to completed pace + full monthly membership exactly); memCost lands in Purchases; grossRev/gp/cp/discP/eroP and every % re-base to TOTAL revenue; modeled % vars (burden/ccFee/rebate/invBurn/referral) stay on JOB revenue. Summary Revenue tile gains completed+membership small-text callout, Purchases tile a membership-cost note, recon bridge a membership term. P&L splits Completed / Membership / Total Revenue and adds a Membership cost Purchases line (job-materials line nets it out). Trends: two informational split rows above Total Revenue under the MTD Pace anchor (Sage months don't split \u2014 LM/PY/3M comparisons live on Total Revenue); paceVals gains revJob + memRev. Verified 2026-07-30 jsdom A/B vs R37 on the July 07/01-07/29 exports (3,689 jobs, $5,427,932, gates 6/6 all builds, builtAt equalized): mem ABSENT \u2192 18/18 rendered panes byte-identical to R37 (sum/dept/recon/pnl/trends-pace/trends-lm x 3 scopes); mem PRESENT ($130K/$57K) \u2192 deltas exact to the dollar in all scopes (Branch rev +121,613 = 130,000x29/31, GM$ +68,290; HVAC +114,316/+64,193; Plumb +7,297/+4,098; pace +130,000/+122,200/+7,800 exactly); RAW identical; dept card identical except eroP re-base. Parsers, job-level math, buckets, flags, accrual, Handoff and review machinery untouched. build.js and close.js run VERBATIM (mem nests inside the trade objects goals.json already forwards wholesale).",
+ "mem": {
+  "source": "Yearly Goals.xlsx 'Margin Variables' tab \u2014 'Other Revenue' block (Membership row: Revenue $ + Purchases $, branch monthly totals)",
+  "split": "94% HVAC / 6% Plumbing, applied at ingest into PP_GOALS[trade].mem={rev,cost}",
+  "behavior": "MTD = monthly x calendar elapsedFrac; pace carries the full monthly figure exactly; cost lands in Purchases; all margins/% re-base to TOTAL revenue; mem absent/invalid \u2192 renders exactly R37"
+ }
 }
