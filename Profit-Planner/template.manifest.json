@@ -1,9 +1,9 @@
 {
- "engine_v": "R35",
+ "engine_v": "R36",
  "frozen": "2026-07-30",
- "plaintext_sha256": "9d8e992fb2ffbd180f7212028fe7fb203793a0f5f314bb3d06e260879121ad37",
- "plaintext_utf8_bytes": 193783,
- "plaintext_chars": 192772,
+ "plaintext_sha256": "63acb759d16039b9ba55e4f2875a8e78a322f40429a9377a53eb0bdccc38b602",
+ "plaintext_utf8_bytes": 200191,
+ "plaintext_chars": 199116,
  "markers": 7,
  "marker_names": [
   "CFG",
@@ -17,7 +17,7 @@
  "sageh": {
   "baked_fallback": true,
   "nightly_splices_fresh": true,
-  "source": "Yearly Goals.xlsx 'Sage GL History' tab — read fresh every run per SKILL.md §2c; the baked payload is only the fallback when the tab is unreadable (never splice null). R35: payload gains optional disc ($, GL-negative) + gross series derived from the tab's Discount % column (HVAC col L / Plumb col Z, % of gross); rows hide gracefully when a payload lacks them"
+  "source": "Yearly Goals.xlsx 'Sage GL History' tab — read fresh every run per SKILL.md §2c; the baked payload is only the fallback when the tab is unreadable (never splice null). R35: optional disc ($, GL-negative) + gross series from the tab's Discount % column. R36: optional nrEro / cbEro / wtyEro series (dollars, positive = loss; blank → 0; all three to BOTH trades or to neither) from the Non-Rev / Callback / Warranty Erosion columns — the Trends Erosion section hides when a payload lacks them"
  },
  "june_parity": {
   "jobs": 3902,
@@ -26,5 +26,5 @@
   "window": "06/01/26 - 06/30/26"
  },
  "release_rule": "A template revision is NOT released until, in the SAME session: (1) this template.html + manifest are re-frozen in the repo, (2) the skill bundle is re-saved with the matching pp_template.html and SKILL.md, (3) the nightly task prompt carries no stale revision facts. Nightly: if the skill folder SKILL.md states a HIGHER revision than this manifest, that is a broken release — STOP and report; never silently publish the older engine.",
- "notes": "R35 (2026-07-30): Discounts + Service/Install split. (1) Discounts above Revenue everywhere — full-width Summary tile ($ + % of GROSS = net + discounts, matching the new Discount column of the Sage history tab), two informational P&L rows above Total Revenue (GM math untouched), two Trends rows (Discounts $ informational g:0 · Discount % of gross g:-1, its $ reconciling against gross via the db flag) + a discount-lever insight (mechanical $/pt at current gross + OLS of variable GM vs discount rate, trailing 12). Discounts = counting + benign items, finance fees excluded. (2) Service vs Install card on Summary — job-attributed Labor & Purchases by BU (Install = *Replacement; Service = everything else incl. drain/misc/indirect), invBurn + rebate allocated by revenue share (exact), shared non-job labor stated not split, Svc+Inst = P&L totals. (3) SAGEH optional disc+gross keys; TR hardened: Branch rollup sums only keys on both trades, pick/live null-guard missing series (older payloads render without the disc rows). Verified 2026-07-30 jsdom A/B vs R34 on the July 07/01-07/29 exports (3,689 jobs, $5,427,932, GM 54.4%, gates 6/6 both): every pre-existing summary key and every shared Trends cell identical across both anchors and all three scopes; RAW identical modulo builtAt; disc/gross/dept reconciliations exact. Parsers, job-level math, GM/CP, flags, accrual, Handoff, review machinery untouched — June invariants unaffected. build.js and close.js run VERBATIM. Fetch path: authenticated git clone PRIMARY; decrypt+gate via tpl_fetch.js."
+ "notes": "R36 (2026-07-30): Non-Revenue & Erosion. (1) deptOfBU goes three-way — Non-Revenue = the Misc Service + Indirect BUs, carved OUT of Service; the Summary dept card gains the third column and Service + Install + Non-Revenue still reconciles to the P&L job-attributed labor and purchases. (2) New Summary card 'Non-Revenue · Callback · Warranty — Cost & Erosion': Callback/Warranty match on JOB TYPE across every BU (ILIKE callback / warranty, per the KPI map), Non-Revenue = Misc/Indirect BUs excluding those job types — disjoint buckets; cost = job labor + job purchases + revenue-share invBurn − revenue-share rebate; Erosion = cost − revenue; % Loss = erosion ÷ scope net revenue. (3) Trends Erosion section (Non-Rev / Callback / Warranty / Total $ + % of revenue, g:-1, nosm, MTD-Pace aware via paceVals) fed by the optional SAGEH nrEro/cbEro/wtyEro keys; hardening: rawSeries null-guards absent series, the insights smoothing loop honors live(), and Trends group headers emit lazily so an all-hidden section leaves no dangling header (all three no-ops on R35-shaped payloads). Verified 2026-07-30 jsdom A/B vs R35 on the July 07/01-07/29 exports (3,689 jobs, $5,427,932, gates 6/6 both builds, builtAt equalized): every pre-existing summary key identical in all three scopes, Trends innerHTML byte-identical across both anchors and all scopes, RAW identical; dept split reconciles (A.Svc = B.Svc + B.NR exactly; Svc+Inst+NR labor = jobLabor); erosion buckets disjoint and Tot = sum; synthetic-payload forward test renders all 5 rows in all 6 combos with the pace column reconciling exactly. Parsers, job-level math, GM/CP, flags, accrual, Handoff and review machinery untouched — June invariants unaffected. build.js and close.js run VERBATIM."
 }
