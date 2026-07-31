@@ -1,9 +1,9 @@
 {
- "engine_v": "R38",
+ "engine_v": "R39",
  "frozen": "2026-07-30",
- "plaintext_sha256": "24463a20fc81564152655392cbbdf62d095f22683c4c1cfb75d3f809fd65bafd",
- "plaintext_utf8_bytes": 203188,
- "plaintext_chars": 202064,
+ "plaintext_sha256": "45e6817560ad166f6fb9c7fa0fa5592f38bd3c5b98715ccbb3c39414ddcadae6",
+ "plaintext_utf8_bytes": 209685,
+ "plaintext_chars": 208530,
  "markers": 7,
  "marker_names": [
   "CFG",
@@ -17,20 +17,26 @@
  "sageh": {
   "baked_fallback": true,
   "nightly_splices_fresh": true,
-  "source": "Yearly Goals.xlsx 'Sage GL History' tab \u2014 read fresh every run per SKILL.md \u00a72c; baked payload is only the fallback (never splice null). R35: optional disc ($, GL-negative) + gross series from the Discount % column. R37: optional nrMgn / cbMgn / wtyMgn series \u2014 the Non-Rev / Callback / Warranty Margin columns, dollars exactly as the Summary card's Margin row (negative = loss; blank \u2192 0; all three to BOTH trades or to neither). The R36 nrEro/cbEro/wtyEro keys are RETIRED \u2014 no Excel column ever carried them. The Trends margin section hides when a payload lacks the keys"
+  "source": "Yearly Goals.xlsx 'Sage GL History' tab — read fresh every run per SKILL.md §2c; baked payload is only the fallback (never splice null). R35: optional disc ($, GL-negative) + gross series from the Discount % column. R37: optional nrMgn / cbMgn / wtyMgn series — the Non-Rev / Callback / Warranty Margin columns, dollars exactly as the Summary card's Margin row (negative = loss; blank → 0; all three to BOTH trades or to neither). The R36 nrEro/cbEro/wtyEro keys are RETIRED — no Excel column ever carried them. The Trends margin section hides when a payload lacks the keys"
  },
  "june_parity": {
   "jobs": 3902,
   "revenue": 6087636,
   "gm": "55.3%",
   "window": "06/01/26 - 06/30/26",
-  "caveat": "R38: membership revenue moves revenue/GM whenever goals.json carries mem keys \u2014 June parity holds ONLY when the goals payload has no mem block (mem absent \u2192 byte-identical to R37, verified)."
+  "caveat": "R38: membership revenue moves revenue/GM whenever goals.json carries mem keys — June parity holds ONLY when the goals payload has no mem block (mem absent → byte-identical to R37, verified)."
  },
- "release_rule": "A template revision is NOT released until, in the SAME session: (1) this template.html + manifest are re-frozen in the repo, (2) the skill bundle is re-saved with the matching pp_template.html and SKILL.md, (3) the nightly task prompt carries no stale revision facts. Nightly: if the skill folder SKILL.md states a HIGHER revision than this manifest, that is a broken release \u2014 STOP and report; never silently publish the older engine.",
- "notes": "R38 (2026-07-30): Membership revenue \u2014 non-job club-membership revenue + material cost join the P&L. Build splices full-month branch totals from the 'Other Revenue' block of the Yearly Goals Excel (Margin Variables tab), split 94/6 HVAC/Plumb into PP_GOALS[trade].mem (read at boot like maturity \u2014 no localStorage, no UI dial; saved copies inherit via embedded PP_GOALS). computeAll: rev=revJob+memRev (MTD = monthly x calendar elapsedFrac \u2014 rev/elapsedFrac paces to completed pace + full monthly membership exactly); memCost lands in Purchases; grossRev/gp/cp/discP/eroP and every % re-base to TOTAL revenue; modeled % vars (burden/ccFee/rebate/invBurn/referral) stay on JOB revenue. Summary Revenue tile gains completed+membership small-text callout, Purchases tile a membership-cost note, recon bridge a membership term. P&L splits Completed / Membership / Total Revenue and adds a Membership cost Purchases line (job-materials line nets it out). Trends: two informational split rows above Total Revenue under the MTD Pace anchor (Sage months don't split \u2014 LM/PY/3M comparisons live on Total Revenue); paceVals gains revJob + memRev. Verified 2026-07-30 jsdom A/B vs R37 on the July 07/01-07/29 exports (3,689 jobs, $5,427,932, gates 6/6 all builds, builtAt equalized): mem ABSENT \u2192 18/18 rendered panes byte-identical to R37 (sum/dept/recon/pnl/trends-pace/trends-lm x 3 scopes); mem PRESENT ($130K/$57K) \u2192 deltas exact to the dollar in all scopes (Branch rev +121,613 = 130,000x29/31, GM$ +68,290; HVAC +114,316/+64,193; Plumb +7,297/+4,098; pace +130,000/+122,200/+7,800 exactly); RAW identical; dept card identical except eroP re-base. Parsers, job-level math, buckets, flags, accrual, Handoff and review machinery untouched. build.js and close.js run VERBATIM (mem nests inside the trade objects goals.json already forwards wholesale).",
+ "release_rule": "A template revision is NOT released until, in the SAME session: (1) this template.html + manifest are re-frozen in the repo, (2) the skill bundle is re-saved with the matching pp_template.html and SKILL.md, (3) the nightly task prompt carries no stale revision facts. Nightly: if the skill folder SKILL.md states a HIGHER revision than this manifest, that is a broken release — STOP and report; never silently publish the older engine.",
+ "notes": "R39 (2026-07-30): Lost GP / Lost CP replace Erosion on the Summary bucket card. New minutes layer: man-minutes = job elapsed (Start->End of Working Time, 98-100% coverage in every bucket regardless of pay type; the Total Technician Paid Time timesheet field covers only 6-23% and is NOT used) x crew size from Assigned Technicians (100% populated), capped per job at 8h service-side / 12h install because ServiceTitan leaves jobs open for days (worst July service job spanned 99 days, worst install 135). Caps are Stephen's measured reality (service call ~2 crew man-hours, changeout ~17); the uncapped service MEDIAN reproduces 2.0 man-hours exactly. Each technician is classified install-side or service-side by where the majority of their Service+Install minutes went (branch-wide, one pass); a callback/warranty job worked entirely by an install crew inherits the install ceiling. Lost GP/CP price each bucket's minutes at the rate for the side that actually logged them - 76% of July callback hours and 53% of warranty hours were install crews, so blending the rates or excluding install would both be wrong - with scope GP and CP split between the two sides by their share of job-attributed margin, so Lost GP can never exceed earned GP. Card rows: Erosion out; Man-hours, Lost GP, Lost CP in (Service and Install render em-dash, they set the rate). ero/eroP remain computed but unrendered. Summary gains lostGP/lostCP/lostMin; dept gains min/minS/minI/minCut/minImp; computeAll returns winDays. OPPORTUNITY COST, not recoverable cash - real while capacity-constrained, overstates in a slow month; the card note says so. Verified 2026-07-30 jsdom A/B vs R38 (July 07/01-07/29 exports, 3,689 jobs, $5,549,545, gates 6/6 both builds, builtAt equalized): 84 panes across 3 scopes x 4 tabs -> 60 byte-identical, all 24 diffs are deptBody/deptNote and nothing else; RAW byte-identical (1,121,918 chars); zero engine errors both. Reconciliation 9/9: buckets partition all 3,689 jobs, HVAC+Plumb = Branch on jobs and man-hours, implied $/man-hour internally consistent per scope, total Lost GP inside actual GP. Parsers, job-level math, GM/CP, flags, accrual, Handoff, Trends and review machinery untouched. build.js and close.js run VERBATIM.",
  "mem": {
-  "source": "Yearly Goals.xlsx 'Margin Variables' tab \u2014 'Other Revenue' block (Membership row: Revenue $ + Purchases $, branch monthly totals)",
+  "source": "Yearly Goals.xlsx 'Margin Variables' tab — 'Other Revenue' block (Membership row: Revenue $ + Purchases $, branch monthly totals)",
   "split": "94% HVAC / 6% Plumbing, applied at ingest into PP_GOALS[trade].mem={rev,cost}",
-  "behavior": "MTD = monthly x calendar elapsedFrac; pace carries the full monthly figure exactly; cost lands in Purchases; all margins/% re-base to TOTAL revenue; mem absent/invalid \u2192 renders exactly R37"
+  "behavior": "MTD = monthly x calendar elapsedFrac; pace carries the full monthly figure exactly; cost lands in Purchases; all margins/% re-base to TOTAL revenue; mem absent/invalid → renders exactly R37"
+ },
+ "r39": {
+  "caps": "service-side 480 min/job, install 720 min/job; CB/WT worked entirely by an install crew inherit the install cap",
+  "time_source": "Job Costing 'Start of Working Time' / 'End of Working Time' x crew count from 'Assigned Technicians'; bucket median backfills the ~2% of jobs with no usable stamps",
+  "rate": "scope GP (and CP) split between service and install by share of job-attributed margin, divided by that side's man-minutes; lost minutes priced by the side of the tech who logged them",
+  "caveat": "opportunity cost at current productivity - not recoverable cash"
  }
 }
