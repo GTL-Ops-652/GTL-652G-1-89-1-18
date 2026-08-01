@@ -1,7 +1,7 @@
 {
-  "design_v": "qa_v1_0",
-  "plaintext_sha256": "aca2325de76ba737b639daad97ac85a9f4d50c02c2ea730bc9dea042511cb797",
-  "frozen": "2026-07-30",
+  "design_v": "qa_v1_1",
+  "plaintext_sha256": "15b9f44301ced04eea103f21e07f0b72762f0a1af1b3c29e73e4b45651d74730",
+  "frozen": "2026-08-01",
   "data_marker": "/*QC_DATA_START*/ ... /*QC_DATA_END*/ (exactly one pair; baseline jobs:[])",
-  "notes": "QA Dashboard v1.0 \u2014 Quality Control (MeasureQuick QA). Sections by Job Class: H-Demand=Service, H-Maint=Maintenance, H-Misc Service=Callback/Warranty, H-Install+H-Install QC=Install. Install headline = Full Systems only (Package/Split Horizontal/Split Vertical; Mini-Split excluded to Other). Buckets: mini->other, partial->partial, duct->ducts, package|split->full, else other. Tags: MQ-Complete, Vitals A/B/C-F (worst wins), Picture Compliant (install only)."
+  "notes": "QA Dashboard v1.1 — Quality Control (MeasureQuick QA). v1.1 adds ServiceTitan click-through: each Job # in the detail table links to https://goettl_lasvegas.eh.go.servicetitan.com/#/Job/Index/{job.i} where i = ServiceTitan Job ID carried from the export's 'Job ID' column. Renders as plain text when i is absent (graceful degrade). Build script resolves export columns BY HEADER NAME, never by fixed position. Sections by Job Class: H-Demand=Service, H-Maint=Maintenance, H-Misc Service=Callback/Warranty, H-Install+H-Install QC=Install. Install headline = Full Systems only (Package/Split Horizontal/Split Vertical; Mini-Split excluded to Other). Buckets: mini->other, partial->partial, duct->ducts, package|split->full, else other. Tags: MQ-Complete, Vitals A/B/C-F (worst wins), Picture Compliant (install only)."
 }
