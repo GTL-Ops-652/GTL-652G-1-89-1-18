@@ -1,6 +1,6 @@
 {
- "engine": "warehouse-movement v2.1 (2026-08-04)",
- "template_plain_sha256": "25e31c7c10116faec0205118d4cabbebd37dcd4331da0bf73db820ec47f97ef4",
+ "engine": "warehouse-movement v3 (2026-08-04)",
+ "template_plain_sha256": "4b9491efb3e038e548eed5dbdaecff45fc10072b488539819ce966328a903689",
  "splice_marker": "/*__DATA__*/null",
- "notes": "v2: window filters (Yesterday/3/7/30/MTD + single-day), history.json accumulation (92d), Units Installed sold feed with Job # line-level 1:1 matching, over-pull red banner, generic-Equipment auto-resolution. Month anchor unchanged until daily snapshot feed. v2.1: feed-coverage labels when a window extends past the last movement/sold day."
+ "notes": "v3: explain-and-approve workflow (red to-do -> note -> approve -> orange un-mapped bucket), CSV export to accounting, notes.json bake loop (build_data --notes / input-dir notes.json), units reframed (purchased-to-job + from-stock) vs sold. Fleet value change is an approvable standing item."
 }
