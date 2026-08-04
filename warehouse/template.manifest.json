@@ -1,6 +1,6 @@
 {
- "engine": "warehouse-movement v3.1 (2026-08-04)",
- "template_plain_sha256": "65c4385d32f00a3867df4ee1ad4f89fc390d83720980969fc19296164689d04b",
+ "engine": "warehouse-movement v3.2 (2026-08-04)",
+ "template_plain_sha256": "b82e021ef9bc85224980c0db02d88abcf52d610aae813d3725c95c78e38c1e46",
  "splice_marker": "/*__DATA__*/null",
- "notes": "v3: explain-and-approve workflow (red to-do -> note -> approve -> orange un-mapped bucket), CSV export to accounting, notes.json bake loop (build_data --notes / input-dir notes.json), units reframed (purchased-to-job + from-stock) vs sold. Fleet value change is an approvable standing item. v3.1: Trailing 60 window; over-pull aging \u2014 soft orange grace \u22643 days after job close (weekend catch-up), hard red day 4+."
+ "notes": "v3: explain-and-approve workflow (red to-do -> note -> approve -> orange un-mapped bucket), CSV export to accounting, notes.json bake loop (build_data --notes / input-dir notes.json), units reframed (purchased-to-job + from-stock) vs sold. Fleet value change is an approvable standing item. v3.1: Trailing 60 window; over-pull aging \u2014 soft orange grace \u22643 days after job close (weekend catch-up), hard red day 4+. v3.2: window anchor = built-date minus one (never a partial today); T90 feeds live."
 }
