@@ -1,6 +1,6 @@
 {
- "engine": "warehouse-movement v2 (2026-08-04)",
- "template_plain_sha256": "c688556cbebd99fe49f32946b1460766beab33b065abf7affbb1b90046c0b809",
+ "engine": "warehouse-movement v2.1 (2026-08-04)",
+ "template_plain_sha256": "25e31c7c10116faec0205118d4cabbebd37dcd4331da0bf73db820ec47f97ef4",
  "splice_marker": "/*__DATA__*/null",
- "notes": "v2: window filters (Yesterday/3/7/30/MTD + single-day), history.json accumulation (92d), Units Installed sold feed with Job # line-level 1:1 matching, over-pull red banner, generic-Equipment auto-resolution. Month anchor unchanged until daily snapshot feed."
+ "notes": "v2: window filters (Yesterday/3/7/30/MTD + single-day), history.json accumulation (92d), Units Installed sold feed with Job # line-level 1:1 matching, over-pull red banner, generic-Equipment auto-resolution. Month anchor unchanged until daily snapshot feed. v2.1: feed-coverage labels when a window extends past the last movement/sold day."
 }
