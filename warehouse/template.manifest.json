@@ -2,5 +2,6 @@
  "engine": "warehouse-movement v3.2 (2026-08-04)",
  "template_plain_sha256": "b82e021ef9bc85224980c0db02d88abcf52d610aae813d3725c95c78e38c1e46",
  "splice_marker": "/*__DATA__*/null",
- "notes": "v3: explain-and-approve workflow (red to-do -> note -> approve -> orange un-mapped bucket), CSV export to accounting, notes.json bake loop (build_data --notes / input-dir notes.json), units reframed (purchased-to-job + from-stock) vs sold. Fleet value change is an approvable standing item. v3.1: Trailing 60 window; over-pull aging \u2014 soft orange grace \u22643 days after job close (weekend catch-up), hard red day 4+. v3.2: window anchor = built-date minus one (never a partial today); T90 feeds live."
+ "notes": "v3: explain-and-approve workflow (red to-do -> note -> approve -> orange un-mapped bucket), CSV export to accounting, notes.json bake loop (build_data --notes / input-dir notes.json), units reframed (purchased-to-job + from-stock) vs sold. Fleet value change is an approvable standing item. v3.1: Trailing 60 window; over-pull aging \u2014 soft orange grace \u22643 days after job close (weekend catch-up), hard red day 4+. v3.2: window anchor = built-date minus one (never a partial today); T90 feeds live. build_data.py frozen in repo (plaintext, no secrets) \u2014 nightly runs fetch + sha-verify it; edits bump build_plain_sha256.",
+ "build_plain_sha256": "c920e575ae50efaaef4d1a62fddd0338b41a2793f23ccb6c9560c984e95c5faf"
 }
