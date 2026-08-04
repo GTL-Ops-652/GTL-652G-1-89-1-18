@@ -1,6 +1,6 @@
 {
- "engine": "warehouse-movement v1 (2026-08-04)",
- "template_plain_sha256": "70540f2a1f2fdd874e065699da3eb5e45562c37ea70061b63550093ac0e88a9c",
+ "engine": "warehouse-movement v1.1 (2026-08-04)",
+ "template_plain_sha256": "cd9f19d1eac4030b8dd26d8d43e80bbd12cf2ab222c0e4a998547660348e39c6",
  "splice_marker": "/*__DATA__*/null",
- "notes": "Decrypt template.html with the shared login, splice data.json over the marker, re-encrypt to index.html. Movement daily; snapshot sections month-scope until the Aggregate stock report lands nightly."
+ "notes": "v1.1: everything day-scoped (Units Left box, day oddities); month value/stock tie-out collapsed into bottom anchor until the daily Aggregate snapshot feed lands. Decrypt template with shared login, splice data.json over the marker, re-encrypt to index.html."
 }
