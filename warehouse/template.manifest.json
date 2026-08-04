@@ -1,6 +1,6 @@
 {
- "engine": "warehouse-movement v1.1 (2026-08-04)",
- "template_plain_sha256": "cd9f19d1eac4030b8dd26d8d43e80bbd12cf2ab222c0e4a998547660348e39c6",
+ "engine": "warehouse-movement v2 (2026-08-04)",
+ "template_plain_sha256": "c688556cbebd99fe49f32946b1460766beab33b065abf7affbb1b90046c0b809",
  "splice_marker": "/*__DATA__*/null",
- "notes": "v1.1: everything day-scoped (Units Left box, day oddities); month value/stock tie-out collapsed into bottom anchor until the daily Aggregate snapshot feed lands. Decrypt template with shared login, splice data.json over the marker, re-encrypt to index.html."
+ "notes": "v2: window filters (Yesterday/3/7/30/MTD + single-day), history.json accumulation (92d), Units Installed sold feed with Job # line-level 1:1 matching, over-pull red banner, generic-Equipment auto-resolution. Month anchor unchanged until daily snapshot feed."
 }
