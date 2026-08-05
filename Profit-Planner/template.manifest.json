@@ -1,9 +1,9 @@
 {
- "engine_v": "R41",
- "frozen": "2026-08-04",
- "plaintext_sha256": "ed5c97c32509b03cf014bec07f9dffe2c02894243db87e078bbc157fafaac51a",
- "plaintext_utf8_bytes": 227721,
- "plaintext_chars": 226461,
+ "engine_v": "R43",
+ "frozen": "2026-08-05",
+ "plaintext_sha256": "48bf260018dd21b9094b698ed8174545e0b7ea244c3e0cdb45bdad78ded4246b",
+ "plaintext_utf8_bytes": 236735,
+ "plaintext_chars": 235348,
  "markers": 8,
  "marker_names": [
   "AGES",
@@ -25,10 +25,10 @@
   "revenue": 6087636,
   "gm": "55.3%",
   "window": "06/01/26 - 06/30/26",
-  "caveat": "R38: membership revenue moves revenue/GM whenever goals.json carries mem keys — June parity holds ONLY when the goals payload has no mem block. R41 changes FLAG CLASSIFICATION only — verified on the June exports vs R40: every summary key, every per-job money figure, P&L, dept card and Trends byte-identical; only the flag partition moves. Flagged-job counts legitimately DROP at R41 (June rebase: 293 → 171; Aug 1–3 live rebase: 48 → 7). Re-baseline the review queue, not the margin."
+  "caveat": "R38: membership revenue moves revenue/GM whenever goals.json carries mem keys — June parity holds ONLY when the goals payload has no mem block. R41 changed FLAG CLASSIFICATION only. R42 adds assumed install pay only on Install-bucket jobs ≤14 days old at the data-snapshot moment — mature-month rebuilds byte-identical (verified). R43 paces the three fixed monthly $ (Holiday Pay / PTO / onboarding × $4,000) by the engine's elapsedFrac — on a CLOSED month elapsedFrac=1, paced = full monthly, and the June A/B vs R42 is byte-identical (RAW modulo builtAt; 12/12 rendered panes across 4 tabs × 3 scopes; every pre-existing summary key; verified 2026-08-05 with the baseline fixed values loaded). A YOUNG window legitimately moves: Direct Labor carries only the elapsed share of the fixed $ (MTD = monthly × elapsedFrac), so mid-month GM/CP read higher — and more honest — than R42, and the Pace view carries exactly the full monthly fixed $ instead of inflating it by ÷ elapsedFrac. That is the point of R43, not drift."
  },
  "release_rule": "A template revision is NOT released until, in the SAME session: (1) this template.html + manifest are re-frozen in the repo, (2) the skill bundle is re-saved with the matching pp_template.html and SKILL.md, (3) the nightly task prompt carries no stale revision facts. Nightly: if the skill folder SKILL.md states a HIGHER revision than this manifest, that is a broken release — STOP and report; never silently publish the older engine.",
- "notes": "R41 (2026-08-04, per Stephen): NO-PAY and membership comm-over are no longer flags. (1) NO-PAY (zero pay lines on a $1,000+ revenue job) is cost-maturity timing — pay posts late and eventually lands — so it becomes an info-only field (job.noPay) with a dashed NO-PAY (info) chip and a muted ·no-pay marker beside the job number; never a flag, never reviewed. Above-plan pay still flags via COM-OVER; materials via PURCH-CAP. (2) COM-OVER pills (Jobs grid + Review Desk) now carry the overage: +$ above assumed plan and % of job revenue. (3) MEM COM-OVER split: when a COM-OVER's ENTIRE overage is explained by commission ServiceTitan paid on the job's membership tasks — memberships are non-commissionable by policy (techs get the $20 spiff on adjustments instead) and ST's payment is clawed back later — the job leaves `flags` for job.memOver: dashed MEM COM-OVER info chip, blue MEM-COM pill with the overage, no Approve/Watch, excluded from the FLAGS count, the Review Desk queue and the flag-age ledger (snap.js reads flags only). Classification: overage ≤ MAXCOMB (max combined tier, 12%) × job.memRev + $1, where memRev = positive invoice items whose name/code matches /sadie|member/ — captured in parseDisc for CLASSIFICATION ONLY; the commission pay base still excludes exactly the sadie items, so assumed COM, comUsed, labor and all P&L math are untouched (actual COM still overrides assumed). memRev FALLBACK: when RAW predates R41 (no memRev key — old saved copies, reused nightly payloads), the engine falls back to memRev = sadieRev, June-verified identical (every June membership item is sadie-worded). Summary gains memOverN/memOverDelta; Reconciliation splits real vs membership-only COM-OVER. Verified 2026-08-04: (a) jsdom A/B vs R40 on the June exports, goals=null — 3,902 jobs · $6,087,636 · GM 55.3% identical; all pre-existing summary keys identical in all 3 scopes (only additions memOverN/memOverDelta); per-job money identical; NEG-GM/LOW-GM/PURCH-CAP sets identical; COM-OVER partitions exactly 190 = 62 real + 128 membership-only (+$1,524 of $12,982 overage); NO-PAY 7 → 7 info; RAW identical modulo memRev/builtAt; sumCards/deptBody/P&L/Trends innerHTML byte-identical per scope; recon differs only in the commission line; gates 6/6 through frozen build.js; UI smoke green (chips 171/128/7/62, $/% on pills, no review buttons on mem-only rows, desk basis 171, memRev survives the saved-copy round trip). (b) jsdom A/B on TODAY'S live data (2026-08-04 nightly payloads re-spliced verbatim into R41): window 08/01–08/03 · 327 jobs · $517,989 · GM 56.5% — all summary keys identical, partition exact (COM-OVER 8 = 2 real + 6 membership-only +$29; NO-PAY 38 → 38 info; flagged 48 → 7), fallback memRev=sadieRev confirmed, handoff panel intact, zero engine errors. Header rev stamp fixed (R40 had left it at R39 — both stamps now R41). snap.js untouched (reads the engine's own flags list); its informational engine:'R40' literal is stale — cosmetic only. Manifest note: plaintext_chars is the JS String.length (UTF-16 units) measure, consistent with R34–R40; the 9-char delta vs a Python code-point count is the 9 astral glyphs in the engine.",
+ "notes": "R43 (2026-08-05, per Stephen): PACE THE FIXED MONTHLY $ — 'on the profit planner each night when it builds, i want it to pace out the holiday pay, PTO, and new people onboarding number. use the same pace the sheet uses for all the other things.' The three Goals & Fixed Monthly $ amounts (holiday, pto, onboard × $4,000/head) now enter Direct Labor at monthly × elapsedFrac — the SAME elapsed-day fraction the engine already uses to pro-rate Overhead (CP MTD) and to take membership revenue MTD (R38) — instead of landing at full monthly value on day 1. Consequences, verified to the cent on a synthetic mid-June clock (elapsedFrac 0.5, anchor reproducing the R42 session's published $13,882.94/114-job install top-up exactly): MTD labor drops by F×(1−ef); MTD GM/CP rise by F×(1−ef); GM-Pace/CP-Pace rise by F×(1−ef)/ef and now carry exactly the full monthly F (F = holiday+pto+onboardPay per scope; baseline HVAC $11,000 · Plumb $42,300 · Branch $53,300). Summary gains holidayM/ptoM/onboardPayM; P&L Holiday/PTO/onboarding rows + the Reconciliation labor build annotate the paced share mid-month ('NN% elapsed of $X/mo', same convention as the R38 membership row) and render byte-identically to R42 at elapsedFrac=1. Scope-level P&L change only: parsers, job-level math, buckets, flags (sets verified identical), accrual + R42 netting (verified untouched), Handoff, Trends machinery (MTD-Pace rows ride the same summary → carry the monthly fixed exactly) and the review workflow untouched; no ledger rebase. RAW format unchanged — no new serialized keys; saved copies recompute pacing on reopen from their embedded VARS (monthly values) against the R29 elapsed anchor, exactly like overhead. Whole-file diff vs R42 = 10 intended hunks (computeAll pacing + summary keys, P&L rows, Reconciliation line, Variables labels + help, Instructions, header/footer stamps + changelog). Verified 2026-08-05 (jsdom, June exports, frozen build.js): mature A/B gates 6/6 both engines, 3,902 · $6,087,636 · GM 55.3% exact, all 8 data blocks byte-identical, 12/12 panes byte-identical, save round-trip reproduces as-built numbers, zero engine errors.",
  "mem": {
   "source": "Yearly Goals.xlsx 'Margin Variables' tab — 'Other Revenue' block (Membership row: Revenue $ + Purchases $, branch monthly totals)",
   "split": "94% HVAC / 6% Plumbing, applied at ingest into PP_GOALS[trade].mem={rev,cost}",
@@ -49,8 +49,40 @@
  },
  "r41": {
   "mem_classification": "job.memOver = comOver AND memRev>0 AND (actualCOM-assumedCOM) <= 12% x memRev + $1; memRev = positive invoice items matching /sadie|member/ (name or code), classification only — the pay base still excludes exactly the sadie items; memRev falls back to sadieRev when RAW predates R41",
-  "no_pay": "job.noPay = rev>=1000 AND zero COM/COMUT/BON/hourly — info field + dashed chip, never a flag",
+  "no_pay": "job.noPay = rev>=1000 AND zero COM/COMUT/BON/hourly — info field + dashed chip, never a flag (R42: young install jobs listed under NO-PAY already carry the assumed book plan in margin)",
   "ledger_rebase": "first R41 nightly: flagged count drops (June rebase 293→171; Aug 1–3 rebase 48→7) because membership-only comm-overs and NO-PAY leave the flag set — ledger entries for those jobs stop updating (last_seen freezes); intended re-baseline, not data loss",
   "raw_compat": "RAW.disc.byJob[*].memRev is the one new serialized key; R40-era saved copies classify via the sadieRev fallback — only a non-sadie membership wording (none observed in June) would be missed until the file is re-parsed"
+ },
+ "r42": {
+  "rule": "Install-bucket job, rev>0, age ≤14d (vs mat.asOf, End-of-Working-Time fallback Start; no usable stamp → no assumption) → instAssumed = HVAC flat-rate book by job type / Plumb 8% of job revenue; instTop = instAssumed>0 ? max(0, instAssumed − actual COMUT) : 0; labor += instTop; day 15+ → actuals only",
+  "instdef_hvac": {
+   "H-Install Split Horizontal": 1350,
+   "H-Install Split Vertical": 1350,
+   "H-Install Split Gas": 1350,
+   "H-Install Split Heat Pump": 1400,
+   "H-Install Package": 1000,
+   "H-Install Mini-Split": 1000,
+   "H-Install Duct-System": 1300,
+   "H-Install Partial": 600,
+   "H-Install Clean, Seal, IAQ": 161,
+   "H-Install Insulation": 226
+  },
+  "plumb_pct": 0.08,
+  "age_max_days": 14,
+  "accrual_netting": "n = min(pendPay, instTop) per young job; pendPay −= n; acc −= n; accrMat = accr − accrPay invariant — no double count with the Cost-Maturity pay component; the Yearly Goals Cost Maturity block needs NO change",
+  "provenance": "rates = median crew flat-rate pay per job type, Q2-2026 payfiles (Apr/May/Jun medians identical; 86–100% of jobs of these types carry the pay); Plumb 8% exact on 533/576 Q2 install jobs; excluded types (Parts 37% paid, Drywall, QCI) pay too irregularly to assume — re-measure INSTDEF when the install pay plan changes and cut a revision",
+  "raw_compat": "no new RAW keys — pre-R42 saved copies and reused nightly payloads compute R42 rules on reopen; their builtAt anchors the ages, so an old file keeps its as-built assumption"
+ },
+ "r43": {
+  "rule": "holiday = holidayM × elapsedFrac; pto = ptoM × elapsedFrac; onboardPay = onboardN × 4000 × elapsedFrac — inside Direct Labor, per scope; elapsedFrac = the engine's R29 elapsed-day fraction (through yesterday, capped by the window)",
+  "pace_identity": "Pace = MTD ÷ elapsedFrac, so the paced P&L carries exactly the full monthly fixed $ — pre-R43 pace carried fixed ÷ elapsedFrac (inflated)",
+  "display": "P&L rows + Reconciliation annotate 'NN% elapsed of $X/mo' when elapsedFrac<1; plain labels on closed months (byte-identical to R42); Variables labels now read '$/mo — paced to elapsed days'",
+  "summary_keys_added": [
+   "holidayM",
+   "ptoM",
+   "onboardPayM"
+  ],
+  "untouched": "job-level math, flags (verified identical sets), accrual + accrual netting, instTop, Handoff, RAW format, review machinery",
+  "raw_compat": "no new RAW keys — pre-R43 saved copies pace on reopen via their embedded VARS monthly values (same reopen semantics as overhead pro-ration)"
  }
 }
