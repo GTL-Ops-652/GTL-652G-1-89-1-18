@@ -1,9 +1,9 @@
 {
- "engine_v": "R46",
+ "engine_v": "R47",
  "frozen": "2026-08-07",
- "plaintext_sha256": "1c65f7f23c2a0d35142a91798a2653fcb823719ded22aa5840e4301acc37391e",
- "plaintext_utf8_bytes": 287252,
- "plaintext_chars": 285514,
+ "plaintext_sha256": "26367f3ac72950dcb044f1b103fd350a30aeb45f90040c46cda65fb7c717e773",
+ "plaintext_utf8_bytes": 291301,
+ "plaintext_chars": 289536,
  "markers": 8,
  "marker_names": [
   "AGES",
@@ -113,5 +113,15 @@
   "untouched": "parsers otherwise, computeAll, project/tier math, buckets, GM/CP, flags, accrual + R42 netting, install-pay assumption, Handoff, Trends, review machinery. build.js, close.js, snap.js and ages.py run VERBATIM.",
   "raw_compat": "Pre-R46 RAW (saved copies, reused nightly payloads) carries no stid — every job renders as plain text, i.e. exactly R45. Files saved FROM R46 carry the ids and keep the links.",
   "verification": "Verified 2026-08-07 (jsdom, June 2026 exports through frozen build.js, goals=skip). Zero-drift A/B vs R45: gates 6/6 both, 3,902 jobs / $6,087,636 / GM 55.3% / window 06/01/26-06/30/26, RAW byte-identical, 7/7 other markers identical, 12/12 panes byte-identical, 3,902/3,902 per-job records identical, zero anchors rendered (June export has no Job ID column). Link build (June spine with a synthetic Job ID column, 10% deliberately blank): 3,512 of 3,902 jobs carry a valid id, 1,350 Jobs-grid anchors all with target=_blank + rel=noopener, every href resolving to that row's own id, 150 rows correctly plain; job-card header linked; 2/2 project-rollup member rows linked with row click-through still navigating; Review Desk 152 of 171 queue rows linked; save round-trip carries stid, serializes no live overlay, stamps R46, and the reopened copy re-renders all 1,350 links. Real August 1-7 export parsed: 785 of 785 real job rows carry a valid Job ID (the 786th is the grand-total row, filtered by the existing BU rule). StatiCrypt gate: zero plaintext leaks (buildSaveHtml, four real job numbers, 'servicetitan.com', 'Job/Index' all absent from the ciphertext)."
+ },
+ "r47": {
+  "what": "Approve / Watchlist actions inside the R44 full-screen job card. Per Stephen 2026-08-07: 'on the jobs tab, when I expand a job, add the watchlist and approve button to the top right of the expanded box, so a job can be added to the watchlist, or be approved from there. and if a job is added to either approved, or the watchlist from that screen, then close the expanded box.'",
+  "render": "cardReview(j) builds the button group; showDetail() wraps it plus the existing close button in <div class=\"rvg\"> at the right of the .hd header (margin-left:auto). State-driven: active -> [Approve if j.flags.length||ST.reflag[job]] + [Watchlist]; watch -> 'Watching BY M/D' + [Approve] + [Remove from watchlist]; approved -> 'Approved BY M/D' + [Undo approval]. Same .ab / .ab.ok / .ab.rm classes as the grid, sized up (12px) for the card.",
+  "approve_scope": "Approve is offered ONLY where the Jobs-grid review column offers it (a flagged or re-flagged job) - approving an unflagged job would record an approval that clears nothing. Watchlist is offered on ANY job (per Stephen): parking a clean job you want to keep an eye on is the point of a watchlist. This is the one intentional divergence from reviewCell().",
+  "close_rule": "doAction() now RETURNS true only when STX.record() actually persisted a state change (approve / watch / unapprove / unwatch); it returns false on a cancelled initials or note prompt, on the disabled manual-data path, and on every note action. The card handler is `if(doAction(a,job)) closeDetail();` - so a recorded action closes the card and a cancel leaves it open. The Jobs-grid handler ignores the return value and is byte-identical in behaviour.",
+  "one_workflow": "Same STX actions, same ST state model, same initials() stamp, same confirm() prompts and the same STX.wired()&&S.manual disabled rule as the grid. renderJobs() still runs inside doAction, so the view pills (Approved (n) / Watchlist (n)), the grid rows and the Review Desk all move together. No second state store, no second code path.",
+  "untouched": "parsers, computeAll, project/tier math, buckets, GM/CP, flags, accrual + R42 netting, install-pay assumption, Handoff, Trends, checkReflags, PP_REFLAG, STX, buildSaveHtml. build.js, close.js, snap.js and ages.py run VERBATIM.",
+  "raw_compat": "No RAW / STATE format change whatsoever. Pre-R47 saved copies reopen unchanged; a copy saved FROM R47 carries the same STATE shape it always did.",
+  "verification": "Verified 2026-08-07 (jsdom + Chromium, June 2026 exports through frozen build.js, goals=skip). Zero-drift A/B vs R46: gates 6/6 both, 3,902 jobs / $6,087,636 / GM 55.3% / window 06/01/26-06/30/26; ALL 8 data markers byte-identical incl. RAW (1,223,163 chars, modulo builtAt); 21/21 rendered panes (7 tabs x 3 scopes) byte-identical modulo the R46->R47 stamp and the build clock. Functional 28/28: flagged card exposes Approve+Watchlist; Watch records and closes; reopened watched job shows 'Watching SG' + Approve + Remove and no duplicate Watch; Approve records, closes, moves Watchlist 1->0 and Approved 0->1; reopened approved job shows 'Approved SG' + Undo only; Undo records and closes; a cancelled prompt records nothing and leaves the card open; a clean job offers Watchlist but not Approve; Esc still closes; buildSaveHtml body carries no live overlay and stamps R47; zero engine alerts. Chromium screenshots confirm the three header states and a clean wrap at 430px."
  }
 }
