@@ -134,7 +134,7 @@ footer .motto{font-family:'Roboto Slab',Georgia,serif;color:var(--dark-blue);fon
 </footer>
 
 <script>
-const DESIGN_V="qa_v1_1";
+const DESIGN_V="qa_v1_2";
 const ST_JOB_URL="https://goettl_lasvegas.eh.go.servicetitan.com/#/Job/Index/";
 const jobCell=j=> j.i? '<a href="'+ST_JOB_URL+j.i+'" target="_blank" rel="noopener noreferrer" title="Open job '+j.j+' in ServiceTitan">'+j.j+'</a>' : j.j;
 /*QC_DATA_START*/
@@ -183,7 +183,7 @@ function donut(pct, color, cls){
   </svg>`;
 }
 
-let curWindow='t7', openSection=null, search='', curBucket='full';
+let curWindow='t7', openSection='install', search='', curBucket='full';
 
 function render(){
   document.getElementById('window-note').textContent = WINDOWS[curWindow]+' · '+fmtRange(curWindow);
