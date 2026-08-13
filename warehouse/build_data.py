@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Goettl LV — Warehouse Movement Daily — data build (engine v1, locked 2026-08-04).
+Goettl LV — Warehouse & Fleet Movement Daily — data build (engine v5, 2026-08-12).
 
 Routes input .xlsx files by HEADER SIGNATURE (filenames don't matter):
   * Movement  — header contains 'Transaction Type'   (Inventory - Profit Planner; MTD and/or single-day, any mix)
@@ -103,6 +103,330 @@ def install_class(jt):
     if jt == 'P-Install Water Heater': return 'wh'
     return None
 
+
+# ============================== FLEET (v5, 2026-08-12) ==============================
+# Inlined so the frozen artifact set stays exactly template.html + build_data.py + manifest.
+# Rules live in WAREHOUSE_SOURCE_MAP v5 section 9.
+# accounting's locked template names + par per truck (from month_end_inventory_v2 tmpl_defaults)
+TMAP = {'SVC-H': 'HVAC Service', 'CFT-H': 'HVAC Craftsman', 'INS-H': 'HVAC Install',
+        'SVC-P': 'Plumbing Service', 'INS-P': 'Plumbing Install', 'WP-P': 'Water Purity'}
+PAR = {'HVAC Service': 9079.23, 'HVAC Craftsman': 8003.96, 'HVAC Install': 598.29,
+       'Plumbing Service': 4432.87, 'Plumbing Install': 1392.88, 'Water Purity': 1384.74}
+# accounting's fleet groups — the roll-up the month-end export reports on
+GROUPS = [('hvac_service', 'HVAC Service (Craftsman and Service)', ['HVAC Craftsman', 'HVAC Service'], 'HVAC'),
+          ('hvac_install', 'HVAC Install (Install only)', ['HVAC Install'], 'HVAC'),
+          ('plumbing', 'Plumbing (All plumbing templates)', ['Plumbing Service', 'Plumbing Install', 'Water Purity'], 'Plumbing')]
+UNTEMPLATED = 'Unassigned / Other'
+RETIRED = 'Retired / transferred'
+PCT_TRIP, DOLLAR_TRIP = 0.15, 500.0
+
+# The location naming convention doubles as a STATUS field (discovered 2026-08-12). The
+# template-code slot carries RET / RNR (retired) and XFR (transferred out of branch), and the
+# driver slot carries RET / RETIRED / XFR on the same vehicles. Every one is $0 — stripped before
+# retirement. These are roster history, NOT operational trucks: they are reported in their own
+# class and excluded from fleet value, par and anomaly tracking.
+STATUS_CODES = {'RET': 'retired', 'RNR': 'retired', 'XFR': 'transferred'}
+STATUS_DRIVERS = {'RET', 'RETIRED', 'XFR', 'TRANSFERRED'}
+
+LOC = re.compile(r'^LAS-([A-Za-z0-9]+)-([A-Z]{2,4}-[A-Z])_(\d+)\s*(.*)$')
+
+
+def is_fleet(loc):
+    return loc.startswith('LAS-') or loc.startswith('Default Truck')
+
+
+def parse_loc(loc):
+    """-> dict(veh, code, badge, driver, tmpl, status) for any fleet location."""
+    m = LOC.match(loc)
+    if m:
+        code = m.group(2)
+        drv = (m.group(4) or '').strip()
+        status = STATUS_CODES.get(code.rsplit('-', 1)[0], '')
+        if drv.upper() in STATUS_DRIVERS:
+            status = status or ('transferred' if drv.upper().startswith('XFR') else 'retired')
+            drv = ''
+        if drv.upper() in ('N/A', 'NA', ''):
+            drv = ''
+        return {'veh': m.group(1), 'code': code, 'badge': m.group(3), 'driver': drv,
+                'status': status,
+                'tmpl': RETIRED if status else TMAP.get(code, UNTEMPLATED)}
+    drv = ''
+    if loc.startswith('Default Truck - '):
+        drv = loc[len('Default Truck - '):].strip()
+    return {'veh': '', 'code': 'DEFAULT', 'badge': '', 'driver': drv, 'status': '',
+            'tmpl': UNTEMPLATED}
+
+
+def vkey(loc):
+    """Stable fleet identity. Vehicle number for LAS-* (survives driver renames); full string for
+    Default Truck rows, which carry no vehicle number."""
+    m = LOC.match(loc)
+    return m.group(1) if m else loc
+
+
+def load_roster(path):
+    """Truck Template Validator — the ROSTER OF RECORD (ServiceTitan).
+    Authoritative for which trucks exist, their Inventory Template and their assigned Technician.
+    The stock snapshot only lists locations that currently hold item rows, so a truck with no
+    inventory is invisible there — the roster is what makes those visible."""
+    hdr, it, _ = sheet(path)
+    ix = {h: i for i, h in enumerate(hdr)}
+    g = lambda r, c: sv(r[ix[c]]) if c in ix and ix[c] < len(r) else ''
+    out = {}
+    for r in it:
+        nm = g(r, 'Truck Name')
+        if not nm: continue
+        out[vkey(nm)] = {'loc': nm, 'tech': g(r, 'Technician'),
+                         'tmpl': g(r, 'Inventory Template') or UNTEMPLATED,
+                         'truckid': g(r, 'TruckId')}
+    return out
+
+
+def fleet_from_snap(snap):
+    """snap: {location: {item_code: {name, ty, q, v, mx, uc}}} -> {location: rolled dict}"""
+    out = {}
+    for loc, items in snap.items():
+        if not is_fleet(loc):
+            continue
+        info = parse_loc(loc)
+        val = round(sum(i['v'] for i in items.values()), 2)
+        tgt = round(sum(i.get('mx', 0) * i.get('uc', 0) for i in items.values()), 2)
+        # Quantity on Hand exists from 2026-08-12 (Stephen added the column), so unit counts are
+        # real. Items with no pricebook cost still carry quantity but contribute $0 of value —
+        # counted separately so a value-only read never hides physical stock.
+        qty = round(sum(i.get('q', 0) for i in items.values()), 1)
+        qty0 = round(sum(i.get('q', 0) for i in items.values() if not i.get('uc')), 1)
+        blind = sum(1 for i in items.values() if not i.get('uc') and i.get('q'))
+        out[vkey(loc)] = dict(info, loc=loc, key=vkey(loc), val=val, tgt=tgt, lines=len(items),
+                              qty=qty, qty_nocost=qty0, qty_blind=blind,
+                              par=PAR.get(info['tmpl'], 0.0))
+    return out
+
+
+def build_fleet(cur_snap, cur_date, prev_snap=None, prev_date=None, roster=None, roster_date=None,
+                roster_prev=None):
+    cur = fleet_from_snap(cur_snap)
+    prev = fleet_from_snap(prev_snap) if prev_snap else {}
+
+    # ---- roster overlay (ServiceTitan Truck Template Validator) --------------------------------
+    # The roster wins on TEMPLATE and TECHNICIAN because it states them as explicit fields; parsing
+    # them out of the location string was only ever a workaround for not having this file. Trucks in
+    # the roster with no snapshot rows are ADDED at $0 so a truck holding nothing is still visible.
+    if roster:
+        for k, rr in roster.items():
+            t = cur.get(k)
+            if t is None:
+                info = parse_loc(rr['loc'])
+                t = cur[k] = dict(info, loc=rr['loc'], key=k, val=0.0, tgt=0.0, lines=0,
+                                  qty=0.0, qty_nocost=0.0, qty_blind=0, par=0.0)
+            if rr['tmpl'] and not t['status']:
+                t['tmpl'] = rr['tmpl']
+                t['par'] = PAR.get(rr['tmpl'], 0.0)
+            if rr['tech']:
+                t['driver'] = rr['tech']
+            t['truckid'] = rr.get('truckid', '')
+            t['in_roster'] = True
+        for k, t in cur.items():
+            t.setdefault('in_roster', False)
+
+    # --- classify: retired / inactive / active ------------------------------------------------
+    # Stephen 2026-08-12: a truck with NO driver assigned AND NO inventory is INACTIVE. Value and
+    # movement are tracked for ACTIVE trucks only. Retired/transferred is its own class ahead of
+    # that test — a retired truck is roster history, not an idle asset to go chase.
+    for t in cur.values():
+        t['cls'] = ('retired' if t['status']
+                    else 'inactive' if (not t['driver'] and abs(t['val']) < 0.005)
+                    else 'active')
+        t['active'] = t['cls'] == 'active'
+    active = {k: v for k, v in cur.items() if v['active']}
+    inactive = sorted((v for v in cur.values() if v['cls'] == 'inactive'),
+                      key=lambda x: (x['tmpl'], x['veh']))
+    retired = sorted((v for v in cur.values() if v['cls'] == 'retired'),
+                     key=lambda x: (x['status'], x['veh']))
+
+    span = None
+    if prev_date and cur_date:
+        span = (datetime.date.fromisoformat(cur_date) - datetime.date.fromisoformat(prev_date)).days
+
+    # --- roster changes -----------------------------------------------------------------------
+    # Match on VEHICLE NUMBER, not the full location string: a driver change rewrites the string,
+    # so string-keying reports one truck as both "added" and "removed" (it did — 578137, 578189 and
+    # A94362 each showed up on both lists). Vehicle number is the stable identity.
+    cur_by_veh = {v['veh']: v for v in cur.values() if v['veh']}
+    prev_by_veh = {v['veh']: v for v in prev.values() if v['veh']}
+    cur_nov = {v['loc']: v for v in cur.values() if not v['veh']}      # Default Truck rows
+    prev_nov = {v['loc']: v for v in prev.values() if not v['veh']}
+
+    # Roster changes are a ROSTER-vs-ROSTER question. Diffing the roster against snapshot-parsed
+    # names manufactures false positives: the roster states the current driver while the prior
+    # snapshot's location string states the driver as of that day, so every driver change since the
+    # roster was pulled reads as a "reassignment", and every roster truck holding no stock reads as
+    # "added". Measured 2026-08-12: that produced 7 false adds and 15 false reassignments. With only
+    # one roster on hand, report NOTHING here and say why.
+    roster_diff = bool(roster and roster_prev)
+    added, removed, reassigned = [], [], []
+    if roster and not roster_prev:
+        pass
+    elif roster_diff:
+        for k, rr in roster.items():
+            if k not in roster_prev:
+                t = cur.get(k, {})
+                added.append(dict(t or {}, loc=rr['loc'], tmpl=rr['tmpl'], driver=rr['tech'],
+                                  val=(t or {}).get('val', 0.0), change='added'))
+        for k, pr in roster_prev.items():
+            if k not in roster:
+                removed.append({'loc': pr['loc'], 'veh': k, 'tmpl': pr['tmpl'], 'driver': pr['tech'],
+                                'status': '', 'val': (prev.get(k) or {}).get('val', 0.0),
+                                'change': 'removed'})
+            else:
+                rr = roster[k]
+                if pr['tech'] != rr['tech'] or pr['tmpl'] != rr['tmpl']:
+                    t = cur.get(k, {})
+                    reassigned.append({'veh': k, 'loc': rr['loc'], 'tmpl': rr['tmpl'],
+                                       'tmpl_from': pr['tmpl'], 'status': '',
+                                       'from': pr['tech'] or '(unassigned)',
+                                       'to': rr['tech'] or '(unassigned)',
+                                       'val': t.get('val', 0.0),
+                                       'prev': (prev.get(k) or {}).get('val', 0.0)})
+    elif prev:
+        for veh, v in cur_by_veh.items():
+            if veh not in prev_by_veh:
+                added.append(dict(v, change='added'))
+        for veh, p in prev_by_veh.items():
+            c = cur_by_veh.get(veh)
+            if not c:
+                removed.append(dict(p, change='removed'))
+            elif p['driver'] != c['driver'] or p['tmpl'] != c['tmpl']:
+                reassigned.append({'veh': veh, 'loc': c['loc'], 'tmpl': c['tmpl'],
+                                   'tmpl_from': p['tmpl'], 'status': c['status'],
+                                   'from': p['driver'] or '(unassigned)',
+                                   'to': c['driver'] or '(unassigned)',
+                                   'val': c['val'], 'prev': p['val']})
+        for loc, v in cur_nov.items():
+            if loc not in prev_nov:
+                added.append(dict(v, change='added'))
+        for loc, p in prev_nov.items():
+            if loc not in cur_nov:
+                removed.append(dict(p, change='removed'))
+
+    # --- per-truck rows, active only ----------------------------------------------------------
+    rows = []
+    for loc, t in active.items():
+        p = prev.get(loc)
+        p0 = p['val'] if p else None
+        dv = round(t['val'] - p0, 2) if p0 is not None else None
+        fill = round(100.0 * t['val'] / t['par'], 1) if t['par'] else None
+        flags = []
+        if t['val'] < -0.005:
+            flags.append('negative')
+        if dv is not None:
+            if t['par'] and abs(dv) >= PCT_TRIP * t['par']:
+                flags.append('pct')
+            if abs(dv) >= DOLLAR_TRIP:
+                flags.append('dollar')
+        if not t['driver']:
+            flags.append('nodriver')
+        rows.append(dict(t, prev=p0, dv=dv, fill=fill, flags=flags,
+                         anom=bool({'negative', 'pct', 'dollar'} & set(flags))))
+    rows.sort(key=lambda r: -abs(r['dv'] if r['dv'] is not None else 0))
+
+    # --- template roll-up (active trucks only) ------------------------------------------------
+    tmpl = collections.OrderedDict()
+    for r in rows:
+        d = tmpl.setdefault(r['tmpl'], {'tmpl': r['tmpl'], 'n': 0, 'val': 0.0, 'prev': 0.0,
+                                        'tgt': 0.0, 'par_each': PAR.get(r['tmpl'], 0.0),
+                                        'par': 0.0, 'anom': 0, 'nodriver': 0})
+        d['n'] += 1
+        d['val'] += r['val']
+        d['prev'] += (r['prev'] or 0.0)
+        d['tgt'] += r['tgt']
+        d['par'] += r['par']
+        d['anom'] += 1 if r['anom'] else 0
+        d['nodriver'] += 1 if not r['driver'] else 0
+    for d in tmpl.values():
+        for k in ('val', 'prev', 'tgt', 'par'):
+            d[k] = round(d[k], 2)
+        d['dv'] = round(d['val'] - d['prev'], 2) if prev else None
+        d['fill'] = round(100.0 * d['val'] / d['par'], 1) if d['par'] else None
+
+    order = [t for _, _, ts, _ in GROUPS for t in ts] + [UNTEMPLATED]
+    tmpl_rows = sorted(tmpl.values(), key=lambda d: order.index(d['tmpl']) if d['tmpl'] in order else 99)
+
+    # --- fleet groups -> trade ----------------------------------------------------------------
+    grows = []
+    for key, label, members, trade in GROUPS:
+        mem = [d for d in tmpl_rows if d['tmpl'] in members]
+        grows.append({'key': key, 'label': label, 'trade': trade, 'templates': members,
+                      'n': sum(d['n'] for d in mem),
+                      'val': round(sum(d['val'] for d in mem), 2),
+                      'prev': round(sum(d['prev'] for d in mem), 2),
+                      'par': round(sum(d['par'] for d in mem), 2),
+                      'anom': sum(d['anom'] for d in mem)})
+    un = [d for d in tmpl_rows if d['tmpl'] == UNTEMPLATED]
+    if un:
+        grows.append({'key': 'untemplated', 'label': 'Untemplated / Default trucks', 'trade': 'Unassigned',
+                      'templates': [UNTEMPLATED], 'n': sum(d['n'] for d in un),
+                      'val': round(sum(d['val'] for d in un), 2),
+                      'prev': round(sum(d['prev'] for d in un), 2), 'par': 0.0,
+                      'anom': sum(d['anom'] for d in un)})
+    for g in grows:
+        g['dv'] = round(g['val'] - g['prev'], 2) if prev else None
+
+    trade = collections.OrderedDict()
+    for g in grows:
+        d = trade.setdefault(g['trade'], {'trade': g['trade'], 'n': 0, 'val': 0.0, 'prev': 0.0, 'par': 0.0, 'anom': 0})
+        for k in ('n', 'anom'):
+            d[k] += g[k]
+        for k in ('val', 'prev', 'par'):
+            d[k] = round(d[k] + g[k], 2)
+    for d in trade.values():
+        d['dv'] = round(d['val'] - d['prev'], 2) if prev else None
+
+    tot = {'n': len(rows), 'inactive': len(inactive), 'retired': len(retired),
+           'val': round(sum(r['val'] for r in rows), 2),
+           'prev': round(sum((r['prev'] or 0.0) for r in rows), 2),
+           'par': round(sum(r['par'] for r in rows), 2),
+           'tgt': round(sum(r['tgt'] for r in rows), 2),
+           'qty': round(sum(r['qty'] for r in rows), 1),
+           'qty_nocost': round(sum(r['qty_nocost'] for r in rows), 1),
+           'anom': sum(1 for r in rows if r['anom']),
+           'nodriver': sum(1 for r in rows if not r['driver']),
+           'qty_blind': sum(r['qty_blind'] for r in rows)}
+    tot['dv'] = round(tot['val'] - tot['prev'], 2) if prev else None
+    tot['fill'] = round(100.0 * tot['val'] / tot['par'], 1) if tot['par'] else None
+
+    roster_note = None
+    if roster and roster_date and roster_date != cur_date:
+        roster_note = (f'Roster is dated {roster_date}, snapshot {cur_date} — template and technician '
+                       f'are from the roster, so a change made between those dates reads as current.')
+    return {'roster_date': roster_date, 'roster_n': len(roster or {}), 'roster_note': roster_note,
+            'roster_diff': roster_diff,
+            'cur_date': cur_date, 'prev_date': prev_date, 'span': span,
+            'has_prev': bool(prev), 'tot': tot, 'tmpl': tmpl_rows, 'groups': grows,
+            'trades': list(trade.values()), 'trucks': rows, 'inactive': inactive,
+            'retired': retired,
+            'added': added, 'removed': removed, 'reassigned': reassigned,
+            'thresholds': {'pct': PCT_TRIP, 'dollar': DOLLAR_TRIP},
+            'par_table': PAR, 'tmap': TMAP}
+
+# ============================ end FLEET block ============================
+
+# ServiceTitan 'Equipment Type' -> this engine's class vocabulary. Used only to resolve units the
+# name classifier could not place (see the Equipment branch below). 'Configurable' and blank stay
+# unresolved on purpose — they are a pricebook gap, and hiding them would hide the fix.
+ST_EQTYPE = {
+    'Straight Cool Condensers R32': 'Condenser / HP',
+    'Heat Pump Condensers R32':     'Condenser / HP',
+    'Split Air Conditioner':        'Condenser / HP',
+    'Furnace R32':                  'Furnace',
+    'Plenum Coil R32':              'Coil',
+    'Plenum Coil':                  'Coil',
+    'Evaporator Coil R32':          'Coil',
+    'Air Handler R32':              'Air Handler',
+    'Packaged Heat Pump':           'Package Unit',
+    'Water Heater':                 'Water Heater',
+}
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument('--input', required=True)
@@ -117,12 +441,14 @@ def main():
     # identical payloads — header signature alone cannot separate them, so invoice-item files are
     # content-deduped below. Units Installed also matches 'Item GL Group Name'+'Item Quantity',
     # so it is claimed FIRST on its unique 'Completion Date' column.
-    movement, snaps, jobsfiles, soldfiles, taskfiles = [], [], [], [], []
+    movement, snaps, jobsfiles, soldfiles, taskfiles, rosterfiles = [], [], [], [], [], []
     for p in sorted(glob.glob(os.path.join(a.input, '*.xlsx'))):
         if os.path.basename(p).startswith('~$'): continue
         try: hdr, _, _ = sheet(p)
         except Exception: continue
-        if 'Transaction Type' in hdr: movement.append(p)
+        # Roster claimed FIRST on its own unique pair — it is the fleet roster of record (§9).
+        if 'Truck Name' in hdr and 'Inventory Template' in hdr: rosterfiles.append(p)
+        elif 'Transaction Type' in hdr: movement.append(p)
         elif 'Quantity on Hand' in hdr: snaps.append(p)
         elif 'Completion Date' in hdr and 'Item GL Group Name' in hdr: soldfiles.append(p)
         elif 'Invoice Number' in hdr and 'Item Type' in hdr: taskfiles.append(p)
@@ -144,8 +470,25 @@ def main():
             jn_s, js_s = g(r, 'Job Number'), g(r, 'Job Status')
             if jn_s and js_s: jobstat[jn_s] = js_s      # captured BEFORE the Bill skip — Bills carry status too
             if not tt or tt == 'Bill': continue
-            d = r[ix['Date']]
-            iso = d.strftime('%Y-%m-%d') if hasattr(d, 'strftime') else sv(d)[:10]
+            # PHYSICAL-DATE RULE (2026-08-13). 'Date' / 'Date Created' is when a human keyed the
+            # transaction, not when material moved: on the 08-11 export every row carries Date
+            # Created = 08-11 while Date Received splits 08-11/08-12, Date Approved reaches back to
+            # 07-10 and Date Sent to 08-04. Dating on the keystroke made a catch-up entry day look
+            # like a huge movement day and broke the whole point of a day-specific view.
+            # Receipts/Bills -> Date Received. Transfers -> Date Picked, else Date Sent.
+            # Returns / Adjustments / POs have no physical stamp, so they keep 'Date'.
+            def _iso(v):
+                return v.strftime('%Y-%m-%d') if hasattr(v, 'strftime') else (sv(v)[:10] if sv(v) not in ('', 'N/A') else '')
+            def _col(c):
+                return _iso(r[ix[c]]) if c in ix and ix[c] < len(r) else ''
+            keyed = _col('Date') or _col('Date Created')
+            if tt in ('Receipt', 'Bill'):
+                iso = _col('Date Received') or keyed
+            elif 'Transfer' in tt:
+                iso = _col('Date Picked') or _col('Date Sent') or keyed
+            else:
+                iso = keyed
+            if not iso: iso = keyed
             key = (tt, g(r, 'Transaction Number'), iso, g(r, 'Inventory Location'), g(r, 'Transfer From'), g(r, 'Transfer To'))
             if key in seen: continue
             seen.add(key)
@@ -154,7 +497,11 @@ def main():
                    'to': g(r, 'Transfer To'), 'v': round(gross / (1 + TAX), 2) if tt in TAXED else round(gross, 2),
                    'doc': g(r, 'Transaction Number'), 'vendor': g(r, 'Vendor Name'), 'tech': g(r, 'Technician Name'),
                    'pot': g(r, 'Purchase Order Type'), 'at': g(r, 'Adjustment Type'), 'rt': g(r, 'Return Type'),
-                   'job': g(r, 'Job Number'), 'st': g(r, 'Transaction Status')}
+                   'job': g(r, 'Job Number'), 'st': g(r, 'Transaction Status'),
+                   'dk': keyed if keyed and keyed != iso else '',
+                   'qty': fv(g(r, 'Quantity on Transaction')) if 'Quantity on Transaction' in ix else 0,
+                   'stid': g(r, 'Job ID') if 'Job ID' in ix else '',
+                   'appr': g(r, 'Approval Status')}
             ledger.append({k: v for k, v in row.items() if v or k in ('t', 'd', 'v')})
     days = sorted({r['d'] for r in ledger})
 
@@ -167,7 +514,11 @@ def main():
             jn = sv(r[ix['Job #']])
             if not jn: continue
             end = r[ix['End of Working Time']]
+            # 'Job ID' is ServiceTitan's INTERNAL id and the only thing /#/Job/Index/<id> accepts —
+            # the job NUMBER will not resolve. Job Costing is MTD, so links only reach back to the
+            # 1st until Job ID is added to the trailing-90 report.
             jmap[jn] = {'jt': sv(r[ix['Job Type']]), 'tech': sv(r[ix['Assigned Technicians']]),
+                        'stid': sv(r[ix['Job ID']]) if 'Job ID' in ix else '',
                         'end': end.strftime('%Y-%m-%d') if hasattr(end, 'strftime') else ''}
     inst_by_day = collections.defaultdict(lambda: {'hvac_full': 0, 'hvac_partial': 0, 'wp': 0, 'wh': 0})
     for j in jmap.values():
@@ -226,11 +577,27 @@ def main():
             elif ity == 'Equipment':
                 c = eclass(nm)
                 if c == 'WP Faucet (AG)': continue        # excluded per Stephen
+                # 2026-08-13: the trailing-90 invoice feed now carries ServiceTitan's own curated
+                # 'Equipment Type', plus 'Serial Number' and 'Installed On' per unit. Per the
+                # trust-the-curated-field rule the ST class is used to RESOLVE units the name-based
+                # classifier could not place — it does NOT override a class that already resolved,
+                # so the locked variance baselines cannot shift underneath us.
+                et = gi(r, 'Equipment Type')
+                if c in ('Unspecified', 'Other Equipment', '') and et:
+                    c = ST_EQTYPE.get(et.strip(), c)
+                inst = gi(r, 'Installed On')[:10]
                 inv_eq.append({'d': iso, 'job': jn, 'name': nm[:46], 'cls': c, 'q': q,
-                               'jt': gi(r, 'Job Type')})
+                               'jt': gi(r, 'Job Type'),
+                               'et': et, 'ser': gi(r, 'Serial Number')[:32],
+                               'id': inst, 'inv': gi(r, 'Is Inventory')})
             if jn and gi(r, 'Job Type'):
                 jmap.setdefault(jn, {'jt': gi(r, 'Job Type'),
-                                     'tech': gi(r, 'Assigned Technicians'), 'end': ''})
+                                     'tech': gi(r, 'Assigned Technicians'), 'stid': '', 'end': ''})
+                # 'Job ID' landed on the trailing-90 feed 2026-08-13 (verified 226/226 against the
+                # movement export). Job Costing is MTD only, so this is what gives every job on the
+                # page a working ServiceTitan link across the full 90 days.
+                if not jmap[jn].get('stid'):
+                    jmap[jn]['stid'] = gi(r, 'Job ID')
 
     # ---------- sold units (Units Installed report) ----------
     # Day key = Completion Date (fallback Invoice Date). Files may overlap days (trailing-14 window):
@@ -261,29 +628,69 @@ def main():
 
     # ---------- snapshots (2 newest by Filters date) ----------
     warnings, month, skus, cls_roll, tie = [], None, [], {}, []
+    # v5: also carries Max/Min Quantity and Item Unit Cost — the truck REPLENISHMENT TEMPLATE, which
+    # is what makes the Fleet tab's par math possible. 'Quantity on Hand' was added to the daily
+    # subscription 2026-08-12, so the daily aggregate export now routes here on the same signature
+    # as the month-end one and no router change is needed.
+    def loadsnap(p):
+        hdr, it, _ = sheet(p)
+        ix = {h: i for i, h in enumerate(hdr)}
+        g = lambda r, c: r[ix[c]] if c in ix and ix[c] < len(r) else None
+        out = {}
+        for r in it:
+            loc = sv(g(r, 'Inventory Location'))
+            if not loc: continue
+            d = out.setdefault(loc, {})
+            c = sv(g(r, 'Item Code'))
+            uc = fv(g(r, 'Item Unit Cost'))
+            itm = d.setdefault(c, {'name': sv(g(r, 'Item Name'))[:46], 'desc': sv(g(r, 'Item Description'))[:90],
+                                   'ty': sv(g(r, 'Item Type')), 'q': 0.0, 'v': 0.0,
+                                   'mx': 0.0, 'mn': 0.0, 'uc': uc})
+            itm['q'] += fv(g(r, 'Quantity on Hand')); itm['v'] += fv(g(r, 'Total Item Cost'))
+            itm['mx'] += fv(g(r, 'Max Quantity')); itm['mn'] += fv(g(r, 'Min Quantity'))
+            if uc: itm['uc'] = uc
+        return out
+
     snap0 = snap1 = None; d0 = d1 = None
-    if len(snaps) >= 2:
-        dated = sorted(((filters_date(sheet(p)[2]), p) for p in snaps), key=lambda x: (x[0] or datetime.date.min))
+    dated = sorted(((filters_date(sheet(p)[2]), p) for p in snaps), key=lambda x: (x[0] or datetime.date.min))
+    if len(dated) >= 2:
         (d0, p0), (d1, p1) = dated[-2], dated[-1]
         if len(dated) > 2: warnings.append(f'{len(dated)} snapshots found — using {d0} and {d1}.')
-        def loadsnap(p):
-            hdr, it, _ = sheet(p)
-            ix = {h: i for i, h in enumerate(hdr)}
-            out = {}
-            for r in it:
-                loc = sv(r[ix['Inventory Location']])
-                if not loc: continue
-                d = out.setdefault(loc, {})
-                c = sv(r[ix['Item Code']])
-                itm = d.setdefault(c, {'name': sv(r[ix['Item Name']])[:46], 'desc': sv(r[ix['Item Description']])[:90],
-                                       'ty': sv(r[ix['Item Type']]), 'q': 0.0, 'v': 0.0})
-                itm['q'] += fv(r[ix['Quantity on Hand']]); itm['v'] += fv(r[ix['Total Item Cost']])
-            return out
         snap0, snap1 = loadsnap(p0), loadsnap(p1)
+    elif len(dated) == 1:
+        # One snapshot still drives the Fleet tab at levels-only. Do NOT set snap0 — the month panel
+        # and equipment stock math genuinely need two and must stay omitted rather than compare a
+        # snapshot against nothing.
+        d1, p1 = dated[0]
+        snap1 = loadsnap(p1)
+        warnings.append('Only 1 stock snapshot — Fleet reports levels with no movement; Month Tie-Out omitted.')
     else:
-        warnings.append('Fewer than 2 stock snapshots — Equipment Watch stock math and Month Tie-Out omitted.')
+        warnings.append('No stock snapshots — Fleet tab and Month Tie-Out omitted.')
 
     # ---------- optional Databricks PO items ----------
+    # Generic catch-all PO lines (SKU literally named 'Materials' / 'Equipment' / 'Misc'). A unit
+    # bought on one of these is invisible to every downstream system — the SKU name carries no class,
+    # even though the buyer typed a real description on the line. Verified on job 553837: the plenum
+    # coil was bought as 'Materials' $608.00 on the same PO as the condenser and furnace. These are
+    # surfaced against the job so a 'unit not found' reads as a pricebook fix, not a mystery.
+    generic_po = collections.defaultdict(list)
+    gj = os.path.join(a.input, 'generic_po.json')
+    if os.path.exists(gj):
+        gp = json.load(open(gj))
+        gi = {c: i for i, c in enumerate(gp['cols'])}
+        # Genie widens an IN list to ILIKE, so real named SKUs ('Equipment Rentals', 'E-Lite
+        # Equipment Pad', 'Field Po Materials') come back too. Those DO identify what was bought —
+        # keep only the true catch-alls, whose names carry no class at all.
+        CATCHALL = {'materials', 'material', 'equipment', 'misc', 'miscellaneous', 'parts'}
+        for r in gp['rows']:
+            job = str(r[gi['job_number']] or '')
+            if not job: continue
+            if str(r[gi['item_name']] or '').strip().lower() not in CATCHALL: continue
+            generic_po[job].append({'name': str(r[gi['item_name']] or ''), 'ty': str(r[gi['item_type']] or ''),
+                                    'q': fv(r[gi['quantity']]), 'v': round(fv(r[gi['total']]), 2),
+                                    'po': str(r[gi['purchase_order_number']] or ''),
+                                    'd': str(r[gi['purchase_order_date']] or '')[:10]})
+
     eq_po = []
     pj = os.path.join(a.input, 'po_items.json')
     if os.path.exists(pj):
@@ -364,6 +771,43 @@ def main():
             if c and j['end'] and inwin(j['end']): inst_tot[c] += 1
     else:
         inst_tot = collections.Counter()
+
+    # ---------- fleet (v5) ----------
+    # Snapshot-scoped, NOT window-scoped: it reports fleet state on the snapshot date and the change
+    # since the previous snapshot. Built off the same two snapshots the month panel uses.
+    roster, roster_date = None, None
+    if rosterfiles:
+        rp = sorted(rosterfiles)[-1]
+        roster = load_roster(rp)
+        rd = filters_date(sheet(rp)[2])
+        roster_date = rd.isoformat() if rd else None
+        if not roster_date:
+            # Validator carries no Filters date — fall back to the file mtime so staleness is visible.
+            roster_date = datetime.date.fromtimestamp(os.path.getmtime(rp)).isoformat()
+    else:
+        warnings.append('Truck Template Validator missing — fleet template/technician fall back to '
+                        'parsing the location string, and trucks holding no stock are invisible.')
+
+    # Prior roster: same report, an older dated copy. Only with two can roster changes be reported.
+    roster_prev = None
+    if len(rosterfiles) >= 2:
+        roster_prev = load_roster(sorted(rosterfiles)[-2])
+
+    fleet = None
+    if snap1:
+        fleet = build_fleet(snap1, d1.isoformat() if d1 else '',
+                            snap0, d0.isoformat() if (snap0 and d0) else None,
+                            roster, roster_date, roster_prev)
+        ft = fleet['tot']
+        if ft['anom']:
+            warnings.append(f"Fleet: {ft['anom']} truck(s) past threshold "
+                            f"({int(PCT_TRIP*100)}% of par or ${int(DOLLAR_TRIP)}) or holding negative value.")
+        neg = [t['loc'] for t in fleet['trucks'] if t['val'] < -0.005]
+        if neg:
+            warnings.append('Fleet NEGATIVE on-hand value (impossible — bad count or mis-post): ' + ', '.join(neg[:6]))
+        bad_removals = [t['veh'] or t['loc'] for t in fleet['removed'] if abs(t['val']) > 0.005]
+        if bad_removals:
+            warnings.append('Fleet vehicles left the roster still carrying value: ' + ', '.join(bad_removals[:6]))
 
     installs = [{'d': j['end'], 'job': jn, 'jt': j['jt'], 'cls': install_class(j['jt']), 'tech': j['tech'][:24]}
                 for jn, j in jmap.items() if install_class(j['jt']) and j['end']]
@@ -492,10 +936,23 @@ def main():
         # problem and gets its own flag, otherwise it floods the red list with false positives.
         moved = sum(r['po'] for r in rows)
         anyreq = any(r['req'] for r in rows)
+        # A required unit with no job PO and nothing itemized splits two ways, and conflating them
+        # made a 177-job red list out of 24 real items. If the job carries a generic catch-all PO
+        # line, that line is almost certainly the unit on the wrong SKU -> 'short', actionable.
+        # If it carries nothing at all, the unit came off warehouse stock, which ServiceTitan does
+        # not record per job -> 'stock', the DOCUMENTED BLIND SPOT, informational not red.
+        nounit = any(r['req'] and not r['po'] and not r['inv'] for r in rows)
+        # 'short' USED to mean inv < req — but Goettl invoices FLAT RATE, so a sold system carries a
+        # Service task and no Item Type='Equipment' row at all. That made inv==0 the normal case and
+        # fired on 233 of 776 jobs, including job 553887 whose coil was correctly PO'd and visible.
+        # Corrected 2026-08-12: only flag when a required class has NO evidence at all — nothing
+        # PO'd to the job AND nothing itemized. If the unit was bought against the job, it is
+        # accounted for; whether the invoice names it is a pricebook question, not a variance.
         flag = ('over'     if any(r['vmove'] > 0 and r['req'] for r in rows)
                 else 'canceled' if state == 'canceled' and moved
                 else 'notask'   if moved and not anyreq
-                else 'short'    if any(r['vinv'] < 0 and r['req'] for r in rows) else 'ok')
+                else 'short'    if (nounit and generic_po.get(job))
+                else 'stock'    if nounit else 'ok')
         # Window anchor for the variance sections is the job's COMPLETION date — that is when the
         # sale happened and when units must reconcile. Filtering each side by its own date would split
         # pairs at a window edge (a PO dated 7/21 against a job that closed 7/22). Where completion is
@@ -508,9 +965,11 @@ def main():
             est = bool(anchor)
         jobvar.append({'job': job, 'st': state, 'end': end or '', 'anchor': anchor or '',
                        'endEst': est, 'flag': flag, 'rows': rows,
+                       'gen': generic_po.get(job, []),
+                       'stid': (jmap.get(job, {}) or {}).get('stid', ''),
                        'jt': (jmap.get(job, {}) or {}).get('jt', ''),
                        'tech': ((jmap.get(job, {}) or {}).get('tech') or '')[:24]})
-    _ORD = {'over': 0, 'canceled': 1, 'notask': 2, 'short': 3, 'ok': 4}
+    _ORD = {'over': 0, 'canceled': 1, 'notask': 2, 'short': 3, 'stock': 4, 'ok': 5}
     jobvar.sort(key=lambda x: (_ORD.get(x['flag'], 9), x['anchor'] or '', x['job']))
 
     notes = {}
@@ -527,7 +986,9 @@ def main():
                       'instDay': inst_by_day, 'instTot': dict(inst_tot), 'tie': tie,
                       'installs': sorted(installs, key=lambda x: x['d'])},
             'bk': buckets, 'branch': branch, 'jobvar': jobvar, 'tasks': task_rows, 'qtyViol': qty_viol,
-            'invEq': inv_eq, 'jobstat_n': len(jobstat)}
+            'invEq': inv_eq, 'jobstat_n': len(jobstat), 'fleet': fleet,
+            'stids': {k: v.get('stid', '') for k, v in jmap.items() if v.get('stid')},
+            'stBase': 'https://goettl_lasvegas.eh.go.servicetitan.com/#/Job/Index/'}
     json.dump(data, open('data.json', 'w'), default=str)
     stc = collections.Counter(e['st'] for e in eq_po)
     print(json.dumps({'ok': True, 'ledger_rows': len(ledger), 'days': f'{days[0]}..{days[-1]}' if days else '—',
@@ -538,6 +999,16 @@ def main():
                       'bom_jobs': len(bom_job), 'jobvar_rows': len(jobvar),
                       'flags': dict(collections.Counter(j['flag'] for j in jobvar)),
                       'qty_violations': len(qty_viol),
+                      'generic_po_jobs': len(generic_po),
+                      'generic_po_value': round(sum(x['v'] for v in generic_po.values() for x in v), 2),
+                      'stids': len({k: v for k, v in jmap.items() if v.get('stid')}),
+                      'fleet': (None if not fleet else {
+                          'snapshot': fleet['cur_date'], 'prior': fleet['prev_date'], 'span': fleet['span'],
+                          'active': fleet['tot']['n'], 'inactive': fleet['tot']['inactive'],
+                          'retired': fleet['tot']['retired'], 'value': fleet['tot']['val'],
+                          'par': fleet['tot']['par'], 'delta': fleet['tot']['dv'],
+                          'anomalies': fleet['tot']['anom'],
+                          'roster': [len(fleet['added']), len(fleet['removed']), len(fleet['reassigned'])]}),
                       'buckets': {k: (v['n'], v['v']) for k, v in buckets.items()},
                       'branch': {b['cls']: (b['req'], b['inv'], b['poj'], b['pos']) for b in branch},
                       'warnings': warnings}, indent=1))
