@@ -457,7 +457,7 @@ def main():
     if not movement and not os.path.exists(a.history or ''): sys.exit('FATAL: no movement export and no history')
 
     # ---------- movement ledger (dedupe by (type,doc,date,loc); tax-stripped; Bills dropped) ----------
-    seen, ledger = set(), []
+    seen, ledger, bills = set(), [], []
     jobstat = {}          # v4: job_number -> live ServiceTitan Job Status, straight off the movement export.
                           # 2,407 jobs / 90 days vs 490 in the MTD Job Costing file. This is THE fix for the
                           # false "open — job not completed" labels (job 550193 reads Completed here).
@@ -469,7 +469,16 @@ def main():
             tt = g(r, 'Transaction Type')
             jn_s, js_s = g(r, 'Job Number'), g(r, 'Job Status')
             if jn_s and js_s: jobstat[jn_s] = js_s      # captured BEFORE the Bill skip — Bills carry status too
-            if not tt or tt == 'Bill': continue
+            if tt == 'Bill':
+                # v5.5 Leakage L3 (map §12L): Bills stay OUT of the ledger (accounting mirror of
+                # Receipts, §3) — captured here for the bill tripwires ONLY. Doc grammar is locked:
+                # PO '<base>' · Receipt '<base>-R<n>' · Bill '<base>-B<n>'.
+                _brv = r[ix['Date Received']] if 'Date Received' in ix and ix['Date Received'] < len(r) else None
+                bills.append({'doc': g(r, 'Transaction Number'), 'job': jn_s,
+                              'd': _brv.strftime('%Y-%m-%d') if hasattr(_brv, 'strftime') else sv(_brv)[:10],
+                              'v': round(fv(r[ix['Total']]) / (1 + TAX), 2)})
+                continue
+            if not tt: continue
             # PHYSICAL-DATE RULE (2026-08-13). 'Date' / 'Date Created' is when a human keyed the
             # transaction, not when material moved: on the 08-11 export every row carries Date
             # Created = 08-11 while Date Received splits 08-11/08-12, Date Approved reaches back to
@@ -757,9 +766,20 @@ def main():
         for s in skus:
             r = cls_roll.setdefault(s['cls'], {'q0': 0, 'q1': 0, 'dq': 0, 'dv': 0.0})
             r['q0'] += s['q0']; r['q1'] += s['q1']; r['dq'] += s['dq']; r['dv'] = round(r['dv'] + s['dv'], 2)
+        # RECEIPT-DATE RULE (v5.5, map §12L): inbound units are dated by the ServiceTitan RECEIPT
+        # ('Date Received' of the '<PO base>-R<n>' row), never by purchase_order_date — a PO dated a
+        # week before delivery would land outside a daily window and make receipt day read as phantom
+        # gains (proof: Certiflow PO 646571076, PO-dated 08-06, received 08-13, 42 units). A PO with
+        # no receipt row has not arrived and contributes nothing. Multi-receipt POs: earliest receipt.
+        rec_d = {}
+        for r in ledger:
+            if r['t'] != 'Receipt' or not r.get('doc'): continue
+            _b = re.sub(r'-R\d+$', '', r['doc'])
+            if _b and r.get('d') and (_b not in rec_d or r['d'] < rec_d[_b]): rec_d[_b] = r['d']
         inb, direct = collections.defaultdict(float), collections.defaultdict(float)
         for e in eq_po:
-            if not inwin(e['d']): continue
+            rd = rec_d.get(e.get('po', ''))
+            if rd is None or not inwin(rd): continue
             (inb if e['dest'] == 'Stock replenishment' else direct)[e['cls']] += e['q']
         for cls, r in cls_roll.items():
             so = r['q0'] + inb[cls] - r['q1']
@@ -972,6 +992,91 @@ def main():
     _ORD = {'over': 0, 'canceled': 1, 'notask': 2, 'short': 3, 'stock': 4, 'ok': 5}
     jobvar.sort(key=lambda x: (_ORD.get(x['flag'], 9), x['anchor'] or '', x['job']))
 
+    # ---------- LEAKAGE tab (v5.5, map §12L) ----------
+    OB = 'Open Box Warehouse HVAC'
+    _wv = lambda sn, loc: round(sum(i['v'] for i in (sn or {}).get(loc, {}).values()), 2)
+    sd = None
+    if snap1:
+        ob_items = []
+        if snap0:
+            for c in set(snap0.get(OB, {})) | set(snap1.get(OB, {})):
+                i0, i1 = snap0.get(OB, {}).get(c), snap1.get(OB, {}).get(c)
+                dq = (i1['q'] if i1 else 0) - (i0['q'] if i0 else 0)
+                dv = (i1['v'] if i1 else 0) - (i0['v'] if i0 else 0)
+                if abs(dq) < 0.005 and abs(dv) < 0.005: continue
+                ref = i1 or i0
+                ob_items.append({'name': ref['name'], 'code': c, 'dq': round(dq, 1), 'dv': round(dv, 2),
+                                 'q1': round(i1['q'], 1) if i1 else 0, 'v1': round(i1['v'], 2) if i1 else 0})
+        _cur = snap1.get(OB, {})
+        sd = {'d0': d0.isoformat() if (snap0 and d0) else None, 'd1': d1.isoformat() if d1 else None,
+              'open': _wv(snap0, OB) if snap0 else None, 'close': _wv(snap1, OB),
+              'units': round(sum(i['q'] for i in _cur.values()), 1),
+              'nitems': sum(1 for i in _cur.values() if abs(i['q']) > 0.005),
+              'items': sorted(ob_items, key=lambda x: -abs(x['dv']))}
+
+    # L2 — trucks over the live ServiceTitan template (>110%, Stephen 2026-08-14). INS-H is grouped
+    # as stale-template (§12L); untemplated actives listed as hygiene — a % rule cannot see them.
+    trucks_over, untmpl = [], []
+    if fleet and snap1:
+        for t in fleet['trucks']:
+            _tgt, _val = t.get('tgt') or 0.0, t.get('val') or 0.0
+            if _tgt > 0 and _val > 1.10 * _tgt:
+                _items = []
+                for c, i in (snap1.get(t['loc'], {}) or {}).items():
+                    _ov = (i['q'] - (i['mx'] or 0)) * (i['uc'] or 0)
+                    if i['q'] > (i['mx'] or 0) and _ov > 0.005:
+                        _items.append({'name': i['name'], 'q': round(i['q'], 1),
+                                       'mx': round(i['mx'] or 0, 1), 'ov': round(_ov, 2)})
+                _items.sort(key=lambda x: -x['ov'])
+                trucks_over.append({'loc': t['loc'], 'veh': t.get('veh', ''), 'drv': t.get('driver') or '',
+                                    'code': t.get('code', ''), 'tmpl': t.get('tmpl', ''),
+                                    'val': round(_val, 2), 'tgt': round(_tgt, 2),
+                                    'over': round(_val - _tgt, 2), 'pct': round(100.0 * _val / _tgt, 1),
+                                    'stale': t.get('code') == 'INS-H', 'items': _items[:8]})
+            elif _tgt <= 0 and _val > 0.005:
+                untmpl.append({'loc': t['loc'], 'veh': t.get('veh', ''), 'drv': t.get('driver') or '',
+                               'code': t.get('code', ''), 'val': round(_val, 2)})
+        trucks_over.sort(key=lambda x: -x['over'])
+        untmpl.sort(key=lambda x: -x['val'])
+
+    # L3 bill tripwires — verified dormant 2026-08-14 (0 orphans / 0 mismatches on 5,873 bills).
+    po_doc, rec_bases = {}, set()
+    for r in ledger:
+        if r['t'] == 'Purchase Order' and r.get('doc'): po_doc[r['doc']] = r
+        elif r['t'] == 'Receipt' and r.get('doc'): rec_bases.add(re.sub(r'-R\d+$', '', r['doc']))
+    orph, mism, seen_b = [], [], set()
+    for bl in bills:
+        if not bl.get('doc') or bl['doc'] in seen_b: continue
+        seen_b.add(bl['doc'])
+        _base = re.sub(r'-B\d+$', '', bl['doc'])
+        _po = po_doc.get(_base)
+        if _po is None and _base not in rec_bases:
+            orph.append(bl)
+        elif _po is not None and bool(_po.get('job')) != bool(bl.get('job')):
+            mism.append({'doc': bl['doc'], 'pojob': _po.get('job', ''), 'billjob': bl.get('job', ''),
+                         'd': bl.get('d', '')})
+    bills_flags = {'n': len(seen_b), 'orphans': orph[:50], 'mismatch': mism[:50]}
+
+    # L4 — Small Tools SKU lines (third pinned Genie pull, §7a). Vendor comes from the matching
+    # ledger PO row — the SKU's primary vendor is just the pricebook default.
+    tools = None
+    stj = os.path.join(a.input, 'small_tools.json')
+    if os.path.exists(stj):
+        sp = json.load(open(stj))
+        si = {c: i for i, c in enumerate(sp['cols'])}
+        tools = []
+        for r in sp['rows']:
+            _pon = str(r[si['purchase_order_number']] or '')
+            tools.append({'d': str(r[si['purchase_order_date']] or '')[:10], 'po': _pon,
+                          'q': fv(r[si['quantity']]), 'v': round(fv(r[si['total']]), 2),
+                          'job': str(r[si['job_number']] or ''),
+                          'vendor': (po_doc.get(_pon, {}).get('vendor') or '')[:30]})
+    else:
+        warnings.append('small_tools.json missing — Leakage L4 runs on the ServiceTitan PO-type channel alone.')
+
+    leak = {'sd': sd, 'trucks': {'over': trucks_over, 'untmpl': untmpl, 'thresh': 110},
+            'bills': bills_flags, 'tools': tools}
+
     notes = {}
     if a.notes and os.path.exists(a.notes):
         try: notes = json.load(open(a.notes))
@@ -986,7 +1091,7 @@ def main():
                       'instDay': inst_by_day, 'instTot': dict(inst_tot), 'tie': tie,
                       'installs': sorted(installs, key=lambda x: x['d'])},
             'bk': buckets, 'branch': branch, 'jobvar': jobvar, 'tasks': task_rows, 'qtyViol': qty_viol,
-            'invEq': inv_eq, 'jobstat_n': len(jobstat), 'fleet': fleet,
+            'invEq': inv_eq, 'jobstat_n': len(jobstat), 'fleet': fleet, 'leak': leak,
             'stids': {k: v.get('stid', '') for k, v in jmap.items() if v.get('stid')},
             'stBase': 'https://goettl_lasvegas.eh.go.servicetitan.com/#/Job/Index/'}
     json.dump(data, open('data.json', 'w'), default=str)
@@ -999,6 +1104,13 @@ def main():
                       'bom_jobs': len(bom_job), 'jobvar_rows': len(jobvar),
                       'flags': dict(collections.Counter(j['flag'] for j in jobvar)),
                       'qty_violations': len(qty_viol),
+                      'leak': {'sd_items': len((sd or {}).get('items', [])),
+                               'sd_close': (sd or {}).get('close'),
+                               'trucks_over': len(trucks_over), 'untemplated': len(untmpl),
+                               'bills_checked': bills_flags['n'],
+                               'bill_orphans': len(bills_flags['orphans']),
+                               'bill_job_mismatch': len(bills_flags['mismatch']),
+                               'tool_lines': (len(tools) if tools is not None else None)},
                       'generic_po_jobs': len(generic_po),
                       'generic_po_value': round(sum(x['v'] for v in generic_po.values() for x in v), 2),
                       'stids': len({k: v for k, v in jmap.items() if v.get('stid')}),
