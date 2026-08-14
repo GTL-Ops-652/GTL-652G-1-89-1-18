@@ -933,6 +933,36 @@ def main():
     for e in inv_eq:
         if e.get('job'): inv_job[e['job']][e['cls']] += e.get('q', 1) or 1
     CLS = ['Condenser / HP', 'Coil', 'Furnace', 'Air Handler', 'Package Unit', 'Water Heater', 'Water Purity']
+
+    # UNIT-RESCUE (v5.6, map §7a fourth pull — job 554442 lesson). Real units ride PO lines whose
+    # pricebook SKU is NOT typed Equipment (a $1,104 water heater keyed on a Material-typed
+    # "2 GAL EXP TNK" SKU), so the type-filtered po_items pull can't see them and the job reads
+    # 'stock'/'short' falsely. Rescue lines are ONE-DIRECTIONAL evidence: they can SATISFY an unmet
+    # requirement (clearing a false flag) but can NEVER create an over-pull or a notask — applied
+    # per job/class only up to max(0, required − equipment-typed PO units). Engine-side gate:
+    # eclass(name+description) must resolve to a tracked class, total >= $150, and the line must not
+    # match the accessory skip list (motors, curbs, condensate pumps, pans, stands, cleaners...).
+    RESCUE_SKIP = re.compile(r'MOTOR|CURB|CONDENSATE|CLEANER|\bPAN\b|STAND|BRACKET|FILTER|DRIER'
+                             r'|CAPACITOR|CONTACTOR|THERMOSTAT|BREAKER|DISCONNECT|WHIP|\bPAD\b')
+    rescue_job = collections.defaultdict(list)
+    rjp = os.path.join(a.input, 'po_rescue.json')
+    if os.path.exists(rjp):
+        rp = json.load(open(rjp))
+        ri = {c: i for i, c in enumerate(rp['cols'])}
+        for r in rp['rows']:
+            nm = str(r[ri['item_name']] or ''); ds = str(r[ri['item_description']] or '')
+            job = str(r[ri['job_number']] or '')
+            if not job or fv(r[ri['total']]) < 150: continue
+            if RESCUE_SKIP.search((nm + ' ' + ds).upper()): continue
+            c = eclass(nm, ds)
+            if c not in CLS: continue
+            rescue_job[job].append({'cls': c, 'q': fv(r[ri['quantity']]) or 1.0,
+                                    'v': round(fv(r[ri['total']]), 2), 'name': nm[:46],
+                                    'po': str(r[ri['purchase_order_number']] or ''),
+                                    'd': str(r[ri['purchase_order_date']] or '')[:10],
+                                    'ty': str(r[ri['item_type']] or '')})
+    else:
+        warnings.append('po_rescue.json missing — mis-typed-SKU unit rescue off; jobs whose unit rides a non-Equipment SKU may read stock/short falsely (see job 554442).')
     branch = []
     for c in CLS:
         req = sum(b[c] for b in bom_job.values())
@@ -947,7 +977,14 @@ def main():
         for c in set(list(bom_job[job]) + list(po_job[job]) + list(inv_job[job])):
             req, pj, iv = bom_job[job][c], po_job[job][c], inv_job[job][c]
             if not (req or pj or iv): continue
+            # v5.6 unit-rescue: mis-typed-SKU lines satisfy an unmet requirement, capped at the gap
+            # so they can never push a class into over-pull.
+            resq = 0.0
+            if req > 0 and pj < req and job in rescue_job:
+                avail = sum(x['q'] for x in rescue_job[job] if x['cls'] == c)
+                resq = min(avail, req - pj)
             rows.append({'cls': c, 'req': round(req, 1), 'po': round(pj, 1), 'inv': round(iv, 1),
+                         'resq': round(resq, 1),
                          'vmove': round(pj - req, 1), 'vinv': round(iv - req, 1)})
         if not rows: continue
         # Flag precedence. 'over' is Stephen's waste case and REQUIRES a known requirement:
@@ -961,7 +998,7 @@ def main():
         # line, that line is almost certainly the unit on the wrong SKU -> 'short', actionable.
         # If it carries nothing at all, the unit came off warehouse stock, which ServiceTitan does
         # not record per job -> 'stock', the DOCUMENTED BLIND SPOT, informational not red.
-        nounit = any(r['req'] and not r['po'] and not r['inv'] for r in rows)
+        nounit = any(r['req'] and not (r['po'] + r.get('resq', 0)) and not r['inv'] for r in rows)
         # 'short' USED to mean inv < req — but Goettl invoices FLAT RATE, so a sold system carries a
         # Service task and no Item Type='Equipment' row at all. That made inv==0 the normal case and
         # fired on 233 of 776 jobs, including job 553887 whose coil was correctly PO'd and visible.
@@ -986,6 +1023,7 @@ def main():
         jobvar.append({'job': job, 'st': state, 'end': end or '', 'anchor': anchor or '',
                        'endEst': est, 'flag': flag, 'rows': rows,
                        'gen': generic_po.get(job, []),
+                       'resc': rescue_job.get(job, []),
                        'stid': (jmap.get(job, {}) or {}).get('stid', ''),
                        'jt': (jmap.get(job, {}) or {}).get('jt', ''),
                        'tech': ((jmap.get(job, {}) or {}).get('tech') or '')[:24]})
@@ -1110,7 +1148,9 @@ def main():
                                'bills_checked': bills_flags['n'],
                                'bill_orphans': len(bills_flags['orphans']),
                                'bill_job_mismatch': len(bills_flags['mismatch']),
-                               'tool_lines': (len(tools) if tools is not None else None)},
+                               'tool_lines': (len(tools) if tools is not None else None),
+                               'rescue_lines': sum(len(v) for v in rescue_job.values()),
+                               'rescue_jobs': len(rescue_job)},
                       'generic_po_jobs': len(generic_po),
                       'generic_po_value': round(sum(x['v'] for v in generic_po.values() for x in v), 2),
                       'stids': len({k: v for k, v in jmap.items() if v.get('stid')}),
