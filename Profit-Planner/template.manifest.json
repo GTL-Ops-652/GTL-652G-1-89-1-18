@@ -1,9 +1,9 @@
 {
- "engine_v": "R53",
+ "engine_v": "R54",
  "frozen": "2026-08-19",
- "plaintext_sha256": "7560522e945e12143adcdc40059e1523f293f73049320870d6cb03af8ca3d430",
- "plaintext_utf8_bytes": 334453,
- "plaintext_chars": 332420,
+ "plaintext_sha256": "35c9bb7037abd77fed7a07962aa4739b0ec619c7238a008015ffeffe6a3bd3bc",
+ "plaintext_utf8_bytes": 342565,
+ "plaintext_chars": 340650,
  "markers": 10,
  "marker_names": [
   "AGES",
@@ -160,5 +160,10 @@
  },
  "r53": {
   "summary": "Reviews name the error type — Review button (Jobs grid + job card) opens the What-was-the-error-type popup: Discounting / Training / Price / No Issue. Picking one marks the job Reviewed (same approve op, rec.cat added) and files it into that action list; three list view pills beside Reviewed and Watchlist; Recategorize via new recat op; Review Desk queue cards count the lists. Display/state-layer only — with builtAt normalized the whole June nightly output diff equals the template diff exactly: 3,902 jobs / $6,087,636 / GM 55.3% / gates 6/6 / RAW and all data markers byte-identical. Pre-R53 reviews carry no category, render a Categorize button, and can be filed later; state.json shape and STX protocol unchanged."
+ },
+ "r54": {
+  "summary": "Display-only, three surfaces. (1) GM Review Desk gains a 14-day ACTIVITY FEED (every recorded action from the shared log — reviews with the error type currently on the record, recategorizations, watch adds/removes, manual and auto re-flags, notes — jobs outside the loaded data month render a plain job number) and the PER-QUEUE JOB LISTS: Watchlist + the three action lists (Training / Price / Discounting), each a table (job link, trade, type, revenue, GM%, by/when + category pill) sorted newest-first. Grid watch/review actions repaint the desk on tab open (unchanged R45 behavior); recordReview repaints immediately. (2) Flag Bands — HVAC gains the map BUILD CARDS under the % band section: every Task-to-Purchase build as a card — preferred unit (IDEAL/SPEC) per component, acceptable subs with unit costs, package equipment cost band (incl. with-coil), materials band with the calibrated MAT flag line (hi×matMult or hi+matFloor) — grouped by star tier then system family, collapsible, with a search box over task code / name / tonnage / model (empty groups hide while searching). Renders from PP_TPM only (map not loaded → no cards, same notice as R51). (3) Instructions tab REWRITTEN around the operating loop: what the tool forecasts (margin/GP/CP + month-end prediction, non-revenue erosion as lost capacity in opportunity), what flags and why (COM-OVER, labor over plan, PURCH-CAP bubbles TON/EFF/$HI/+EQ/MAT, NEG/LOW-GM), the margin standards to research against (55% replacement / 60% repair — operational standards; the hard LOW-GM line stays 40%), the daily routine (log in daily, research each flagged job, fix errors, categorize Discounting / Training / Price / No Issue), the GM desk, forecast mechanics condensed, month-end handoff, housekeeping. NOTHING behavioral changed: parsers, computeAll, flags, state ops (approve/recat/watch/…), state.json shape, STX sync, checkReflags, buildSaveHtml machinery all untouched — the new surfaces are pure reads over ST/PP_TPM.",
+  "verify": "2026-08-19, jsdom, June 2026 exports through frozen build.js, goals=skip. A/B vs R53: gates 6/6 both, 3,902 jobs / $6,087,636 / GM 55.3% / window 06/01/26-06/30/26; ALL 10 data markers byte-identical incl. RAW; with builtAt normalized and entities DOM-canonicalized the whole 1.59 MB output diff equals the template diff EXACTLY (-14/+124 lines, line-for-line). Functional smoke 35/35 on the built output with the real TPM v3 payload spliced (381 cards render, counts/search/group-collapse verified; review→Training files the job and the feed shows it; recat→Price moves the lists; watch repaints on desk-tab open; occurrence-count proof no live popup serializes; save round-trip re-renders feed, lists and cards from embedded STATE/TPM with zero engine errors). build.js, close.js, snap.js, ages.py VERBATIM (build.js run live).",
+  "expect_first_build": "Nothing moves — no dollar, no flag. The desk simply shows more, the bands tab documents the map, and the Instructions read current."
  }
 }
