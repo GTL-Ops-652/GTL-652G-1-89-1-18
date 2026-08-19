@@ -1,9 +1,9 @@
 {
- "engine_v": "R52",
+ "engine_v": "R53",
  "frozen": "2026-08-19",
- "plaintext_sha256": "275eb204df336809819c08e21596d892ada226f7ddda29732ebf491f0ae1e2a0",
- "plaintext_utf8_bytes": 326894,
- "plaintext_chars": 324916,
+ "plaintext_sha256": "7560522e945e12143adcdc40059e1523f293f73049320870d6cb03af8ca3d430",
+ "plaintext_utf8_bytes": 334453,
+ "plaintext_chars": 332420,
  "markers": 10,
  "marker_names": [
   "AGES",
@@ -157,5 +157,8 @@
   "summary": "Furnace and air-handler tonnage parsing corrected to the real model structure (Stephen 2026-08-19, Goodman/Amana nomenclature sheets), plus the EFF AFUE-tier check. Furnaces are NOT rated in tonnage pairs: Goodman/Amana = prefix + stage (S/T, identification only) + AFUE pair (80/92/96/97) + BTU group (3 digits) + max-CFM digit (3=1200/4=1600/5=2000 CFM -> 3/4/5T; no half sizes - the furnace pairs UP to the condenser's half size, never down, which the engine's existing >=-floor downsize rule enforces once the parse is right); Lennox/Elite = trailing airflow pair after the BTU group (the leading number is the series/AFUE - ML180 is the 80% series, never 1.5T). Air handlers = nominal capacity after the alpha prefix (AMST36=3T, AHVE60=5T) or Lennox trailing zero-led group (CBK48MVT-030 = 2.5T; 48 is the series). R51 read the first tonnage-looking pair anywhere, so GR9S800603AN (80%/60k/3T) read 5T off the BTU digits and ML180UH090V48B read 1.5T - furnace downsizing was invisible. Unknown formats return null (fail-open); the text fallback also accepts '4.0 TON'. Condenser/package/coil parsing byte-unchanged from amended R51 (EL18KCV-048-230 -> 4T). NEW EFF bubble on PURCH-CAP: furnace AFUE tier (80 vs 90+, from the model) must match the sold task's tier (builds' eff field); a 90%+ furnace typically runs $800-$1,300 over the 80% version, so a tier miss is real money even inside a price band. Condenser-less builds (furnace-only/AH-only/coil-only tasks) now anchor the downsize floor on the build's own tonnage. Fur/AH classification prefix fallbacks gain GR9T/CBK/AHVE/AWUF. Bubbles are now +EQ / TON / EFF / $HI / MAT; stage (S vs T) is deliberately NOT flagged - price catches it via $HI.",
   "verify": "2026-08-19, jsdom, June 2026 exports through frozen build.js, goals=skip. 126/126 parser+eval regression battery (every furnace/AH/condenser/coil model in map v3, AFUE tiers, TON/EFF/upsize/anchor-floor scenarios, R51 condenser battery incl. EL18KCV-048-230 -> 4T). NULL-payload A/B vs amended R51: gates 6/6 both, 3,902 jobs / $6,087,636 / GM 55.3% / window 06/01/26-06/30/26; whole-output diff == template diff EXACTLY (builtAt + entity serialization normalized) - zero unintended movement. SPLICED A/B (map v3 381 builds/538 codes from SharePoint raw payload; real Genie EQPO pulls, 567 eq/rescue lines, 2,766 material-sum jobs, window 2026-05-02..2026-08-19): zero numeric diffs on all 3,902 jobs, zero flag-count deltas (193 flagged both), zero map-mode changes; 22 real June pieces receive corrected tonnage (GRVT800805CN null->5T, GR9S/GRVT960603BN 5T->3T, ML296UH070XV36BK ->3T); reason delta exactly ONE: job 545261 (ML296 96%-AFUE furnace on an 80% build, already $HI $493-over) additionally names EFF. Save round-trip: saved copy carries TPM+EQPO and recomputes identical flags/GM/reasons on all jobs, zero engine errors. build.js, close.js, snap.js, ages.py VERBATIM (build.js run live this session).",
   "expect_first_build": "Flags-only, and in practice nearly invisible on current data: June replay moves exactly one reason bubble (EFF on 545261). The real payoff is forward-looking - wrong-size furnaces/AHs and AFUE-tier swaps were previously unflaggable and now read TON/EFF. No dollar figure can move: if revenue/GM/purchases change on identical inputs, that is NOT R52 - stop and flag."
+ },
+ "r53": {
+  "summary": "Reviews name the error type — Review button (Jobs grid + job card) opens the What-was-the-error-type popup: Discounting / Training / Price / No Issue. Picking one marks the job Reviewed (same approve op, rec.cat added) and files it into that action list; three list view pills beside Reviewed and Watchlist; Recategorize via new recat op; Review Desk queue cards count the lists. Display/state-layer only — with builtAt normalized the whole June nightly output diff equals the template diff exactly: 3,902 jobs / $6,087,636 / GM 55.3% / gates 6/6 / RAW and all data markers byte-identical. Pre-R53 reviews carry no category, render a Categorize button, and can be filed later; state.json shape and STX protocol unchanged."
  }
 }
