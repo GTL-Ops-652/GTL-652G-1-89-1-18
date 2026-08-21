@@ -1115,6 +1115,24 @@ def main():
     leak = {'sd': sd, 'trucks': {'over': trucks_over, 'untmpl': untmpl, 'thresh': 110},
             'bills': bills_flags, 'tools': tools}
 
+    # ---------- month closes (v6) — prior-month CLOSING balances, saved not recomputed ----------
+    # The Month End tab compares this month's running position against the two prior closes. Those
+    # are read from month_closes.json and NEVER recalculated: once a month is closed and handed to
+    # accounting, its number is frozen — recomputing it from a later snapshot would silently restate
+    # a period accounting has already booked. Seeded 2026-08-19 from the 06/30 and 07/31 daily
+    # aggregate snapshots through this engine's own loadsnap + build_fleet, so the prior columns and
+    # the live column are produced by identical math. Each later month is appended by the page's
+    # "Close the month" button.
+    mclose = {}
+    mcj = os.path.join(a.input, 'month_closes.json')
+    if os.path.exists(mcj):
+        try:
+            mclose = json.load(open(mcj))
+        except Exception:
+            warnings.append('month_closes.json unreadable — Month End prior-month columns omitted.')
+    else:
+        warnings.append('month_closes.json missing — Month End tab runs current-month-only, no prior-month comparison.')
+
     notes = {}
     if a.notes and os.path.exists(a.notes):
         try: notes = json.load(open(a.notes))
@@ -1128,6 +1146,7 @@ def main():
             'equip': {'skus': sorted(skus, key=lambda x: -abs(x['dv'])), 'cls': cls_roll, 'po': eq_po,
                       'instDay': inst_by_day, 'instTot': dict(inst_tot), 'tie': tie,
                       'installs': sorted(installs, key=lambda x: x['d'])},
+            'mclose': mclose,
             'bk': buckets, 'branch': branch, 'jobvar': jobvar, 'tasks': task_rows, 'qtyViol': qty_viol,
             'invEq': inv_eq, 'jobstat_n': len(jobstat), 'fleet': fleet, 'leak': leak,
             'stids': {k: v.get('stid', '') for k, v in jmap.items() if v.get('stid')},
