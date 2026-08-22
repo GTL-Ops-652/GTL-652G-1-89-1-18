@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Goettl LV — Warehouse & Fleet Movement Daily — data build (engine v5, 2026-08-12).
+Goettl LV — Warehouse & Fleet Movement Daily — data build (engine v7, 2026-08-22).
 
 Routes input .xlsx files by HEADER SIGNATURE (filenames don't matter):
   * Movement  — header contains 'Transaction Type'   (Inventory - Profit Planner; MTD and/or single-day, any mix)
@@ -829,6 +829,70 @@ def main():
         if bad_removals:
             warnings.append('Fleet vehicles left the roster still carrying value: ' + ', '.join(bad_removals[:6]))
 
+    # ---------- fleet template composition (v7, map §14.8) ----------
+    # The live ServiceTitan min/max template per accounting template, taken as the MODE across that
+    # template's ACTIVE trucks (items with Max Quantity > 0 only). This is what powers the Month End
+    # 4-cause fleet variance drill: (1) vendor cost change on a template item, (2) item added to the
+    # template, (3) item removed, (4) truck added/removed. Saved into each month close by the page's
+    # "Close the month" button so closed months can be diffed item-by-item, never recomputed.
+    if fleet and snap1:
+        _by_t = collections.defaultdict(lambda: collections.defaultdict(list))   # tmpl -> code -> [(mx,uc,name)]
+        _tn = collections.Counter()
+        for t in fleet['trucks']:                                # ACTIVE trucks only
+            # Bucket by the RAW location-string template (TMAP on the code), NOT the roster-overlaid
+            # t['tmpl']: the min/max rows on a truck are what ServiceTitan stamped for the location's
+            # own template, so a stale roster retag must not leak one truck's items into another
+            # template's composition (measured 2026-08-22: 59 phantom 'added' items on HVAC Service).
+            _rawt = TMAP.get(t.get('code', ''), None)
+            if not _rawt: continue
+            _tn[_rawt] += 1
+            for c, i in (snap1.get(t['loc'], {}) or {}).items():
+                if (i.get('mx') or 0) > 0:
+                    _by_t[_rawt][c].append((i['mx'], i.get('uc') or 0.0, i['name']))
+        tcomp = {}
+        for _tm, _items in _by_t.items():
+            comp, drift = {}, 0
+            for c, obs in _items.items():
+                mxm = collections.Counter(x[0] for x in obs).most_common(1)[0][0]
+                ucm = collections.Counter(x[1] for x in obs).most_common(1)[0][0]
+                if any(x[0] != mxm or abs(x[1] - ucm) > 0.005 for x in obs): drift += 1
+                comp[c] = {'name': obs[0][2][:44], 'mx': round(mxm, 1), 'uc': round(ucm, 2),
+                           'on': len(obs)}                       # trucks carrying the item row
+            tcomp[_tm] = {'n': _tn[_tm], 'items': comp, 'drift_items': drift,
+                          'tgt_each': round(sum(v['mx'] * v['uc'] for v in comp.values()), 2)}
+        fleet['tcomp'] = tcomp
+
+    # ---------- fleet roster EVENTS — raw snapshot-pair diff (v7, map §14.8) ----------
+    # A second, independent channel from the roster-gated added/removed lists above: both sides are
+    # RAW parsed snapshot locations (apples to apples, vehicle-number keyed), so it is immune to the
+    # stale-roster overlay problem and safe to accumulate nightly. Powers vehicle-level naming in the
+    # Month End fleet variance drill. Fleet-tab roster reporting is UNCHANGED.
+    fev = None
+    if snap0 and snap1 and fleet:
+        _c, _p = fleet_from_snap(snap1), fleet_from_snap(snap0)
+        _cb = {v['veh']: v for v in _c.values() if v['veh']}
+        _pb = {v['veh']: v for v in _p.values() if v['veh']}
+        _cn = {v['loc']: v for v in _c.values() if not v['veh']}
+        _pn = {v['loc']: v for v in _p.values() if not v['veh']}
+        fev = {'a': [], 'r': [], 'x': []}
+        for k, v in _cb.items():
+            p = _pb.get(k)
+            if p is None:
+                fev['a'].append({'veh': k, 'tmpl': v['tmpl'], 'driver': v['driver'], 'val': round(v['val'], 2)})
+            elif p['driver'] != v['driver'] or p['tmpl'] != v['tmpl']:
+                fev['x'].append({'veh': k, 'tmpl': v['tmpl'], 'tmpl_from': p['tmpl'],
+                                 'from': p['driver'] or '(unassigned)', 'to': v['driver'] or '(unassigned)'})
+        for k, p in _pb.items():
+            if k not in _cb:
+                fev['r'].append({'veh': k, 'tmpl': p['tmpl'], 'driver': p['driver'], 'val': round(p['val'], 2)})
+        for k, v in _cn.items():
+            if k not in _pn:
+                fev['a'].append({'veh': k[:40], 'tmpl': v['tmpl'], 'driver': v['driver'], 'val': round(v['val'], 2)})
+        for k, p in _pn.items():
+            if k not in _cn:
+                fev['r'].append({'veh': k[:40], 'tmpl': p['tmpl'], 'driver': p['driver'], 'val': round(p['val'], 2)})
+        fleet['events'] = {d1.isoformat(): fev}
+
     installs = [{'d': j['end'], 'job': jn, 'jt': j['jt'], 'cls': install_class(j['jt']), 'tech': j['tech'][:24]}
                 for jn, j in jmap.items() if install_class(j['jt']) and j['end']]
 
@@ -841,9 +905,16 @@ def main():
             for d, rs in byd.items(): store[d] = rs           # replace whole day (self-heal)
         upsert(H['ledger'], ledger); upsert(H['sold'], sold)
         upsert(H['installs'], installs); upsert(H['po'], eq_po)
+        # v7: accumulate the raw snapshot-pair fleet events by snapshot date, same 92-day retention.
+        if fev is not None and d1:
+            H.setdefault('fleet_events', {})[d1.isoformat()] = fev
         cutoff = (datetime.date.fromisoformat(max(list(H['ledger']) + ['1970-01-01'])) - datetime.timedelta(days=92)).isoformat()
         for k in ('ledger', 'sold', 'installs', 'po'):
             H[k] = {d: v for d, v in H[k].items() if d >= cutoff}
+        if 'fleet_events' in H:
+            H['fleet_events'] = {d: v for d, v in H['fleet_events'].items() if d >= cutoff}
+            if fleet is not None:
+                fleet['events'] = H['fleet_events']
         json.dump(H, open(a.history, 'w'), default=str)
         ledger = [r for d in sorted(H['ledger']) for r in H['ledger'][d]]
         sold = [r for d in sorted(H['sold']) for r in H['sold'][d]]
@@ -1179,6 +1250,7 @@ def main():
                           'retired': fleet['tot']['retired'], 'value': fleet['tot']['val'],
                           'par': fleet['tot']['par'], 'delta': fleet['tot']['dv'],
                           'anomalies': fleet['tot']['anom'],
+                          'tcomp_templates': len(fleet.get('tcomp', {})),
                           'roster': [len(fleet['added']), len(fleet['removed']), len(fleet['reassigned'])]}),
                       'buckets': {k: (v['n'], v['v']) for k, v in buckets.items()},
                       'branch': {b['cls']: (b['req'], b['inv'], b['poj'], b['pos']) for b in branch},
