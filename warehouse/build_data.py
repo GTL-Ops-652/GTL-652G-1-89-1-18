@@ -59,7 +59,7 @@ def eclass(name, desc=''):
     if t.strip() == 'EQUIPMENT': return 'Unspecified'
     if re.search(r'\b905\b.*\bAG\b|AIR GAP FAUCET', t): return 'WP Faucet (AG)'          # excluded from units tie per Stephen 2026-08-04
     if re.search(r'MINI ?SPLIT|DUCTLESS|^ASUM|\bASUM', t): return 'Mini-Split'
-    if re.search(r'PACKAGE|PKG ?GAS|PKGGAS|[HM][- ]?PKGD|\bPKG\b|^GPG|\bGPG', t): return 'Package Unit'
+    if re.search(r'PACKAGE|PKG ?GAS|PKGGAS|[HM][- ]?PKGD|\bPKG\b|^GPG|\bGPG|^GPHM|\bGPHM', t): return 'Package Unit'   # GPHM added v8 (Goodman pkg HP, job 546888)
     if re.search(r'AIR CONDITIONER|CONDENSER|HEAT PUMP|\bCOND/|\bCOND\b', t): return 'Condenser / HP'
     if re.search(r'^GLXS|^GLXT|^GLZS|^GSX|^GSZ|^ASX|^GZV|\bGLXS|\bGLXT|\bGLZS|\bGSX\w|\bASXC|\bGZV', t): return 'Condenser / HP'
     if re.search(r'FURNACE|GAS FURN|^GR9|^GRVT|^GM9|^GMVC|^ML180|^ML193|^ML296|^SL280|^EL296|\bGR9|\bGRVT|\bGMVC', t): return 'Furnace'
@@ -81,9 +81,65 @@ BOM_SKIP = re.compile(r'REBUILD|FAN MOTOR|CONTROL BOARD|COMPRESSOR|DE-ICE|EASY S
                       r'|CLEAN|SEAL|DUCT|MAINT|TUNE|INSPECT|PERMIT|CRANE|DISPOS|CARTRIDGE'
                       r'|FILTER AND MEMBRANE|ELECTRICAL DISCONNECT|NIPPLE|HEX |\bIAQ\b|BIOCIDE|AEROSEAL')
 
-def bom(name):
+# ---------- WARRANTY TASKS (v8, approved by Stephen 2026-08-24) ----------
+# Families: POWARR-* (parts-only warranty, customer pays labor) / PLWARR-* (parts & labor, $0
+# lines) / named 'Warranty ...' tasks. Pricebook CODES are Wp-*/Wpl-* (title case) — NOT the same
+# as WP-* (all caps), which is Water Purity — so matching keys on NAMES only. Three tiers:
+#   1 HARD    Warranty Water Heater Replacement REQUIRES the unit like a sale (5/5 jobs T90 had
+#             the Rheem PO'd). Checked BEFORE BOM_SKIP because the skip list kills WARR.
+#   2 JUSTIFY part-named hardware tasks JUSTIFY moved units of the named class — the OEM often
+#             ships a WHOLE unit for a failed part (verified: POWARR-Cond Coil / -Compressor jobs
+#             received full condensers; PLWARR-Motor Blower received a full furnace). Absence of
+#             a unit is NOT a flag: warranty parts routinely ride Material-typed SKUs or ship
+#             free from the OEM, so a hard requirement would flood short/stock with false flags.
+#   3 AMBER   any other warranty task (Warranty Hour, diagnostics, parts) + tracked units moved
+#             beyond tier 1+2 -> amber 'warranty' flag, never red 'notask'.
+# WARR stays in BOM_SKIP on purpose: a warranty task must never hard-map through a generic sale
+# pattern (a POWARR-Air Handler would otherwise REQUIRE a unit the OEM may ship for free).
+WARR_HARD = re.compile(r'WARRANTY WATER HEATER REPLACEMENT')
+WARR_ANY = re.compile(r'POWARR|PLWARR|WARRANT')
+
+def warr_justify(name):
+    """-> list of {'cls': [classes], 'q': n} allowances per task occurrence, or None (parts task)."""
     t = (name or '').upper()
-    if not t or BOM_SKIP.search(t): return None
+    if not WARR_ANY.search(t): return None
+    if re.search(r'EVAP\.? ?COIL', t):                    return [{'cls': ['Coil'], 'q': 1}]
+    if re.search(r'COND\.? ?COIL', t):                    return [{'cls': ['Condenser / HP'], 'q': 1}]
+    if re.search(r'COMPRESSOR', t):                       return [{'cls': ['Condenser / HP'], 'q': 1}]
+    if re.search(r'\bCONDENSER\b', t) and not re.search(r'MOTOR|\bMTR\b|FAN', t): return [{'cls': ['Condenser / HP'], 'q': 1}]
+    if re.search(r'AIR ?HANDLER', t):                     return [{'cls': ['Air Handler'], 'q': 1}]
+    if re.search(r'MOTOR BLOWER|BLOWER MOTOR|ECM OR VARIABLE BLOWER', t): return [{'cls': ['Furnace', 'Air Handler'], 'q': 1}]
+    if re.search(r'FULL SPLIT', t):                       return [{'cls': ['Condenser / HP'], 'q': 1}, {'cls': ['Coil'], 'q': 1},
+                                                                  {'cls': ['Furnace'], 'q': 1}, {'cls': ['Air Handler'], 'q': 1}]
+    if re.search(r'\bFURNACE\b', t):                     return [{'cls': ['Furnace'], 'q': 1}]
+    if re.search(r'PACKAGE|\bPKG\b', t):                 return [{'cls': ['Package Unit'], 'q': 1}]
+    if re.search(r'WATER HEATER|TANKLESS', t):            return [{'cls': ['Water Heater'], 'q': 1}]
+    return None
+
+# v8: star-family pricebook CODE grammar — belt-and-suspenders when the NAME misses (a pricebook
+# rename shipping code-as-name must not blind the BOM). Verified live codes: 2STARPG48-11.0 =
+# '2-Star 4 Ton Package Gas System' (job 555701), 1STARACC36-8.0, 1STARCOIL48C-5.0, 1STARWH4050G-3.0.
+# Non-equipment star codes (DC, GDS, IAQPACK, KFR, LFR, SV, TR, DUCT) deliberately match nothing.
+BOM_CODE = [(re.compile(r'^\dSTARSG\d'), {'Condenser / HP': 1, 'Coil': 1, 'Furnace': 1}),
+            (re.compile(r'^\dSTARSHP\d'), {'Condenser / HP': 1, 'Air Handler': 1}),
+            (re.compile(r'^\dSTAR(PG|PHP)\d'), {'Package Unit': 1}),
+            (re.compile(r'^\dSTAR(ACC|HPC)\d'), {'Condenser / HP': 1}),
+            (re.compile(r'^\dSTARCOIL\d'), {'Coil': 1}),
+            (re.compile(r'^\dSTAR(MHFUR|FUR)\d'), {'Furnace': 1}),
+            (re.compile(r'^\dSTAR(CM|WM)H?AH\d'), {'Air Handler': 1}),
+            (re.compile(r'^\dSTARWH\d'), {'Water Heater': 1})]
+
+def bom_code(code):
+    c = (code or '').upper().strip()
+    for rx, b in BOM_CODE:
+        if rx.match(c): return dict(b)
+    return None
+
+def bom(name, code=''):
+    t = (name or '').upper()
+    if not t: return None
+    if WARR_HARD.search(t): return {'Water Heater': 1}    # v8 tier-1, before the WARR skip
+    if BOM_SKIP.search(t): return None
     if re.search(r'SPLIT GAS', t):                                   return {'Condenser / HP': 1, 'Coil': 1, 'Furnace': 1}
     if re.search(r'SPLIT HEAT ?PUMP', t):                            return {'Condenser / HP': 1, 'Air Handler': 1}
     if re.search(r'PACKAGE (GAS|HEAT ?PUMP)', t):                    return {'Package Unit': 1}
@@ -94,7 +150,7 @@ def bom(name):
     if re.search(r'WATER HEATER|TANKLESS SYSTEM SWAP', t):           return {'Water Heater': 1}
     if re.search(r'REFINER AND WATER SOFTENER|REFINER, WATER SOFTENER', t): return {'Water Purity': 2}
     if re.search(r'SOFTENING SYSTEM|\bREFINER\b|SUPREME|REVERSE OSMOSIS', t): return {'Water Purity': 1}
-    return None
+    return bom_code(code)                                 # v8: name wins, skip kills, code rescues
 
 def install_class(jt):
     if re.match(r'^H-Install (Split|Package)', jt): return 'hvac_full'
@@ -540,6 +596,9 @@ def main():
     # Content-dedupe: 'Real Discounts' ships the same payload as 'Jobs trailing 90 days'.
     inv_eq, bom_job, task_rows, seen_inv = [], collections.defaultdict(collections.Counter), [], set()
     qty_viol = []
+    just_job = collections.defaultdict(list)    # v8: warranty JUSTIFY allowances per job
+    jobwarr = collections.defaultdict(list)     # v8: warranty task names per job (tier-3 amber)
+    st_svc_jobs = set()                         # v8: jobs the ST feed delivered ANY Service row for
     for p in taskfiles:
         hdr, it, _ = sheet(p)
         ix = {h: i for i, h in enumerate(hdr)}
@@ -557,7 +616,8 @@ def main():
             d = r[ix['Invoice Date']] if 'Invoice Date' in ix and ix['Invoice Date'] < len(r) else None
             iso = d.strftime('%Y-%m-%d') if hasattr(d, 'strftime') else sv(d)[:10]
             if ity == 'Service':
-                b = bom(nm)
+                if jn: st_svc_jobs.add(jn)
+                b = bom(nm, gi(r, 'Item Code'))
                 if b:
                     # Guard: Item Quantity on service tasks is not always a whole count — the feed
                     # carries 0.27 / 0.5 / 1.5 on labor lines and NEGATIVE values (e.g. 'Need
@@ -583,6 +643,16 @@ def main():
                     task_rows.append({'d': iso, 'job': jn, 'task': nm[:70], 'q': q,
                                       'jt': gi(r, 'Job Type'), 'bom': b,
                                       'tech': gi(r, 'Assigned Technicians')[:24]})
+                elif jn:
+                    # v8 warranty tiers 2-3. Sign-aware qty so a reversal pair nets to zero.
+                    jw = warr_justify(nm)
+                    if jw is not None:
+                        qn = (1 if q >= 0 else -1) * int(abs(q) + 0.5) if q else 1
+                        for al in jw:
+                            just_job[jn].append({'cls': al['cls'], 'q': al['q'] * qn, 'task': nm[:70]})
+                        jobwarr[jn].append(nm[:70])
+                    elif WARR_ANY.search(nm.upper()):
+                        jobwarr[jn].append(nm[:70])
             elif ity == 'Equipment':
                 c = eclass(nm)
                 if c == 'WP Faucet (AG)': continue        # excluded per Stephen
@@ -1034,6 +1104,44 @@ def main():
                                     'ty': str(r[ri['item_type']] or '')})
     else:
         warnings.append('po_rescue.json missing — mis-typed-SKU unit rescue off; jobs whose unit rides a non-Equipment SKU may read stock/short falsely (see job 554442).')
+
+    # ---------- optional Databricks invoice TASKS — the in-flight gap-fill (v8, map §7a fifth pull) ----------
+    # The ST trailing-90 invoice export is invoice-DATE scoped, so a job still In Progress with an
+    # undated invoice contributes NO Service rows — while its equipment PO is already visible. That
+    # gap read job 555701 ('2-Star 4 Ton Package Gas System', code 2STARPG48, package unit PO'd) as
+    # red 'no task requiring equipment' (caught by Stephen 2026-08-24). fact_invoice_line carries the
+    # line the moment it exists, invoice_date NULL. GAP-FILL GUARDS: only jobs the ST feed delivered
+    # NO Service rows for, and only jobs that already show movement evidence (a PO or an invoiced
+    # unit) — the fill can resolve a variance question, never invent one for a job with no movement.
+    taskfill_jobs = set()
+    itj = os.path.join(a.input, 'invoice_tasks.json')
+    if os.path.exists(itj):
+        tp = json.load(open(itj))
+        ti = {c: i for i, c in enumerate(tp['cols'])}
+        for r in tp['rows']:
+            jn = str(r[ti['job_number']] or '')
+            if not jn or jn in st_svc_jobs: continue
+            if not (po_job.get(jn) or inv_job.get(jn)): continue   # movement evidence required
+            nm = str(r[ti['item_name']] or ''); cd = str(r[ti['item_code']] or '')
+            q = fv(r[ti['quantity']]) or 1.0
+            qn = (1 if q >= 0 else -1) * int(abs(q) + 0.5) if q else 1
+            b = bom(nm, cd)
+            if b:
+                for cls, n in b.items(): bom_job[jn][cls] += n * qn
+                taskfill_jobs.add(jn)
+                task_rows.append({'d': '', 'job': jn, 'task': nm[:70], 'q': qn,
+                                  'jt': (jmap.get(jn, {}) or {}).get('jt', ''), 'bom': b,
+                                  'tech': '', 'fill': True})
+            else:
+                jw = warr_justify(nm)
+                if jw is not None:
+                    for al in jw:
+                        just_job[jn].append({'cls': al['cls'], 'q': al['q'] * qn, 'task': nm[:70]})
+                    jobwarr[jn].append(nm[:70]); taskfill_jobs.add(jn)
+                elif WARR_ANY.search(nm.upper()):
+                    jobwarr[jn].append(nm[:70]); taskfill_jobs.add(jn)
+    else:
+        warnings.append('invoice_tasks.json missing — in-flight task gap-fill off; jobs invoiced but not yet dated read amber in-flight instead of tying (see job 555701).')
     branch = []
     for c in CLS:
         req = sum(b[c] for b in bom_job.values())
@@ -1058,12 +1166,41 @@ def main():
                          'resq': round(resq, 1),
                          'vmove': round(pj - req, 1), 'vinv': round(iv - req, 1)})
         if not rows: continue
+        # v8 WARRANTY JUSTIFY: consume allowances against pulled units beyond req, per class.
+        # Aggregated by class-set so a reversal pair (+1/-1 of the same task) nets to zero, and an
+        # either-class allowance (Motor Blower -> Furnace OR Air Handler) serves whichever moved.
+        wjust = []
+        if job in just_job:
+            agg = {}
+            for al in just_job[job]:
+                key = tuple(sorted(al['cls']))
+                alw = agg.setdefault(key, {'cls': al['cls'], 'q': 0.0, 'tasks': set()})
+                alw['q'] += al['q']; alw['tasks'].add(al['task'])
+            pool = [alw for alw in agg.values() if alw['q'] > 0]
+            for r in rows:
+                excess = r['po'] - r['req']
+                if excess <= 0: continue
+                got = 0.0
+                for alw in pool:
+                    if r['cls'] not in alw['cls'] or alw['q'] <= 0: continue
+                    take = min(alw['q'], excess - got)
+                    if take <= 0: continue
+                    alw['q'] -= take; got += take
+                    wjust.append({'cls': r['cls'], 'q': round(take, 1),
+                                  'task': ' + '.join(sorted(alw['tasks']))[:70]})
+                    if got >= excess: break
+                if got: r['justq'] = round(got, 1)
+        for r in rows: r.setdefault('justq', 0.0)
         # Flag precedence. 'over' is Stephen's waste case and REQUIRES a known requirement:
         # required 1 condenser, 2 PO'd to the job -> +1. A job with units moved but NO recognised
         # system task (required 0) is NOT a over-pull — that is a task-classification / itemisation
         # problem and gets its own flag, otherwise it floods the red list with false positives.
         moved = sum(r['po'] for r in rows)
         anyreq = any(r['req'] for r in rows)
+        # v8: units pulled beyond requirement + warranty justification. A fully-justified warranty
+        # job falls through to 'ok' and renders 'warranty replacement — justified'.
+        unjust = any(r['po'] > r['req'] + r['justq'] + 0.05 for r in rows)
+        iswarr = bool(jobwarr.get(job))
         # A required unit with no job PO and nothing itemized splits two ways, and conflating them
         # made a 177-job red list out of 24 real items. If the job carries a generic catch-all PO
         # line, that line is almost certainly the unit on the wrong SKU -> 'short', actionable.
@@ -1076,9 +1213,20 @@ def main():
         # Corrected 2026-08-12: only flag when a required class has NO evidence at all — nothing
         # PO'd to the job AND nothing itemized. If the unit was bought against the job, it is
         # accounted for; whether the invoice names it is a pricebook question, not a variance.
-        flag = ('over'     if any(r['vmove'] > 0 and r['req'] for r in rows)
+        # v8 flag precedence: over -> canceled -> notask(red) -> warranty(amber) -> inflight(amber)
+        # -> short -> stock -> ok. 'over' now measures po beyond req + warranty allowance, so a
+        # warranty job that pulls MORE than its tasks justify still goes red. 'notask' is reserved
+        # for jobs with no task story at all on a completed/nofeed job; a warranty job's residue is
+        # amber 'warranty' (verify & key the replacement task) and a not-yet-completed job's residue
+        # is amber 'inflight' (invoice not posted yet — the gap-fill usually resolves these first).
+        # An OPEN job missing a required unit is also 'inflight', never short/stock: the unit simply
+        # has not moved yet.
+        flag = ('over'     if any(r['po'] > r['req'] + r['justq'] + 0.05 and (r['req'] or r['justq']) for r in rows)
                 else 'canceled' if state == 'canceled' and moved
-                else 'notask'   if moved and not anyreq
+                else 'warranty' if moved and not anyreq and unjust and iswarr
+                else 'inflight' if moved and not anyreq and unjust and state == 'open'
+                else 'notask'   if moved and not anyreq and unjust
+                else 'inflight' if nounit and state == 'open'
                 else 'short'    if (nounit and generic_po.get(job))
                 else 'stock'    if nounit else 'ok')
         # Window anchor for the variance sections is the job's COMPLETION date — that is when the
@@ -1093,12 +1241,14 @@ def main():
             est = bool(anchor)
         jobvar.append({'job': job, 'st': state, 'end': end or '', 'anchor': anchor or '',
                        'endEst': est, 'flag': flag, 'rows': rows,
+                       'wjust': wjust, 'wtasks': jobwarr.get(job, [])[:6],
+                       'fill': job in taskfill_jobs,
                        'gen': generic_po.get(job, []),
                        'resc': rescue_job.get(job, []),
                        'stid': (jmap.get(job, {}) or {}).get('stid', ''),
                        'jt': (jmap.get(job, {}) or {}).get('jt', ''),
                        'tech': ((jmap.get(job, {}) or {}).get('tech') or '')[:24]})
-    _ORD = {'over': 0, 'canceled': 1, 'notask': 2, 'short': 3, 'stock': 4, 'ok': 5}
+    _ORD = {'over': 0, 'canceled': 1, 'notask': 2, 'short': 3, 'warranty': 4, 'inflight': 5, 'stock': 6, 'ok': 7}
     jobvar.sort(key=lambda x: (_ORD.get(x['flag'], 9), x['anchor'] or '', x['job']))
 
     # ---------- LEAKAGE tab (v5.5, map §12L) ----------
@@ -1231,6 +1381,9 @@ def main():
                       'task_rows': len(task_rows), 'inv_eq_rows': len(inv_eq),
                       'bom_jobs': len(bom_job), 'jobvar_rows': len(jobvar),
                       'flags': dict(collections.Counter(j['flag'] for j in jobvar)),
+                      'warr_jobs': len(jobwarr), 'justify_jobs': len(just_job),
+                      'taskfill_jobs': len(taskfill_jobs),
+                      'warr_justified_jobs': sum(1 for j in jobvar if j.get('wjust')),
                       'qty_violations': len(qty_viol),
                       'leak': {'sd_items': len((sd or {}).get('items', [])),
                                'sd_close': (sd or {}).get('close'),
