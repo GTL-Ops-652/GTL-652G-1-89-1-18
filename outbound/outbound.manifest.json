@@ -1,0 +1,57 @@
+{
+  "artifact": "outbound-call-center",
+  "design_v": "v4.0.0",
+  "frozen": "2026-08-26",
+  "template_file": "Outbound_TEMPLATE.html",
+  "template_sha256": "92b0492bd3d961ec79bf701b7a37d00de11921894741f26ec747deaa31539f18",
+  "builder_file": "build_payload.py",
+  "builder_sha256": "94d2fdf5d097c07198e270aa5723fac1c58c14638db7eb680ef4e8b015a8bca8",
+  "markers": {
+    "__PAYLOAD__": 1
+  },
+  "publish_path": "outbound/index.html",
+  "roster": [
+    "Stuart",
+    "Stephen",
+    "Brook",
+    "Tawny",
+    "Shane",
+    "Patty",
+    "Erika",
+    "Paul",
+    "Eric",
+    "John",
+    "Lisa",
+    "Slomka",
+    "Lailonnie"
+  ],
+  "block_size": 100,
+  "ownership": "No baked ownership. Assignment is derived from the distribution code at read time, identically on every machine.",
+  "verified": {
+    "date": "2026-08-26",
+    "pool": 15515,
+    "suppressed": 9192,
+    "cross_agent_collisions": 0,
+    "cross_round_duplicates": 0,
+    "hvac_only_list": 9231,
+    "rounds_that_list_holds": 8,
+    "per_agent_avg_score_spread": "61-61",
+    "payload_b64_bytes": 1521728,
+    "score_check": {
+      "one_two_star_avg": 33.6,
+      "five_star_avg": 51.1,
+      "recovered_avg": 47.3
+    }
+  },
+  "notes": "Presentation layer is FROZEN. A nightly data refresh replaces only the __PAYLOAD__ marker. Any change to the template or builder requires a new design_v and fresh hashes in this file.",
+  "distribution": {
+    "model": "supervisor-issued code",
+    "code_format": "L~s~m~mt~lj~eq~tr~rv~cx~z~n~r (positional, '~' separated, trailing blanks trimmed; zips '.' separated)",
+    "deal": "pool sorted by score desc then id; agent i takes indices where i % rosterSize; block = slice((round-1)*n, round*n)",
+    "default_block": 100,
+    "supervisors": [
+      "Stuart",
+      "Supervisor — view all"
+    ]
+  }
+}
