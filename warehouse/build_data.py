@@ -566,6 +566,10 @@ def main():
                    'dk': keyed if keyed and keyed != iso else '',
                    'qty': fv(g(r, 'Quantity on Transaction')) if 'Quantity on Transaction' in ix else 0,
                    'stid': g(r, 'Job ID') if 'Job ID' in ix else '',
+                   # v9.2: internal adjustment id for ServiceTitan deep links — the column does not
+                   # exist in today's export (docs are short sequence numbers that would 404); read
+                   # by name so links light up the day it is added, no engine change needed.
+                   'aid': (g(r, 'Adjustment ID') if 'Adjustment ID' in ix else '') if tt == 'Adjustment' else '',
                    'appr': g(r, 'Approval Status')}
             ledger.append({k: v for k, v in row.items() if v or k in ('t', 'd', 'v')})
     days = sorted({r['d'] for r in ledger})
@@ -769,6 +773,75 @@ def main():
                                     'q': fv(r[gi['quantity']]), 'v': round(fv(r[gi['total']]), 2),
                                     'po': str(r[gi['purchase_order_number']] or ''),
                                     'd': str(r[gi['purchase_order_date']] or '')[:10]})
+
+    # ---------- PO meta: memo/summary + internal id (v9.2, Stephen 2026-08-30) ----------
+    # Sixth pinned Genie pull -> po_meta.json: DISTINCT purchase_order_number, purchase_order_id,
+    # purchase_order_summary, memo for the trailing-90 LV window. Two consumers:
+    #   (a) CONSUMABLES SPLIT — a cage purchase (Vegas HVAC/Plumbing Warehouse) is TRUE consumable
+    #       job material ONLY when the buyer typed "cons" in the PO memo/summary (per Stephen:
+    #       bulk consumables are expensed at purchase and taken slowly; everything else bought into
+    #       the cage is par-level inventory restock and belongs in Received-into-stock).
+    #       Match: CONS anywhere, case-insensitive, excluding CONSTRUCT (e.g. "cons", "CONS",
+    #       "consum cage", "restock consumable cage" all match; "construction" does not).
+    #   (b) DEEP LINKS — purchase_order_id powers the ServiceTitan PO link
+    #       (#/EditInvoice/<internal id>, URL pattern supplied by Stephen 2026-08-30). Job-numbered
+    #       POs ('541738-001') need this map; bare vendor POs are already their own internal id.
+    # Absent file -> cons_armed False: the template falls back to the v9.1 all-cage-consumable rule
+    # and PO links degrade to bare-numeric docs only. Never a stop.
+    CONS_RX = re.compile(r'CONS(?!TRUCT)')
+    po_cons, po_ids, cons_armed = {}, {}, False
+    pmj = os.path.join(a.input, 'po_meta.json')
+    if os.path.exists(pmj):
+        pm = json.load(open(pmj))
+        mi = {c: i for i, c in enumerate(pm['cols'])}
+        for r in pm['rows']:
+            num = str(r[mi['purchase_order_number']] or '').strip()
+            if not num: continue
+            pid = r[mi.get('purchase_order_id', -1)] if 'purchase_order_id' in mi else None
+            if pid: po_ids[num] = str(pid)
+            memo = ' '.join(str(r[mi[c]] or '') for c in ('purchase_order_summary', 'memo') if c in mi).strip()
+            if memo and CONS_RX.search(memo.upper()) and num not in po_cons:
+                po_cons[num] = memo[:60]
+        cons_armed = True
+    else:
+        warnings.append("po_meta.json missing — consumables memo split off (all cage purchases read consumable, v9.1 rule) and PO deep links limited to bare-numeric docs.")
+
+    # ---------- adjustment id map (v9.2b, Stephen 2026-08-30) ----------
+    # ServiceTitan adjustment DETAIL pages key on the internal id, but the movement export's
+    # adjustment docs are short sequence numbers. No feed carries the id, so an interactive
+    # session harvests number->id from the ST adjustments list (browser) into adjmap.json;
+    # the nightly carries it forward via the state mirror. Rows also read an 'Adjustment ID'
+    # column by name if ST ever adds one (that column wins over the harvest map).
+    # Adjustments newer than the last harvest simply don't link - honest degrade, never a 404.
+    adjmap = {}
+    amj = os.path.join(a.input, 'adjmap.json')
+    if os.path.exists(amj):
+        try:
+            adjmap = (json.load(open(amj)) or {}).get('map', {}) or {}
+        except Exception:
+            warnings.append('adjmap.json unreadable - adjustment deep links off this run.')
+    else:
+        warnings.append('adjmap.json missing - adjustment deep links off (re-harvest in an interactive session).')
+    n_adj_linked = 0
+    for r in ledger:
+        if r['t'] != 'Adjustment': continue
+        if not r.get('aid') and r.get('doc') in adjmap:
+            r['aid'] = str(adjmap[r['doc']]); n_adj_linked += 1
+        elif r.get('aid'):
+            n_adj_linked += 1
+
+    # Stamp receipts/POs whose PO memo says "cons": cons=1 + the typed memo. NOT restricted to
+    # the cage locations — measured 2026-08-30 on live T90 data: 25 of 29 cons-memo POs are
+    # received through GOETTL WAREHOUSE JOB HOLDING, only 3 land directly in the cage warehouses.
+    # The MEMO is the classifier (Stephen 2026-08-30); location alone mislabels both directions.
+    _base_rx = re.compile(r'-[RB]\d+$')
+    n_cons_rows = 0
+    if cons_armed:
+        for r in ledger:
+            if r['t'] not in ('Receipt', 'Purchase Order'): continue
+            base = _base_rx.sub('', r.get('doc', ''))
+            if base in po_cons:
+                r['cons'] = 1; r['consm'] = po_cons[base]; n_cons_rows += 1
 
     eq_po = []
     pj = os.path.join(a.input, 'po_items.json')
@@ -1362,7 +1435,23 @@ def main():
         try: notes = json.load(open(os.path.join(a.input, 'notes.json')))
         except Exception: warnings.append('notes.json unreadable — baked notes skipped')
 
+    # v9.2: trim the PO-id map to POs the page can actually reference (ledger docs + evidence rows)
+    # so the payload stays lean. Bare-numeric vendor POs are their own internal id and need no entry.
+    _refs = set()
+    for r in ledger:
+        if r.get('doc'): _refs.add(_base_rx.sub('', r['doc']))
+    for e in eq_po: _refs.add(e.get('po', ''))
+    for v in generic_po.values():
+        for x in v: _refs.add(x.get('po', ''))
+    for v in rescue_job.values():
+        for x in v: _refs.add(x.get('po', ''))
+    poid = {k: v for k, v in po_ids.items() if k in _refs and not k.isdigit()}
+
     data = {'built': a.built or datetime.date.today().isoformat(), 'days': days, 'ledger': ledger,
+            'consArmed': cons_armed, 'poid': poid,
+            'stPoBase': 'https://goettl_lasvegas.eh.go.servicetitan.com/#/EditInvoice/',
+            'stTruckBase': 'https://goettl_lasvegas.eh.go.servicetitan.com/#/new/inventory/inventory-locations/trucks/details/',
+            'stAdjBase': 'https://goettl_lasvegas.eh.go.servicetitan.com/#/new/inventory/adjustments/details/',
             'month': month, 'warnings': warnings, 'sold': sold, 'notes': notes,
             'equip': {'skus': sorted(skus, key=lambda x: -abs(x['dv'])), 'cls': cls_roll, 'po': eq_po,
                       'instDay': inst_by_day, 'instTot': dict(inst_tot), 'tie': tie,
@@ -1378,6 +1467,9 @@ def main():
                       'movement_files': len(movement), 'snapshots': [str(d0), str(d1)] if snap0 else None,
                       'jobs': len(jmap), 'po_items': len(eq_po), 'sold_rows': len(sold), 'history': bool(a.history),
                       'jobstat_jobs': len(jobstat), 'po_status': dict(stc),
+                      'cons_armed': cons_armed, 'cons_pos': len(po_cons), 'cons_cage_rows': n_cons_rows,
+                      'adjmap_n': len(adjmap), 'adj_linked': n_adj_linked,
+                      'poid_map': len(poid),
                       'task_rows': len(task_rows), 'inv_eq_rows': len(inv_eq),
                       'bom_jobs': len(bom_job), 'jobvar_rows': len(jobvar),
                       'flags': dict(collections.Counter(j['flag'] for j in jobvar)),
