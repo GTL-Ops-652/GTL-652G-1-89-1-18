@@ -1,0 +1,51 @@
+{
+ "adj|2026-08-25|3245|Vegas HVAC Warehouse": {
+  "note": "adjusting for r32 sensors not tracked to jobs correctly to reflect current inventory",
+  "ts": 1787761347587,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-26"
+ },
+ "adj|2026-08-25|3243|LAS-578101-SVC-P_403 Alex Denny": {
+  "note": "adjustment to reflect truck stock",
+  "ts": 1787761417684,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-26"
+ },
+ "adj|2026-08-25|3244|Vegas Safety Stock": {
+  "note": "adding unused pad back in",
+  "ts": 1787761444046,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-26"
+ },
+ "adj|2026-08-25|3246|Open Box Warehouse HVAC": {
+  "note": "wrong equipment purchased, original skus not tracked or serialized so making adjustment",
+  "ts": 1787761475666,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-26"
+ },
+ "adj|2026-08-27|3249|Plumbing Equipment": {
+  "note": "small parts taken out of plumbing cage without being tracked to jobs correctly",
+  "ts": 1787927404288,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-28"
+ },
+ "adj|2026-08-11|3209|Open Box Warehouse HVAC": {
+  "note": "wrong equipment sold/purchased for job",
+  "ts": 1787928242668,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-28"
+ },
+ "adj|2026-08-19|3235|Open Box Warehouse HVAC": {
+  "note": "wrong equipment sold/purchased for job 554988",
+  "ts": 1787928901885,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-28"
+ }
+}
