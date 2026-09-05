@@ -47,5 +47,26 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-08-28"
+ },
+ "adj|2026-08-28|3249|Plumbing Equipment": {
+  "note": "plumbing equipment count Variance is (63.40)",
+  "ts": 1788560395412,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-04"
+ },
+ "adj|2026-08-31|3251|Vegas HVAC Warehouse": {
+  "note": "hvac warehouse count variance",
+  "ts": 1788560486983,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-04"
+ },
+ "adj|2026-08-31|3252|Vegas Safety Stock": {
+  "note": "vegas safety stock warehouse count variance, missing curb",
+  "ts": 1788560534107,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-04"
  }
 }
