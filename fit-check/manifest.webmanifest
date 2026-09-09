@@ -1,0 +1,17 @@
+{
+  "name": "Fit Check — Goettl Las Vegas",
+  "short_name": "Fit Check",
+  "description": "Replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#003963",
+  "theme_color": "#003963",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
