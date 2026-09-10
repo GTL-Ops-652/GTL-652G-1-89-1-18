@@ -68,5 +68,19 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-09-04"
+ },
+ "adj|2026-09-08|3257|LAS-177293-CFT-H_122 Kalif Silva-Giersdorf": {
+  "note": "adjustment for inventory count performed by kalif on 122, stated warranty jobs wont let him attach materials to jobs correctly",
+  "ts": 1788971107099,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-09"
+ },
+ "adj|2026-09-08|3256|Vegas HVAC Warehouse": {
+  "note": "Adjusting Negative Quantity Before Updating to Physical Count",
+  "ts": 1788971151545,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-09"
  }
 }
