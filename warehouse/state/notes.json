@@ -82,5 +82,61 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-09-09"
+ },
+ "adj|2026-09-09|3258|Vegas HVAC Warehouse": {
+  "note": "adjusting count to reflect physical inventory",
+  "ts": 1789050455992,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-09-09|3262|Default Truck - Kdyn Johnson": {
+  "note": "adjustment to deactivate default truck location",
+  "ts": 1789050489070,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-09-09|3259|Default Truck - Alberto Escobedo Quinones": {
+  "note": "adjustment to deactivate default truck location",
+  "ts": 1789050492788,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-09-09|3263|Default Truck - Mason Staten": {
+  "note": "adjustment to deactivate default truck location",
+  "ts": 1789050496534,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-08-04|3180|LAS-502205-EMT-P_439 N/A": {
+  "note": "removal of truck template",
+  "ts": 1789050736464,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-08-04|3185|Open Box Warehouse HVAC": {
+  "note": "adjustment to reflect physical inventory, units given to tech out of openbox",
+  "ts": 1789050787750,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-08-04|3190|Vegas Safety Stock": {
+  "note": "Eom count adjustment to reflect physical inventory",
+  "ts": 1789050834216,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-09-03|3218|LAS-115351-SVC-P_446 Logan Nester": {
+  "note": "removed ghost items to reflect physical inventory",
+  "ts": 1789050877590,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
  }
 }
