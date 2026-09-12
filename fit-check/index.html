@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-11 v2.23 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-12 v2.24 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -143,7 +143,12 @@ body.printing #printReport{display:block;background:#fff;color:#0b2340;padding:2
 #printReport .pbrand{font-size:11px;letter-spacing:.8px;text-transform:uppercase;color:var(--mb);font-weight:700}
 #printReport h1{font-family:var(--serif);color:var(--db);font-size:26px;margin:2px 0}
 #printReport .psub{color:var(--muted);font-size:13px}#printReport .pdate{text-align:right;color:var(--muted);font-size:12px}#printReport .pdate span{display:inline-block;margin-top:8px;color:var(--ink)}
-#printReport .pscore{display:grid;grid-template-columns:auto auto auto 1fr;gap:14px;align-items:center;margin:10px 0 14px}
+#printReport .pscore{display:grid;grid-template-columns:auto auto auto 1fr;gap:14px;align-items:center;margin:10px 0 10px}
+#printReport .pl2{font-size:10.5px;color:var(--muted);margin-top:2px}#printReport .plead{font-size:13px;line-height:1.45;margin:0 0 10px;color:var(--ink)}#printReport .pnote{font-size:11.5px;color:var(--muted);line-height:1.4;margin:0 0 6px}
+#printReport .pc{font-weight:600}#printReport .pw{font-size:10.5px;color:var(--muted);line-height:1.35;margin-top:2px}
+#printReport .ptwo{display:grid;grid-template-columns:1fr 1fr;gap:18px;align-items:start}
+#printReport .pscore2{display:grid;gap:5px;font-size:12px}#printReport .pscore2>div{display:grid;grid-template-columns:86px 1fr auto;gap:8px;align-items:center}#printReport .pscore2 i{display:block;height:9px;border-radius:999px;background:#e6edf4;overflow:hidden}#printReport .pscore2 i b{display:block;height:100%;background:var(--ok);border-radius:999px}
+#printReport .pbreak{display:none}
 #printReport .ps{border-radius:14px;padding:10px 16px;text-align:center;min-width:150px}#printReport .ps.ok{background:var(--okbg)}#printReport .ps.warn{background:var(--warnbg)}#printReport .ps.bad{background:var(--badbg)}
 #printReport .ps .big{font-family:var(--serif);font-size:40px;font-weight:800;line-height:1}#printReport .ps.ok .big{color:var(--ok)}#printReport .ps.warn .big{color:#a35300}#printReport .ps.bad .big{color:var(--bad)}
 #printReport .parrow{font-size:30px;color:var(--muted)}#printReport .pl{font-size:10.5px;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);font-weight:700}
@@ -154,9 +159,13 @@ body.printing #printReport{display:block;background:#fff;color:#0b2340;padding:2
 #printReport .ptbl .num{text-align:right;white-space:nowrap}#printReport .ptbl small{color:var(--ok);font-weight:700;margin-left:2px}#printReport .ptbl tr.base td{color:var(--muted)}#printReport .ptbl tr.total td{background:#f6f9fc}
 #printReport .pill{display:inline-block;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;color:#fff;background:var(--ok)}#printReport .pill.warn{background:var(--warn)}#printReport .pill.bad{background:var(--bad)}
 #printReport .pfoot{color:var(--muted);font-size:10.5px;margin-top:14px;line-height:1.4}
-@media print{ @page{margin:12mm} body{background:#fff} #printReport .pshots,#printReport .ptbl{page-break-inside:avoid} #printReport .pbar{display:none} }
-#printReport .pbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#f6f9fc;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:14px}
-@media (max-width:640px){ body.printing #printReport{padding:14px 12px} #printReport .pscore{grid-template-columns:1fr auto 1fr} #printReport .ptiles{grid-column:1/-1} #printReport .pshots{grid-template-columns:1fr} #printReport .ps{min-width:0} #printReport .pscope{grid-template-columns:1fr} #printReport .ptbl{font-size:11px} }
+@media print{ @page{size:letter;margin:11mm 12mm} body{background:#fff} body.printing #printReport{padding:0;max-width:none;font-size:11.5px}
+  #printReport .pshots{page-break-inside:avoid;break-inside:avoid} #printReport .ptbl tr{page-break-inside:avoid;break-inside:avoid} #printReport h2{page-break-after:avoid;break-after:avoid}
+  #printReport .ptwo{page-break-inside:avoid;break-inside:avoid} #printReport .pbar{display:none} #printReport .pnote,#printReport .plead{page-break-after:avoid;break-after:avoid}
+  #printReport .pshots img{max-height:3in;object-fit:cover} #printReport .ps .big{font-size:34px} #printReport .ptbl td{padding:4px 5px} #printReport .pw{font-size:9.8px} #printReport .ptbl{font-size:11px} #printReport h2{margin:10px 0 4px} #printReport .pfoot{font-size:9.5px} }
+#printReport .pbar{display:flex;gap:12px;align-items:center;flex-wrap:wrap;background:#f6f9fc;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:14px;position:sticky;top:0;z-index:5}
+body.printing #printReport .pshots img{border-radius:12px;box-shadow:var(--shadow)}
+@media (max-width:640px){ body.printing #printReport{padding:14px 12px} #printReport .pscore{grid-template-columns:1fr auto 1fr} #printReport .ptiles{grid-column:1/-1} #printReport .pshots{grid-template-columns:1fr} #printReport .ptwo{grid-template-columns:1fr} #printReport .ps{min-width:0} #printReport .pscope{grid-template-columns:1fr} #printReport .ptbl{font-size:11px} }
 .scope{display:flex;flex-wrap:wrap;gap:6px}
 .sc{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--line);border-radius:10px;padding:7px 10px;font-size:13px;cursor:pointer;background:#fff}
 .sc.on{border-color:var(--db);background:#eaf2f9}.sc.na{opacity:.45;cursor:default}.sc input{margin:0}
@@ -340,6 +349,16 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
 .pair .sz{font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:var(--muted);display:block;margin-top:2px}
 /* today vs proposed pictures */
 .shots{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.shots.big{margin:4px 0 12px}.shots .recshot{position:relative}
+.sbadge{position:absolute;top:10px;left:10px;z-index:2;font-family:var(--serif);font-weight:800;font-size:26px;line-height:1;padding:8px 12px;border-radius:12px;color:#fff;background:rgba(0,4,38,.72);border:2px solid rgba(255,255,255,.35);box-shadow:0 2px 10px rgba(0,0,0,.35)}
+.sbadge.ok{border-color:#43b279;color:#c9f2d8}.sbadge.warn{border-color:var(--warn);color:#ffd8a8}.sbadge.bad{border-color:var(--bad);color:#ffb3b3}
+.chain{list-style:none;margin:6px 0 0;padding:0;display:grid;gap:8px}
+.chain li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px}
+.chain .n{width:28px;height:28px;border-radius:50%;background:var(--db);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;margin-top:1px}
+.chain .ct{font-weight:800;font-size:13.5px;color:var(--ink);line-height:1.3}
+.chain .cw{font-size:12.5px;color:var(--muted);line-height:1.4;margin-top:3px}
+.chain .ce{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px;font-size:12px;color:var(--muted)}.chain .ce b{color:var(--ink)}.chain .ce i{font-style:normal;color:var(--ok);font-weight:800}
+@media (max-width:640px){.shots.big{grid-template-columns:1fr}}
 .shots .cap{font-size:11px;font-weight:800;color:var(--mb);text-transform:uppercase;letter-spacing:.6px;margin-bottom:4px}
 /* saved checks on this device */
 .saved{display:grid;gap:6px;margin-top:8px}
@@ -993,7 +1012,7 @@ function showDecoded(elId,r){
 $('#lookFurn').onclick=()=>{const r=decode($('#oldFurnModel').value); showDecoded('decFurn',r); if(r&&!r.unknown){set('oF_h',r.h);set('oF_w',r.w);set('oF_d',r.d);} refreshOld()};
 $('#lookCoil').onclick=()=>{const r=decode($('#oldCoilModel').value); showDecoded('decCoil',r); if(r&&!r.unknown){ if(isHoriz()||r.type==='coil_h'){set('oC_h',r.type==='coil_h'?r.h:r.w);set('oC_w',r.type==='coil_h'?r.w:r.d);set('oC_d',r.type==='coil_h'?r.l:r.h)} else {set('oC_h',r.h);set('oC_w',r.w);set('oC_d',r.d)} } refreshOld()};
 $('#lookPkg').onclick=()=>{const r=decode($('#oldPkgModel').value); showDecoded('decPkg',r); if(r&&!r.unknown){set('oP_l',r.l);set('oP_w',r.w);set('oP_h',r.h); if(r.chassis){$('#oP_chassis').value=r.chassis;S.f.oP_chassis=r.chassis;save()}} refreshOld()};
-function set(id,v){ if(v==null) return; $('#'+id).value=v; S.f[id]=String(v); save() }
+function set(id,v){ if(v==null) return; $('#'+id).value=v; S.f[id]=String(v); clearAuto(id); save() } // v2.24: a chip tap is a decision too — it must not be overwritten by the next autoAssume()
 
 // ============================================================ old equipment envelope
 // Envelope convention: horizontal → {L,H,W}; vertical → {H,W,D}. We store as {a,b,c} with labels from labels().
@@ -1022,9 +1041,8 @@ const ASM_SUP={2:14,2.5:14,3:16,3.5:16,4:18,5:20};
 const ASM_GR ={2:'20x20',2.5:'20x25',3:'20x25',3.5:'20x30',4:'20x30',5:'20x30'};
 const ELBOW_FACE=['el_len','el_h','tr_sw','tr_sh','tr_rw','tr_rh','tr_gap'];
 const ASM_LABEL={ex_ret_d:'return plenum / main duct',ex_gr:'return grille',ex_sup_d:'supply plenum / main duct',
-  st_l:'stand size',st_w:'stand size',st_h:'stand legs',el_len:'elbow face',el_h:'elbow face',el_div:'elbow divider',el_throat:'elbow throat',
-  tr_sw:'openings',tr_sh:'openings',tr_rw:'openings',tr_rh:'openings',tr_gap:'openings',tr_sz:'openings',tr_rz:'openings',
-  jk_w:'jack box',jk_d:'jack box',jk_h:'jack box',el_run:'elbow → jack run'};
+  st_l:'stand size',st_w:'stand size',st_h:'stand legs',jk_w:'jack box',jk_d:'jack box',jk_h:'jack box',el_run:'elbow → jack run'};
+// (the elbow face and the openings are never assumed INTO a box — untaped metal falls back to the old unit's spec pattern inside existingOpenings0 and is flagged est. there)
 function isAuto(id){ return !!(S.auto&&S.auto[id]) }
 function clearAuto(id){ if(S.auto&&S.auto[id]){ delete S.auto[id]; save() } }
 function setAuto(id,v){ const el=$('#'+id); if(!el||v==null||v==='') return false;
@@ -1054,10 +1072,16 @@ function deriveJack(){ if(!isPkg()||isCurbSetup()||S.setup==='separate') return;
 function assumeSpace(){ if(!isPkg()||S.setup==='separate') return; const u=asmOldUnit(); const q=v=>Math.round(v*2)/2;
   setAuto('st_l',q(u.l)); setAuto('st_w',q(u.w)); setAuto('st_h',14); deriveJack(); }
 function autoAssume(){ assumeAirflow(); assumeSpace(); }
-function asmList(which){ const ids=which===1?['ex_ret_d','ex_gr','ex_sup_d']:['st_l','st_w','st_h','el_len','el_h','el_div','el_throat','tr_sw','tr_sh','tr_rw','tr_rh','tr_gap','tr_sz','tr_rz','jk_w','jk_d','jk_h','el_run'];
+function asmList(which){ const ids=which===1?['ex_ret_d','ex_gr','ex_sup_d']:['st_l','st_w','st_h','jk_w','jk_d','jk_h','el_run'];
   const seen=[]; ids.forEach(id=>{ if(isAuto(id)){ const l=ASM_LABEL[id]||id; if(!seen.includes(l)) seen.push(l) } }); return seen }
 function asmBars(){ [[1,'#asmBar1'],[2,'#asmBar2']].forEach(([w,sel])=>{ const el=$(sel); if(!el) return; const L=asmList(w);
-  el.classList.toggle('hidden',!L.length); if(L.length) el.innerHTML=`<b>Assumed so you can keep moving:</b> ${L.join(' · ')}. These are averages for the equipment being removed — the 3D and the chokepoints are drawn from them. Type over anything you actually taped and the assumption drops out.` }) }
+  el.classList.toggle('hidden',!L.length); if(L.length) el.innerHTML=`<b>Assumed so you can keep moving:</b> ${L.join(' · ')}. These are averages for the equipment being removed — the 3D and the chokepoints are drawn from them. Type over anything you actually taped and the assumption drops out.` }); asmBadges() }
+// v2.24: the badge on the box itself — v2.23 documented it but never rendered it. One <span class="asm"> per assumed field, in its label.
+function asmBadges(){ Object.keys(ASM_LABEL).forEach(id=>{ const el=$('#'+id); if(!el) return; const f=el.closest('.field'); const lab=f?f.querySelector('label'):null; if(!lab) return;
+  let b=lab.querySelector('.asm'); const on=isAuto(id)&&String(el.value||'').trim()!=='';
+  if(on&&!b){ b=document.createElement('span'); b.className='asm'; b.textContent='assumed'; b.title='An average for the equipment being removed — type over it and it is yours'; lab.appendChild(b) }
+  else if(!on&&b) b.remove();
+  if(f) f.classList.toggle('isasm',on) }) }
 function syncGrille(){ const f=$('#exGr2F'); if(!f) return; const n=Math.max(1,parseInt($('#ex_gr_n').value)||1); f.classList.toggle('hidden',n<2);
   const l=$('#ex_grl'); if(l) l.innerHTML=n>1?'First grille size <small>W × H</small>':'Grille size <small>W × H</small>';
   const gn=$('#grNote'); if(gn) gn.classList.toggle('hidden',n<2) }
@@ -1288,27 +1312,56 @@ function gradeComps(comps,design,needs){
     if(c.area<d.area-0.5){ c.neck=true; c.squeeze=c.area/d.area; c.lossArea=c.area*c.squeeze; c.cls='bad' } }); // a squeeze caps what gets through AND adds its own loss — two squeezes back to back cost twice
   return comps;
 }
-// Comfort score 0–100: airflow 40 · insulation 30 · static 15 · return sizing 15, with hard caps for big misses.
+// ============================================================ v2.24 · COMFORT SCORE v3 — "everything moves together"
+// Stephen, 2026-09-12: static is the INDICATOR of a duct flaw. Every chokepoint adds backpressure, the blower turns that into
+// less air, so opening any one spot lowers the static and lifts the CFM — they never move apart. The v2.4–v2.22 score
+// disagreed with that: four separate buckets plus a hard "any red spot left → pinned at 60" cliff, which left the step
+// table flat for seven rows and then jumping. v3 is a slope with no cliffs:
+//   Airflow     40 — air delivered vs the air the unit NEEDS (400/ton). Straight out of the static solve, so it carries the static story.
+//   Static      10 — the indicator. Full at or under thr.sp (0.7"), zero at 1.0".
+//   Chokepoints 20 — share of the scored squeeze points inside the ACCA design velocity (amber = half, necked = nothing).
+//                    Open a hole, gain points — every time. (Replaces the old "return sizing" bucket; new metal is not graded.)
+//   Insulation  30 — R / R-38, unchanged.
+// 100 still means done right: every spot clear · static in range · the unit gets all its air · attic at R-38. It is just reached
+// by a slope instead of a jump. v2.22 R2 invariant kept: once every spot passes ACCA the duct design is complete and the
+// airflow bucket is full — anything the model still shows short is equipment selection / a suspect static, said in words.
 function comfortScore(m){
-  // v2.22 — the airflow and return grades are re-expressed against what the unit NEEDS (400 CFM/ton) instead of against
-  // the 450/ton aim. The curve is arithmetically IDENTICAL to v2.21 (zero drift on the locked numbers): v2.21 scored
-  // (r − 0.55)/(fl − 0.55) with r = delivered/design and fl = needs/design; dividing through by fl gives
-  // (rN − 0.619)/(1 − 0.619) with rN = delivered/needs. Same bar — but now immune to the aim, so the static-anchor fix
-  // cannot move a single score. The 85%-of-aim cap becomes the same physical bar, 95.6% of the floor (= 382 CFM/ton).
-  const FZ=0.619; const rN=m.delivered/m.needs; const air=40*clamp((rN-FZ)/(1-FZ),0,1);
-  const P=m.P, hi=S.thr.sp||0.7; const st= P==null?10:(P<=hi?15:Math.max(0,15-15*(P-hi)/0.3)); // 0.5–0.7" is acceptable by the Goettl rule, so it earns full marks; over 0.7" tapers to 0 at 1.0"
-  const retC=m.comps.filter(c=>c.side==='r'&&!c.newMetal); const rrN=retC.length?Math.min(...retC.map(c=>c.max/m.needs)):null; const ret= rrN==null?10:15*clamp((rrN-FZ)/(1-FZ),0,1); // new plenums are manufacturer-sized — not part of the return grade
+  const FZ=0.619; const rN=m.delivered/m.needs; let air=40*clamp((rN-FZ)/(1-FZ),0,1);
+  const P=m.P, hi=S.thr.sp||0.7; const st= P==null?7:(P<=hi?10:Math.max(0,10-10*(P-hi)/0.3));
+  const scored=m.comps.filter(c=>!c.newMetal);
+  const chkFrac= scored.length? scored.reduce((s,c)=>s+(c.neck?0:(c.cls==='ok'?1:(c.cls==='warn'?0.5:0))),0)/scored.length : 1;
+  const chk=20*chkFrac;
   const R=m.ins.Rf; const ins= R==null?15:30*clamp(R/R_MIN,0,1);
-  // v2.22 R2 — the hard airflow cap is a verdict on THE DUCT WE ARE LEAVING BEHIND, not on a CFM figure the design
-  // cannot reach. It fires when a scored spot is still over the ACCA maximum or still necked — i.e. we did not fix it.
-  // Once every spot passes ACCA the duct design is complete and the score has to say so: a customer reading 60 on a
-  // correct design hears "they cut corners", which is the opposite of the truth. Anything still short after that is
-  // equipment selection or a suspect static reading, and it is said in words on the card, not by hammering the score.
   const unfixed=m.comps.filter(c=>!c.newMetal&&(c.cls==='bad'||c.neck));
-  let total=air+st+ret+ins, cap=100; const caps=[]; const short=unfixed.length>0;
-  if(short){cap=Math.min(cap,60);caps.push(`${unfixed.length} chokepoint${unfixed.length===1?'':'s'} still over the ACCA limit`)} if(R!=null&&R<19){cap=Math.min(cap,55);caps.push('insulation under R-19')} if(short&&R!=null&&R<19) cap=38;
-  total=Math.min(total,cap); return {total:Math.round(total),air:Math.round(air),st:Math.round(st),ret:Math.round(ret),ins:Math.round(ins),cap,caps,unfixed:unfixed.length,ductDone:!unfixed.length,shortButClean:!unfixed.length&&rN<0.956,unknownIns:R==null,unknownP:P==null};
+  const ductDone=!unfixed.length; const shortButClean=ductDone&&rN<0.956;
+  if(ductDone&&rN>=0.956) air=40; // the duct design is complete — a correct design is not marked down for the model's last few CFM
+  const total=air+st+chk+ins;
+  return {total:Math.round(total),air:Math.round(air),st:Math.round(st),chk:Math.round(chk),ret:Math.round(chk),ins:Math.round(ins),cap:100,caps:[],unfixed:unfixed.length,ductDone,shortButClean,unknownIns:R==null,unknownP:P==null,
+    spots:scored.length,clear:scored.filter(c=>c.cls==='ok'&&!c.neck).length};
 }
+const SCORE_PARTS=[['air','Airflow',40],['st','Static',10],['chk','Chokepoints',20],['ins','Insulation',30]];
+function scoreBreak(sc){ return SCORE_PARTS.map(([k,l,mx])=>`${l.toLowerCase()} ${sc[k]}/${mx}`).join(' · ') }
+// ---- why each fix matters (Stephen 2026-09-12: the Summary and the report explain it, not just list it) -------------
+const WHY={
+  grille:'The filter grille is the first squeeze. Pulled through a face that is too small, the air speeds up, loads the filter, whistles — and everything downstream starts out short.',
+  ret:'The return main is the straw the unit breathes through. If it cannot pull the air in, nothing downstream can fix that: the blower works harder, static climbs, the coil runs starved and cold.',
+  penR:'A hole through the roof smaller than the duct is a neck in the line. The duct on either side can be perfect — the air still has to squeeze through the hole, and it pays for it in pressure.',
+  penS:'Same on the supply side: the roof hole is a neck. Every inch it is short of the duct is backpressure the blower has to push against before the air even reaches the trunk.',
+  elbR:'The return opening in the metal at the roof line is the last squeeze before the unit. Too small and the air arrives fast and turbulent, and the whole return side runs at a higher static than it should.',
+  elbS:'The supply opening in the metal at the roof line is the first squeeze after the unit. Too small and the blower is pushing into a wall — pressure up, airflow down, noise up.',
+  sup:'The supply trunk carries every bit of conditioned air to the rooms. Undersized, the unit pushes against it: static rises, airflow falls, the far rooms get the least.',
+  takeoff:'The branches are where the air leaves the trunk for the rooms. Not enough branch area and the trunk pressurises; the rooms at the end of the run starve first.',
+  tkadd:'More branch area lets the trunk empty — pressure drops, airflow rises, and the rooms at the end of the run finally get their share.',
+  insul:'Insulation is not airflow — it is the load. Under R-38 the ceiling pours heat into the rooms all afternoon, so even a perfect system runs longer to hold the temperature.',
+  install:'A new curb replaces the old stand, elbow and jack with metal built for this unit, so the roof-line squeeze points stop being squeeze points.',
+  plenums:'New plenums through the roof are sized to the unit — the roof penetrations stop being chokepoints and the design comes down to the ducts alone.',
+  'scope:ducts':'A supply duct system built for this unit — plenum, trunk and take-offs sized to the air it moves — takes the biggest source of static out of the house.',
+  'scope:splen':'A supply plenum sized to the unit is the first thing the air meets after the coil; built right, the trunk fills evenly instead of fighting a squeeze.',
+  'scope:rdrop':'A new return drop sized to the unit lets it breathe in freely — the return side is where most starved systems start.',
+  'scope:grille':'A new return grille and filter rack sized to the unit keeps the filter face velocity where ACCA wants it — quieter, and the filter loads slower.',
+  'scope:hp':'A heat pump conditions with the same duct system in both seasons — every duct fix pays off twice.',
+  default:'Air moves in series — every squeeze point adds backpressure the blower has to fight. Opening this one lowers the static and lets more air through everywhere.'};
+function whyFor(k){ return WHY[k]||(k&&k.indexOf('scope:')===0?WHY['scope:ducts']:WHY.default) }
 function scoreCls(t){ return t>=80?'ok':(t>=60?'warn':'bad') }
 // v2.22 — WE DO NOT PROMISE A STATIC NUMBER. The tech measured one; the design changes it by a percentage.
 // The reference is ALWAYS the measured TESP — never "the new unit on the untouched duct", which is a number
@@ -1485,12 +1538,11 @@ function existingOpenings0(){ const curb=isCurbSetup(); const legHi=num('st_h')|
       const Sop={k:'s',z:zS,w:sw,h:sh}, Rop={k:'r',z:zR,w:rw,h:rh};
       const first=retFirst()?Rop:Sop, second=retFirst()?Sop:Rop;   // tr_sx anchors the LEFT-hand opening looking uphill
       first.x=sx; second.x= isOverUnder()? sx : sx+(first.w||0)+(gap!=null?gap:6); // over-and-under sits stacked at the same spot, not side by side
-      const ex=[Sop]; if(rw!=null&&rh!=null) ex.push(Rop); else if(!retFirst()) {} 
       if(rw==null||rh==null) return {ex:[Sop],src:'tape'};
-      return {ex,src:'tape'} } }
+      return {ex:[Sop,Rop],src:'tape'} } }
   // v2.23: nothing taped → the old unit's published openings; nothing looked up either → the unit being sold,
   // so the old setup always draws and always scores. Both are flagged est. so nobody mistakes them for a tape.
-  const old=asmOldUnit(); if(old.c){ const ops=chassisOpenings(old.c,curb,false); if(ops.length){ const oo=0; return {ex:ops.map(p=>({k:p.k,x:p.x+oo,z:p.z,w:p.w,h:p.h,est:true})),src:'spec',assumed:!!old.est} } }
+  const old=asmOldUnit(); if(old.c){ const ops=chassisOpenings(old.c,curb,false); if(ops.length){ return {ex:ops.map(p=>({k:p.k,x:p.x,z:p.z,w:p.w,h:p.h,est:true})),src:'spec',assumed:!!old.est} } } // the old unit sat flush at the stand end (v2.19: no setback field)
   // nothing taped and no cabinet at all to go on — the average elbow, so the old setup still draws and still scores
   { const span=40, h=14, x=elbowX(span), retW=18; const z=curb?4:Math.max(0,20-legHi);
     const L={k:retFirst()?'r':'s',x,z,w:retW,h,est:true}, R={k:retFirst()?'s':'r',x:x+retW,z,w:span-retW,h,est:true};
@@ -1635,7 +1687,7 @@ function draw(){
   fitItems.forEach(b=>{[[0,0,0],[1,0,0],[1,1,0],[0,1,0],[0,0,1],[1,0,1],[1,1,1],[0,1,1]].forEach(k=>{const q=project([b.x+k[0]*b.dx-ctr[0],b.y+k[1]*b.dy-ctr[1],b.z+k[2]*b.dz-ctr[2]],0,0,1);px0=Math.min(px0,q[0]);px1=Math.max(px1,q[0]);py0=Math.min(py0,q[1]);py1=Math.max(py1,q[1])})});
   view.pan=savePan;
   const narrow=r.width<520; // v2.18: a phone canvas is tall and narrow — use more of its width
-  const sc=Math.min(r.width*(narrow?0.94:0.84)/Math.max(px1-px0,1), r.height*0.70/Math.max(py1-py0,1))*view.zoom; const cx=r.width/2-(px0+px1)/2*sc, cy=r.height/2-(py0+py1)/2*sc+10;
+  const sc=Math.min(r.width*(narrow?0.94:0.88)/Math.max(px1-px0,1), r.height*(narrow?0.70:0.80)/Math.max(py1-py0,1))*view.zoom; const cx=r.width/2-(px0+px1)/2*sc, cy=r.height/2-(py0+py1)/2*sc+6; // v2.24: fill the viewer — the picture is what the customer is looking at
   const P=p=>project([p[0]-ctr[0],p[1]-ctr[1],p[2]-ctr[2]],cx,cy,sc); curP=P; const lbls=$('#lbls'); lbls.innerHTML='';
   // roof / floor planes (quads) — always underneath, drawn first
   scene.filter(b=>b.quad).map(q=>{ const pts=q.quad.map(P); return {q,pts,depth:pts.reduce((s,p)=>s+p[2],0)/pts.length} }).sort((a,b)=>a.depth-b.depth).forEach(({q,pts})=>{ ctx.beginPath(); pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.closePath(); ctx.fillStyle=q.color; ctx.fill(); if(q.stroke){ctx.strokeStyle=q.stroke;ctx.lineWidth=1;ctx.stroke()} });
@@ -1672,9 +1724,25 @@ function draw(){
   // dimension callouts for the primary "new" envelope
   const env=scene.find(b=>b.dimLabels); if(env){ const {x,y,z,dx,dy,dz}=env; const put=(pt,txt,cls)=>{if(!showLbl(cls)) return; const p=P(pt);const d=document.createElement('div');d.className='lbl3 '+(cls||'');d.style.left=p[0]+'px';d.style.top=p[1]+'px';d.textContent=txt;lbls.appendChild(d)};
     put([x+dx/2,y-4,z+dz+5],env.dimLabels[0].txt,env.dimLabels[0].cls); put([x-5,y+dy/2,z+dz+5],env.dimLabels[1].txt,env.dimLabels[1].cls); put([x+dx+7,y-4,z+dz/2],env.dimLabels[2].txt,env.dimLabels[2].cls); }
-  // v2.18: keep every note inside the canvas — on a phone the long ones used to run off the right-hand edge
-  if(narrow){ [...lbls.children].forEach(d=>{ const w=d.offsetWidth; if(!w) return; const l=Math.max(w/2+3,Math.min(r.width-w/2-3,parseFloat(d.style.left))); d.style.left=l+'px' }) }
+  // v2.24: DECLUTTER — the notes used to pile on top of each other over the unit. Each note keeps its anchor, is slid
+  // up or down until it overlaps nothing, is kept inside the canvas, and gets a thin leader back to the spot it describes
+  // when it had to move. Red / orange notes are placed first so a problem is never the one pushed aside.
+  declutterLabels(lbls,r);
 }
+function declutterLabels(lbls,r){ const items=[...lbls.children].map(d=>({d,ax:parseFloat(d.style.left),ay:parseFloat(d.style.top),w:d.offsetWidth||60,h:d.offsetHeight||18,pri:/bad/.test(d.className)?0:(/warn/.test(d.className)?1:2)}));
+  if(!items.length) return; items.sort((a,b)=>a.pri-b.pri||a.ay-b.ay); const placed=[]; const PAD=3;
+  const narrow=r.width<520; const X1=r.width-(narrow?3:126), Y1=r.height-(narrow?3:44), X0=3, Y0=3; // stay clear of the button column and the legend
+  const hits=(x,y,w,h)=>placed.some(p=>Math.abs(p.x-x)*2<p.w+w+PAD*2&&Math.abs(p.y-y)*2<p.h+h+PAD*2);
+  items.forEach(it=>{ const w=it.w,h=it.h; let x=Math.max(X0+w/2,Math.min(X1-w/2,it.ax)); let y=Math.max(Y0+h/2,Math.min(Y1-h/2,it.ay)); const step=h+PAD+1; let best=null;
+    // nearest free slot: straight up / down first, then sideways, then both — the note stays as close to its anchor as it can
+    const xs=[0,-w/4,w/4,-w/2,w/2,-3*w/4,3*w/4];
+    outer: for(let k=0;k<=16;k++){ for(const s of (k?[-1,1]:[0])){ const yy=y+s*k*step; if(yy<Y0+h/2||yy>Y1-h/2) continue;
+      for(const ox of (k?xs:[0])){ const xx=x+ox; if(xx<X0+w/2||xx>X1-w/2) continue; if(!hits(xx,yy,w,h)){ best=[xx,yy]; break outer } } } }
+    if(best==null){ for(const ox of xs.slice(1)){ const xx=x+ox; if(xx<X0+w/2||xx>X1-w/2) continue; if(!hits(xx,y,w,h)){ best=[xx,y]; break } } }
+    if(best==null) best=[x,y]; x=best[0]; y=best[1]; it.x=x; it.y=y; placed.push({x,y,w,h}); it.d.style.left=x+'px'; it.d.style.top=y+'px'; });
+  ctx.save(); ctx.lineWidth=1; items.forEach(it=>{ const dy=it.y-it.ay, dx=it.x-it.ax; if(Math.abs(dy)<it.h*0.75&&Math.abs(dx)<12) return;
+    const col=it.pri===0?'rgba(255,120,120,.75)':(it.pri===1?'rgba(255,200,120,.75)':'rgba(255,255,255,.45)'); ctx.strokeStyle=col; ctx.fillStyle=col;
+    const ey=it.y+(dy<0?it.h/2:-it.h/2); ctx.beginPath(); ctx.moveTo(it.ax,it.ay); ctx.lineTo(it.x,ey); ctx.stroke(); ctx.beginPath(); ctx.arc(it.ax,it.ay,2.2,0,Math.PI*2); ctx.fill() }); ctx.restore(); }
 function hexA(hex,a,shade){ const r=parseInt(hex.slice(1,3),16)*shade, g=parseInt(hex.slice(3,5),16)*shade, b=parseInt(hex.slice(5,7),16)*shade; return `rgba(${r|0},${g|0},${b|0},${a})` }
 // interaction
 let drag=null, pinch=null, curP=null, mv3=null;
@@ -1804,7 +1872,7 @@ function buildScene(){
       const ceilY=pitched?Math.min(sf(z1),sf(z2))-20:-30; const insD=ins.known?Math.min(Math.max(ins.depth!=null?ins.depth:(ins.R/2.8),0),18):6; const insFixD=(ins.Rf!=null&&ins.R!=null&&ins.Rf>ins.R)?Math.min(insD*(ins.Rf/Math.max(ins.R,1)),22):insD;
       const insCls=ins.known?(ins.Rf<19?'bad':(ins.Rf<R_MIN?'warn':'ok')):''; const insCol=insCls==='bad'?'#c9532e':(insCls==='warn'?'#e0a05a':'#e8c98a');
       scene.push({x:x0,y:ceilY-4,z:z2+2,dx:x1-x0,dy:4,dz:z1-z2-4,color:'#b9bfc7',alpha:.55,noshadow:true,la:[0.5,0,0.9],label:'ceiling'});
-      if(ins.known||true) scene.push({x:x0+1,y:ceilY,z:z2+3,dx:x1-x0-2,dy:Math.max(insD,0.5),dz:z1-z2-6,color:insCol,alpha:ins.known?.6:.3,noshadow:true,cls:insCls,la:[0.5,1,0.35],label:ins.known?`Insulation R-${fmt(ins.R)}${ins.src&&ins.src!=='entered'?' · '+ins.src:''}${ins.R<R_MIN?' · under R-38':''}`:'Insulation — depth not entered'});
+      if(ins.known||true) scene.push({x:x0+1,y:ceilY,z:z2+3,dx:x1-x0-2,dy:Math.max(insD,0.5),dz:z1-z2-6,color:insCol,alpha:ins.known?.6:.3,noshadow:true,cls:insCls,la:[0.5,1,0.35],label:ins.known?`Insulation R-${fmt(ins.R)}${ins.Rf>ins.R?' → R-'+fmt(ins.Rf)+' proposed':''}${ins.src&&ins.src!=='entered'?' · '+ins.src:''}${ins.Rf<R_MIN?' · under R-38':''}`:'Insulation — depth not entered'});
       if(insFixD>insD+0.1) scene.push({x:x0+1,y:ceilY+insD,z:z2+3,dx:x1-x0-2,dy:insFixD-insD,dz:z1-z2-6,color:'#f2e2b8',alpha:.5,wire:true,dash:[4,3],lw:1,noshadow:true,cls:'ok',la:[0.5,1,0.6],label:`+ top up to R-${fmt(ins.Rf)}`});
       const yT=ceilY+Math.max(insD,insFixD)+6; // trunks ride just above the insulation
       const cs=(sp,alongX)=> sp?(sp.kind==='round'?{a:sp.d,b:sp.d,round:true}:(alongX?{a:sp.w,b:sp.h}:{a:sp.h,b:sp.w})):{a:14,b:14};
@@ -1903,7 +1971,7 @@ function buildScene(){
       // ---- ceiling slab + insulation (the attic layer the branches and the grille live against)
       const px0=-62, px1=Math.max(Lx,54)+34, pz0=zc-Math.max(Wz,48)/2-26, pz1=zc+Math.max(Wz,48)/2+26;
       scene.push({x:px0,y:ceilY-4,z:pz0,dx:px1-px0,dy:4,dz:pz1-pz0,color:'#b9bfc7',alpha:.5,noshadow:true,nofit:true,la:[0.06,0,0.92],label:attic?'ceiling':'ceiling'});
-      if(attic) { scene.push({x:px0+1,y:ceilY,z:pz0+2,dx:px1-px0-2,dy:Math.max(insD,0.5),dz:pz1-pz0-4,color:insCol,alpha:ins.known?.42:.22,noshadow:true,nofit:true,cls:insCls,la:[0.08,1,0.35],label:ins.known?`Insulation R-${fmt(ins.R)}${ins.R<R_MIN?' · under R-38':''}`:'Insulation — depth not entered'});
+      if(attic) { scene.push({x:px0+1,y:ceilY,z:pz0+2,dx:px1-px0-2,dy:Math.max(insD,0.5),dz:pz1-pz0-4,color:insCol,alpha:ins.known?.42:.22,noshadow:true,nofit:true,cls:insCls,la:[0.08,1,0.35],label:ins.known?`Insulation R-${fmt(ins.R)}${ins.Rf>ins.R?' → R-'+fmt(ins.Rf)+' proposed':''}${ins.Rf<R_MIN?' · under R-38':''}`:'Insulation — depth not entered'});
         if(insFixD>insD+0.1) scene.push({x:px0+1,y:ceilY+insD,z:pz0+2,dx:px1-px0-2,dy:insFixD-insD,dz:pz1-pz0-4,color:'#f2e2b8',alpha:.45,wire:true,dash:[4,3],lw:1,noshadow:true,nofit:true,cls:'ok',la:[0.08,1,0.6],label:`+ top up to R-${fmt(ins.Rf)}`}) }
       if(flrY!=null) scene.push({x:px0,y:flrY-4,z:pz0,dx:px1-px0,dy:4,dz:pz1-pz0,color:'#b9bfc7',alpha:.5,noshadow:true,nofit:true,la:[0.06,0,0.92],label:'floor'});
       // ---- v2.13 supply: three layouts. The take-offs always come off the plenum; what changes is the plenum's form.
@@ -2044,6 +2112,13 @@ function designTo100(o){ let M=flowModel(o,S.fix); if(!M) return; M.comps.filter
   // Sweep again until nothing is left necked (or nothing moves) instead of leaving a red hole in a "designed to 100" plan.
   for(let pass=0;pass<3;pass++){ const m=flowModel(o,S.fix); if(!m) break; const bad=m.comps.filter(c=>!c.newMetal&&(c.neck||c.cls!=='ok')); if(!bad.length) break;
     const before=JSON.stringify(S.fix); bad.forEach(c=>applyFix(c.slot,o)); if(JSON.stringify(S.fix)===before) break }
+  // v2.24 — "Design to 100" is the whole design, fit included. On a package job kept on its stand, a red Stand verdict or a
+  // red / orange Metal verdict is put into the crew scope (new stand · new elbow / transition metal) so the Summary does
+  // not read "100 — 2 still open". Fix ▸ / Fix ducts never tick scope (Stephen 2026-09-07: the crew's scope is the salesman's call —
+  // this is the one button that IS the salesman asking for the complete design). A curb redesign already replaces both.
+  if(isPkg()&&S.setup!=='separate'&&(S.fix.install||'reuse')==='reuse'){ try{ const j=judgePkg(o.unit); if(j&&!j.manual&&j.boxes){ S.scope=S.scope||{};
+    const [b1,b2]=j.boxes; if(b1&&b1.cls==='bad'&&!isCurbSetup()) S.scope.stand=true; if(b2&&(b2.cls==='bad'||b2.cls==='warn')) S.scope.elbow=true;
+    if(isOverUnder()) S.scope.trans=true } }catch(e){} }
   save() }
 function proposedChanges(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M) return []; const L=[]; const c0=sl=>M0.comps.find(c=>c.slot===sl), c1=sl=>M.comps.find(c=>c.slot===sl);
   if(!isPkg()){ const sc=S.scope||{}; const st=scopeState(); SCOPE_SPLIT.forEach(([k,l])=>{ const it=st.items.find(i=>i.k===k); if(!it||!it.on) return;
@@ -2061,7 +2136,7 @@ function renderAirCard(o){ const el=$('#airCard'); if(!el) return; const M=flowM
   const arrow=(a,b,f)=>anyFix&&a!==b?`${f(a)} <span style="opacity:.6">→</span> <b>${f(b)}</b>`:`<b>${f(b)}</b>`;
   const stTxt=v=>v==null?'—':v.toFixed(2)+'"';
   const tiles=`<div class="env" style="grid-template-columns:repeat(4,1fr)">
-    <div class="dim ${scoreCls(sc.total)}"><div class="lbl">Comfort score</div><div class="val">${arrow(sc0.total,sc.total,v=>v)}</div><div class="sub">${sc.caps.length?'capped: '+sc.caps.join(', '):'airflow '+sc.air+'/40 · insul '+sc.ins+'/30 · static '+sc.st+'/15 · return '+sc.ret+'/15'}</div></div>
+    <div class="dim ${scoreCls(sc.total)}"><div class="lbl">Comfort score</div><div class="val">${arrow(sc0.total,sc.total,v=>v)}</div><div class="sub">${scoreBreak(sc)}</div></div>
     <div class="dim ${M.ratioNeed>=1?'ok':(M.ratioNeed>=0.956?'warn':'bad')}"><div class="lbl">Airflow</div><div class="val">${arrow(M0.delivered,M.delivered,CFM)}</div><div class="sub">needs <b>${CFM(M.needs)} CFM</b> (400/ton) · ${Math.round(M.ratioNeed*100)}% of what it needs · aim ${CFM(M.design)} (${S.thr.cpt}/ton) is the charge-up headroom${M.op?'':' · velocity caps only — no static measured'}</div></div>
     <div class="dim ${M.op?staticCls(M):(M.sp!=null?(M.sp<=S.thr.sp?'ok':'bad'):'')}"><div class="lbl">Static pressure</div><div class="val">${M.op?`${staticMeasTxt(M)} <span style="opacity:.6">→</span> <b>${staticTxt(M)}</b>`:stTxt(M.sp)}</div><div class="sub">${M.op?`measured on the old ${tons1(airflowState().tons)}-ton · ${staticNote(M)} · we quote the <b>reduction</b>, never a number — the real figure is verified at start-up${M.pfix?` · coil+filter ${M.pfix.Pf.toFixed(2)}" (${M.pfix.src})`:''}`:(M.sp!=null?`measured ${M.sp.toFixed(2)}" on the old system`:'measure TESP on step 1 to estimate the change')}</div></div>
     <div class="dim ${ins.known?(ins.Rf<19?'bad':(ins.Rf<R_MIN?'warn':'ok')):''}"><div class="lbl">Attic insulation</div><div class="val">${ins.known?arrow(ins.R,ins.Rf,v=>'R-'+fmt(v)):'—'}</div><div class="sub">${ins.known?(ins.src&&ins.src!=='entered'?ins.src+' · ':'')+`min R-${R_MIN} · code R-${R_CODE}`:'enter depth on step 1'}</div></div></div>`;
@@ -2069,7 +2144,7 @@ function renderAirCard(o){ const el=$('#airCard'); if(!el) return; const M=flowM
   const rows=M.comps.map(c=>{ const act=(c.cls!=='ok'&&!c.newMetal)?`<button class="btn sm" data-autofix="${c.slot}">Fix ▸</button>`:'';
     return `<tr class="${c.cls}"><td><b>${c.name}</b>${c.fixed?' <span class="est" style="color:var(--ok)">proposed</span>':''}${c.newMetal?' <span class="est" style="color:var(--ok)">new — sized to the unit</span>':''}</td><td>${c.size}${c.neck?`<br><span class="note" style="color:var(--bad);font-weight:700">smaller than the ${c.feed.size} duct through it — open it to at least ${sqinTxt(c.feed.area)}</span>`:''}</td><td>${sqinTxt(c.area)}</td><td>${c.vel.toLocaleString()} fpm</td><td><span class="note" style="text-transform:none;letter-spacing:0">${c.vtyp} design<br>${c.vmax} max</span></td><td><b>${CFM(c.max)}</b> CFM<br><span class="note" style="text-transform:none;letter-spacing:0">${CFM(c.maxAbs)} at ACCA max</span></td><td><span class="status ${c.cls}">${statusTxt(c,M)}</span>${act?`<div style="margin-top:6px">${act}</div>`:''}</td></tr>` }).join('');
   const changes=proposedChanges(o); const necks=M.comps.filter(c=>c.neck); const stillShort=[]; if(necks.length) stillShort.push(`${necks.map(c=>c.name.toLowerCase()).join(' and ')} smaller than the duct through it`);
-  if(sc.total<100){ if(M.delivered<M.needs) stillShort.push(`airflow ${Math.round(M.ratio*100)}% of design`); if(M.op&&M.op.P>(S.thr.sp||0.7)) stillShort.push(`static still expected over the ${S.thr.sp}" limit${M.pfix&&M.pfix.Pf>0.45?' — coil + filter alone are '+M.pfix.Pf.toFixed(2)+'"':''}`); if(ins.known&&ins.Rf<R_MIN) stillShort.push(`insulation R-${fmt(ins.Rf)}`); if(!ins.known) stillShort.push('insulation not entered'); if(sc.ret<15) stillShort.push('return side still tight');
+  if(sc.total<100){ if(M.delivered<M.needs) stillShort.push(`airflow ${Math.round(M.ratio*100)}% of design`); if(M.op&&M.op.P>(S.thr.sp||0.7)) stillShort.push(`static still expected over the ${S.thr.sp}" limit${M.pfix&&M.pfix.Pf>0.45?' — coil + filter alone are '+M.pfix.Pf.toFixed(2)+'"':''}`); if(ins.known&&ins.Rf<R_MIN) stillShort.push(`insulation R-${fmt(ins.Rf)}`); if(!ins.known) stillShort.push('insulation not entered'); if(sc.chk<20) stillShort.push(`${sc.spots-sc.clear} of ${sc.spots} squeeze points still over the ACCA design velocity`);
     if(!isPkg()&&!(S.scope||{}).ducts&&((M.op&&M.op.P>(S.thr.sp||0.7))||M.delivered<M.needs)) stillShort.push('enlarging alone will not clear it — tick <b>New supply duct system</b> in the install scope below') }
   const checklist=`<div class="chk"><div class="row" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Proposed changes → score <b style="color:${sc.total>=80?'var(--ok)':(sc.total>=60?'#a35300':'var(--bad)')}">${sc.total}</b><span class="note" style="text-transform:none;letter-spacing:0;font-weight:600;margin-left:10px">${M.op?`static <b>${staticTxt(M)}</b> vs the ${staticMeasTxt(M)} measured · `:''}airflow ${CFM(M0.delivered)} → <b>${CFM(M.delivered)}</b> · needs ${CFM(M.needs)} · aim ${CFM(M.design)}</span></h3><span style="display:flex;gap:6px"><button class="btn sm" id="design100">✦ Design to 100</button>${changes.length?'<button class="btn sm ghost" id="fixReset">↺ Clear</button>':''}</span></div>
     ${changes.length?`<ol class="chklist">${changes.map((c,i)=>`<li><span class="tick">✓</span><span>${c.txt}</span><button class="x" data-undo="${i}" title="remove">✕</button></li>`).join('')}</ol>`:'<p class="note" style="margin:6px 0 0">Nothing proposed yet — tap <b>Fix ▸</b> on a red row, or <b>Design to 100</b> to size everything at once.</p>'}
@@ -2100,7 +2175,7 @@ function renderAirCard(o){ const el=$('#airCard'); if(!el) return; const M=flowM
     ${insChips}
     <div class="msg ${M.chokes.length?'bad':(recs.some(r=>r.includes('a35300'))?'warn':'')}" style="margin-top:10px">${recs.join('<br>')}</div>
     ${M.bal&&M.bal.ratio!=null?`<div class="row" style="margin-top:10px;gap:8px;align-items:center"><span class="note"><b>Supply vs return:</b></span><span class="status ${M.bal.cls}">${M.bal.ratio>=1?'Return leads':'More supply than return'}</span><span class="note">return side ${CFM(M.bal.ret)} CFM at its tightest · supply side ${CFM(M.bal.sup)} — <b>more return than supply</b> is the rule of thumb.</span></div>`:''}
-    <div class="row" style="margin-top:8px;justify-content:space-between"><span class="note">Score: airflow ${sc.air}/40 · insulation ${sc.ins}/30 · static ${sc.st}/15 · return sizing ${sc.ret}/15${sc.cap<100?` · capped at ${sc.cap}`:''}</span></div>`;
+    <div class="row" style="margin-top:8px;justify-content:space-between"><span class="note">Score: ${scoreBreak(sc)} — every fix moves it; 100 = every spot clear, static in range, all the air the unit needs, attic at R-38</span></div>`;
   wireAirCard(o);
 }
 // v2.11: a hole that carries the CFM but is smaller than its duct reads TOO SMALL, not CHOKE - different problem, different fix
@@ -2192,36 +2267,47 @@ function renderRecCard(o){ const el=$('#recCard'); if(!el) return; const R=recLi
 }
 // ---- v2.8 Export to PDF: a print-ready report (before / after, 3D today vs proposed, each recommendation's cumulative effect on airflow, static and comfort score) rendered in-page and sent to the browser's print → Save as PDF
 function stepEffects(o){ // walk the steps backwards, undoing one item at a time, to get the design's numbers after each step. Insulation goes first in the story — it lifts the R-19 cap so the duct steps show their real gains.
-  const saved=JSON.stringify(S.fix), savedSc=JSON.stringify(S.scope||{}); const raw=proposedChanges(o); const items=[...raw.filter(i=>i.k==='insul'),...raw.filter(i=>i.k!=='insul')]; const after=[]; let cur=flowModel(o,S.fix);
+  const saved=JSON.stringify(S.fix), savedSc=JSON.stringify(S.scope||{}); const tkv=$('#new_tk_add').value; const raw=proposedChanges(o);
+  // v2.24 story order = build order: the install method, then the holes at the roof line (so a duct never gets opened into a hole
+  // that is still small — that transient neck used to show a step LOSING airflow), then grille → return → supply → branches, insulation last.
+  const RANK={install:0,plenums:0,penR:2,penS:2,elbR:3,elbS:3,grille:4,ret:5,sup:6,takeoff:7,tkadd:7,insul:9}; const rk=i=>RANK[i.k]!=null?RANK[i.k]:(String(i.k).indexOf('scope:')===0?1:8);
+  const items=raw.map((it,i)=>({it,i})).sort((a,b)=>rk(a.it)-rk(b.it)||a.i-b.i).map(x=>x.it); const after=[]; let cur=flowModel(o,S.fix);
   for(let i=items.length-1;i>=0;i--){ after[i]={score:cur.score.total,cfm:cur.delivered,P:cur.op?cur.op.P:null,R:cur.ins.Rf}; items[i].undo(); cur=flowModel(o,S.fix) }
   const base={score:cur.score.total,cfm:cur.delivered,P:cur.op?cur.op.P:null,R:cur.ins.Rf}; S.fix=JSON.parse(saved); S.scope=JSON.parse(savedSc);
+  if($('#new_tk_add').value!==tkv){ $('#new_tk_add').value=tkv; S.f.new_tk_add=tkv; save() } // v2.24: the take-off undo blanks the field — put it back (it used to stay blank after an export)
   const sp=(flowModel(o,S.fix)||{}).sp; // v2.22: each step is reported as a cumulative % off the MEASURED static, never as an absolute figure
-  return items.map((it,i)=>{ const prev=i?after[i-1]:base; const a=after[i]; return {txt:String(it.txt).replace(/<[^>]+>/g,''),score:a.score,dScore:a.score-prev.score,cfm:a.cfm,dCfm:a.cfm-prev.cfm,P:a.P,pct:(a.P!=null&&sp>0)?Math.round((sp-a.P)/sp*100/5)*5:null,dP:(a.P!=null&&prev.P!=null)?a.P-prev.P:null,R:a.R,dR:(a.R!=null&&prev.R!=null)?a.R-prev.R:0} });
+  return items.map((it,i)=>{ const prev=i?after[i-1]:base; const a=after[i]; return {k:it.k,txt:String(it.txt).replace(/<[^>]+>/g,''),score:a.score,dScore:a.score-prev.score,cfm:a.cfm,dCfm:a.cfm-prev.cfm,P:a.P,pct:(a.P!=null&&sp>0)?Math.round((sp-a.P)/sp*100/5)*5:null,dP:(a.P!=null&&prev.P!=null)?a.P-prev.P:null,R:a.R,dR:(a.R!=null&&prev.R!=null)?a.R-prev.R:0} });
 }
 function exportPdf(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M) return; const steps=stepEffects(o);
-  const shotAfter=ensureShot(o), shotBefore=ensureBaseShot(o);
+  const shotAfter=ensureCleanShot(o), shotBefore=ensureTodayShot(o); // v2.24: the report shows the same two pictures the Summary does — today with the chokepoints called out, proposed drawn clean
   const sys={split_gas:'Split gas furnace + coil',split_hp:'Split heat pump',pkg_gas:'Package gas/electric',pkg_hp:'Package heat pump'}[S.sys]||'';
-  const unit=o.unit||[o.furn,o.coil,o.ahu].filter(Boolean).join(' + '); const st=v=>v==null?'—':v.toFixed(2)+'"'; const sg=v=>v>0?'+'+v:String(v);
+  const unit=o.unit||[o.furn,o.coil,o.ahu].filter(Boolean).join(' + '); const sg=v=>v>0?'+'+v:String(v);
   const tile=(l,a,b,cls)=>`<div class="pt ${cls||''}"><div class="pl">${l}</div><div class="pv">${a} <span class="arrow">→</span> <b>${b}</b></div></div>`;
-  const rows=steps.map((s_,i)=>`<tr><td>${i+1}</td><td>${s_.txt}</td><td class="num">${CFM(s_.cfm)}<small>${s_.dCfm?` (${sg(s_.dCfm)})`:''}</small></td><td class="num">${s_.pct==null?'—':(s_.pct>0?'↓ ':(s_.pct<0?'↑ ':''))+Math.abs(s_.pct)+'%'}</td><td class="num">${s_.R!=null?'R-'+fmt(s_.R):'—'}<small>${s_.dR?` (+${fmt(s_.dR)})`:''}</small></td><td class="num"><b>${s_.score}</b><small>${s_.dScore?` (${sg(s_.dScore)})`:''}</small></td></tr>`).join('');
+  const rows=steps.map((s_,i)=>`<tr><td class="num">${i+1}</td><td><div class="pc">${s_.txt.replace(/ — one way to get.*$/,'')}</div><div class="pw">${whyFor(s_.k)}</div></td><td class="num">${CFM(s_.cfm)}<small>${s_.dCfm>0?` +${s_.dCfm}`:''}</small></td><td class="num">${s_.pct==null?'—':(s_.pct>0?'↓ '+s_.pct+'%':(s_.pct<0?'↑ '+Math.abs(s_.pct)+'%':'—'))}</td><td class="num">${s_.R!=null?'R-'+fmt(s_.R):'—'}</td><td class="num"><b>${s_.score}</b><small>${s_.dScore>0?` +${s_.dScore}`:''}</small></td></tr>`).join('');
   const c0=sl=>M0.comps.find(c=>c.slot===sl); const compRows=M.comps.map(c=>{ const a=c0(c.slot); const pill=(x,mm)=>x?`<span class="pill ${x.cls}">${statusTxt(x,mm||M)}</span>`:'—'; return `<tr><td>${c.name.replace(/^New plenum — (\w+).*/,'Roof penetration — $1 (new plenum)')}</td><td>${a?a.size:'—'}</td><td class="num">${a?CFM(a.max):'—'}</td><td>${pill(a,M0)}</td><td>${c.size}</td><td class="num">${CFM(c.max)}</td><td>${pill(c,M)}</td></tr>` }).join('');
-  const html=`<div class="ph"><div><div class="pbrand">Goettl Air Conditioning &amp; Plumbing · Las Vegas</div><h1>Recommended Design</h1><div class="psub">${sys} · ${unit} · ${tons1(M.tons)} ton · aim ${CFM(M.design)} CFM (${S.thr.cpt}/ton) · needs ${CFM(M.needs)}</div></div><div class="pdate">${new Date().toLocaleDateString()}<br><span>Customer: ______________________</span></div></div>
-    <div class="pscore"><div class="ps ${scoreCls(M0.score.total)}"><div class="pl">Comfort score today</div><div class="big">${M0.score.total}</div></div><div class="parrow">→</div><div class="ps ${scoreCls(M.score.total)}"><div class="pl">With the recommended design</div><div class="big">${M.score.total}</div></div>
+  const html=`<div class="ph"><div><div class="pbrand">Goettl Air Conditioning &amp; Plumbing · Las Vegas</div><h1>Recommended Design</h1><div class="psub">${sys} · ${unit} · ${tons1(M.tons)} ton · needs ${CFM(M.needs)} CFM</div></div><div class="pdate">${new Date().toLocaleDateString()}<br><span>Customer: ______________________</span></div></div>
+    <div class="pscore"><div class="ps ${scoreCls(M0.score.total)}"><div class="pl">New AC on today's ducts</div><div class="big">${M0.score.total}</div><div class="pl2">${M0.chokes.length} chokepoint${M0.chokes.length===1?'':'s'}</div></div><div class="parrow">→</div><div class="ps ${scoreCls(M.score.total)}"><div class="pl">Goettl design</div><div class="big">${M.score.total}</div><div class="pl2">${M.chokes.length} chokepoint${M.chokes.length===1?'':'s'}</div></div>
       <div class="ptiles">${tile('Airflow',CFM(M0.delivered)+' CFM',CFM(M.delivered)+' CFM')}${M.op?tile('Static pressure',staticMeasTxt(M)+' measured',staticTxt(M)):''}${M.ins.known?tile('Attic insulation','R-'+fmt(M.ins.R),'R-'+fmt(M.ins.Rf)):''}${tile('Chokepoints',M0.chokes.length,M.chokes.length)}</div></div>
-    <div class="pshots"><div><div class="pcap">Today</div>${shotBefore?`<img src="${shotBefore}">`:''}</div><div><div class="pcap">Proposed</div>${shotAfter?`<img src="${shotAfter}">`:''}</div></div>
-    <h2>What we recommend — and what each step does</h2>
-    <table class="ptbl"><thead><tr><th>#</th><th>Change</th><th class="num">Airflow after</th><th class="num">Static change</th><th class="num">Insulation</th><th class="num">Comfort score</th></tr></thead><tbody>
-      <tr class="base"><td></td><td><i>Today — ${sys.toLowerCase()} as it sits</i></td><td class="num">${CFM(M0.delivered)}</td><td class="num">${M.sp!=null?staticMeasTxt(M)+' measured':'—'}</td><td class="num">${M0.ins.known?'R-'+fmt(M0.ins.R):'—'}</td><td class="num"><b>${M0.score.total}</b></td></tr>${rows}
-      <tr class="total"><td></td><td><b>Recommended design</b></td><td class="num"><b>${CFM(M.delivered)}</b> of the ${CFM(M.needs)} it needs</td><td class="num"><b>${M.op?staticTxt(M):'—'}</b></td><td class="num"><b>${M.ins.known?'R-'+fmt(M.ins.Rf):'—'}</b></td><td class="num"><b>${M.score.total}</b> / 100</td></tr></tbody></table>
-    <h2>Install scope</h2><div class="pscope">${isPkg()?[['reuse','Keep the existing stand / elbow / jack setup'],['curb_old','Redesign to a curb — reuse the existing drops'],['curb','Redesign to a curb — new plenum drops']].map(([k,l])=>`<div>${(S.fix.install||'reuse')===k?'☑':'☐'} ${l}</div>`).join(''):''}${scopeState().items.map(i=>`<div class="${i.na?'na':''}">${i.on?'☑':'☐'} ${i.l}${i.auto?' <small>(automatic — penetration enlarged)</small>':''}${i.air&&i.on?' <small>(sized to the unit)</small>':''}</div>`).join('')}</div>
+    <p class="plead">A new unit on the ductwork as it is scores <b>${M0.score.total}</b> — the equipment is new, but the air still has to squeeze through the same ${M0.chokes.length} tight spot${M0.chokes.length===1?'':'s'}, so it runs at a higher static, moves less air and works harder than it was built to. The design below scores <b>${M.score.total}</b>${M.score.total>=100?' — every spot clear, the unit getting all the air it needs, inside the acceptable static, with the attic at R-38':''}.</p>
+    <div class="pshots"><div><div class="pcap">Today — where it chokes</div>${shotBefore?`<img src="${shotBefore}">`:''}</div><div><div class="pcap">Proposed — as built</div>${shotAfter?`<img src="${shotAfter}">`:''}</div></div>
+    <h2>Why each fix matters — and what it does</h2>
+    <p class="pnote">Air moves in series: every squeeze point adds backpressure the blower has to fight. Each fix lowers the static and lets more air through, and the comfort score climbs with it. Static is quoted as a change off the reading measured on the old system, never as a promised figure.</p>
+    <table class="ptbl pstep"><thead><tr><th class="num">#</th><th>Change — and why it matters</th><th class="num">Airflow after</th><th class="num">Static</th><th class="num">Attic</th><th class="num">Score</th></tr></thead><tbody>
+      <tr class="base"><td></td><td><i>New ${sys.toLowerCase()} on the ductwork as it is</i></td><td class="num">${CFM(M0.delivered)}</td><td class="num">${M.sp!=null?staticMeasTxt(M)+' measured':'—'}</td><td class="num">${M0.ins.known?'R-'+fmt(M0.ins.R):'—'}</td><td class="num"><b>${M0.score.total}</b></td></tr>${rows}
+      <tr class="total"><td></td><td><b>Goettl design</b></td><td class="num"><b>${CFM(M.delivered)}</b> of the ${CFM(M.needs)} it needs</td><td class="num"><b>${M.op?staticTxt(M):'—'}</b></td><td class="num"><b>${M.ins.known?'R-'+fmt(M.ins.Rf):'—'}</b></td><td class="num"><b>${M.score.total}</b> / 100</td></tr></tbody></table>
+    <div class="ptwo"><div><h2>Install scope</h2><div class="pscope">${isPkg()?[['reuse','Keep the existing stand / elbow / jack setup'],['curb_old','Redesign to a curb — reuse the existing drops'],['curb','Redesign to a curb — new plenum drops']].map(([k,l])=>`<div>${(S.fix.install||'reuse')===k?'☑':'☐'} ${l}</div>`).join(''):''}${scopeState().items.map(i=>`<div class="${i.na?'na':''}">${i.on?'☑':'☐'} ${i.l}${i.auto?' <small>(automatic — penetration enlarged)</small>':''}${i.air&&i.on?' <small>(sized to the unit)</small>':''}</div>`).join('')}</div></div>
+    <div><h2>Comfort score</h2><div class="pscore2">${SCORE_PARTS.map(([k,l,mx])=>`<div><span>${l}</span><i><b style="width:${Math.round(M.score[k]/mx*100)}%"></b></i><span class="num">${M0.score[k]} → <b>${M.score[k]}</b> / ${mx}</span></div>`).join('')}</div><p class="pnote">Airflow delivered vs what the unit needs · static in range · squeeze points inside the ACCA design velocity · attic insulation vs R-38. Every fix moves it; 100 means all four are met.</p></div></div>
     <h2>Where the air chokes — today vs proposed</h2>
     <table class="ptbl"><thead><tr><th>Component</th><th>Today</th><th class="num">Max CFM</th><th></th><th>Proposed</th><th class="num">Max CFM</th><th></th></tr></thead><tbody>${compRows}</tbody></table>
-    <p class="pfoot">Every squeeze point is graded against <b>ACCA Manual D (3rd ed.) Table 3-1</b> residential velocity limits, design / maximum fpm: return grille and filter face ${accaTyp('grille')}/${accaMax('grille')} on the gross grille face (ACCA's 400/500 fpm on net free area at 75% net, which is also the 300 fpm face-velocity limit for a 1&quot; pleated filter); return main and return-side roof / ${isCurbSetup()?'curb':'elbow'} openings ${accaTyp('ret')}/${accaMax('ret')}; supply trunk and supply-side openings ${accaTyp('sup')}/${accaMax('sup')}; supply branches ${accaTyp('takeoff')}/${accaMax('takeoff')}. Carried CFM is quoted at the design velocity. Static is reported as an expected <b>reduction off the measured reading</b>, never as a promised figure. Airflow and static are engineering estimates from the measured static on the existing system and typical blower curves — final numbers are verified at start-up. Comfort score: airflow 40 · insulation 30 · static 15 · return sizing 15. Las Vegas minimum attic insulation R-38; 2021 IECC (Clark County) new-construction R-49.</p>`;
+    <p class="pfoot">Every squeeze point is graded against <b>ACCA Manual D (3rd ed.) Table 3-1</b> residential velocity limits, design / maximum fpm: return grille and filter face ${accaTyp('grille')}/${accaMax('grille')} on the gross grille face (ACCA's 400/500 fpm on net free area at 75% net, which is also the 300 fpm face-velocity limit for a 1&quot; pleated filter); return main and return-side roof / ${isCurbSetup()?'curb':'elbow'} openings ${accaTyp('ret')}/${accaMax('ret')}; supply trunk and supply-side openings ${accaTyp('sup')}/${accaMax('sup')}; supply branches ${accaTyp('takeoff')}/${accaMax('takeoff')}. Carried CFM is quoted at the design velocity. Static is reported as an expected <b>reduction off the measured reading</b>, never as a promised figure. Airflow and static are engineering estimates from the measured static on the existing system and typical blower curves — final numbers are verified at start-up. Comfort score: airflow 40 · static 10 · chokepoints 20 · insulation 30. Las Vegas minimum attic insulation R-38; 2021 IECC (Clark County) new-construction R-49.</p>`;
   let box=$('#printReport'); if(!box){ box=document.createElement('div'); box.id='printReport'; document.body.appendChild(box) } box.innerHTML=html;
   const done=()=>{ document.body.classList.remove('printing'); const pb=$('#printReport .pbar'); if(pb) pb.remove() };
-  // v2.18: an iPhone / iPad running Fit Check from the home screen (standalone) has no print dialog — show the report on screen with a way back instead of calling print() into the void
+  // v2.24: on an iPhone / iPad running Fit Check from the home screen there is no print dialog — the report opens as a full-screen
+  // presentation the customer can read on the iPad, with Share (AirDrop / Messages / Mail the text) and a way back. Saving a PDF
+  // is still Safari's job: open the same page in Safari → Export to PDF → Share → Save to Files.
   const standalone=!!(navigator.standalone||(window.matchMedia&&window.matchMedia('(display-mode: standalone)').matches));
-  if(standalone){ const bar=document.createElement('div'); bar.className='pbar'; bar.innerHTML=`<button class="btn sm" id="pbarBack">‹ Back to Fit Check</button><span class="note">Printing is not available from the home-screen app. Screenshot this report, or open Fit Check in Safari and use <b>Export to PDF</b> there to save a PDF.</span>`; box.prepend(bar); document.body.classList.add('printing'); window.scrollTo(0,0); $('#pbarBack').onclick=done; return }
+  if(standalone){ const bar=document.createElement('div'); bar.className='pbar'; bar.innerHTML=`<button class="btn sm" id="pbarBack">‹ Back to Fit Check</button>${navigator.share?'<button class="btn sm ghost" id="pbarShare">Share the summary</button>':''}<span class="note">Show this page to the customer as it is. To save it as a PDF, open Fit Check in Safari and use <b>Export to PDF</b> there (Share → Save to Files).</span>`; box.prepend(bar); document.body.classList.add('printing'); window.scrollTo(0,0); $('#pbarBack').onclick=done;
+    const sh=$('#pbarShare'); if(sh) sh.onclick=()=>{ try{ navigator.share({title:'Goettl — Recommended Design',text:$('#summary').value}) }catch(e){} }; return }
   document.body.classList.add('printing'); window.addEventListener('afterprint',done,{once:true});
   setTimeout(()=>{ window.print(); setTimeout(done,1500) },150);
 }
@@ -2348,7 +2434,7 @@ function renderPlanHero(o){ const el=$('#planHero'); if(!el) return;
   el.innerHTML=`<div class="hero ${cls}"><div class="hk">Step 5 · The plan</div>
     <div class="hv">Comfort score ${sc0} → ${sc}</div>
     <div class="rail"><i style="width:${Math.max(2,Math.min(100,sc))}%"></i><b style="left:${Math.max(0,Math.min(99,sc0))}%"></b></div>
-    <div class="railkey"><span>today ${sc0}</span><span>proposed ${sc}</span><span>100</span></div>
+    <div class="railkey"><span>new AC on today's ducts ${sc0}</span><span>this design ${sc}</span><span>100</span></div>
     <div class="hs">${hs}</div>
     <div class="hs" style="margin-top:6px;opacity:.85;max-width:none">Airflow ${arw(M0.delivered,M.delivered,CFM)} of ${CFM(M.design)} CFM${M.op?` · static ${staticTxt(M)} vs ${staticMeasTxt(M)} measured`:''}${M.ins.known?` · attic ${arw(M.ins.R,M.ins.Rf,v=>'R-'+fmt(v))}`:''} · ${nch0===nch?nch:nch0+' → '+nch} chokepoint${nch===1?'':'s'}</div></div>`;
 }
@@ -2384,7 +2470,7 @@ function designDetailsHtml(o){
 // Every problem the system has today, paired with what the proposed design does about it.
 function issuePairs(o){
   const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); const L=[];
-  const push=(t,was,wasWhy,fixed,now,nowWhy,cls)=>L.push({t:t,was:was,wasWhy:wasWhy,fixed:!!fixed,now:now,nowWhy:nowWhy,cls:cls||'bad'});
+  const push=(t,was,wasWhy,fixed,now,nowWhy,cls,k)=>L.push({t:t,was:was,wasWhy:wasWhy,fixed:!!fixed,now:now,nowWhy:nowWhy,cls:cls||'bad',k:k||null});
   if(M&&M0){
     const c1=sl=>M.comps.find(c=>c.slot===sl);
     M0.comps.forEach(a=>{ if(a.cls==='ok'&&!a.neck) return; const b=c1(a.slot); const ok=!!(b&&b.cls==='ok'&&!b.neck);
@@ -2394,18 +2480,18 @@ function issuePairs(o){
       push(a.name, a.size, why, ok, b?b.size:'—',
         ok ? (b.newMetal?`New metal built for this unit — ${CFM(b.max)} CFM, no longer a chokepoint.`:`Opened up to ${CFM(b.max)} CFM in the proposed design.`)
            : 'Not addressed yet — tap <b>Fix ▸</b> on that row, or <b>Design to 100</b>, on the Plan tab.',
-        (a.cls==='warn'&&!a.neck)?'warn':'bad') });
+        (a.cls==='warn'&&!a.neck)?'warn':'bad', a.slot) });
     if(M0.ins.known&&M0.ins.R<R_MIN){ const done=M.ins.Rf>=R_MIN;
       push('Attic insulation','R-'+fmt(M0.ins.R),`Under the R-${R_MIN} minimum, so the ceiling keeps dumping heat into the rooms however well the system runs.`,
-        done,'R-'+fmt(M.ins.Rf), done?`Topped up — cuts ceiling heat gain about ${Math.round(M.ins.gain*100)}% and lowers the load on the new system.`:'Not in the proposal yet — the insulation toggle is on the Plan tab.','warn') }
+        done,'R-'+fmt(M.ins.Rf), done?`Topped up — cuts ceiling heat gain about ${Math.round(M.ins.gain*100)}% and lowers the load on the new system.`:'Not in the proposal yet — the insulation toggle is on the Plan tab.','warn','insul') }
     if(M0.op&&M0.op.P>S.thr.sp){ const done=!!(M.op&&M.op.P<=S.thr.sp);
       push('Static pressure',staticMeasTxt(M0)+' measured',`Over ${S.thr.sp}". The blower is fighting the ductwork, which costs capacity and shortens the equipment's life.`,
         done,M.op?staticTxt(M):'—', done?`Expected inside the acceptable range once the chokepoints open up — we quote the reduction, not a promised number.`:'Still expected to be high — more of the duct has to open up.') }
-    if(M0.bal&&M0.bal.ratio!=null&&M0.bal.ratio<1){ const done=!!(M.bal&&M.bal.ratio>=1);
+    if(M0.bal&&M0.bal.ratio!=null&&M0.bal.ratio<1){ const leads=!!(M.bal&&M.bal.ratio>=1); const both=!!(M.bal&&M.bal.ret>=M.needs&&M.bal.sup>=M.needs); const done=leads||both; // v2.24: both sides carrying what the unit needs answers it — the rule of thumb is a preference, not a chokepoint
       push('Supply vs return',`${CFM(M0.bal.ret)} return / ${CFM(M0.bal.sup)} supply`,
         'More supply than return. The system cannot give back what it cannot pull in, so rooms go uneven and the coil runs cold.',
         done, M.bal?`${CFM(M.bal.ret)} return / ${CFM(M.bal.sup)} supply`:'—',
-        done?'Return now leads the supply — the side the rule of thumb wants.':'Still supply-heavy — open the return grille or the return duct rather than adding supply.','warn') }
+        leads?'Return now leads the supply — the side the rule of thumb wants.':(both?`Both sides now carry more than the ${CFM(M.needs)} CFM the unit needs — the return can breathe in what the supply gives out.`:'Still supply-heavy — open the return grille or the return duct rather than adding supply.'),'warn') }
   }
   if(S.tkEndOld==='bad'&&!(!isPkg()&&supOld()==='plenum_coil'))
     push('Supply take-off placement','Branches run to the very end of the plenum',
@@ -2428,36 +2514,42 @@ function renderSumCard(o){
   if(!M||!M0){ el.classList.add('hidden'); el.innerHTML=''; if(hero) hero.innerHTML=''; return }
   el.classList.remove('hidden');
   const sc=M.score.total, sc0=M0.score.total, gain=sc-sc0;
-  const P=issuePairs(o); const solved=P.filter(x=>x.fixed).length;
+  const P=issuePairs(o); const solved=P.filter(x=>x.fixed).length; const allDone=P.length&&solved===P.length;
+  // v2.24 CLIENT MODE — the customer is looking at this page. The 38 is not "the old unit": it is what THIS new unit scores on
+  // the ducts as they are. Say so, then show the picture, then explain why each fix matters.
   if(hero) hero.innerHTML=`<div class="hero ${scoreCls(sc)}"><div class="hk">Step 6 · Summary</div>
-    <div class="hv">${P.length?`${solved} of ${P.length} problem${P.length===1?'':'s'} solved`:'Nothing wrong found'}</div>
-    <div class="hs">${P.length?(solved===P.length?'Everything found on this system is answered by the proposed design.':`${P.length-solved} still open — the pairs below show which ones and what closes them.`):'The new equipment goes in as it sits and the ductwork carries what it wants to move.'} Comfort score <b>${sc0} → ${sc}</b>${gain>0?` (+${gain})`:''}.</div></div>`;
-  const stT=v=>v==null?'—':v.toFixed(2)+'"';
-  const tile=(k,a,b,f,cls)=>`<div class="dim ${cls||''}"><div class="lbl">${k}</div><div class="val">${a===b?f(b):f(a)+' → '+f(b)}</div><div class="sub">${a===b?'unchanged':'today → proposed'}</div></div>`;
+    <div class="hv">New AC on today's ducts: ${sc0} &nbsp;→&nbsp; Goettl design: ${sc}</div>
+    <div class="hs">${P.length?(allDone?`Every one of the ${P.length} problems found on this system is answered by the design.`:`${solved} of ${P.length} problem${P.length===1?'':'s'} solved — ${P.length-solved} still open; the pairs below show which and what closes ${P.length-solved===1?'it':'them'}.`):'Nothing wrong found — the new equipment goes in as it sits and the ductwork carries what it wants to move.'}${gain>0?` A new unit alone would score <b>${sc0}</b>; this design scores <b>${sc}</b>.`:''}</div></div>`;
+  const tile=(k,a,b,f,cls)=>`<div class="dim ${cls||''}"><div class="lbl">${k}</div><div class="val">${a===b?f(b):f(a)+' → '+f(b)}</div><div class="sub">${a===b?'unchanged':'new AC on today\'s ducts → this design'}</div></div>`;
   const tiles=[tile('Airflow',M0.delivered,M.delivered,CFM,M.delivered>=M.needs?'ok':'bad'),
     (M.op?tile('Static',staticMeasTxt(M),staticTxt(M),v=>v,staticCls(M)):''),
     (M.ins.known?tile('Insulation',M.ins.R,M.ins.Rf,v=>'R-'+fmt(v),M.ins.Rf>=R_MIN?'ok':'warn'):''),
     tile('Chokepoints',M0.chokes.length,M.chokes.length,v=>String(v),M.chokes.length?'bad':'ok')].filter(Boolean).join('');
+  // the picture first — this is the wow
+  let shots='';
+  if(curTab()===6){ const a=ensureTodayShot(o), b=ensureCleanShot(o);
+    if(a||b) shots=`<div class="shots big">`
+      +`<div><div class="cap">Today — where it chokes</div><div class="recshot"><span class="sbadge ${scoreCls(sc0)}">${sc0}</span>${a?`<img src="${a}" alt="3D of the system as it sits today, chokepoints marked">`:''}</div></div>`
+      +`<div><div class="cap">Proposed — as built</div><div class="recshot"><span class="sbadge ${scoreCls(sc)}">${sc}</span>${b?`<img src="${b}" alt="3D of the proposed design">`:''}</div></div></div>` }
+  // why each fix matters — the chain, in air-path order, with what each one does to the number
+  const steps=stepEffects(o); const sp=M.sp;
+  const chain=steps.length?`<h3>Why each fix matters</h3><p class="help" style="margin-top:0">Air moves in series. Every squeeze point adds backpressure the blower has to fight, so each fix lowers the static and lets more air through — and the score climbs with it. Leave one out and the unit is still being strangled at that spot.</p>
+    <ol class="chain">${steps.map((s_,i)=>`<li><span class="n">${i+1}</span><div><div class="ct">${s_.txt.replace(/ — one way to get.*$/,'')}</div><div class="cw">${whyFor(s_.k)}</div><div class="ce"><span>airflow <b>${CFM(s_.cfm)}</b>${s_.dCfm>0?` <i>+${s_.dCfm}</i>`:''}</span>${s_.pct!=null?(s_.pct>0?`<span>static <b>↓ ${s_.pct}%</b> off the ${sp!=null?sp.toFixed(2)+'"':''} measured</span>`:`<span>static <b>unchanged</b> at this step</span>`):''}${s_.R!=null&&s_.dR?`<span>attic <b>R-${fmt(s_.R)}</b></span>`:''}<span>score <b>${s_.score}</b>${s_.dScore>0?` <i>+${s_.dScore}</i>`:''}</span></div></div></li>`).join('')}</ol>`:'';
   const pairs=P.length?`<h3>What was wrong — and how this design fixes it</h3><div class="pairs">${P.map(x=>
       `<div class="pair"><div class="was ${x.cls==='warn'?'warn':''}"><span class="t">${x.t}</span><span class="sz">${strip(x.was)}</span><span class="why">${x.wasWhy}</span></div>`
       +`<div class="arw">→</div>`
       +`<div class="now ${x.fixed?'':'open'}"><span class="t">${x.fixed?'Solved':'Still open'}</span><span class="sz">${strip(x.now)}</span><span class="why">${x.nowWhy}</span></div></div>`).join('')}</div>`
     : '<p class="note">No chokepoints, no fit problems and nothing under the insulation minimum — there is nothing to pair up.</p>';
-  let shots='';
-  if(curTab()===6){ const a=ensureTodayShot(o), b=ensureCleanShot(o);
-    if(a||b) shots=`<h3>The picture</h3><div class="shots">`
-      +`<div><div class="cap">Today — where it chokes</div><div class="recshot">${a?`<img src="${a}" alt="3D of the system as it sits today, chokepoints marked">`:''}</div></div>`
-      +`<div><div class="cap">Proposed — as built</div><div class="recshot">${b?`<img src="${b}" alt="3D of the proposed design">`:''}</div></div></div>` }
   el.innerHTML=`<h2>Before and after</h2>
+    ${shots}
     <div class="ba">
-      <div class="bax ${scoreCls(sc0)}"><div class="k">Comfort score today</div><div class="n">${sc0}</div><div class="d">${M0.chokes.length} chokepoint${M0.chokes.length===1?'':'s'}</div></div>
+      <div class="bax ${scoreCls(sc0)}"><div class="k">New AC on today's ducts</div><div class="n">${sc0}</div><div class="d">${M0.chokes.length} chokepoint${M0.chokes.length===1?'':'s'} · the unit is being strangled</div></div>
       <div class="arw">→</div>
-      <div class="bax ${scoreCls(sc)}"><div class="k">With this design</div><div class="n">${sc}</div><div class="d">${M.chokes.length} chokepoint${M.chokes.length===1?'':'s'}</div></div>
+      <div class="bax ${scoreCls(sc)}"><div class="k">Goettl design</div><div class="n">${sc}</div><div class="d">${M.chokes.length} chokepoint${M.chokes.length===1?'':'s'}${sc>=100?' · every spot clear':''}</div></div>
     </div>
     <div class="env" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">${tiles}</div>
-    ${pairs}${shots}`;
+    ${chain}${pairs}`;
 }
-
 // ---- saved checks on this device --------------------------------------------
 const SVKEY='fitcheck_saved_v1';
 function savedList(){ try{ const a=JSON.parse(store.get(SVKEY)||'[]'); return Array.isArray(a)?a:[] }catch(e){ return [] } }
@@ -2727,8 +2819,8 @@ $('#fillFromOld').onclick=()=>{ const old=oldPkg(); const curb=isCurbSetup(); co
   const left=sop.x<=rop.x?sop:rop, right=sop.x<=rop.x?rop:sop, gap=Math.max(0,right.x-left.x-left.w);
   if(!curb&&(S.elbowMode||'one')==='one'){ set('el_len',q(right.x+right.w-left.x)); set('el_h',Math.max(sop.h,rop.h)); set('el_div',q(left.w+gap/2)); set('el_x',q(left.x+oo)); set('el_throat',q(Math.min(sop.z,rop.z)+legHi)); }
   else { set('tr_sw',sop.w); set('tr_sh',sop.h); set('tr_sx',q(left.x+oo)); set('tr_sz',curb?sop.z:q(sop.z+legHi)); set('tr_rw',rop.w); set('tr_rh',rop.h); set('tr_gap',q(gap)); set('tr_rz',curb?rop.z:q(rop.z+legHi)); }
-  if(!num('st_l')&&old.l){ set('st_l',old.l); set('st_w',old.w) }
-  note.textContent=(sop.est||rop.est)?'Filled from spec — positions for this chassis are nominal (manufacturer does not publish offsets). Verify with a tape.':'Filled from the old unit\'s spec sheet'+(curb?'.':' (throat = opening bottom above the deck + high-side leg).'); standDiag(); };
+  deriveJack(); // v2.24: the jack is 1" bigger than the elbow face — a new face means a new jack box
+  note.textContent=(sop.est||rop.est)?'Filled from spec — positions for this chassis are nominal (manufacturer does not publish offsets). Verify with a tape.':'Filled from the old unit\'s spec sheet'+(curb?'.':' (throat = opening bottom above the deck + high-side leg).'); refreshOld(); standDiag(); };
 // geometry shared by the alignment drawing and its drag handler. Elevation (elbows): y up from the deck. Curb top view: y = in from the duct-side edge, drawn downward (duct side at the top).
 // v2.3: drawn in the ROOF frame — the existing metal stays where it was taped; the stand (at its relocation) and the unit (at its spot on the stand) are what move.
 function alignGeom(A){ const n=A.n, curb=A.curb; const so=standShift(); const deck=curb?0:(A.stand.h||0)+so.y; const px=(A.pos.x||0)+so.x, py=A.pos.y||0; const sx=so.x;
@@ -2850,7 +2942,7 @@ function summaryText(o){
   if(isPkg()&&S.tkEndOld==='bad') L.push('EXISTING: take-offs run to the end of the supply trunk — the last 8–12" should be clear');
   airSummaryLines().forEach(l=>L.push(l));
   { const M=flowModel(o,S.fix); if(M){ const M0=flowModel(o,TODAY); const strip=t=>String(t).replace(/<[^>]+>/g,''); const inst=S.fix.install||'reuse';
-    L.push(`COMFORT SCORE: ${M0.score.total}${M.score.total!==M0.score.total?` → ${M.score.total} with proposed fixes`:''} (airflow ${M.score.air}/40 · insulation ${M.score.ins}/30 · static ${M.score.st}/15 · return ${M.score.ret}/15${M.score.caps.length?' · capped: '+M.score.caps.join(', '):''})`);
+    L.push(`COMFORT SCORE: ${M0.score.total}${M.score.total!==M0.score.total?` → ${M.score.total} with proposed fixes`:''} (${scoreBreak(M.score)})`);
     L.push(`Airflow: needs ${CFM(M.needs)} CFM (400/ton) · aim ${CFM(M.design)} (${S.thr.cpt}/ton) · est. delivered ${CFM(M0.delivered)}${M.delivered!==M0.delivered?` → ${CFM(M.delivered)} with fixes`:''}${M.op?` · static measured ${staticMeasTxt(M)} → this design ${staticTxt(M)} (reduction, not a promised figure)`:''}`);
     if(inst!=='reuse') L.push(`Install proposal: ${inst==='curb'?'NEW CURB — two enlarged roof holes, new plenum drops to the attic, existing ducts reattached':'NEW CURB over the existing roof penetrations — existing drops reused'}`);
     { const sc=scopeState(); if(sc.lines.length) L.push(`INSTALL SCOPE: ${sc.lines.join(' · ')}`); }
