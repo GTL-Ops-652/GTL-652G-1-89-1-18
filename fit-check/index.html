@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-14 v2.32 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-14 v2.33 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -1987,7 +1987,8 @@ window.addEventListener('resize',draw);
 function buildScene(){
   scene=[]; sceneFloor=z=>0; sceneLines=null; syncMoveUi(); const GHOST='#9aa6b2', FURN='#3678A0', COIL='#77B2D0', HATCH='#ffd166', SPACE='#77B2D0', METAL='#d9e2ec';
   if(isPkg()){ const row=rowsFor()[S.star]; if(!row) return draw(); const o=pick(S.star,row); const n=pkgDims(o.unit), old=oldPkg(); const j=judgePkg(o.unit); const A=j.A||alignState(o); const pos=A.pos;
-    const AM=flowModel(o,S.fix); const comp=slot=>AM?AM.comps.find(c=>c.slot===slot):null; const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null; const flowTag=c=>c?(c.newMetal?' · sized to the unit':` · max ${CFM(c.max)} CFM`):''; // v2.4 airflow colouring
+    const AM=flowModel(o,S.fix); const comp=slot=>AM?AM.comps.find(c=>c.slot===slot):null; const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null; const tkTag=c=>` · ${c.spec.n} runs · ${CFM(Math.round(AM.design/Math.max(1,c.spec.n)))} CFM each`; // v2.33 — never a capacity sum on a set of branches
+    const flowTag=c=>c?(c.newMetal?' · sized to the unit':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?tkTag(c):` · max ${CFM(c.max)} CFM`)):''; // v2.4 airflow colouring
     const deck=A.stand.h||0; const isCurb=A.curb, pitched=isPitched(); const st=A.stand;
     // roof frame: the roof, jack, metal and the old unit stay where they were measured; the stand (and the new unit riding on it) is drawn at its relocated spot
     const so=standShift(), dk=deck+so.y; const exR=(A.ex||[]).map(op=>Object.assign({},op,{x:op.x+so.x,z:op.z+so.y})); const moved=!!(so.x||so.y);
@@ -2148,7 +2149,7 @@ function buildScene(){
     if(AM){ const F=E[o.furn||o.ahu], C=o.coil?E[o.coil]:null;
       const comp=s=>AM.comps.find(c=>c.slot===s); const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null;
       const NEWM='#a9d9bd', METAL='#d9e2ec'; const isNew=c=>!!(c&&(c.fixed||c.newMetal));
-      const tag=c=>c?` · max ${CFM(c.effMax!=null?c.effMax:c.max)} CFM`:'';
+      const tag=c=>!c?'':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?` · ${c.spec.n} runs · ${CFM(Math.round(AM.design/Math.max(1,c.spec.n)))} CFM each`:` · max ${CFM(c.effMax!=null?c.effMax:c.max)} CFM`);
       const put=(x,y,z,dx,dy,dz,c,label,cyl,la)=>scene.push({x,y,z,dx,dy,dz,cyl:cyl||undefined,color:flowCol(c)||(isNew(c)?NEWM:METAL),alpha:flowCol(c)?.85:(isNew(c)?.82:.6),noshadow:true,cls:c?c.cls:'',la:la||[0.5,1,0.5],label:label||null});
       const dsz=(c,fb)=>{ const sp=c&&c.spec; if(!sp||sp.kind==='multi') return fb==null?{a:null,b:null}:{a:fb,b:fb}; return sp.kind==='round'?{a:sp.d,b:sp.d,round:true}:{a:sp.w,b:sp.h} };
       const rpBox=(x,y,z,dx,dy,dz,label)=>{ const nw=!!(S.scope&&S.scope.rdrop); scene.push({x,y,z,dx,dy,dz,color:nw?'#a9d9bd':'#d9e2ec',alpha:nw?.78:.5,noshadow:true,la:[0.5,1,0.5],label}) }; // the return plenum is geometry, not a scored spot
@@ -2299,7 +2300,15 @@ function designDucts(o){ let M=flowModel(o,S.fix); if(!M) return; const inst=S.f
   const ORDER={grille:0,ret:1,sup:2,takeoff:3,penR:4,penS:4,elbR:5,elbS:5}; // the ducts first, then the holes they pass through — a hole is sized to its duct
   for(let pass=0;pass<3;pass++){ M=flowModel(o,S.fix); const before=JSON.stringify(S.fix);
     M.comps.filter(c=>!c.newMetal&&!skipCurb(c.slot)).sort((a,b)=>ORDER[a.slot]-ORDER[b.slot]).forEach(c=>{ const Mx=flowModel(o,S.fix); const cx=Mx.comps.find(x=>x.slot===c.slot); if(!cx) return;
-      const want=needAreaFor(c.slot,Mx); if(cx.cls==='bad'||cx.neck||(want!=null&&cx.area<want-0.5)){ const f=mdFixSpec(c.slot,Mx)||legacyFix(c.slot,want,currentFixOrBase(c.slot)); if(f) S.fix[c.slot]=f } });
+      // v2.33 — Design to 100 opens what is RESTRICTING and nothing else. A spot that already carries the design airflow inside its
+      // velocity limit is left exactly as it is, however generous the worksheet size is (Stephen 2026-09-14: the old take-offs already
+      // passed 1,335 CFM on a 3-ton and it still upsized them — "it already had enough"). The Manual D size is what to INSTALL when a
+      // spot has to change; it is not a reason to replace duct that is already carrying the air.
+      // The ONE exception is the filter grille: its size feeds back into the worksheet, because the filter's pressure drop is a function of
+      // its face velocity. A grille that only just squeaks under the choke line still costs the design real static, so it is held to the
+      // 300 fpm design face (the worksheet size). Everything else is judged on whether it carries the air.
+      const want=needAreaFor(c.slot,Mx); const faceShort=c.slot==='grille'&&want!=null&&cx.area<want-0.5;
+      if(cx.cls!=='ok'||cx.neck||faceShort){ const f=mdFixSpec(c.slot,Mx)||legacyFix(c.slot,want,currentFixOrBase(c.slot)); if(f) S.fix[c.slot]=f } });
     if(JSON.stringify(S.fix)===before) break }
   save() }
 function designTo100(o){ let M=flowModel(o,S.fix); if(!M) return; designDucts(o); const ins=insulState(); if(ins.known&&ins.R<R_MIN) S.fix.insul='38';
