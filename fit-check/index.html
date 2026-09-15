@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-15 v2.34 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-15 v2.35 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -458,7 +458,7 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
   <div class="card" id="homeCard">
     <h2>The home</h2>
     <p class="help">Square footage and how the house is built give the Manual&nbsp;J size &mdash; the tonnage to recommend on this job. Open <b>Room by room</b> to measure the rooms and design the duct all the way to every register. Leave it closed and the tool works exactly as it always has.</p>
-    <div class="sect stat"><div class="sh"><span class="sn"></span><span class="st">Size &amp; build</span><span class="sd">Sets sq ft per ton</span></div><div class="sb">
+    <div class="sect stat"><div class="sh"><span class="sn"></span><span class="st">Size, build &amp; attic</span><span class="sd">Sets the tonnage, and the way out of it</span></div><div class="sb">
       <div class="row">
         <div class="field" style="max-width:240px"><label>Total conditioned sq ft</label><input id="homeSf" type="number" inputmode="numeric" min="300" step="25" placeholder="1450"></div>
         <div class="field" style="flex:2"><label>&nbsp;</label><div class="note" style="padding:8px 0">Whole house, heated and cooled. Garage and patio do not count.</div></div>
@@ -466,9 +466,19 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
       <h4 class="sub">How is the house built?</h4>
       <div class="seg" id="buildSeg">
         <button data-v="standard"><b>Standard build</b><span>1980&ndash;2015 tract home, R&#8209;30 to R&#8209;38 attic &middot; 400 sq ft / ton</span></button>
-        <button data-v="pre1980"><b>Old &mdash; pre&#8209;1980</b><span>Thin attic, single pane, leaky duct &middot; half&#8209;ton up, or attic to R&#8209;60</span></button>
+        <button data-v="pre1980"><b>Old &mdash; pre&#8209;1980</b><span>Thin attic, single pane, leaky duct &middot; half&#8209;ton up, or bring the attic up</span></button>
         <button data-v="hieff"><b>High&#8209;efficiency home</b><span>Attic ceiling insulated and sealed &middot; 600 sq ft / ton</span></button>
       </div>
+      <h4 class="sub">How much attic insulation is there?</h4>
+      <p class="note" style="margin:0 0 8px">Eyeball it over the ceiling joists. This is what tells us whether a bigger unit is the answer, or whether topping the attic up gets the house there on the Manual&nbsp;J size.</p>
+      <div class="row">
+        <div class="field"><label>Depth <small>inches</small></label><input type="number" inputmode="decimal" id="in_depth" placeholder="8"></div>
+        <div class="field"><label>Type</label><select id="in_type"><option value="unknown">Unknown / mixed (&asymp;R-2.8 per in)</option><option value="blown_fg">Blown fiberglass (&asymp;R-2.5 per in)</option><option value="cellulose">Blown cellulose (&asymp;R-3.5 per in)</option><option value="batts">Fiberglass batts (&asymp;R-3.2 per in)</option><option value="spray">Spray foam (&asymp;R-6 per in)</option><option value="none">None</option></select></div>
+        <div class="field opt"><label>Or R-value if known <small>optional</small></label><input type="number" inputmode="decimal" id="in_r" placeholder="R-19"></div>
+      </div>
+      <p class="help" style="margin:8px 0 0">2&times;6 joists are 5&frac12;" &mdash; insulation flush with the top of a 2&times;6 is about R-14 blown fiberglass. Las Vegas minimum R-38; today's code (2021 IECC, Clark County) is R-49 on new construction.</p>
+      <div class="msg" id="insulRead" style="margin-top:10px"></div>
+
       <div id="mjOut"></div>
     </div></div>
 
@@ -699,19 +709,7 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
     <div class="msg" id="airflowRead" style="margin-top:10px"></div>
   </div>
 
-  <div class="card" id="insulCard">
-    <h2>Attic insulation</h2>
-    <div class="sect ins"><div class="sh"><span class="sn"></span><span class="st">How deep is it?</span><span class="sd">Eyeball it over the ceiling joists</span></div><div class="sb">
-    <div class="row">
-      <div class="field"><label>Depth <small>inches</small></label><input type="number" inputmode="decimal" id="in_depth" placeholder="8"></div>
-      <div class="field"><label>Type</label><select id="in_type"><option value="unknown">Unknown / mixed (≈R-2.8 per in)</option><option value="blown_fg">Blown fiberglass (≈R-2.5 per in)</option><option value="cellulose">Blown cellulose (≈R-3.5 per in)</option><option value="batts">Fiberglass batts (≈R-3.2 per in)</option><option value="spray">Spray foam (≈R-6 per in)</option><option value="none">None</option></select></div>
-      <div class="field opt"><label>Or R-value if known <small>optional</small></label><input type="number" inputmode="decimal" id="in_r" placeholder="R-19"></div>
-    </div>
-    <p class="help" style="margin:8px 0 0">2×6 joists are 5½" — insulation flush with the top of a 2×6 is about R-14 blown fiberglass. Las Vegas minimum R-38; today's code (2021 IECC, Clark County) is R-49 on new construction.</p>
-    </div></div>
-    <div class="msg" id="insulRead" style="margin-top:10px"></div>
-  </div>
-</section>
+  </section>
 
 <!-- ============ STEP 2 ============ -->
 <section class="panel" id="p2">
@@ -3297,7 +3295,17 @@ function summaryText(o){
   { const P=issuePairs(o); if(P.length){ L.push(''); L.push('WHAT WAS WRONG → HOW THIS DESIGN FIXES IT');
       P.forEach(x=>L.push(`- ${strip(x.t)} (${strip(x.was)}): ${strip(x.wasWhy)} ${x.fixed?'FIXED → '+strip(x.now)+' — '+strip(x.nowWhy):'STILL OPEN — '+strip(x.nowWhy)}`)) } }
   { const B=rbrBuild(), sfh=rbrHomeSf(), rec=rbrRecTons();
-    if(sfh&&B){ L.push(''); L.push(`THE HOME: ${CFM(sfh)} sq ft · ${B.n} · Manual J ${rec} ton (${B.sf} sq ft/ton)${RM&&RM.loadT?` · measured room load ${CFM(RM.needTot)} CFM = ${RM.loadT} ton`:''}`) }
+    if(sfh&&B){ L.push(''); L.push(`THE HOME: ${CFM(sfh)} sq ft · ${B.n} · Manual J ${rec} ton (${B.sf} sq ft/ton)${RM&&RM.loadT?` · measured room load ${CFM(RM.needTot)} CFM = ${RM.loadT} ton`:''}`);
+      { const ai=insulState(); if(ai.known) L.push(`  Attic: R-${fmt(ai.R)}${ai.src&&ai.src!=='entered'?' ('+ai.src+')':''}`); }
+      // v2.35 — the size question always goes out with both answers on it
+      { const c=rbrSizeCall(); if(c){
+        L.push(`  SIZE CALL: the ${c.why==='rooms'?'measured rooms':'pre-1980 build'} put this at ${c.askT} ton against the ${c.rec} ton the square footage gives.`);
+        if(!c.known) L.push(`    Two ways to land it — the ${c.askT} ton, OR the ${c.rec} ton with the attic at R-38 or better. Attic depth was not taken, so this is undecided.`);
+        else if(c.already) L.push(`    Attic is already R-${fmt(c.R)} (at or over R-38), so there is no load to take out up there — THE ${c.askT} TON IS THE ANSWER.`);
+        else { L.push(`    1) Put in the ${c.askT} ton.`);
+               L.push(`    2) Keep the ${c.rec} ton and bring the attic R-${fmt(c.R)} → R-38: about ${Math.round(c.cut*100)}% off the load${c.why==='rooms'?` (${CFM(RM.needTot)} → ${CFM(Math.round(c.loadNow*(1-c.cut)))} CFM)`:''}.`);
+               L.push(`    ${c.closes?'Both land the house — the attic is the cheaper one and keeps paying every month after.':'R-38 alone does not close it — price R-49, or put in the '+c.askT+' ton.'}`) } } }
+    }
     if(S.rooms.length&&RM){ rbrModel();
       L.push(`ROOM BY ROOM: ${S.rooms.length} rooms · ${CFM(RM.roomSf)} sq ft measured · rooms want ${CFM(RM.needTot)} CFM · unit delivers ${CFM(RM.A.Qd)} (${Math.round(RM.pct*100)}%)`);
       S.rooms.forEach(r=>L.push(`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.ld} load · ${CFM(r.cfm)} CFM · ${r.nReg} × ${r.can}×${r.can} can · ${rbrDuctTxt(r).replace(/<[^>]+>/g,'')}`));
@@ -3334,7 +3342,7 @@ const RBR_TONS=[2,2.5,3,3.5,4,5];
 const RBR_CANS=[[8,7,167],[9,8,211],[10,9,260],[12,11,375],[14,13,510]]; // size, biggest neck, max CFM at 500 fpm on 75% free area
 const RBR_BUILD={
   standard:{n:'Standard build', sf:400, base:1.00, note:'400 sq ft per ton — the Las Vegas standard-build number.'},
-  pre1980:{ n:'Old — pre-1980', sf:400, base:1.00, note:'Sized at 400 sq ft per ton, then it needs one of two things: a half ton more, or the attic brought to R-60.'},
+  pre1980:{ n:'Old — pre-1980', sf:400, base:1.00, note:'Sized at 400 sq ft per ton, then it needs one of two things: a half ton more, or the attic brought up — how far up depends on what is there now.'},
   hieff:{   n:'High-efficiency home', sf:600, base:1/1.5, note:'Insulated and sealed at the attic ceiling — 600 sq ft per ton, and each room turns over less air.'}
 };
 const RBR_GW=50, RBR_GD=48;
@@ -3642,20 +3650,79 @@ function rbrRender(){
   $('#rbrOut').classList.toggle('hidden',!S.rooms.length);
 }
 function rbrTile(l,v,s,cls){ return `<div class="dim ${cls||''}"><div class="lbl">${l}</div><div class="val">${v}</div><div class="sub">${s}</div></div>` }
+// v2.35 — when the house asks for more than the square footage alone said, there are always TWO answers:
+// the larger unit, or the Manual J size with the attic brought up so the load comes down to meet it.
+// Ceiling conduction scales with 1/R, and the ceiling is roughly a third of a Las Vegas cooling load
+// (ACCalculator: R-19 → R-38 cuts total cooling load 15–25%; that jump halves the ceiling gain, so the
+// ceiling is carrying ~30–50% of the load — 0.30 is the conservative end and is what we quote).
+const RBR_CEIL_SHARE=0.30;
+// What topping the attic up to `target` takes off the whole-house load, as a fraction.
+function rbrInsCut(R,target){ if(R==null||!(target>0)||R>=target) return 0;
+  return RBR_CEIL_SHARE*(1-Math.max(R,1)/target) }
+// The size question, answered: which tonnage the house actually asks for, and whether insulation is a
+// way out of it. Returns null when there is nothing to decide.
+function rbrSizeCall(){
+  const rec=rbrRecTons(); if(!rec) return null;
+  const i=insulState(), R=i.known?i.R:null;
+  const pre=S.home.build==='pre1980';
+  // the size the house asks for: the measured rooms when they have been taken, else the build-type rule
+  const bigger=RBR_TONS.find(t=>t>rec)||null;
+  const askT=(RM&&RM.loadT&&RM.loadT>rec)?RM.loadT:(pre?bigger:null);
+  if(!askT||askT<=rec) return null;
+  const target=R_MIN; // at least R-38 — Stephen 2026-09-15
+  const cut=rbrInsCut(R,target);
+  // does the top-up actually close the gap? compare the load after the cut against what `rec` carries
+  const loadNow=(RM&&RM.needTot)?RM.needTot:rec*RBR_CPT*(askT/rec);
+  const capRec=rec*RBR_CPT;
+  const closes=R!=null && cut>0 && loadNow*(1-cut)<=capRec+1e-6;
+  return {rec, askT, why:(RM&&RM.loadT&&RM.loadT>rec)?'rooms':'build', R, known:i.known,
+          target, cut, closes, already:R!=null&&R>=target, loadNow, capRec,
+          cutT:Math.round(loadNow*(1-cut)/RBR_CPT*100)/100};
+}
+// The sentence the SM reads out. Never "the cross-check wants a bigger size" on its own.
+function rbrSizeCallHtml(c,short){
+  if(!c) return '';
+  const src=c.why==='rooms'
+    ? `The rooms you measured come to <b>${CFM(RM.needTot)} CFM</b> of load &mdash; that is a <b>${c.askT} ton</b> house, a size above the ${c.rec} ton the square footage alone gives.`
+    : `A pre-1980 house carries more load than its square footage suggests &mdash; that is a <b>${c.askT} ton</b> house on the rule, against the <b>${c.rec} ton</b> the square footage gives.`;
+  if(!c.known) return `${src} <b>Two ways to land it: put in the ${c.askT} ton, or keep the ${c.rec} ton and bring the attic to at least R-38.</b> Put the attic depth in above and the tool will tell you which one this house needs.`;
+  if(c.already) return `${src} The attic is already <b>R-${fmt(c.R)}</b>, at or over the R-38 minimum, so there is no load to take out up there &mdash; <b>the answer on this house is the ${c.askT} ton</b>.${c.R<R_CODE?` (R-49 is today's code; going R-${fmt(c.R)}&nbsp;&rarr;&nbsp;R-49 is worth about ${Math.round(rbrInsCut(c.R,R_CODE)*100)}% of the load &mdash; not enough to drop a size.)`:''}`;
+  const sold=t=>RBR_TONS.find(x=>x>=t-1e-9)||5;
+  const after=Math.round(c.loadNow*(1-c.cut));
+  const head=`${src} <b>Pick one:</b>`;
+  const two=`<br>&nbsp;&nbsp;<b>1 &mdash; Put in the ${c.askT} ton.</b>`+
+    `<br>&nbsp;&nbsp;<b>2 &mdash; Keep the ${c.rec} ton and bring the attic from R-${fmt(c.R)} up to at least R-38.</b> That takes about <b>${Math.round(c.cut*100)}%</b> off the load`+
+    (c.why==='rooms'?` &mdash; ${CFM(RM.needTot)} CFM becomes ${CFM(after)}, a <b>${sold(after/RBR_CPT)} ton</b> house.`:`, which is what the half-ton up is covering.`);
+  if(c.closes) return short?head+two:head+two+
+    `<br><span style="font-weight:600">Both land the house. The attic is the cheaper one and it keeps paying every month after &mdash; the unit only has to be bigger if the insulation stays as it is.</span>`;
+  const cut49=rbrInsCut(c.R,R_CODE), after49=Math.round(c.loadNow*(1-cut49));
+  const closes49=sold(after49/RBR_CPT)<=c.rec;
+  return short?head+two:head+two+
+    `<br><span style="font-weight:600;color:#a35300">R-38 helps but does not get all the way there. R-49 &mdash; today's code &mdash; takes about ${Math.round(cut49*100)}% off`+(c.why==='rooms'?` (${CFM(after49)} CFM, ${sold(after49/RBR_CPT)} ton)`:'')+`, `+
+    (c.why!=='rooms'?`still short of the half ton.`:(closes49?`which does land it on the ${c.rec} ton.`:`which still leaves it a size big.`))+
+    ` If the attic is staying as it is, put in the ${c.askT} ton.</span>`;
+}
 function rbrMJ(){
   const el=$('#mjOut'), B=rbrBuild(), sf=rbrHomeSf(), rec=rbrRecTons();
   if(!B||!sf){ el.innerHTML='<div class="msg" style="margin-top:10px">Put in the conditioned square footage and how the house is built and the Manual J size lands here.</div>'; return }
   const A=rbrAir(), fits=!A.live||A.tons>=(RM.loadT||rec)-0.01;
+  const call=rbrSizeCall();
   el.innerHTML='<div class="env" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:10px">'+
     rbrTile('Conditioned area',CFM(sf)+' sq ft',B.n,'')+
     rbrTile('Manual J size',rec+' ton',CFM(sf)+' ÷ '+B.sf+' = '+(sf/B.sf).toFixed(2)+' — rounded up','ok')+
-    (RM.loadT?rbrTile('Measured cross-check',RM.loadT+' ton',CFM(RM.needTot)+' CFM of room load ÷ '+RBR_CPT,RM.loadT>rec?'warn':'')
+    (RM.loadT?rbrTile('Measured cross-check',RM.loadT+' ton',CFM(RM.needTot)+' CFM of room load ÷ '+RBR_CPT+(RM.loadT>rec?' — bigger unit, or attic to R-38':''),RM.loadT>rec?'warn':'')
              :rbrTile('Measured cross-check','—','appears once the rooms are entered',''))+
+    (call?rbrTile('The way out',
+        !call.known?'Attic depth?':(call.already?call.askT+' ton':(call.closes?'Attic to R-38':call.askT+' ton')),
+        !call.known?'tells us which one':(call.already?'attic already R-'+fmt(call.R):(call.closes?'or the '+call.askT+' ton':'R-38 alone is short')),
+        !call.known?'':(call.already?'warn':(call.closes?'ok':'warn'))):'')+
     (A.live?rbrTile('Unit being quoted',tons1(A.tons)+' ton',A.name,fits?'ok':'bad'):'')+
     '</div>'+
     '<div class="msg">'+B.note+
-      (S.home.build==='pre1980'?` <b>Pre-1980 — pick one:</b> go up to <b>${RBR_TONS.find(t=>t>rec)||5} ton</b>, <i>or</i> stay at ${rec} ton and bring the attic to <b>R-60</b>. Both land the house; one sells equipment, the other sells insulation.`:'')+
-      (RM.loadT&&RM.loadT>rec?`<br><br><b style="color:#a35300">The measured rooms come out a size larger than the square footage alone.</b> ${CFM(RM.needTot)} CFM of room load is ${RM.loadT} ton — the vaulted and high-load rooms are what move it.`:'')+
+      // v2.35: when the house asks for more than the square footage gave, the answer is never just
+      // "the cross-check wants a bigger size" — it is the bigger unit OR the attic, and the attic depth
+      // entered above is what decides which one this house actually needs.
+      (call?`<br><br>${rbrSizeCallHtml(call)}`:'')+
       (A.live&&!fits?`<br><br><b style="color:var(--bad)">The ${tons1(A.tons)}-ton being quoted is under what the house asks for.</b> It delivers ${Math.round(RM.pct*100)}% of the air the rooms need — the duct design still balances, but every room is short by the same share.`:'')+
     '</div>';
 }
@@ -3749,6 +3816,9 @@ function rbrPlan2D(){ const box=$('#duct2d'); if(!box) return;
 function rbrWire(){
   const sf=$('#homeSf'); if(sf){ sf.value=S.home.sf||''; sf.addEventListener('input',e=>{ S.home.sf=e.target.value; save(); rbrRender(); rbrSync() }) }
   $$('#buildSeg button').forEach(b=>b.addEventListener('click',()=>{ S.home.build=b.dataset.v; rbrSyncSeg(); save(); rbrRender(); rbrSync() }));
+  // v2.35: the attic now lives in The home, because what is up there decides whether the answer is a
+  // bigger unit or a top-up. Retyping it re-runs the size recommendation and the banner, nothing else.
+  ['in_depth','in_type','in_r'].forEach(id=>{ const el=$('#'+id); if(el) el.addEventListener('input',()=>{ try{ rbrModel(); rbrMJ(); rbrSizeFlag() }catch(e){} }) });
   rbrSyncSeg();
   $('#rbrBtn').addEventListener('click',()=>{ S.rbrOpen=!S.rbrOpen; save();
     if(S.rbrOpen&&!S.rooms.length) rbrSeed();
@@ -3834,6 +3904,10 @@ function rbrSizeFlag(){
     } else if(A.live){
       html=`<div class="banner ok" style="margin:0 0 10px">Matches the Manual J size — <b>${rec} ton</b> for ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()}.</div>`;
     }
+    // v2.35: if the house is asking for a size above the square footage, the banner carries BOTH ways
+    // out (bigger unit / attic to R-38) rather than just reporting the gap.
+    const call=rbrSizeCall();
+    if(call) html+=`<div class="banner ${call.known&&call.closes&&!call.already?'warn':'bad'}" style="margin:0 0 10px">${rbrSizeCallHtml(call)}</div>`;
   }
   els.forEach(e=>{ e.innerHTML=html; e.classList.toggle('hidden',!html) });
 }
