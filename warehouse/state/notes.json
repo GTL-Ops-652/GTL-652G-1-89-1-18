@@ -138,5 +138,103 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-09-10"
+ },
+ "adj|2026-09-10|3262|Default Truck - Kdyn Johnson": {
+  "note": "ghost inventory adjustment",
+  "ts": 1789417778413,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-09-10|3259|Default Truck - Alberto Escobedo Quinones": {
+  "note": "ghost inventory adjustment",
+  "ts": 1789417799247,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-09-10|3263|Default Truck - Mason Staten": {
+  "note": "ghost inventory adjustment",
+  "ts": 1789417815774,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-09-11|3267|Open Box Warehouse HVAC": {
+  "note": "packaged unit replaced on job 555637 high limit switch repaired and put in open box, serial 2607245101",
+  "ts": 1789417844243,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3130|LAS-113926-CFT-H_125 Rodney Hendree": {
+  "note": "removed template to move tech to a different template",
+  "ts": 1789417941811,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3131|LAS-543113-SVC-P_420 Zach Wells": {
+  "note": "Adjustment for truck 420, count 964. Truck has a positive variance of $114.38, mainly due to having an extra shower trim kit and extra flood stop kit",
+  "ts": 1789417972706,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3141|LAS-129193-DRW-P_194 RET": {
+  "note": "retired vehicle removing ghost inventory",
+  "ts": 1789418360077,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3143|LAS-B57663-RET-H_291 RET": {
+  "note": "Retired Vehicle Wash out",
+  "ts": 1789418374384,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3146|LAS-124749-RET-H_177 RET": {
+  "note": "Retired Vehicle Wash out",
+  "ts": 1789418420432,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3145|LAS-512081-RET-H_124 RET": {
+  "note": "Retired Vehicle Wash out",
+  "ts": 1789418453311,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3144|LAS-122306-INS-P_511 RET": {
+  "note": "Retired Vehicle Wash out",
+  "ts": 1789418491712,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3148|LAS-546016-SVC-H_138 N/A": {
+  "note": "inventory count for Leo",
+  "ts": 1789418619753,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3149|LAS-177288-SVC-H_126 Ricardo Salas": {
+  "note": "stock adjustment for 126 ricardo",
+  "ts": 1789418655509,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3152|LAS-578184-SVC-P_409 Martelvious Jones": {
+  "note": "Adjustment for count 968, truck 409. Total variance is ($1242.55. ). $526 of this is a water heater that showed up in the count but was not found on the truck",
+  "ts": 1789418674925,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
  }
 }
