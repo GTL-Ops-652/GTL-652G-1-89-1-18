@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-15 v2.35 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-16 v2.36 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -3305,9 +3305,14 @@ function summaryText(o){
         else { L.push(`    1) Put in the ${c.askT} ton.`);
                L.push(`    2) Keep the ${c.rec} ton and bring the attic R-${fmt(c.R)} → R-38: about ${Math.round(c.cut*100)}% off the load${c.why==='rooms'?` (${CFM(RM.needTot)} → ${CFM(Math.round(c.loadNow*(1-c.cut)))} CFM)`:''}.`);
                L.push(`    ${c.closes?'Both land the house — the attic is the cheaper one and keeps paying every month after.':'R-38 alone does not close it — price R-49, or put in the '+c.askT+' ton.'}`) } } }
+      // v2.36 — a stretch call goes on the invoice with what the attic has to be
+      { const x=rbrStretchInfo(); if(x){
+        L.push(`  STRETCH CALL: load ${x.raw.toFixed(2)} ton → holding the ${x.size} ton (${x.over.toFixed(2)} over; we hold to ${x.stretch.toFixed(2)} before moving up${x.next?' to a '+x.next:''}).`);
+        L.push(`    A stretch only holds on an insulated house. ${!x.known?'Attic not taken — confirm R-38 or better before quoting the '+x.size+' ton.':(x.ok?'Attic R-'+fmt(x.R)+' — at or over R-38, the envelope carries it.':(x.closes?'Attic R-'+fmt(x.R)+' — UNDER R-38: bring it to R-38 with this unit, or put in the '+x.next+' ton.':'Attic R-'+fmt(x.R)+' — R-38 does not close it; put in the '+x.next+' ton.'))}`) } }
     }
     if(S.rooms.length&&RM){ rbrModel();
       L.push(`ROOM BY ROOM: ${S.rooms.length} rooms · ${CFM(RM.roomSf)} sq ft measured · rooms want ${CFM(RM.needTot)} CFM · unit delivers ${CFM(RM.A.Qd)} (${Math.round(RM.pct*100)}%)`);
+      L.push(`  CROSS-CHECK: ${CFM(RM.needTot)} CFM ÷ ${RM.cpt} CFM/ton (${RM.cptSrc}) = ${(RM.needTot/RM.cpt).toFixed(2)} → ${RM.loadT} ton`);
       S.rooms.forEach(r=>L.push(`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.ld} load · ${CFM(r.cfm)} CFM · ${r.nReg} × ${r.can}×${r.can} can · ${rbrDuctTxt(r).replace(/<[^>]+>/g,'')}`));
       if(S.rbrNew){ L.push(`NEW DUCT SYSTEM — REDOING THE ROOM-BY-ROOM DUCTS to ensure adequate flow to each room.`);
         L.push(`  Trunk: ${RM.segs.map(x=>x.tag+' Ø'+x.d+'" '+CFM(x.carry)+' CFM '+Math.round(x.len)+' ft').join(' · ')}`);
@@ -3345,6 +3350,33 @@ const RBR_BUILD={
   pre1980:{ n:'Old — pre-1980', sf:400, base:1.00, note:'Sized at 400 sq ft per ton, then it needs one of two things: a half ton more, or the attic brought up — how far up depends on what is there now.'},
   hieff:{   n:'High-efficiency home', sf:600, base:1/1.5, note:'Insulated and sealed at the attic ceiling — 600 sq ft per ton, and each room turns over less air.'}
 };
+
+/* ── THE STRETCH WINDOW (Stephen 2026-09-16) ─────────────────────────────────
+   A load a hair over a size does not buy the next size up. Hold the smaller
+   unit until the load is properly into the next one:
+     · a half-ton step (3 → 3.5 …)   hold until 0.15 ton over
+     · the 4 → 5 full-ton step       hold until 0.25 ton over (there is no 4.5)
+   Inside that window the unit is DELIBERATELY the smaller one, so the envelope
+   has to carry the difference — every output says so, and says what the attic
+   has to be for it to hold.  Both the square-footage Manual J and the measured
+   room cross-check round through here, so step 1 and the rooms never disagree. */
+const RBR_STRETCH_HALF=0.15, RBR_STRETCH_FULL=0.25;
+function rbrStretchFor(size){ const next=RBR_TONS.find(t=>t>size);
+  return (next!=null && next-size>=0.99) ? RBR_STRETCH_FULL : RBR_STRETCH_HALF }
+// the tonnage Goettl sells for a raw load, with the stretch allowance applied
+function rbrSold(t){
+  if(!(t>0)) return RBR_TONS[0];
+  const top=RBR_TONS[RBR_TONS.length-1];
+  if(t>=top-1e-9) return top;
+  let lo=RBR_TONS[0]; RBR_TONS.forEach(s=>{ if(s<=t+1e-9) lo=s });
+  if(t<=lo+1e-9) return lo;
+  return (t-lo) >= rbrStretchFor(lo)-1e-9 ? (RBR_TONS.find(s=>s>lo)||top) : lo;
+}
+// how the rounding went, in words, for the tile under the number
+function rbrRoundNote(raw){ const s=rbrSold(raw);
+  if(Math.abs(raw-s)<0.005) return 'lands on '+s;
+  if(raw<s) return 'rounded up to '+s;
+  return 'held at '+s+' — '+(raw-s).toFixed(2)+' over, inside the '+rbrStretchFor(s).toFixed(2)+' stretch' }
 const RBR_GW=50, RBR_GD=48;
 S.home=S.home||{}; if(S.home.sf==null) S.home.sf=''; S.home.build=S.home.build||null;
 S.rooms=Array.isArray(S.rooms)?S.rooms:[];
@@ -3361,7 +3393,7 @@ function rbrCap(){ return Math.max(60,Math.round(RBR_VENT_BASE*Math.pow(1.05,S.v
 function rbrHomeSf(){ const v=parseFloat(S.home.sf); return isFinite(v)&&v>0?v:null }
 function rbrBuild(){ return RBR_BUILD[S.home.build]||null }
 function rbrRecTons(){ const B=rbrBuild(), sf=rbrHomeSf(); if(!B||!sf) return null;
-  return RBR_TONS.find(t=>t>=sf/B.sf-1e-9)||5 }
+  return rbrSold(sf/B.sf) }
 function rbrOn(){ return S.rooms.length>0 }
 function rbrCanFor(cfm,neck){
   const byFace=RBR_CANS.find(c=>c[2]>=cfm-0.5)||RBR_CANS[RBR_CANS.length-1];
@@ -3378,6 +3410,22 @@ function rbrAir(){
   const t=rbrRecTons()||3;
   return {tons:t,Qd:Math.round(t*440),Qp:Math.round(t*415),fr:0.06,esp:spGoal(),name:t+'-ton (Manual J size — no unit picked yet)',live:false};
 }
+/* ── WHAT THE CROSS-CHECK DIVIDES BY (v2.36 R2 — Stephen 2026-09-16) ─────────
+   The measured room load is turned into a tonnage by the CFM PER TON THE UNIT
+   BEING QUOTED ACTUALLY MOVES — its own blower table at the design static — not
+   a flat 400.  It follows whatever kind of system is on the job, because
+   blowerFor() reads the table for the equipment that is selected:
+     split gas        → the FURNACE table          (o.furn)
+     split heat pump  → the AIR HANDLER table      (o.ahu)
+     package gas / HP → the package FAMILY table   (o.unit)
+   With no unit picked yet it falls back to RBR_CPT (400) and the tile says so. */
+const RBR_SYS={split_gas:'split gas — furnace blower',split_hp:'split heat pump — air handler',
+               pkg_gas:'package gas/electric',pkg_hp:'package heat pump'};
+function rbrCpt(A){ if(!A && RM && RM.cpt) return RM.cpt; A=A||rbrAir();
+  if(A.live && A.tons>0 && A.Qd>0){ const c=A.Qd/A.tons; if(c>=250&&c<=600) return Math.round(c) }
+  return RBR_CPT }
+function rbrCptSrc(A){ if(!A && RM && RM.cptSrc) return RM.cptSrc; A=A||rbrAir();
+  return A.live ? A.name+(RBR_SYS[S.sys]?' · '+RBR_SYS[S.sys]:'') : 'no unit picked yet — '+RBR_CPT+' assumed' }
 
 /* ---------- the design pass ---------- */
 let RM=null;
@@ -3388,7 +3436,8 @@ function rbrModel(){
     r.lf=r.ld==='high'?1.25:(r.ld==='low'?0.85:1);
     r.need=r.sf*B.base*r.hf*r.lf; });
   const needTot=rooms.reduce((s,r)=>s+r.need,0), roomSf=rooms.reduce((s,r)=>s+r.sf,0);
-  const loadT=rooms.length?(RBR_TONS.find(t=>t>=needTot/RBR_CPT-1e-9)||5):null;
+  const cpt=rbrCpt(A), cptSrc=rbrCptSrc(A);          // the unit's own CFM/ton, off its own blower table
+  const loadT=rooms.length?rbrSold(needTot/cpt):null;
   // distribute what the unit delivers — largest remainder so the rooms total it exactly
   const ratio=needTot>0?A.Qd/needTot:0, raw=rooms.map(r=>r.need*ratio), out=raw.map(v=>Math.floor(v));
   let left=Math.round(A.Qd)-out.reduce((s,v)=>s+v,0);
@@ -3417,7 +3466,7 @@ function rbrModel(){
       segs.push({arm:k,from:prev,to:x,len:Math.max(len,1),carry,d:sz.d,vel:sz.vel,first:i===0,room:arm[i].n});
       prev=x; } });
   rooms.forEach(r=>{ r.run=Math.round(Math.abs(rbrCy(r)-uy)+3); r.legFt=r.tys>0?Math.round((r.w+r.d)/4+3):0 });
-  RM={B,A,cap,tmat:mat,segs,needTot,roomSf,loadT,ux,uy,
+  RM={B,A,cap,tmat:mat,segs,needTot,roomSf,loadT,cpt,cptSrc,ux,uy,
       recT:rbrRecTons(), homeSf:rbrHomeSf(),
       pct:needTot>0?A.Qd/needTot:1,
       vents:rooms.reduce((a,r)=>a+r.nReg,0), taps:rooms.reduce((a,r)=>a+r.nTap,0),
@@ -3672,12 +3721,13 @@ function rbrSizeCall(){
   const target=R_MIN; // at least R-38 — Stephen 2026-09-15
   const cut=rbrInsCut(R,target);
   // does the top-up actually close the gap? compare the load after the cut against what `rec` carries
-  const loadNow=(RM&&RM.needTot)?RM.needTot:rec*RBR_CPT*(askT/rec);
-  const capRec=rec*RBR_CPT;
+  const cpt=rbrCpt();
+  const loadNow=(RM&&RM.needTot)?RM.needTot:rec*cpt*(askT/rec);
+  const capRec=rec*cpt;
   const closes=R!=null && cut>0 && loadNow*(1-cut)<=capRec+1e-6;
   return {rec, askT, why:(RM&&RM.loadT&&RM.loadT>rec)?'rooms':'build', R, known:i.known,
           target, cut, closes, already:R!=null&&R>=target, loadNow, capRec,
-          cutT:Math.round(loadNow*(1-cut)/RBR_CPT*100)/100};
+          cpt, cutT:Math.round(loadNow*(1-cut)/cpt*100)/100};
 }
 // The sentence the SM reads out. Never "the cross-check wants a bigger size" on its own.
 function rbrSizeCallHtml(c,short){
@@ -3687,31 +3737,66 @@ function rbrSizeCallHtml(c,short){
     : `A pre-1980 house carries more load than its square footage suggests &mdash; that is a <b>${c.askT} ton</b> house on the rule, against the <b>${c.rec} ton</b> the square footage gives.`;
   if(!c.known) return `${src} <b>Two ways to land it: put in the ${c.askT} ton, or keep the ${c.rec} ton and bring the attic to at least R-38.</b> Put the attic depth in above and the tool will tell you which one this house needs.`;
   if(c.already) return `${src} The attic is already <b>R-${fmt(c.R)}</b>, at or over the R-38 minimum, so there is no load to take out up there &mdash; <b>the answer on this house is the ${c.askT} ton</b>.${c.R<R_CODE?` (R-49 is today's code; going R-${fmt(c.R)}&nbsp;&rarr;&nbsp;R-49 is worth about ${Math.round(rbrInsCut(c.R,R_CODE)*100)}% of the load &mdash; not enough to drop a size.)`:''}`;
-  const sold=t=>RBR_TONS.find(x=>x>=t-1e-9)||5;
+  const sold=rbrSold, cpt=c.cpt||rbrCpt();
   const after=Math.round(c.loadNow*(1-c.cut));
   const head=`${src} <b>Pick one:</b>`;
   const two=`<br>&nbsp;&nbsp;<b>1 &mdash; Put in the ${c.askT} ton.</b>`+
     `<br>&nbsp;&nbsp;<b>2 &mdash; Keep the ${c.rec} ton and bring the attic from R-${fmt(c.R)} up to at least R-38.</b> That takes about <b>${Math.round(c.cut*100)}%</b> off the load`+
-    (c.why==='rooms'?` &mdash; ${CFM(RM.needTot)} CFM becomes ${CFM(after)}, a <b>${sold(after/RBR_CPT)} ton</b> house.`:`, which is what the half-ton up is covering.`);
+    (c.why==='rooms'?` &mdash; ${CFM(RM.needTot)} CFM becomes ${CFM(after)}, a <b>${sold(after/cpt)} ton</b> house${sold(after/cpt)<c.rec?`, comfortably inside the ${c.rec} ton`:''}.`:`, which is what the half-ton up is covering.`);
   if(c.closes) return short?head+two:head+two+
     `<br><span style="font-weight:600">Both land the house. The attic is the cheaper one and it keeps paying every month after &mdash; the unit only has to be bigger if the insulation stays as it is.</span>`;
   const cut49=rbrInsCut(c.R,R_CODE), after49=Math.round(c.loadNow*(1-cut49));
-  const closes49=sold(after49/RBR_CPT)<=c.rec;
+  const closes49=sold(after49/cpt)<=c.rec;
   return short?head+two:head+two+
-    `<br><span style="font-weight:600;color:#a35300">R-38 helps but does not get all the way there. R-49 &mdash; today's code &mdash; takes about ${Math.round(cut49*100)}% off`+(c.why==='rooms'?` (${CFM(after49)} CFM, ${sold(after49/RBR_CPT)} ton)`:'')+`, `+
+    `<br><span style="font-weight:600;color:#a35300">R-38 helps but does not get all the way there. R-49 &mdash; today's code &mdash; takes about ${Math.round(cut49*100)}% off`+(c.why==='rooms'?` (${CFM(after49)} CFM, ${sold(after49/cpt)} ton)`:'')+`, `+
     (c.why!=='rooms'?`still short of the half ton.`:(closes49?`which does land it on the ${c.rec} ton.`:`which still leaves it a size big.`))+
     ` If the attic is staying as it is, put in the ${c.askT} ton.</span>`;
+}
+
+/* The stretch call: we are holding the SMALLER unit on a load that sits just
+   above it. Says so plainly, and makes it conditional on what is in the attic. */
+function rbrStretchInfo(){
+  const B=rbrBuild(), sf=rbrHomeSf(), rec=rbrRecTons();
+  if(!B||!sf||!rec) return null;
+  if(rbrSizeCall()) return null;                       // the two-answer size call owns the message
+  const measured=!!(S.rooms.length && RM && RM.needTot);
+  const raw=measured ? RM.needTot/rbrCpt() : sf/B.sf;  // the load actually driving the call
+  const size=rbrSold(raw);
+  if(size<rec) return null;                            // the sq-ft size already covers the rooms
+  if(!(raw>size+1e-9)) return null;                    // lands on or under the size — no stretch
+  const next=RBR_TONS.find(t=>t>size)||null;
+  const i=insulState(), R=i.known?i.R:null, target=R_MIN, cut=rbrInsCut(R,target);
+  return {raw, size, next, measured, over:raw-size, pct:raw/size-1, stretch:rbrStretchFor(size),
+          R, known:i.known, target, cut, ok:R!=null&&R>=target,
+          closes:R!=null&&cut>0&&raw*(1-cut)<=size+1e-9};
+}
+function rbrStretchHtml(x,short){
+  if(!x) return '';
+  const head=`The load works out to <b>${x.raw.toFixed(2)} ton</b> and the call is the <b>${x.size} ton</b> — `+
+    `only ${x.over.toFixed(2)} over, inside the ${x.stretch.toFixed(2)} ton we hold before moving up`+
+    (x.next?` to a ${x.next}`:'')+`. <b>That makes this a stretch, and a stretch only holds on a house that is insulated.</b>`;
+  if(short) return head;
+  if(!x.known) return `${head} Put the attic depth in above and the tool will say whether this house carries it.`;
+  if(x.ok) return `${head} The attic is <b>R-${fmt(x.R)}</b>, at or over the R-38 minimum &mdash; <b>the envelope carries it, the ${x.size} ton is the unit</b>.`;
+  if(x.closes) return `${head} The attic is <b>R-${fmt(x.R)}</b>, <b>under the R-38 minimum</b>. Bring it to at least R-38 with this unit &mdash; that takes about ${Math.round(x.cut*100)}% off the load`+
+    (x.measured?` (${CFM(RM.needTot)} CFM becomes ${CFM(Math.round(RM.needTot*(1-x.cut)))})`:'')+
+    `, which lands it comfortably. <b>Leave the attic as it is and the honest call is the ${x.next} ton.</b>`;
+  return `${head} The attic is <b>R-${fmt(x.R)}</b> and R-38 does not take enough off to land it &mdash; <b>put in the ${x.next} ton</b>.`;
 }
 function rbrMJ(){
   const el=$('#mjOut'), B=rbrBuild(), sf=rbrHomeSf(), rec=rbrRecTons();
   if(!B||!sf){ el.innerHTML='<div class="msg" style="margin-top:10px">Put in the conditioned square footage and how the house is built and the Manual J size lands here.</div>'; return }
   const A=rbrAir(), fits=!A.live||A.tons>=(RM.loadT||rec)-0.01;
-  const call=rbrSizeCall();
+  const call=rbrSizeCall(), str=rbrStretchInfo();
   el.innerHTML='<div class="env" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:10px">'+
     rbrTile('Conditioned area',CFM(sf)+' sq ft',B.n,'')+
-    rbrTile('Manual J size',rec+' ton',CFM(sf)+' ÷ '+B.sf+' = '+(sf/B.sf).toFixed(2)+' — rounded up','ok')+
-    (RM.loadT?rbrTile('Measured cross-check',RM.loadT+' ton',CFM(RM.needTot)+' CFM of room load ÷ '+RBR_CPT+(RM.loadT>rec?' — bigger unit, or attic to R-38':''),RM.loadT>rec?'warn':'')
+    rbrTile('Manual J size',rec+' ton',CFM(sf)+' ÷ '+B.sf+' = '+(sf/B.sf).toFixed(2)+' — '+rbrRoundNote(sf/B.sf),'ok')+
+    (RM.loadT?rbrTile('Measured cross-check',RM.loadT+' ton',
+        CFM(RM.needTot)+' CFM ÷ '+RM.cpt+' CFM/ton ('+rbrEsc(RM.cptSrc)+') = '+(RM.needTot/RM.cpt).toFixed(2)+' — '+rbrRoundNote(RM.needTot/RM.cpt)+(RM.loadT>rec?' — bigger unit, or attic to R-38':''),RM.loadT>rec?'warn':'')
              :rbrTile('Measured cross-check','—','appears once the rooms are entered',''))+
+    (str?rbrTile('Stretch call',str.size+' ton held',
+        str.raw.toFixed(2)+' ton load · '+(!str.known?'attic depth?':(str.ok?'attic R-'+fmt(str.R)+', it carries it':'needs the attic at R-38')),
+        str.ok?'ok':'warn'):'')+
     (call?rbrTile('The way out',
         !call.known?'Attic depth?':(call.already?call.askT+' ton':(call.closes?'Attic to R-38':call.askT+' ton')),
         !call.known?'tells us which one':(call.already?'attic already R-'+fmt(call.R):(call.closes?'or the '+call.askT+' ton':'R-38 alone is short')),
@@ -3723,6 +3808,9 @@ function rbrMJ(){
       // "the cross-check wants a bigger size" — it is the bigger unit OR the attic, and the attic depth
       // entered above is what decides which one this house actually needs.
       (call?`<br><br>${rbrSizeCallHtml(call)}`:'')+
+      // v2.36: when we hold the smaller unit on a load just over it, say so and make it
+      // conditional on the envelope — a stretch is only honest on an insulated house.
+      (str?`<br><br>${rbrStretchHtml(str)}`:'')+
       (A.live&&!fits?`<br><br><b style="color:var(--bad)">The ${tons1(A.tons)}-ton being quoted is under what the house asks for.</b> It delivers ${Math.round(RM.pct*100)}% of the air the rooms need — the duct design still balances, but every room is short by the same share.`:'')+
     '</div>';
 }
@@ -3908,6 +3996,8 @@ function rbrSizeFlag(){
     // out (bigger unit / attic to R-38) rather than just reporting the gap.
     const call=rbrSizeCall();
     if(call) html+=`<div class="banner ${call.known&&call.closes&&!call.already?'warn':'bad'}" style="margin:0 0 10px">${rbrSizeCallHtml(call)}</div>`;
+    else { const st=rbrStretchInfo();
+      if(st) html+=`<div class="banner ${st.ok?'ok':'warn'}" style="margin:0 0 10px">${rbrStretchHtml(st)}</div>` }
   }
   els.forEach(e=>{ e.innerHTML=html; e.classList.toggle('hidden',!html) });
 }
