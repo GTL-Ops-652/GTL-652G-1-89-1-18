@@ -462,7 +462,45 @@
   "at": "2026-09-15"
  },
  "standing|deadloc|Goettl Air Conditioning & Plumbing": {
-  "note": ".",
-  "ts": 1789516609552
+  "note": "wrong inventory location used, like jobholding",
+  "ts": 1789571939450,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-15|113931": {
+  "note": "replenishment due to truck stock being off",
+  "ts": 1789573262817,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-15|177287": {
+  "note": "negative on hand value adjusted today, empty vehicle that was used when techs truck was being repaired",
+  "ts": 1789585689369,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-15|598279": {
+  "note": "ghost inventory adjusted",
+  "ts": 1789587403477,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-15|578108": {
+  "note": "ghost inventory adjusted",
+  "ts": 1789587442470,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-15|Default Truck - Luis Sanchez Lopez": {
+  "note": "dectivated location",
+  "ts": 1789587534728,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
  }
 }
