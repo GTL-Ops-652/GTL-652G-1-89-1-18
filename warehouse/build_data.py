@@ -490,6 +490,9 @@ def main():
     ap.add_argument('--built', default=None)
     ap.add_argument('--history', default=None, help='history.json path — day-keyed accumulation, 92-day retention')
     ap.add_argument('--notes', default=None, help='notes.json — approved explanations exported from the page, baked into DATA.notes')
+    ap.add_argument('--archive-of', default=None, dest='archive_of',
+                    help='YYYY-MM — mark this build as the FROZEN saved copy of that month (v10 month-end archive). '
+                         'Purely a page label: it renders the archive banner and nothing else changes.')
     a = ap.parse_args()
 
     # Router (v4): header signature first, Filters-tab report title only to break exact ties.
@@ -1427,6 +1430,21 @@ def main():
     else:
         warnings.append('month_closes.json missing — Month End tab runs current-month-only, no prior-month comparison.')
 
+    # ---------- month-end close archive index (v10, Stephen 2026-09-16) ----------
+    # The list of saved month-end closes the Summary tab links to. Written by the nightly's §5b
+    # handoff as it files each month, read straight through to the page. Absent -> the archive
+    # section says so and explains when the first one lands; never a warning-worthy condition
+    # because a branch that has not hit a month boundary yet legitimately has none.
+    closes = []
+    cij = os.path.join(a.input, 'closes_index.json')
+    if os.path.exists(cij):
+        try:
+            _ci = json.load(open(cij))
+            closes = _ci.get('closes', _ci) if isinstance(_ci, dict) else _ci
+            if not isinstance(closes, list): closes = []
+        except Exception:
+            warnings.append('closes_index.json unreadable — the month-end archive list renders empty.')
+
     notes = {}
     if a.notes and os.path.exists(a.notes):
         try: notes = json.load(open(a.notes))
@@ -1449,6 +1467,7 @@ def main():
 
     data = {'built': a.built or datetime.date.today().isoformat(), 'days': days, 'ledger': ledger,
             'consArmed': cons_armed, 'poid': poid,
+            'closes': closes, 'archiveOf': a.archive_of,
             'stPoBase': 'https://goettl_lasvegas.eh.go.servicetitan.com/#/EditInvoice/',
             'stTruckBase': 'https://goettl_lasvegas.eh.go.servicetitan.com/#/new/inventory/inventory-locations/trucks/details/',
             'stAdjBase': 'https://goettl_lasvegas.eh.go.servicetitan.com/#/new/inventory/adjustments/details/',
@@ -1469,6 +1488,7 @@ def main():
                       'jobstat_jobs': len(jobstat), 'po_status': dict(stc),
                       'cons_armed': cons_armed, 'cons_pos': len(po_cons), 'cons_cage_rows': n_cons_rows,
                       'adjmap_n': len(adjmap), 'adj_linked': n_adj_linked,
+                      'closes_indexed': len(closes), 'archive_of': a.archive_of,
                       'poid_map': len(poid),
                       'task_rows': len(task_rows), 'inv_eq_rows': len(inv_eq),
                       'bom_jobs': len(bom_job), 'jobvar_rows': len(jobvar),
