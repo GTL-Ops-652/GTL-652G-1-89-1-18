@@ -236,5 +236,233 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3151|LAS-502180-SVC-H_131 Colby Radel": {
+  "note": ".",
+  "ts": 1789515895046,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "fleet|anom|2026-09-14|557038": {
+  "note": "Inventory Count, truck was passed between multiple techs without counts in-between due to break downs",
+  "ts": 1789496206959,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3182|Warranty Units HVAC": {
+  "note": ".",
+  "ts": 1789511133384,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3153|Open Box Warehouse HVAC": {
+  "note": ".",
+  "ts": 1789515897379,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3154|LAS-543296-INS-P_414 Jason Krauth": {
+  "note": ".",
+  "ts": 1789515899642,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3157|LAS-578153-SVC-P_402 Joc Kalili": {
+  "note": ".",
+  "ts": 1789515903215,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3161|LAS-543296-INS-P_414 Jason Krauth": {
+  "note": ".",
+  "ts": 1789515907127,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3167|LAS-A94362-SVC-P_444 Chris Hanson": {
+  "note": ".",
+  "ts": 1789515910626,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3169|LAS-114012-SVC-P_451 Jasmine Jones": {
+  "note": ".",
+  "ts": 1789515914003,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3183|Vegas Plumbing Warehouse": {
+  "note": ".",
+  "ts": 1789515917352,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3187|Vegas HVAC Warehouse": {
+  "note": ".",
+  "ts": 1789515920593,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3195|LAS-A94362-SVC-P_444 Chris Hanson": {
+  "note": "truck count",
+  "ts": 1789515973598,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3198|LAS-113220-INS-P_424 Christian Fisher": {
+  "note": "truck count",
+  "ts": 1789516000259,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3197|LAS-177295-SVC-H_112 Gabe Santos": {
+  "note": "truck count",
+  "ts": 1789516004974,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3202|Open Box Warehouse HVAC": {
+  "note": ".",
+  "ts": 1789516121729,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3206|LAS-543116-SVC-P_430 Tristen Till": {
+  "note": ".",
+  "ts": 1789516138099,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3219|LAS-115351-SVC-P_446 Logan Nester": {
+  "note": ".",
+  "ts": 1789516159088,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3221|LAS-578189-SVC-P_410 Michael Hadley": {
+  "note": ".",
+  "ts": 1789516161994,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3229|LAS-177291-SVC-P_404 Stanley Heath II": {
+  "note": ".",
+  "ts": 1789516166046,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3231|LAS-113220-INS-P_424 Christian Fisher": {
+  "note": ".",
+  "ts": 1789516170083,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3233|LAS-113220-INS-P_424 Christian Fisher": {
+  "note": ".",
+  "ts": 1789516173870,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3236|LAS-502179-SVC-H_101 Daniel Stewart": {
+  "note": ".",
+  "ts": 1789516191389,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3242|Vegas Safety Stock": {
+  "note": ".",
+  "ts": 1789516198778,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3245|Vegas HVAC Warehouse": {
+  "note": ".",
+  "ts": 1789516202008,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3246|Open Box Warehouse HVAC": {
+  "note": ".",
+  "ts": 1789516205382,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3249|Plumbing Equipment": {
+  "note": ".",
+  "ts": 1789516208472,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3251|Vegas HVAC Warehouse": {
+  "note": ".",
+  "ts": 1789516218358,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3158|Open Box Warehouse HVAC": {
+  "note": ".",
+  "ts": 1789516224057,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3235|Open Box Warehouse HVAC": {
+  "note": ".",
+  "ts": 1789516227108,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-14|3267|Open Box Warehouse HVAC": {
+  "note": "packaged unit replaced on job 555637 high limit switch repaired and put in open box",
+  "ts": 1789516378036,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-14|3268|LAS-557038-SVC-H_127 Leo Bermudez III": {
+  "note": "cycle count, vehicle was passed through more than one tech without a count due to vehicle break downs",
+  "ts": 1789516428605,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "standing|openbox|2026-07": {
+  "note": "packaged unit replaced on job 555637 high limit switch repaired and put in open box adj 3267",
+  "ts": 1789516540635,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "standing|deadloc|Goettl Air Conditioning & Plumbing": {
+  "note": ".",
+  "ts": 1789516609552
  }
 }
