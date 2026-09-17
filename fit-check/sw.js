@@ -1,8 +1,8 @@
-/* Fit Check — service worker · DEPLOY: fit-check/sw.js · build v2.36-2026-09-16-c4902b9d
+/* Fit Check — service worker · DEPLOY: fit-check/sw.js · build v2.37-2026-09-17-5106b9ce
    Caches the encrypted app shell so Fit Check opens with no signal (attics, rooftops).
    Navigation: network first (4 s), then the saved copy.  Assets: saved copy first, refreshed in the background.
    A new build changes this file, which makes the browser install the new worker; the app shows "Update now". */
-const BUILD = 'v2.36-2026-09-16-c4902b9d';
+const BUILD = 'v2.37-2026-09-17-5106b9ce';
 const CACHE = 'fitcheck-' + BUILD;
 const SHELL = ['./index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './icon-512-maskable.png', './apple-touch-icon.png'];
 const INDEX = new URL('./index.html', self.location.href).href;
