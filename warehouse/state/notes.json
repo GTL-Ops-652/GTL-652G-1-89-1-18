@@ -502,5 +502,40 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-16|D06948": {
+  "note": "insulation transfer",
+  "ts": 1789655284648,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-17"
+ },
+ "fleet|anom|2026-09-16|D06767": {
+  "note": "insulation transfer",
+  "ts": 1789655308502,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-17"
+ },
+ "fleet|anom|2026-09-16|Default Truck - Luis Sanchez Lopez": {
+  "note": "deactivated truck location",
+  "ts": 1789655473184,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-17"
+ },
+ "fleet|removed|2026-09-16|578108": {
+  "note": "ghost inventory",
+  "ts": 1789655520508,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-17"
+ },
+ "adj|2026-09-16|3269|LAS-177287-EMT-H_111 N/A": {
+  "note": "ghost inventory",
+  "ts": 1789655534980,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-17"
  }
 }
