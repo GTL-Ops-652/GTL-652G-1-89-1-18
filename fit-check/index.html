@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-18 v2.40 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-18 v2.41 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -391,7 +391,9 @@ body.pack.full .footbar{display:block}
 .tp .shots{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .tp .shots figure{margin:0}.tp .shots img{width:100%;border-radius:12px;background:#000426;display:block}
 .tp .shots figcaption{font-size:12px;color:var(--muted);margin-top:6px;text-align:center}
-.tp .pair{border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin:0 0 9px;background:#fff}
+.tp .pair{display:block;border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin:0 0 9px;background:#fff}
+.tp .pair>div{padding:0;font-size:inherit;min-width:0}
+.tp .pair .was,.tp .pair .now{background:transparent}
 .tp .pair .t{font-weight:700;font-size:14px}
 .tp .pair .was,.tp .pair .now{margin-top:6px;font-size:13.5px;padding-left:11px;border-left:3px solid var(--line)}
 .tp .pair .was{border-left-color:var(--red)}.tp .pair.warn .was{border-left-color:var(--warn)}
@@ -504,7 +506,7 @@ body.pack.full .footbar{display:block}
   .hero{padding:13px 14px;border-radius:15px}.hero .hv{font-size:21px}.hero .hs{font-size:12.5px}
   .htiles{grid-template-columns:repeat(2,1fr)}
   .ba{grid-template-columns:1fr;gap:4px}.ba .arw{font-size:0;min-height:20px}.ba .arw::before{content:"↓";font-size:24px}
-  .pair{grid-template-columns:1fr}.pair .arw{padding:0;min-height:20px;font-size:0}.pair .arw::before{content:"↓";font-size:15px}
+  .pair{grid-template-columns:1fr}.tp .pair{display:block}.pair .arw{padding:0;min-height:20px;font-size:0}.pair .arw::before{content:"↓";font-size:15px}
   .shots{grid-template-columns:1fr}
   .svrow{grid-template-columns:1fr auto}
   .actbar .btn{flex:1 1 100%}
@@ -3467,11 +3469,23 @@ function wirePackTech(o){
 // Fetching our own URL is the clean path and works with no signal too, because the service worker
 // precaches index.html. A pack opened from Files sits on file://, where fetch is blocked — there the
 // document is rebuilt from the DOM, which carries every <script> and <style> verbatim.
+function fcDeployVer(s){ const m=/DEPLOY: fit-check\/index\.html \u00b7 generated \S+ (v[\d.]+)/.exec(String(s||'')); return m?m[1]:null }
+// what THIS page is running, read off its own head comment — never off a fetched copy
+function fcRunningVer(){ try{ for(const n of document.head.childNodes){
+    if(n.nodeType===8){ const v=fcDeployVer(n.nodeValue); if(v) return v } } }catch(e){} return null }
 async function fcAppSource(){
-  const url=fcAppUrl();
+  const url=fcAppUrl(); const mine=fcRunningVer();
   if(url&&/^https?:/i.test(url)){
-    try{ const r=await fetch(url,{cache:'force-cache'});
-      if(r&&r.ok){ const s=await r.text(); if(/<\/html>/i.test(s)&&s.length>150000) return s } }catch(e){}
+    // network first: the service worker serves assets cache-first, so force-cache alone could hand
+    // back a build older than the one on screen and the pack would carry ITS bugs, not this one's
+    for(const mode of ['reload','force-cache']){
+      try{ const r=await fetch(url,{cache:mode});
+        if(r&&r.ok){ const s=await r.text();
+          if(/<\/html>/i.test(s)&&s.length>150000){
+            const got=fcDeployVer(s);
+            // a copy that is not this exact build is not allowed to become the pack
+            if(!mine||!got||got===mine) return s } } }catch(e){}
+    }
   }
   return fcDomSource();
 }
