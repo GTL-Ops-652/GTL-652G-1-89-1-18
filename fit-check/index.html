@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-17 v2.38 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-18 v2.39 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -312,7 +312,7 @@ details.adv>*:not(summary){padding:0 10px 10px}
 @media (max-width:640px){ .sect>.sh{padding:8px 10px;gap:8px} .sect>.sh .sd{display:none} .sect>.sb{padding:10px} .sect .field label{font-size:12.5px} .diag svg{max-width:100%} }
 /* ===== v2.18 phones & tablets ===== */
 @supports (-webkit-touch-callout:none){ input,select,textarea,.fixctl input,.fixctl select{font-size:16px} } /* iOS zooms the page when it focuses a field under 16px — keep the layout, stop the zoom */
-button,.chip,.sc,.step{-webkit-tap-highlight-color:transparent;touch-action:manipulation} /* no 300 ms double-tap delay, no grey flash */
+button,.chip,.sc,.step,.pstep{-webkit-tap-highlight-color:transparent;touch-action:manipulation} /* no 300 ms double-tap delay, no grey flash */
 dialog .in{max-height:calc(100vh - 48px);overflow:auto}
 @media (max-width:640px){
   html,body{font-size:15px}
@@ -357,6 +357,64 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
 .pwabar>div{display:flex;gap:10px;align-items:center;flex-wrap:wrap;border-radius:12px;padding:10px 12px;font-size:13.5px;box-shadow:var(--shadow)}
 .pwabar .upd{background:var(--db);color:#fff}
 .pwabar .a2hs{background:#fff;border:1px solid var(--line);color:var(--ink)}
+/* ============================================================ v2.39 — PACK MODE
+   The tech pack IS Fit Check with the job baked in: the export writes the app's own bytes out with a
+   one-line boot block in the head. So the "3D Design" tab below is the Plan tab itself — the real
+   viewer, the real Fix ▸ / Design to 100 / curb buttons, the real Manual D engine. One implementation,
+   no second copy to drift. These rules only bite when <body class="pack"> is set by that boot block. */
+.packnav{max-width:960px;margin:0 auto;display:grid;grid-template-columns:repeat(3,1fr) auto;gap:6px;padding:10px 12px 0;align-items:stretch}
+.pstep{background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 10px;cursor:pointer;display:flex;justify-content:center;align-items:center;text-align:center;font-weight:600;font-size:13px;color:var(--muted)}
+.pstep span.t{display:inline;font-size:13px}
+.pstep.active{background:var(--db);color:#fff;border-color:var(--db)}
+.packfull{background:#fff;border:1px solid var(--line);color:var(--db);border-radius:12px;padding:8px 11px;cursor:pointer;font-weight:700;font-size:12.5px;white-space:nowrap}
+.packfull.on{background:var(--db);color:#fff;border-color:var(--db)}
+body.pack #steps,body.pack #btnReset,body.pack #btnInstall,body.pack #a2hsBar,body.pack #updBar{display:none!important}
+body.pack .footbar{display:none}
+body.pack.full #steps{display:grid!important}
+body.pack.full .footbar{display:block}
+@media (max-width:640px){.packnav{grid-template-columns:repeat(3,1fr);padding:8px 6px 0;gap:4px}
+  .pstep{padding:7px 3px}.pstep span.t{font-size:11.5px}.packfull{grid-column:1/-1;margin-top:2px}}
+/* ---- the customer story + tech pack, scoped so nothing here can touch the rest of the app ---- */
+.tp{--ok:#1f8a4c;--warn:#e07b12}
+.tp .scores{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.tp .sc{flex:1;min-width:150px;border-radius:12px;padding:12px;text-align:center;background:#eef3f8;border:1px solid var(--line)}
+.tp .sc .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.tp .sc .n{font-size:38px;font-weight:800;line-height:1.05}.tp .sc .s{font-size:12px;color:var(--muted)}
+.tp .sc.good{background:#e6f5ec;border-color:#bfe5cd}.tp .sc.good .n{color:var(--ok)}
+.tp .sc.mid{background:rgba(224,123,18,.12);border-color:#f0d3ad}.tp .sc.mid .n{color:var(--warn)}
+.tp .sc.poor{background:rgba(205,30,31,.10);border-color:#f0c2c2}.tp .sc.poor .n{color:var(--red)}
+.tp .arw{font-size:26px;color:var(--muted)}
+.tp .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px;margin-top:10px}
+.tp .tile{background:#f5f8fb;border:1px solid var(--line);border-radius:10px;padding:9px 10px}
+.tp .tile .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.tp .tile .v{font-size:16px;font-weight:700;margin-top:2px}.tp .tile .v .was{color:var(--muted);font-weight:500}
+.tp .shots{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tp .shots figure{margin:0}.tp .shots img{width:100%;border-radius:12px;background:#000426;display:block}
+.tp .shots figcaption{font-size:12px;color:var(--muted);margin-top:6px;text-align:center}
+.tp .pair{border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin:0 0 9px;background:#fff}
+.tp .pair .t{font-weight:700;font-size:14px}
+.tp .pair .was,.tp .pair .now{margin-top:6px;font-size:13.5px;padding-left:11px;border-left:3px solid var(--line)}
+.tp .pair .was{border-left-color:var(--red)}.tp .pair.warn .was{border-left-color:var(--warn)}
+.tp .pair .now{border-left-color:var(--ok)}.tp .pair .now.open{border-left-color:var(--muted)}
+.tp .pair .lb{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:block}
+.tp ol.tpstep li{margin:0 0 9px}.tp ol.tpstep li .w{color:var(--muted);font-size:13px;margin-top:2px}
+.tp table{width:100%;border-collapse:collapse;font-size:13px}
+.tp th,.tp td{text-align:left;padding:6px 7px;border-bottom:1px solid var(--line);vertical-align:top}
+.tp th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.tp td.num,.tp th.num{text-align:right;font-variant-numeric:tabular-nums}
+.tp .tpill{display:inline-block;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:700}
+.tp .tpill.ok{background:#e6f5ec;color:var(--ok)}.tp .tpill.warn{background:rgba(224,123,18,.16);color:var(--warn)}.tp .tpill.bad{background:rgba(205,30,31,.14);color:var(--red)}
+.tp .bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
+.tp pre{white-space:pre-wrap;word-break:break-word;background:#0b2340;color:#dbe7f2;border-radius:10px;padding:12px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;max-height:340px;overflow:auto}
+.tp .scope div{padding:2px 0;font-size:13.5px}.tp .scope .na{color:var(--muted);text-decoration:line-through}
+.tp .mdws{font-size:13px}.tp .mdws table{margin:6px 0 12px}.tp .mdws summary{display:none}
+.tp .ptbl.dt td,.tp .ptbl.dt th{padding:4px 6px;font-size:12px}
+.tp .pnote{color:var(--muted);font-size:12.5px}
+.tp svg{max-width:100%;height:auto}
+.tp .tpfoot{color:var(--muted);font-size:11.5px;margin-top:4px}
+@media (max-width:640px){.tp .shots{grid-template-columns:1fr}}
+@media print{.packnav,.tp .noprint{display:none!important}}
+
 .pwabar .a2hs b{color:var(--db)}
 .pwabar .btn.sm{padding:6px 12px;font-size:13px}
 .pwabar .upd .btn.sm{background:#fff;color:var(--db);border-color:#fff}
@@ -474,6 +532,15 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
   <div class="step" data-go="4"><span class="n">4</span><span class="t">Fit</span></div>
   <div class="step" data-go="5"><span class="n">5</span><span class="t">Plan</span></div>
   <div class="step" data-go="6"><span class="n">6</span><span class="t">Summary</span></div>
+</nav>
+
+<!-- v2.39 — the tech pack's tabs. Hidden in the app; the boot block shows them. "3D Design" is data-pgo="5":
+     the Plan tab itself, so the tech designs on the same viewer and the same buttons the SM did. -->
+<nav class="packnav" id="packNav" hidden>
+  <div class="pstep active" data-pgo="7"><span class="t">Your system</span></div>
+  <div class="pstep" data-pgo="5"><span class="t">3D Design</span></div>
+  <div class="pstep" data-pgo="8"><span class="t">Tech pack</span></div>
+  <button class="packfull" id="packFull" title="Open the whole tool — measurements, equipment, room by room">&#9974; Full tool</button>
 </nav>
 
 <main>
@@ -958,7 +1025,7 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
   </div>
     <div class="card" id="techCard">
     <h2>Send it to the tech</h2>
-    <p class="help">One file with the whole job in it — the system that is there, the design we are proposing, both in 3D, what is wrong and what we are doing about it. Text or email it to the technician: they open it on the iPad in front of the customer, and the customer can be sent the same file. The <b>Tech pack</b> tab behind it carries the Manual D worksheet, the chokepoints and the material list, and an <b>Open in Fit Check</b> button that loads this exact design back into the tool if something has to change in the field.</p>
+    <p class="help">One file with the whole job in it — and, since v2.39, the whole tool. Text or email it to the technician: they open it on the iPad in front of the customer with no signal, and it opens on <b>Your system</b> — both 3D pictures, what is wrong, what we are doing about it, the score today &rarr; designed. Behind that, <b>3D Design</b> is this Plan tab itself: the live 3D, Design to 100, Fix ducts, the curb options. Anything they change there runs through the same Manual D engine and rewrites the story, the scope and the ServiceTitan text in front of the customer. <b>Tech pack</b> carries the worksheet, the chokepoints and the material list, with <b>Open in Fit Check</b> to drop their version back into the app.</p>
     <div class="row">
       <div class="field" style="flex:2"><label>Customer or address <small>goes on the cover and the file name</small></label><input id="techName" placeholder="Smith &mdash; 4412 Desert Inn"></div>
       <div class="field"><label>Service manager <small>optional</small></label><input id="techSm" placeholder="Your name"></div>
@@ -979,6 +1046,11 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
     <div id="savedWrap"></div>
   </div>
 </section>
+
+<!-- ============ PACK — the customer story (7) and the tech pack (8). Empty in the app; filled live
+     from the same functions that build them, so every edit the tech makes redraws them. ============ -->
+<section class="panel" id="p7"><div id="packStory"></div></section>
+<section class="panel" id="p8"><div id="packTech"></div></section>
 </main>
 
 <div class="footbar"><div class="in">
@@ -1240,14 +1312,28 @@ const fmt=n=>n==null||isNaN(n)?'—':(Math.round(n*4)/4).toString().replace(/\.5
 const num=id=>{const v=parseFloat($('#'+id).value);return isNaN(v)?null:v};
 const tonNum=t=>parseFloat(String(t).replace('T',''));
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+// ============================================================ v2.39 — PACK MODE
+// A tech pack is not a separate document any more: it is THIS app, written out with the job baked into a
+// one-line boot block in the head. So the tech designs on the real Plan tab, with the real Fix ▸ /
+// Design to 100 / curb buttons and the real Manual D engine — there is no second copy of any of it to
+// drift from this one. Everything below is inert unless that boot block is present.
+const PACK=(function(){ try{ const p=window.FC_PACK; return (p&&typeof p==='object')?p:null }catch(e){ return null } })();
+const packOn=()=>!!PACK;
+// Each pack keeps its OWN saved check. Two packs opened from the same Files folder share one file://
+// origin, so a single key would have the second job silently overwrite the first — and a pack must never
+// touch the check the SM has open in the installed app either.
+const SKEY = PACK ? ('fitcheck_pack_'+String(PACK.id||'0').replace(/[^\w-]/g,'').slice(0,32)) : 'fitcheck_v1';
+// The office version seeds the pack once. After that the technician's edits ARE the design on this
+// device, so reopening the same file in the driveway never throws their work away.
+if(PACK&&PACK.state){ try{ if(!store.get(SKEY)) store.set(SKEY,JSON.stringify(PACK.state)) }catch(e){} }
 // v2.37 — a tech pack handing the job back: #fc=<base64url of the state> is decoded into this device's
 // current check before anything reads it, then the hash is dropped so a refresh does not re-apply it.
 try{ const m=/[#&]fc=([A-Za-z0-9_-]+)/.exec(location.hash||'');
   if(m){ const b=m[1].replace(/-/g,'+').replace(/_/g,'/'); const bin=atob(b+'==='.slice((b.length+3)%4));
     const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
-    const json=new TextDecoder().decode(u); JSON.parse(json); store.set('fitcheck_v1',json);
+    const json=new TextDecoder().decode(u); JSON.parse(json); store.set(SKEY,json);
     try{ history.replaceState(null,'',location.pathname+location.search) }catch(e){ location.hash='' } } }catch(e){}
-let S={}; try{S=JSON.parse(store.get('fitcheck_v1')||'{}')||{}}catch(e){S={}}
+let S={}; try{S=JSON.parse(store.get(SKEY)||'{}')||{}}catch(e){S={}}
 S.thr=S.thr||{tight:4,acc:2}; S.thr.al1=S.thr.al1||1; S.thr.al3=S.thr.al3||3; S.thr.ovh=S.thr.ovh||2; S.thr.sp=S.thr.sp||0.7; S.pos=S.pos||{x:0,y:0,flip:false}; if(S.pos.auto==null) S.pos.auto=true; // v2.1: auto-fit placement unless the user has dragged this unit
 S.sys=S.sys||null; S.orient=S.orient||null; S.setup=S.setup||null; S.room=S.room||null; S.afue=S.afue||'80';
 S.sel=S.sel||{}; // per star: {coil,furn,ahu,unit}
@@ -1269,7 +1355,7 @@ function accaPair(slot){ return (S.thr.acca&&S.thr.acca[slot])||ACCA[slot]||ACCA
 function accaTyp(slot){ return accaPair(slot)[0] } function accaMax(slot){ return accaPair(slot)[1] }
 S.thr.coil=S.thr.coil||0.20; S.thr.filt=S.thr.filt||0.10; S.thr.spGoal=S.thr.spGoal||0.5; S.thr.cptFloor=S.thr.cptFloor||390; if(S.thr.damper==null) S.thr.damper=true; delete S.thr.spRet; delete S.thr.spSup; /* v2.28: Manual D design point 0.50", limit 0.70" (the CFM quoted), 390/ton floor, 450 aim, balancing dampers on */
 S.thr.gr=S.thr.gr||2; S.thr.retv=S.thr.retv||900; S.thr.supv=S.thr.supv||900; S.thr.opv=S.thr.opv||900; S.thr.cpt=S.thr.cpt||450; /* v2.10: design aim 450 CFM/ton (Goettl charges the blower up); 400/ton is the floor the unit needs */ S.fix=S.fix||{install:'reuse',insul:'none'}; if(S.view.attic==null) S.view.attic=true; if(S.view.info==null) S.view.info=true; if(S.view.flag==null) S.view.flag=true; /* v2.11: 3D note toggles — Info = everything that passes, Chokepoints = the red/orange notes */ // v2.3: stand relocation (along the ridge / leg height) + which object drag & nudge move ('unit' | 'stand')
-function save(){store.set('fitcheck_v1',JSON.stringify(S))}
+function save(){store.set(SKEY,JSON.stringify(S))}
 const FIELDS=['oldFurnModel','oF_h','oF_w','oF_d','oldCoilModel','oC_h','oC_w','oC_d','oldPkgModel','oP_l','oP_w','oP_h','oP_chassis','acc_w','acc_l','sp_1','sp_2','sp_3','pk_cl','pk_crane','st_l','st_w','st_h','tr_sw','tr_sh','tr_sx','tr_sz','tr_rw','tr_rh','tr_gap','tr_rz','rf_pitch','el_len','el_h','el_div','el_x','el_throat','el_run','jk_h','jk_w','jk_d','ex_sp','ex_motor','ex_tons','ex_ret_d','ex_ret_n','ex_ret_rect','ex_gr','ex_gr2','ex_gr_n','ex_sup_d','ex_sup_rect','ex_sup_n','ex_fdp','ex_cdp','in_depth','in_type','in_r','pn_r','pn_s','ex_tk','ex_trunk_ft','ex_rplen','new_trunk_ft','ex_splen','new_splen','new_tk_add','dr_ret','dr_sup','dr_br','dr_n'];
 S.f=S.f||{};
 FIELDS.forEach(id=>{const el=$('#'+id); if(S.f[id]!=null) el.value=S.f[id]; el.addEventListener('input',()=>{S.f[id]=el.value;save();clearAuto(id);
@@ -3208,102 +3294,43 @@ function shrinkShot(url,maxW,q){ return new Promise(res=>{ if(!url) return res(n
       const g=c.getContext('2d'); g.fillStyle='#000426'; g.fillRect(0,0,c.width,c.height); g.drawImage(im,0,0,c.width,c.height);
       res(c.toDataURL('image/jpeg',q||0.82)) }catch(e){ res(url) } };
     im.onerror=()=>res(url); im.src=url }catch(e){ res(url) } }) }
+const SYS_LABEL={split_gas:'Split gas furnace + coil',split_hp:'Split heat pump',pkg_gas:'Package gas/electric',pkg_hp:'Package heat pump'};
 const tpEsc=x=>String(x==null?'':x).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 function techFileName(name){ const n=String(name||'').trim().replace(/[^\w\s.-]+/g,'').replace(/\s+/g,'-').slice(0,48);
   const d=new Date(); const s=d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');
   return 'Goettl-Fit-Check_'+(n||'job')+'_'+s+'.html' }
-const TECH_CSS=`:root{--db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--ink:#0b2340;--muted:#5b6b7c;--line:#dfe6ee;--ok:#1f8a4c;--warn:#e07b12;--bg:#f3f6f9}
-*{box-sizing:border-box}html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.4 Montserrat,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-text-size-adjust:100%}
-header{background:var(--db);color:#fff;padding:calc(12px + env(safe-area-inset-top)) 16px 12px}
-header .bw{font-weight:800;letter-spacing:.14em;font-size:12px;text-transform:uppercase;opacity:.8}
-header h1{margin:3px 0 2px;font-size:21px;font-weight:800}header .sub{font-size:13px;opacity:.85}
-nav{display:flex;gap:6px;background:var(--db);padding:0 10px 10px;position:sticky;top:0;z-index:9}
-nav button{flex:1;border:0;border-radius:10px 10px 0 0;padding:11px 8px;font-size:14px;font-weight:700;background:rgba(255,255,255,.12);color:#cfe1ee;cursor:pointer}
-nav button.on{background:var(--bg);color:var(--db)}
-main{max-width:980px;margin:0 auto;padding:14px 14px 40px}
-section{display:none}section.on{display:block}
-.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px;margin:0 0 14px;box-shadow:0 6px 20px rgba(0,0,0,.06);overflow-x:auto}
-h2{font-size:17px;margin:0 0 10px}h3{font-size:14px;margin:16px 0 6px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-p{margin:0 0 10px}.note,.help{color:var(--muted);font-size:13px}
-.scores{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.sc{flex:1;min-width:150px;border-radius:12px;padding:12px;text-align:center;background:#eef3f8;border:1px solid var(--line)}
-.sc .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.sc .n{font-size:38px;font-weight:800;line-height:1.05}.sc .s{font-size:12px;color:var(--muted)}
-.sc.good{background:#e6f5ec;border-color:#bfe5cd}.sc.good .n{color:var(--ok)}
-.sc.mid{background:rgba(224,123,18,.12);border-color:#f0d3ad}.sc.mid .n{color:var(--warn)}
-.sc.poor{background:rgba(205,30,31,.10);border-color:#f0c2c2}.sc.poor .n{color:var(--red)}
-.arw{font-size:26px;color:var(--muted)}
-.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(135px,1fr));gap:8px;margin-top:10px}
-.tile{background:#f5f8fb;border:1px solid var(--line);border-radius:10px;padding:9px 10px}
-.tile .k{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
-.tile .v{font-size:16px;font-weight:700;margin-top:2px}.tile .v .was{color:var(--muted);font-weight:500}
-.shots{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.shots figure{margin:0}.shots img{width:100%;border-radius:12px;background:var(--navy);display:block}
-.shots figcaption{font-size:12px;color:var(--muted);margin-top:6px;text-align:center}
-.pair{border:1px solid var(--line);border-radius:12px;padding:11px 12px;margin:0 0 9px;background:#fff}
-.pair .t{font-weight:700;font-size:14px}
-.pair .was,.pair .now{margin-top:6px;font-size:13.5px;padding-left:11px;border-left:3px solid var(--line)}
-.pair .was{border-left-color:var(--red)}.pair.warn .was{border-left-color:var(--warn)}
-.pair .now{border-left-color:var(--ok)}.pair .now.open{border-left-color:var(--muted)}
-.pair .lb{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);display:block}
-.step{counter-reset:s}
-.step li{margin:0 0 9px;padding-left:2px}.step li .w{color:var(--muted);font-size:13px;margin-top:2px}
-table{width:100%;border-collapse:collapse;font-size:13px}
-th,td{text-align:left;padding:6px 7px;border-bottom:1px solid var(--line);vertical-align:top}
-th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
-td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
-.pill{display:inline-block;border-radius:999px;padding:1px 8px;font-size:11px;font-weight:700}
-.pill.ok{background:#e6f5ec;color:var(--ok)}.pill.warn{background:rgba(224,123,18,.16);color:var(--warn)}.pill.bad{background:rgba(205,30,31,.14);color:var(--red)}
-.btn{display:inline-block;border:0;border-radius:10px;background:var(--db);color:#fff;font-weight:700;font-size:14px;padding:11px 16px;cursor:pointer;text-decoration:none}
-.btn.ghost{background:#eef3f8;color:var(--db);border:1px solid var(--line)}
-.bar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}
-pre{white-space:pre-wrap;word-break:break-word;background:#0b2340;color:#dbe7f2;border-radius:10px;padding:12px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;max-height:340px;overflow:auto}
-.scope div{padding:2px 0;font-size:13.5px}.scope .na{color:var(--muted);text-decoration:line-through}
-.mdws{font-size:13px}.mdws table{margin:6px 0 12px}.mdws summary{display:none}
-.ptbl.dt td,.ptbl.dt th{padding:4px 6px;font-size:12px}
-.pnote{color:var(--muted);font-size:12.5px}
-svg{max-width:100%;height:auto}
-footer{max-width:980px;margin:0 auto;padding:0 14px 40px;color:var(--muted);font-size:11.5px}
-@media (max-width:640px){.shots{grid-template-columns:1fr}main{padding:12px 12px 32px}header h1{font-size:19px}}
-@media print{nav,.noprint{display:none!important}section{display:block!important}body{background:#fff}.card{box-shadow:none;break-inside:avoid}}`;
-// Build the whole file. Async because the two stills are re-encoded first.
-async function techPackHtml(o,meta){
-  const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M||!M0) return null;
-  meta=meta||{}; const name=String(meta.name||'').trim(), sm=String(meta.sm||'').trim();
-  const [shotBefore,shotAfter]=await Promise.all([shrinkShot(ensureTodayShot(o),1100,.82), shrinkShot(ensureCleanShot(o),1100,.82)]);
-  const sysName={split_gas:'Split gas furnace + coil',split_hp:'Split heat pump',pkg_gas:'Package gas/electric',pkg_hp:'Package heat pump'}[S.sys]||'';
-  const unit=o.unit||[o.furn,o.coil,o.ahu].filter(Boolean).join(' + ');
-  const pairs=issuePairs(o); const steps=stepEffects(o); const changes=proposedChanges(o);
-  const open=pairs.filter(p=>!p.fixed).length;
+// ============================================================ v2.39 — THE PACK ITSELF
+// Up to v2.38 the pack was a separate hand-built document: its own CSS, its own markup, its own copy of
+// the story. It could show the job but not change it, because the engine was not in it. v2.39 turns that
+// around — the pack IS this app with the job baked into its head, so the "3D Design" tab is the Plan tab,
+// the buttons are the buttons, and a change the tech makes in the driveway runs through the same Manual D
+// engine the Service Manager used in the office. Nothing below is a second implementation of anything.
+
+// ---- the two pages, rendered from LIVE state -----------------------------------------------------
+// The office preview, the file the tech opens, and every redraw after an edit all come through here, so
+// what the customer is looking at can never disagree with what the engine currently says.
+function tpMeta(){ const m=(PACK&&PACK.meta)||{};
+  return { name:(val('techName')||val('saveName')||m.name||'').trim(), sm:(val('techSm')||m.sm||'').trim() } }
+// The pictures are taken live and keyed on the design (shotSig covers S.fix and S.scope), so the moment
+// the tech opens a chokepoint the "designed" picture is a different picture. The SM's own two stills ride
+// along in the pack only as a fallback, for a canvas the browser will not give a size to.
+function tpShots(o){ let before=null, after=null;
+  try{ before=ensureTodayShot(o) }catch(e){}
+  try{ after=ensureCleanShot(o) }catch(e){}
+  const f=(PACK&&PACK.shots)||{};
+  return { before:before||f.before||null, after:after||f.after||null } }
+
+function tpStoryHtml(o){
+  const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M||!M0) return '';
+  const meta=tpMeta(); const sh=tpShots(o);
+  const sysName=SYS_LABEL[S.sys]||''; const unit=o.unit||[o.furn,o.coil,o.ahu].filter(Boolean).join(' + ');
+  const pairs=issuePairs(o); const changes=proposedChanges(o); const open=pairs.filter(p=>!p.fixed).length;
   const cls=v=>v>=90?'good':(v>=70?'mid':'poor');
   const tile=(k,a,b)=>`<div class="tile"><div class="k">${k}</div><div class="v">${a!=null&&String(a)!==String(b)?`<span class="was">${a} → </span>`:''}${b}</div></div>`;
-  const c0=sl=>M0.comps.find(c=>c.slot===sl);
-  const compRows=M.comps.map(c=>{ const a=c0(c.slot); const pill=(x,mm)=>x?`<span class="pill ${x.cls}">${statusTxt(x,mm||M)}</span>`:'—';
-    return `<tr><td>${c.name}</td><td>${a?a.size:'—'}</td><td class="num">${a?CFM(a.maxAbs):'—'}</td><td>${pill(a,M0)}</td><td>${c.size}</td><td class="num">${CFM(c.maxAbs)}</td><td>${pill(c,M)}</td></tr>` }).join('');
   const pairHtml=pairs.map(p=>`<div class="pair ${p.cls}"><div class="t">${p.t}</div>
     <div class="was"><span class="lb">What is there now — ${tpEsc(p.was)}</span>${p.wasWhy}</div>
     <div class="now${p.fixed?'':' open'}"><span class="lb">${p.fixed?'What we are doing':'Still open'} — ${tpEsc(p.now)}</span>${p.nowWhy}</div></div>`).join('');
-  const stepRows=steps.map((s_,i)=>`<tr><td class="num">${i+1}</td><td>${s_.txt.replace(/ — one way to get.*$/,'')}<div class="pnote">${whyFor(s_.k)}</div></td><td class="num">${CFM(s_.cfm)}${s_.dCfm>0?` <small>+${s_.dCfm}</small>`:''}</td><td class="num">${Math.round(s_.cfm/M.tons)}</td><td class="num">${s_.R!=null?'R-'+fmt(s_.R):'—'}</td><td class="num"><b>${s_.score}</b>${s_.dScore>0?` <small>+${s_.dScore}</small>`:''}</td></tr>`).join('');
-  const scope=`<div class="scope">${isPkg()?[['reuse','Keep the existing stand / elbow / jack setup'],['curb_old','Redesign to a curb — reuse the existing drops'],['curb','Redesign to a curb — new plenum drops']].map(([k,l])=>`<div>${(S.fix.install||'reuse')===k?'☑':'☐'} ${l}</div>`).join(''):''}${scopeState().items.map(i=>`<div class="${i.na?'na':''}">${i.on?'☑':'☐'} ${i.l}</div>`).join('')}</div>`;
-  const mdws=M.md?mdWorksheetHtml(M).replace(/<details class="adv mdws"><summary>[^]*?<\/summary>/,'<div class="mdws">').replace(/<\/details>\s*$/,'</div>'):'';
-  const rbr=rbrExportBlock();
-  const payload=fcEncode(JSON.stringify(fcHandoffState())); const app=fcAppUrl();
-  const when=new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
-  const title=['Goettl',name||unit].filter(Boolean).join(' — ');
-  return `<!DOCTYPE html>
-<html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="robots" content="noindex,nofollow">
-<title>${tpEsc(title)}</title>
-<style>${TECH_CSS}</style></head><body>
-<header>
-  <div class="bw">Goettl Air Conditioning &amp; Plumbing · Las Vegas</div>
-  <h1>${tpEsc(name||'Your comfort design')}</h1>
-  <div class="sub">${tpEsc(sysName)} · ${tpEsc(unit)} · ${tons1(M.tons)} ton · ${when}${sm?' · '+tpEsc(sm):''}</div>
-</header>
-<nav class="noprint"><button id="tb1" class="on">Your system</button><button id="tb2">Tech pack</button></nav>
-<main>
-<section id="s1" class="on">
+  return `<div class="tp">
   <div class="card">
     <h2>What this comes down to</h2>
     <div class="scores">
@@ -3322,9 +3349,10 @@ async function techPackHtml(o,meta){
   <div class="card">
     <h2>The system today, and the one we are proposing</h2>
     <div class="shots">
-      <figure>${shotBefore?`<img alt="The system as it is today" src="${shotBefore}">`:''}<figcaption>Today — the red is where the air is being choked</figcaption></figure>
-      <figure>${shotAfter?`<img alt="The proposed design" src="${shotAfter}">`:''}<figcaption>The design — built to ACCA Manual D, drawn to the same scale</figcaption></figure>
+      <figure>${sh.before?`<img alt="The system as it is today" src="${sh.before}">`:''}<figcaption>Today — the red is where the air is being choked</figcaption></figure>
+      <figure>${sh.after?`<img alt="The proposed design" src="${sh.after}">`:''}<figcaption>The design — built to ACCA Manual D, drawn to the same scale</figcaption></figure>
     </div>
+    ${packOn()?`<p class="help noprint" style="margin-top:10px">Both pictures redraw the moment anything changes on <b>3D Design</b> — walk the customer through it there and this page follows.</p>`:''}
     ${M.md?`<p class="note" style="margin-top:12px">${mdStatementTxt(M)}</p>`:''}
   </div>
   <div class="card">
@@ -3334,7 +3362,7 @@ async function techPackHtml(o,meta){
   </div>
   <div class="card">
     <h2>The improvements, in the order they get built</h2>
-    <ol class="step">${changes.map(c=>`<li>${c.txt.replace(/ <span class="note"[^>]*>[^]*?<\/span>/g,'')}${whyFor(c.k)?`<div class="w">${whyFor(c.k)}</div>`:''}</li>`).join('')}</ol>
+    <ol class="tpstep">${changes.map(c=>`<li>${c.txt.replace(/ <span class="note"[^>]*>[^]*?<\/span>/g,'')}${whyFor(c.k)?`<div class="w">${whyFor(c.k)}</div>`:''}</li>`).join('')}</ol>
   </div>
   <div class="card">
     <h2>The equipment</h2>
@@ -3344,15 +3372,30 @@ async function techPackHtml(o,meta){
       <tr><td>Size</td><td><b>${tons1(M.tons)} ton</b> — needs ${CFM(M.needs)} CFM to run the way it was built</td></tr>
       ${M.md?`<tr><td>Air it will move</td><td><b>${CFM(M.md.Qp)} CFM</b> at Goettl's ${spLimit().toFixed(2)}" limit (${M.md.perTonP} CFM per ton)</td></tr>`:''}
     </tbody></table>
+    <p class="tpfoot">${tpEsc([meta.name,meta.sm].filter(Boolean).join(' · '))}${meta.name||meta.sm?' · ':''}${new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})}</p>
   </div>
-</section>
-<section id="s2">
+</div>`;
+}
+
+function tpPackHtml(o){
+  const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M||!M0) return '';
+  const sysName=SYS_LABEL[S.sys]||'';
+  const steps=stepEffects(o);
+  const c0=sl=>M0.comps.find(c=>c.slot===sl);
+  const compRows=M.comps.map(c=>{ const a=c0(c.slot); const pill=(x,mm)=>x?`<span class="tpill ${x.cls}">${statusTxt(x,mm||M)}</span>`:'—';
+    return `<tr><td>${c.name}</td><td>${a?a.size:'—'}</td><td class="num">${a?CFM(a.maxAbs):'—'}</td><td>${pill(a,M0)}</td><td>${c.size}</td><td class="num">${CFM(c.maxAbs)}</td><td>${pill(c,M)}</td></tr>` }).join('');
+  const stepRows=steps.map((s_,i)=>`<tr><td class="num">${i+1}</td><td>${s_.txt.replace(/ — one way to get.*$/,'')}<div class="pnote">${whyFor(s_.k)}</div></td><td class="num">${CFM(s_.cfm)}${s_.dCfm>0?` <small>+${s_.dCfm}</small>`:''}</td><td class="num">${Math.round(s_.cfm/M.tons)}</td><td class="num">${s_.R!=null?'R-'+fmt(s_.R):'—'}</td><td class="num"><b>${s_.score}</b>${s_.dScore>0?` <small>+${s_.dScore}</small>`:''}</td></tr>`).join('');
+  const scope=`<div class="scope">${isPkg()?[['reuse','Keep the existing stand / elbow / jack setup'],['curb_old','Redesign to a curb — reuse the existing drops'],['curb','Redesign to a curb — new plenum drops']].map(([k,l])=>`<div>${(S.fix.install||'reuse')===k?'☑':'☐'} ${l}</div>`).join(''):''}${scopeState().items.map(i=>`<div class="${i.na?'na':''}">${i.on?'☑':'☐'} ${i.l}</div>`).join('')}</div>`;
+  const mdws=M.md?mdWorksheetHtml(M).replace(/<details class="adv mdws"><summary>[^]*?<\/summary>/,'<div class="mdws">').replace(/<\/details>\s*$/,'</div>'):'';
+  const rbr=rbrExportBlock();
+  return `<div class="tp">
   <div class="card noprint">
     <div class="bar">
-      <button class="btn" id="openFc">Open this design in Fit Check</button>
-      <button class="btn ghost" id="pr">Print / save as PDF</button>
+      ${packOn()?'<button class="btn sm" id="tpOpenFc">Open this design in Fit Check</button>':''}
+      <button class="btn sm ghost" id="tpSend">&#10515; Send this design on</button>
+      <button class="btn sm ghost" id="tpPrint">Print / save as PDF</button>
     </div>
-    <div class="note">Opening it in Fit Check loads this exact job — every measurement, the equipment, the design — so it can be changed in the field. It replaces whatever check is currently open on that device.</div>
+    <div class="note">${packOn()?'<b>Open this design in Fit Check</b> loads this exact job — including anything changed here — into the Fit Check app on this device, so it is saved with the rest. <b>Send this design on</b> makes a fresh copy of this file to text or email back to the office.':'This is what the technician sees behind the customer story. <b>Send this design on</b> builds the file to text them.'}</div>
   </div>
   <div class="card">
     <h2>Where the air chokes — today vs proposed</h2>
@@ -3371,34 +3414,97 @@ async function techPackHtml(o,meta){
   ${rbr?`<div class="card">${rbr}</div>`:''}
   <div class="card">
     <h2>For ServiceTitan</h2>
-    <div class="bar noprint"><button class="btn ghost" id="cp">Copy this text</button></div>
-    <pre id="st">${tpEsc($('#summary').value)}</pre>
+    <div class="bar noprint"><button class="btn sm ghost" id="tpCopy">Copy this text</button></div>
+    <pre id="tpSt">${tpEsc($('#summary').value)}</pre>
   </div>
-</section>
-</main>
-<footer>Built with Fit Check (Goettl LV) on ${when}. Every squeeze point is graded against ACCA Manual D (3rd ed.) Table 3-1 velocity limits at the design airflow. Proposed sizes follow Manual D's Friction Rate Worksheet: the manufacturer's blower table at the ${spGoal().toFixed(2)}" design static, less the device pressure drops, over the total effective length of the longest supply and return paths. The airflow quoted is the same blower table read at the ${spLimit().toFixed(2)}" limit. Measurements not taped are assumed from the tonnage and marked. Final numbers are verified at start-up.</footer>
-<script>
-(function(){var A=${JSON.stringify(app)},P=${JSON.stringify(payload)};
-var b1=document.getElementById('tb1'),b2=document.getElementById('tb2'),s1=document.getElementById('s1'),s2=document.getElementById('s2');
-function go(n){b1.className=n===1?'on':'';b2.className=n===2?'on':'';s1.className=n===1?'on':'';s2.className=n===2?'on':'';window.scrollTo(0,0)}
-b1.onclick=function(){go(1)};b2.onclick=function(){go(2)};
-var f=document.getElementById('openFc');if(f)f.onclick=function(){ if(!A){alert('This pack was built from a file, so there is no Fit Check address in it. Open Fit Check and use a saved check instead.');return} location.href=A+'#${FC_HASH}='+P };
-var p=document.getElementById('pr');if(p)p.onclick=function(){window.print()};
-var c=document.getElementById('cp');if(c)c.onclick=function(){var t=document.getElementById('st').textContent;
-  try{navigator.clipboard.writeText(t);c.textContent='Copied \\u2713';setTimeout(function(){c.textContent='Copy this text'},1600)}catch(e){var r=document.createRange();r.selectNodeContents(document.getElementById('st'));var s=getSelection();s.removeAllRanges();s.addRange(r)}};
-})();
-<\/script>
-</body></html>`;
+  <p class="tpfoot">Every squeeze point is graded against ACCA Manual D (3rd ed.) Table 3-1 velocity limits at the design airflow. Proposed sizes follow Manual D's Friction Rate Worksheet: the manufacturer's blower table at the ${spGoal().toFixed(2)}" design static, less the device pressure drops, over the total effective length of the longest supply and return paths. The airflow quoted is the same blower table read at the ${spLimit().toFixed(2)}" limit. Measurements not taped are assumed from the tonnage and marked. Final numbers are verified at start-up.</p>
+</div>`;
+}
+
+// Draw both pack pages from whatever the design currently is. Called on every hop onto a pack tab, so a
+// change made on 3D Design is already in the story by the time the tech swipes back to it.
+function renderPackTabs(){
+  const st=$('#packStory'), tk=$('#packTech'); if(!st&&!tk) return;
+  const row=rowsFor()[S.star];
+  if(!row){ if(st) st.innerHTML='<div class="tp"><div class="card"><p class="help">Pick an option on step 3 first.</p></div></div>'; if(tk) tk.innerHTML=''; return }
+  const o=pick(S.star,row);
+  try{ if(st) st.innerHTML=tpStoryHtml(o); }catch(e){ console.error('pack story',e) }
+  try{ if(tk){ tk.innerHTML=tpPackHtml(o); wirePackTech(o) } }catch(e){ console.error('pack tech',e) }
+}
+function wirePackTech(o){
+  const fc=$('#tpOpenFc'); if(fc) fc.onclick=()=>{ const app=(PACK&&PACK.app)||fcAppUrl();
+    if(!app){ alert('This pack has no Fit Check address in it. Open Fit Check and use a saved check instead.'); return }
+    // the EDITED state, not the one the office sent — whatever is on screen right now is what travels
+    location.href=app+'#'+FC_HASH+'='+fcEncode(JSON.stringify(fcHandoffState())) };
+  const pr=$('#tpPrint'); if(pr) pr.onclick=()=>window.print();
+  const sd=$('#tpSend'); if(sd) sd.onclick=()=>sendToTech(false,'#tpSend');
+  const cp=$('#tpCopy'); if(cp) cp.onclick=()=>{ const el=$('#tpSt'); if(!el) return; const txt=el.textContent;
+    try{ navigator.clipboard.writeText(txt); cp.textContent='Copied ✓'; setTimeout(()=>{cp.textContent='Copy this text'},1600) }
+    catch(e){ const r=document.createRange(); r.selectNodeContents(el); const s=getSelection(); s.removeAllRanges(); s.addRange(r) } };
+}
+
+// ---- building the pack: this app's own bytes, with the job in the head ---------------------------
+// Fetching our own URL is the clean path and works with no signal too, because the service worker
+// precaches index.html. A pack opened from Files sits on file://, where fetch is blocked — there the
+// document is rebuilt from the DOM, which carries every <script> and <style> verbatim.
+async function fcAppSource(){
+  const url=fcAppUrl();
+  if(url&&/^https?:/i.test(url)){
+    try{ const r=await fetch(url,{cache:'force-cache'});
+      if(r&&r.ok){ const s=await r.text(); if(/<\/html>/i.test(s)&&s.length>150000) return s } }catch(e){}
+  }
+  return fcDomSource();
+}
+// Everything the app rendered while it was running has to come back out, or the pack carries a stale
+// copy of every card — and, worse, the two 1.6 MB print stills inside #printReport.
+const FC_DOM_RESET=['#airCard','#recCard','#sumCard','#sumHero','#fitHero','#planHero','#printReport','#savedWrap',
+  '#planActions','#planActionsNote','#lbls','#duct2d','#packStory','#packTech','#cmpCard','#pkgCard','#fitShot','#supCfgNote'];
+function fcDomSource(){
+  const d=document.documentElement.cloneNode(true);
+  FC_DOM_RESET.forEach(sel=>{ const e=d.querySelector(sel); if(e) e.innerHTML='' });
+  // the clone is taken mid-export, with the Send button disabled and reading "Building…" — put the card
+  // back to its resting state or the pack arrives with a dead button
+  ['#techSend','#techPreview','#techNote'].forEach(sel=>{ const e=d.querySelector(sel);
+    if(e&&e.dataset&&e.dataset.lbl!=null){ e.innerHTML=e.dataset.lbl; e.removeAttribute('disabled') } });
+  d.querySelectorAll('img[src^="data:"]').forEach(e=>{ try{ e.remove() }catch(_){} });
+  d.querySelectorAll('#fcPackBoot').forEach(e=>{ try{ e.remove() }catch(_){} }); // re-exporting from a pack
+  return '<!DOCTYPE html>\n'+d.outerHTML;
+}
+// A short stable id per design, so two packs in the same Files folder keep separate saved checks.
+function fcPackId(s){ let h=5381; for(let i=0;i<s.length;i++){ h=((h<<5)+h+s.charCodeAt(i))|0 } return (h>>>0).toString(36) }
+function fcPackInject(src,payload){
+  // U+2028 / U+2029 are legal in JSON but END A LINE in JavaScript, and '<' would close the tag the
+  // payload is being written into. Escaped by codepoint so this source can never carry them literally.
+  const LS=String.fromCharCode(0x2028), PS=String.fromCharCode(0x2029);
+  const json=JSON.stringify(payload).split('<').join('\\u003c').split(LS).join('\\u2028').split(PS).join('\\u2029');
+  // NEVER text-scan the source for the boot tag: this file's own comments and string literals contain
+  // that text, and a regex would match one of those first and cut the app in half. A DOM-sourced copy
+  // already had its boot element removed; a fetched copy never had one.
+  const tag='<'+'script id="fcPackBoot">window.FC_PACK='+json+';<\/'+'script>\n';
+  const s=String(src); const m=/<head\b[^>]*>/i.exec(s);
+  // straight after <head> so the job is on the page before a single line of the app reads it
+  return m ? s.slice(0,m.index+m[0].length)+'\n'+tag+s.slice(m.index+m[0].length) : tag+s;
+}
+async function fcPackPayload(o,meta){
+  const sh=tpShots(o);
+  // The two stills are the fallback only — the pack paints its own. 760 px at q0.70 keeps them honest
+  // without putting a megabyte of picture into a file that has to go through Messages.
+  const [before,after]=await Promise.all([shrinkShot(sh.before,760,.70), shrinkShot(sh.after,760,.70)]);
+  const state=fcHandoffState();
+  return { v:1, id:fcPackId(JSON.stringify(state)+(meta.name||'')), app:fcAppUrl()||((PACK&&PACK.app)||''),
+           meta:meta, state:state, shots:{before:before||null, after:after||null} };
 }
 // Build it and hand it over: Share sheet on an iPad (Messages / Mail / AirDrop), a download everywhere else.
-async function sendToTech(preview){
+async function sendToTech(preview,btnSel){
   const row=rowsFor()[S.star]; if(!row) return; const o=pick(S.star,row);
-  const btn=$(preview?'#techPreview':'#techSend'), note=$('#techNote'); const lbl=btn?btn.innerHTML:'';
+  const btn=$(btnSel||(preview?'#techPreview':'#techSend')), note=$('#techNote'); const lbl=btn?btn.innerHTML:'';
   if(btn){ btn.disabled=true; btn.innerHTML='Building…' }
   try{
-    const meta={name:(val('techName')||val('saveName')||'').trim(), sm:val('techSm').trim()};
-    const html=await withViewer(()=>Promise.resolve().then(async()=>{ buildScene(); return techPackHtml(o,meta) }));
-    if(!html){ if(note) note.textContent='Nothing to send yet — pick an option on step 3 first.'; return }
+    const meta=tpMeta();
+    const payload=await fcPackPayload(o,meta);
+    const src=await fcAppSource();
+    const html=fcPackInject(src,payload);
+    if(!html||html.length<150000){ if(note) note.textContent='Could not read the app to build the pack — reload Fit Check and try again.'; return }
     const file=techFileName(meta.name||o.unit); const kb=Math.round(html.length/1024);
     const blob=new Blob([html],{type:'text/html'});
     if(preview){ const u=URL.createObjectURL(blob); window.open(u,'_blank'); setTimeout(()=>URL.revokeObjectURL(u),60000);
@@ -3408,13 +3514,17 @@ async function sendToTech(preview){
       if(navigator.canShare&&navigator.canShare({files:[f]})&&navigator.share){ await navigator.share({files:[f],title:'Goettl — '+(meta.name||'comfort design')}); shared=true } }catch(e){ shared=false }
     if(!shared){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=file; document.body.appendChild(a); a.click();
       setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove() },60000) }
-    if(note) note.innerHTML=shared?`Sent — <b>${file}</b> · ${kb} KB. The tech opens it straight from the message.`
-      :`Saved — <b>${file}</b> · ${kb} KB. Attach it to a text or an email; it opens on any iPad or phone with no signal.`;
+    if(note) note.innerHTML=shared?`Sent — <b>${file}</b> · ${kb} KB. The tech opens it straight from the message; it is the whole tool with this job in it.`
+      :`Saved — <b>${file}</b> · ${kb} KB. Attach it to a text or an email; it opens on any iPad or phone with no signal, and the tech can change the design in it.`;
     techLastFile=file;
   }catch(e){ if(note) note.textContent='Could not build the pack: '+(e&&e.message||e) }
   finally{ if(btn){ btn.disabled=false; btn.innerHTML=lbl } } }
 let techLastFile='';
-{ const b=$('#techSend'); if(b) b.onclick=()=>sendToTech(false); const p=$('#techPreview'); if(p) p.onclick=()=>sendToTech(true);
+// v2.39 — the export serialises the page WHILE it is running, so the resting state of this card has to
+// be recorded now: otherwise every pack ships with a Send button frozen on "Building…" and disabled.
+{ const b=$('#techSend'); if(b){ b.dataset.lbl=b.innerHTML; b.onclick=()=>sendToTech(false) }
+  const p=$('#techPreview'); if(p){ p.dataset.lbl=p.innerHTML; p.onclick=()=>sendToTech(true) }
+  const nt=$('#techNote'); if(nt) nt.dataset.lbl=nt.innerHTML;
   const n=$('#techName'); if(n) n.addEventListener('input',()=>{ const s=$('#saveName'); if(s&&!s.value) s.placeholder=n.value||'Smith — 4412 Desert Inn' }); }
 // ---- saved checks on this device --------------------------------------------
 const SVKEY='fitcheck_saved_v1';
@@ -3438,7 +3548,7 @@ function saveCheck(){ const inp=$('#saveName'); const row=rowsFor()[S.star]; con
   const i=a.findIndex(x=>String(x.name).toLowerCase()===name.toLowerCase()); if(i>=0) a[i]=rec; else a.unshift(rec);
   savedPut(a); if(inp) inp.value=''; renderSaved();
   const b=$('#saveCheck'); if(b){ const h=b.innerHTML; b.innerHTML='Saved ✓'; setTimeout(()=>{ b.innerHTML=h },1600) } }
-function openCheck(id){ const r=savedList().find(x=>x.id===id); if(!r) return; store.set('fitcheck_v1',r.state); location.reload() }
+function openCheck(id){ const r=savedList().find(x=>x.id===id); if(!r) return; store.set(SKEY,r.state); location.reload() }
 { const b=$('#saveCheck'); if(b) b.onclick=saveCheck; }
 { const b=$('#recPdf'); if(b) b.onclick=()=>{ const row=rowsFor()[S.star]; if(row) exportPdf(pick(S.star,row)) } }
 renderSaved();
@@ -5090,22 +5200,49 @@ function go(n){
   if(n>1&&isPkg()&&!S.setup){ flash('Pick the roof / duct setup'); return }
   if(n>2&&!isPkg()&&!S.room){ flash('How much room is there?'); return }
   cur=n; $$('.panel').forEach(p=>p.classList.toggle('active',p.id==='p'+n)); $$('.step').forEach(s=>{const k=+s.dataset.go;s.classList.toggle('active',k===n);s.classList.toggle('done',k<n)});
+  syncPackNav(n); // v2.39 — the pack's own three tabs (7 story · 5 the Plan tab itself · 8 tech pack)
   $('#prev').style.visibility=n===1?'hidden':'visible'; $('#next').textContent=n===6?'Start over':'Next ›';
   if(n>1){ autoAssume(); relabelStand(); refreshOld() }
   if(n===3){buildTons();renderTiers()}
   if(n>3&&!S.tons){buildTons();renderTiers()} // jumped straight to an output tab — make sure there is a tonnage and a lineup behind it
   if(n>3){ if(!view.touched) resetView(); renderCompare(); if(n===5) setTimeout(draw,50) }
+  if(n===7||n===8) renderPackTabs(); // the story and the tech pack are re-rendered from live state, never cached
   window.scrollTo({top:0,behavior:'smooth'});
 }
+// v2.39 — keep the pack's tab strip in step with whatever panel is showing, and keep the 6-step Back/Next
+// bar out of the way while the tech is on a pack tab (it belongs to the measurement flow, not the story).
+function syncPackNav(n){ if(!packOn()) return;
+  $$('#packNav .pstep').forEach(s=>s.classList.toggle('active',+s.dataset.pgo===n));
+  const fb=$('.footbar'); if(fb) fb.style.display=(document.body.classList.contains('full')&&n<=6)?'':'none';
+}
 function flash(t){ const f=$('#footNote'); f.textContent=t; f.style.color='var(--red)'; setTimeout(()=>{f.textContent='';f.style.color=''},2200) }
-$('#next').onclick=()=>{ if(cur===6){ if(confirm('Start a new fit check? Inputs will be cleared.')){store.del('fitcheck_v1');location.reload()} return } go(cur+1) };
+$('#next').onclick=()=>{ if(cur===6){ if(confirm('Start a new fit check? Inputs will be cleared.')){store.del(SKEY);location.reload()} return } go(cur+1) };
 $('#prev').onclick=()=>go(Math.max(1,cur-1));
 $$('.step').forEach(s=>s.onclick=()=>go(+s.dataset.go));
-$('#btnReset').onclick=()=>{ if(confirm('Clear everything and start over?')){store.del('fitcheck_v1');location.reload()} };
+$('#btnReset').onclick=()=>{ if(confirm('Clear everything and start over?')){store.del(SKEY);location.reload()} };
 $('#btnSettings').onclick=()=>{$('#thr_cpt').value=S.thr.cpt;$('#thr_gr').value=S.thr.gr;$('#thr_retv').value=S.thr.retv;$('#thr_supv').value=S.thr.supv;$('#thr_opv').value=S.thr.opv;$('#thr_tight').value=S.thr.tight;$('#thr_acc').value=S.thr.acc;$('#thr_al1').value=S.thr.al1;$('#thr_al3').value=S.thr.al3;$('#thr_ovh').value=S.thr.ovh;$('#thr_sp').value=spLimit();$('#thr_spGoal').value=spGoal();$('#thr_cptFloor').value=cptFloor();$('#thr_damper').checked=dampersOn();$('#dlgSettings').showModal()};
 $('#dlgClose').onclick=()=>{S.thr.tight=parseFloat($('#thr_tight').value)||4;S.thr.acc=parseFloat($('#thr_acc').value)||2;S.thr.al1=parseFloat($('#thr_al1').value)||1;S.thr.al3=parseFloat($('#thr_al3').value)||3;const ov=parseFloat($('#thr_ovh').value);S.thr.ovh=isNaN(ov)?2:ov;const spv=parseFloat($('#thr_sp').value);S.thr.sp=isNaN(spv)?0.7:spv;{const g=parseFloat($('#thr_spGoal').value);S.thr.spGoal=g>0?g:0.5;const fl=parseFloat($('#thr_cptFloor').value);S.thr.cptFloor=fl>0?fl:390;S.thr.damper=!!$('#thr_damper').checked}S.thr.gr=parseFloat($('#thr_gr').value)||2;S.thr.retv=parseFloat($('#thr_retv').value)||900;S.thr.supv=parseFloat($('#thr_supv').value)||900;S.thr.opv=parseFloat($('#thr_opv').value)||900;S.thr.cpt=parseFloat($('#thr_cpt').value)||450;save();refreshOld();$('#thrTxt').textContent=S.thr.tight;$('#dlgSettings').close();if(cur===3)renderTiers();if(cur>3)renderCompare()};
 $('#thrTxt').textContent=S.thr.tight;
 applySys(); $('#prev').style.visibility='hidden';
+// ============================================================ v2.39 — BOOT A PACK
+// By the time this runs the job is already loaded: PACK.state went in through the ordinary saved-check
+// key at the top of the file, so every field, the equipment, the rooms and the design are simply what
+// the app has open. All that is left is to put the three tabs on, point the header at the customer, and
+// land on the story. Nothing here changes the app for anyone who is not holding a pack.
+if(packOn()){ try{
+  document.body.classList.add('pack');
+  const nav=$('#packNav'); if(nav) nav.hidden=false;
+  $$('#packNav .pstep').forEach(s=>s.onclick=()=>go(+s.dataset.pgo));
+  const lg=document.querySelector('header .logo');
+  if(lg){ const m=PACK.meta||{}; const nm=String(m.name||'').trim();
+    lg.innerHTML=(nm?strip(nm):'Your comfort design')+'<small>Goettl Air Conditioning &amp; Plumbing · Las Vegas'+(m.sm?' · '+strip(String(m.sm)):'')+'</small>' }
+  // The whole six-step tool is one tap away — the job in front of the tech is not always the job the
+  // office was told about, and they need to be able to change the equipment or re-measure on the spot.
+  const full=$('#packFull');
+  if(full) full.onclick=()=>{ const on=document.body.classList.toggle('full'); full.classList.toggle('on',on);
+    if(on){ go(1) } else { go(7) } };
+  go(7);
+}catch(e){ console.error('pack boot',e) } }
 
 // ============================================================ v2.20 PWA: service worker, update bar, install button, home-screen hint, offline pill
 (function(){
