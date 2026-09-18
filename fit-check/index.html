@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-18 v2.39 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-18 v2.40 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -1323,17 +1323,37 @@ const packOn=()=>!!PACK;
 // origin, so a single key would have the second job silently overwrite the first — and a pack must never
 // touch the check the SM has open in the installed app either.
 const SKEY = PACK ? ('fitcheck_pack_'+String(PACK.id||'0').replace(/[^\w-]/g,'').slice(0,32)) : 'fitcheck_v1';
-// The office version seeds the pack once. After that the technician's edits ARE the design on this
-// device, so reopening the same file in the driveway never throws their work away.
-if(PACK&&PACK.state){ try{ if(!store.get(SKEY)) store.set(SKEY,JSON.stringify(PACK.state)) }catch(e){} }
-// v2.37 — a tech pack handing the job back: #fc=<base64url of the state> is decoded into this device's
-// current check before anything reads it, then the hash is dropped so a refresh does not re-apply it.
+// ---- the job this page opens with (v2.40) -----------------------------------------------------
+// Precedence: a design handed back through #fc= · what this device has already saved under this key
+// · the job baked into the pack · nothing.
+//
+// NOTHING in here may depend on storage succeeding. Until v2.40 the pack's job was WRITTEN to
+// localStorage and read straight back out, so the file carried the design but the app loaded it
+// through browser storage. Safari on file://, Quick Look and the Messages/Mail preview all throw on
+// localStorage — the exact places a TEXTED pack lands — and `store` swallows the throw, so the read
+// came back empty, S.sys was null, go(7) was refused by the six-step guard and the technician got a
+// blank six-step Fit Check. It looked like the wrong file had been sent; the job was in it the whole
+// time. (Stephen 2026-09-18: "it only texted the fit tool, instead of the exact thing that opens when
+// i clicked open it here" — the preview opens a blob: URL on the app's own origin, where storage
+// works, which is why that path was fine.) The job now goes straight into memory; saving is a bonus.
+let S=null;
+// 1. a pack handing the design back — #fc=<base64url of the state>, decoded into memory before
+//    anything reads it, then the hash is dropped so a refresh cannot re-apply it.
 try{ const m=/[#&]fc=([A-Za-z0-9_-]+)/.exec(location.hash||'');
   if(m){ const b=m[1].replace(/-/g,'+').replace(/_/g,'/'); const bin=atob(b+'==='.slice((b.length+3)%4));
     const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
-    const json=new TextDecoder().decode(u); JSON.parse(json); store.set(SKEY,json);
-    try{ history.replaceState(null,'',location.pathname+location.search) }catch(e){ location.hash='' } } }catch(e){}
-let S={}; try{S=JSON.parse(store.get(SKEY)||'{}')||{}}catch(e){S={}}
+    const json=new TextDecoder().decode(u); const o=JSON.parse(json);
+    if(o&&typeof o==='object'){ S=o; try{ store.set(SKEY,json) }catch(e){} }
+    try{ history.replaceState(null,'',location.pathname+location.search) }catch(e){ location.hash='' } } }catch(e){ S=null }
+// 2. what this device already has under this key. In a pack that is the technician's own edits, and
+//    they win over the office version — but only when they actually look like a check, so a stray or
+//    half-written key can never hide the job the file is carrying.
+if(!S){ try{ const raw=store.get(SKEY); if(raw){ const o=JSON.parse(raw); if(o&&typeof o==='object'&&(!PACK||o.sys)) S=o } }catch(e){ S=null } }
+// 3. the job the pack carries. Seeded into storage too when storage works, so the technician's edits
+//    persist on their iPad; when it does not, the design still opens — it just is not remembered.
+if(!S&&PACK&&PACK.state){ try{ S=JSON.parse(JSON.stringify(PACK.state)) }catch(e){ S=null }
+  if(S){ try{ store.set(SKEY,JSON.stringify(PACK.state)) }catch(e){} } }
+if(!S||typeof S!=='object') S={};
 S.thr=S.thr||{tight:4,acc:2}; S.thr.al1=S.thr.al1||1; S.thr.al3=S.thr.al3||3; S.thr.ovh=S.thr.ovh||2; S.thr.sp=S.thr.sp||0.7; S.pos=S.pos||{x:0,y:0,flip:false}; if(S.pos.auto==null) S.pos.auto=true; // v2.1: auto-fit placement unless the user has dragged this unit
 S.sys=S.sys||null; S.orient=S.orient||null; S.setup=S.setup||null; S.room=S.room||null; S.afue=S.afue||'80';
 S.sel=S.sel||{}; // per star: {coil,furn,ahu,unit}
@@ -5195,10 +5215,15 @@ try{ rbrWire(); rbrWireDuctView(); rbrRender(); rbrSizeFlag(); }catch(e){ consol
 // ============================================================ navigation
 let cur=1;
 function go(n){
-  if(n>1&&!S.sys){ flash('Pick a system type first'); return }
-  if(n>1&&!isPkg()&&!S.orient){ flash('Where is the indoor unit?'); return }
-  if(n>1&&isPkg()&&!S.setup){ flash('Pick the roof / duct setup'); return }
-  if(n>2&&!isPkg()&&!S.room){ flash('How much room is there?'); return }
+  // v2.40 — these guards belong to the six-step MEASUREMENT flow. Panels 7 and 8 are the pack's own
+  // tabs (the customer story and the tech pack) and are not part of it, so they are never gated by
+  // it: a pack that arrived without its job used to be refused here and silently left the technician
+  // looking at the bare tool with "Pick a system type first" in the footer.
+  const flow = n<=6;
+  if(flow&&n>1&&!S.sys){ flash('Pick a system type first'); return }
+  if(flow&&n>1&&!isPkg()&&!S.orient){ flash('Where is the indoor unit?'); return }
+  if(flow&&n>1&&isPkg()&&!S.setup){ flash('Pick the roof / duct setup'); return }
+  if(flow&&n>2&&!isPkg()&&!S.room){ flash('How much room is there?'); return }
   cur=n; $$('.panel').forEach(p=>p.classList.toggle('active',p.id==='p'+n)); $$('.step').forEach(s=>{const k=+s.dataset.go;s.classList.toggle('active',k===n);s.classList.toggle('done',k<n)});
   syncPackNav(n); // v2.39 — the pack's own three tabs (7 story · 5 the Plan tab itself · 8 tech pack)
   $('#prev').style.visibility=n===1?'hidden':'visible'; $('#next').textContent=n===6?'Start over':'Next ›';
@@ -5242,7 +5267,19 @@ if(packOn()){ try{
   if(full) full.onclick=()=>{ const on=document.body.classList.toggle('full'); full.classList.toggle('on',on);
     if(on){ go(1) } else { go(7) } };
   go(7);
-}catch(e){ console.error('pack boot',e) } }
+  // The story is the whole point of this file. If it did not come up — the job failed to load, or
+  // rendering it threw — say so. A pack that quietly falls back to the blank six-step tool reads as
+  // "the wrong file got sent", and the technician is standing in front of the customer. (v2.40)
+  if(cur!==7||!S.sys) packStuck();
+}catch(e){ console.error('pack boot',e); try{ packStuck(e) }catch(_){} } }
+function packStuck(e){
+  const p=document.querySelector('#p7'); if(!p) return;
+  document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id==='p7'));
+  const why=(e&&e.message)?' ('+strip(String(e.message))+')':'';
+  p.innerHTML='<div class="card"><h2>This design did not open</h2>'
+    +'<p class="note">The job is inside this file — this viewer could not start it'+why+'.</p>'
+    +'<p class="note"><b>Open it in Safari or Chrome rather than the preview.</b> From Messages: tap and hold the file → Share → Open in Safari. It still works with no signal.</p></div>';
+}
 
 // ============================================================ v2.20 PWA: service worker, update bar, install button, home-screen hint, offline pill
 (function(){
