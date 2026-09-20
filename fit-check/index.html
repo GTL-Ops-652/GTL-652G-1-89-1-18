@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-18 v2.41 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-20 v2.42 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -343,7 +343,8 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
   .vleg{position:static;flex-wrap:nowrap;overflow-x:auto;background:none;padding:2px 10px 8px;gap:12px;scrollbar-width:none}.vleg::-webkit-scrollbar{display:none}.vleg span{white-space:nowrap}
   .lbl3{font-size:10px;padding:1px 5px;max-width:70vw;overflow:hidden;text-overflow:ellipsis}
   /* airflow table: the status pill and Fix ▸ stay on screen — area and velocity drop out (they are in the summary) */
-  .airtbl th:nth-child(3),.airtbl td:nth-child(3),.airtbl th:nth-child(4),.airtbl td:nth-child(4),.airtbl th:nth-child(5),.airtbl td:nth-child(5){display:none}
+  .airtbl:not(.compact) th:nth-child(3),.airtbl:not(.compact) td:nth-child(3),.airtbl:not(.compact) th:nth-child(4),.airtbl:not(.compact) td:nth-child(4),.airtbl:not(.compact) th:nth-child(5),.airtbl:not(.compact) td:nth-child(5){display:none}
+  .airtbl.compact th:nth-child(3),.airtbl.compact td:nth-child(3){display:none} /* v2.42: the compact table drops the Passes column on a phone — size, verdict and Fix ▸ stay */
   .airtbl td,.airtbl th{padding:6px 5px;font-size:12.5px}
   .chklist li{grid-template-columns:20px 1fr auto}
   .mvchips{flex-wrap:wrap;border-radius:10px}.mvchips button{flex:1 1 auto}
@@ -369,6 +370,7 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
 .packfull{background:#fff;border:1px solid var(--line);color:var(--db);border-radius:12px;padding:8px 11px;cursor:pointer;font-weight:700;font-size:12.5px;white-space:nowrap}
 .packfull.on{background:var(--db);color:#fff;border-color:var(--db)}
 body.pack #steps,body.pack #btnReset,body.pack #btnInstall,body.pack #a2hsBar,body.pack #updBar{display:none!important}
+body.pack:not(.full) #btnSettings{display:none!important} /* v2.42: no thresholds dialog in front of a customer — Full tool brings it back */
 body.pack .footbar{display:none}
 body.pack.full #steps{display:grid!important}
 body.pack.full .footbar{display:block}
@@ -511,6 +513,82 @@ body.pack.full .footbar{display:block}
   .svrow{grid-template-columns:1fr auto}
   .actbar .btn{flex:1 1 100%}
 }
+/* ===== v2.42 · required-field tint, one-line folds, plan-tab design strip, the client pack ===== */
+/* A tinted box is one the design NEEDS (return duct, filter grille, supply, take-offs; the roof holes on a package). Untinted = optional. */
+.field.req input,.field.req select,.sect .field.req input,.sect .field.req select{background:#fff8dc;border-color:#e2c35a}
+.field.req input:focus,.field.req select:focus,.sect .field.req input:focus,.sect .field.req select:focus{border-color:#c99d1a;box-shadow:0 0 0 3px #fff2b8}
+.reqkey{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);margin:0 0 6px}
+.reqkey i{display:inline-block;width:14px;height:14px;border-radius:4px;background:#fff8dc;border:1.5px solid #e2c35a}
+/* one-line fold: closed = one summary line that reads like a sentence; open = the full inputs */
+details.fold{border:2px solid var(--line);border-radius:14px;margin:14px 0 0;background:#fff;overflow:hidden}
+details.fold>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:11px 13px;font-weight:700;font-size:14px;color:var(--db);background:#f6f9fc;user-select:none}
+details.fold>summary::-webkit-details-marker{display:none}
+details.fold>summary .car{width:22px;height:22px;border-radius:50%;background:var(--db);color:#fff;display:grid;place-items:center;font-size:11px;flex:none;transition:transform .15s}
+details.fold[open]>summary .car{transform:rotate(90deg)}
+details.fold>summary .fs{font-weight:500;color:var(--muted);font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+details.fold>summary .fe{font-size:12px;color:var(--mb);font-weight:700;white-space:nowrap}
+details.fold[open]>summary .fe{display:none}
+details.fold>.fb{padding:2px 12px 12px}
+details.fold>.fb>.sect:first-child{margin-top:8px}
+@media (max-width:640px){ details.fold>summary{flex-wrap:wrap;padding:10px} details.fold>summary .fs{white-space:normal;flex-basis:100%;order:3} details.fold>.fb{padding:2px 4px 8px} }
+/* the design strip under the 3D: every button that changes the design, in one place */
+.pstrip{display:flex;flex-direction:column;gap:8px;margin:10px 4px 0}
+.pstrip .prow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.pstrip .plab{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-right:4px;flex:none}
+.pstrip .sc{padding:6px 10px;font-size:12.5px;border-radius:10px}
+.pstrip .sc.on{border-color:var(--db);background:#eaf2f9;font-weight:700}
+.pstrip .sc.na{opacity:.45;cursor:default}
+.pstrip .sc input{margin:0}
+.airtbl.compact td,.airtbl.compact th{padding:7px 8px;font-size:13px}
+.airtbl.compact td .status{font-size:11.5px}
+.airtbl.compact td.num{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}
+.readout{display:flex;flex-wrap:wrap;gap:8px 18px;align-items:baseline;font-size:13.5px;color:var(--ink);margin:8px 4px 0}
+.readout b{font-family:var(--serif);font-size:20px;color:var(--db)}
+.readout .k{font-size:11px;font-weight:800;letter-spacing:.6px;text-transform:uppercase;color:var(--muted);margin-right:4px}
+.readout .arw{color:var(--muted)}
+.readout b.ok{color:var(--ok)}.readout b.warn{color:#a35300}.readout b.bad{color:var(--bad)}
+/* ---- the client pack (v2.42): the story a technician walks a customer through ---- */
+.tp .phero{border-radius:20px;padding:20px 20px 18px;color:#fff;background:linear-gradient(135deg,#0b2c4d 0%,#003963 45%,#1d5a86 100%);box-shadow:var(--shadow);position:relative;overflow:hidden}
+.tp .phero::after{content:"";position:absolute;inset:0;background:radial-gradient(120% 140% at 100% 0%,rgba(255,255,255,.18),transparent 60%);pointer-events:none}
+.tp .phero>*{position:relative;z-index:1}
+.tp .phero .pk{font-size:11px;font-weight:800;letter-spacing:1.4px;text-transform:uppercase;opacity:.8}
+.tp .phero .pt{font-family:var(--serif);font-size:30px;font-weight:800;line-height:1.1;margin:4px 0 6px}
+.tp .phero .ps{font-size:14px;opacity:.94;line-height:1.45;max-width:66ch}
+.tp .pscores{display:grid;grid-template-columns:1fr auto 1fr;gap:12px;align-items:stretch;margin-top:16px}
+.tp .pscores .sc{display:block;cursor:default;background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.3);border-radius:16px;padding:12px 14px;text-align:center}
+.tp .pscores .sc .k{font-size:11px;letter-spacing:.8px;text-transform:uppercase;opacity:.85;color:#fff}
+.tp .pscores .sc .n{font-family:var(--serif);font-size:54px;font-weight:800;line-height:1;margin:4px 0 2px;color:#fff}
+.tp .pscores .sc .s{font-size:12px;opacity:.85;color:#fff}
+.tp .pscores .sc.good{background:rgba(67,178,121,.35);border-color:rgba(201,242,216,.6)}
+.tp .pscores .sc.mid{background:rgba(240,169,79,.32);border-color:rgba(255,216,168,.6)}
+.tp .pscores .sc.poor{background:rgba(205,30,31,.34);border-color:rgba(255,179,179,.6)}
+.tp .pscores .arw{display:grid;place-items:center;font-size:34px;opacity:.85}
+.tp .pgain{margin-top:12px;display:flex;flex-wrap:wrap;gap:8px}
+.tp .pgain span{background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+.tp .pgain span b{font-family:var(--serif);font-size:15px}
+.tp .duo{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:10px}
+.tp .duo .one{min-width:0}
+.tp .duo .cap{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:12px;font-weight:800;color:var(--mb);text-transform:uppercase;letter-spacing:.6px;margin:0 2px 6px}
+.tp .duo .cap .sb{font-family:var(--serif);font-size:22px;line-height:1;padding:5px 10px;border-radius:10px;color:#fff;background:var(--db);text-transform:none;letter-spacing:0}
+.tp .duo .cap .sb.ok{background:var(--ok)}.tp .duo .cap .sb.warn{background:var(--warn)}.tp .duo .cap .sb.bad{background:var(--bad)}
+.tp .duo .viewer{height:min(52vh,420px)}
+.tp .duo .viewer canvas{cursor:grab}
+.tp .duo .hint{font-size:11.5px;color:var(--muted);margin:5px 2px 0}
+.tp .story .card>h2{font-size:21px}
+.tp .lead{font-size:15px;line-height:1.5;margin:0 0 6px}
+.tp .lead b{color:var(--db)}
+.tp .steps2{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:8px}
+.tp .steps2 li{display:grid;grid-template-columns:30px 1fr;gap:10px;align-items:start;background:#f6f9fc;border:1.5px solid var(--line);border-radius:12px;padding:10px 12px}
+.tp .steps2 .n{width:28px;height:28px;border-radius:50%;background:var(--db);color:#fff;display:grid;place-items:center;font-weight:800;font-size:13px;margin-top:1px}
+.tp .steps2 .ct{font-weight:800;font-size:14px;color:var(--ink);line-height:1.3}
+.tp .steps2 .cw{font-size:13px;color:var(--muted);line-height:1.4;margin-top:3px}
+.tp .steps2 .ce{display:flex;flex-wrap:wrap;gap:6px 14px;margin-top:6px;font-size:12px;color:var(--muted)}.tp .steps2 .ce b{color:var(--ink)}.tp .steps2 .ce i{font-style:normal;color:var(--ok);font-weight:800}
+.tp .savecard{border:2px solid var(--db);background:#eaf2f9}
+.tp .savecard .row{align-items:flex-end}
+.tp .tpname{border:2px solid var(--mb);border-radius:12px;padding:11px 12px;font-size:16px;background:#fff;width:100%}
+body.pack .tp .noapp{display:none}
+@media (max-width:760px){ .tp .duo{grid-template-columns:1fr} .tp .duo .viewer{height:min(50vh,380px)!important} .tp .pscores{grid-template-columns:1fr auto 1fr;gap:8px} .tp .pscores .sc{padding:10px 8px} .tp .pscores .sc .n{font-size:40px} .tp .pscores .sc .k{font-size:10px} .tp .phero{padding:16px 14px} .tp .phero .pt{font-size:24px} }
+@media print{ .tp .duo .viewer{height:300px} .pstrip{display:none} }
 </style>
 </head>
 <body>
@@ -562,7 +640,7 @@ body.pack.full .footbar{display:block}
       <div id="fcBox"></div>
       <div id="fcFloors"></div>
       <div class="row">
-        <div class="field" style="max-width:240px"><label>Total conditioned sq ft</label><input id="homeSf" type="number" inputmode="numeric" min="300" step="25" placeholder="1450"></div>
+        <div class="field req" style="max-width:240px"><label>Total conditioned sq ft</label><input id="homeSf" type="number" inputmode="numeric" min="300" step="25" placeholder="1450"></div>
         <div class="field" style="flex:2"><label>&nbsp;</label><div class="note" style="padding:8px 0">Whole house, heated and cooled. Garage and patio do not count.</div></div>
       </div>
       <h4 class="sub">How is the house built?</h4>
@@ -668,6 +746,7 @@ body.pack.full .footbar{display:block}
 
   <div class="card" id="oldSplit">
     <h2>Existing equipment</h2>
+    <details class="fold" id="oldSplitFold"><summary><span class="car">&#9656;</span><span id="oldSplitTtl">Furnace &amp; coil</span><span class="fs" id="oldSplitSum">Not entered — optional</span><span class="fe">Tap to enter</span></summary><div class="fb">
     <p class="help">Type the model number and tap <b>Look up</b> — the sizes fill in. Or tape it and type the inches. Leave blank what you can't get.</p>
     <div class="sect furn"><div class="sh"><span class="sn"></span><span class="st" id="oldFurnLbl">Furnace</span><span class="sd">Model # or tape it</span></div><div class="sb">
     <div class="row">
@@ -699,10 +778,12 @@ body.pack.full .footbar{display:block}
       </div>
     </div></div>
     <div class="msg" id="oldEnv"></div>
+    </div></details>
   </div>
 
   <div class="card hidden" id="oldPkg">
     <h2>Existing package unit</h2>
+    <details class="fold" id="oldPkgFold"><summary><span class="car">&#9656;</span><span>The unit on the roof</span><span class="fs" id="oldPkgSum">Assumed — optional</span><span class="fe">Tap to enter</span></summary><div class="fb">
     <div class="sect furn"><div class="sh"><span class="sn"></span><span class="st">The unit on the roof</span><span class="sd">Model # or tape it</span></div><div class="sb">
     <div class="row">
       <div class="field" style="flex:2"><label>Model # (optional)</label><input class="mono" id="oldPkgModel" placeholder="e.g. GPG1336080M41 or LRP14GE36-072P"></div>
@@ -719,12 +800,13 @@ body.pack.full .footbar{display:block}
         <select id="oP_chassis"><option value="">Unknown — compare footprint only</option></select></div>
     </div>
     </div></div>
+    </div></details>
   </div>
 
   <div class="card" id="airflowCard">
     <h2>Existing airflow</h2>
-    <p class="help">Four quick things: the <b>static</b>, the <b>return plenum / main duct</b>, the <b>return grille</b> and the <b>supply plenum / main duct</b>. Skip anything you didn't check — an average is assumed so the 3D still draws, and you can edit it any time.</p>
-    <div class="asmbar hidden" id="asmBar1"></div>
+    <p class="help" style="margin-bottom:4px">The <b>return</b>, the <b>grille</b>, the <b>supply</b> and its <b>take-offs</b> are what the design is built on. Anything not checked is assumed for the tonnage and can be typed over.</p>
+    <div class="reqkey"><i></i> Tinted = needed for the design · plain = optional</div>
 
     <div class="sect stat"><div class="sh"><span class="sn"></span><span class="st">Static pressure</span><span class="sd">Measured on the old unit — used only for the "new AC on today's ducts" picture</span></div><div class="sb">
     <div class="row">
@@ -743,7 +825,7 @@ body.pack.full .footbar{display:block}
 
     <div class="sect ret"><div class="sh"><span class="sn"></span><span class="st">Return plenum or main duct</span><span class="sd">The big duct bringing air back to the unit</span></div><div class="sb">
     <div class="row">
-      <div class="field"><label>Round return plenum / main — size</label><select id="ex_ret_d"><option value="">Not checked</option><option value="10">10"</option><option value="12">12"</option><option value="14">14" — good to 2 ton</option><option value="16">16" — good to 3 ton</option><option value="18">18" — good to 4 ton</option><option value="20">20" — good to 5 ton</option><option value="22">22"</option><option value="24">24"</option></select></div>
+      <div class="field req"><label>Round return plenum / main — size</label><select id="ex_ret_d"><option value="">Not checked</option><option value="10">10"</option><option value="12">12"</option><option value="14">14" — good to 2 ton</option><option value="16">16" — good to 3 ton</option><option value="18">18" — good to 4 ton</option><option value="20">20" — good to 5 ton</option><option value="22">22"</option><option value="24">24"</option></select></div>
       <div class="field"><label>How many returns</label><input type="number" inputmode="numeric" id="ex_ret_n" placeholder="1" min="1"></div>
       <div class="field"><label>Rectangular instead? <small>W × H</small></label><input id="ex_ret_rect" placeholder="e.g. 20x25"></div>
       <div class="field opt" id="exRplenF"><label>Return plenum before the furnace <small>in · optional</small></label><input type="number" inputmode="decimal" id="ex_rplen" placeholder="24"></div>
@@ -753,7 +835,7 @@ body.pack.full .footbar{display:block}
     <div class="sect gr"><div class="sh"><span class="sn"></span><span class="st">Return grille(s) in the ceiling</span><span class="sd">The filter grille the homeowner sees</span></div><div class="sb">
     <div class="row">
       <div class="field"><label>How many grilles</label><input type="number" inputmode="numeric" id="ex_gr_n" placeholder="1" min="1"></div>
-      <div class="field"><label id="ex_grl">Grille size <small>W × H</small></label><input id="ex_gr" placeholder="e.g. 20x25"></div>
+      <div class="field req"><label id="ex_grl">Grille size <small>W × H</small></label><input id="ex_gr" placeholder="e.g. 20x25"></div>
       <div class="field hidden" id="exGr2F"><label>Second grille size <small>W × H · if it is a different size</small></label><input id="ex_gr2" placeholder="e.g. 20x20"></div>
       <div class="field"><label>&nbsp;</label><div class="chips"><button class="chip sm" data-gr="14x14">14×14</button><button class="chip sm" data-gr="16x16">16×16</button><button class="chip sm" data-gr="20x20">20×20</button><button class="chip sm" data-gr="20x25">20×25</button><button class="chip sm" data-gr="20x30">20×30</button><button class="chip sm" data-gr="20x40">20×40</button></div></div>
     </div>
@@ -762,7 +844,7 @@ body.pack.full .footbar{display:block}
 
     <div class="sect sup"><div class="sh"><span class="sn"></span><span class="st" id="supLbl">Supply plenum / supply main duct</span><span class="sd">Where the air leaves the unit</span></div><div class="sb">
     <div class="row">
-      <div class="field"><label>Round supply plenum / main — size</label><select id="ex_sup_d"><option value="">Not checked</option><option value="12">12"</option><option value="14">14"</option><option value="16">16"</option><option value="18">18"</option><option value="20">20"</option><option value="22">22"</option><option value="24">24"</option></select></div>
+      <div class="field req"><label>Round supply plenum / main — size</label><select id="ex_sup_d"><option value="">Not checked</option><option value="12">12"</option><option value="14">14"</option><option value="16">16"</option><option value="18">18"</option><option value="20">20"</option><option value="22">22"</option><option value="24">24"</option></select></div>
       <div class="field"><label>Rectangular instead? <small>W × H</small></label><input id="ex_sup_rect" placeholder="e.g. 18x12"></div>
       <div class="field"><label>How many supply trunks</label><input type="number" inputmode="numeric" id="ex_sup_n" placeholder="1" min="1"></div>
     </div>
@@ -782,8 +864,8 @@ body.pack.full .footbar{display:block}
       </div>
       <h4 class="sub" id="tkOldTitle">Take-offs coming off the plenum</h4>
       <div class="row">
-        <div class="field" style="flex:2"><label>Take-off sizes</label><input id="ex_tk" placeholder="6,6,8,8,10"></div>
-        <div class="field" style="flex:3"><label>&nbsp;</label><div class="note" style="padding:6px 0">Every branch, comma separated. <b>4@6</b> = four 6&quot; rounds · <b>12x8</b> = a rectangular take-off. Blank = not counted, not scored.</div></div>
+        <div class="field req" style="flex:2"><label>Take-off sizes</label><input id="ex_tk" placeholder="6,6,8,8,10"></div>
+        <div class="field" style="flex:3"><label>&nbsp;</label><div class="note" style="padding:6px 0">Every branch, comma separated. <b>4@6</b> = four 6&quot; rounds · <b>12x8</b> = a rectangular take-off.</div></div>
       </div>
       <div class="chips" id="tkEndOld" style="margin-top:8px">
         <span class="note" style="align-self:center" id="tkEndLbl">Do they clear the last 8–12&quot; of the plenum?</span>
@@ -845,18 +927,10 @@ body.pack.full .footbar{display:block}
     </div>
     <div class="legend"><span><i style="background:var(--ok)"></i>Fits</span><span><i style="background:var(--warn)"></i>Tight — under <b id="thrTxt">4</b>" to spare</span><span><i style="background:var(--bad)"></i>Doesn't fit</span></div>
   </div>
-  <div class="card hidden" id="spacePkg">
-    <h2>Roof notes</h2>
-    <p class="help">Package options are judged on the two things that matter up there: does the existing <b>stand</b> (or <b>curb</b>) take the new unit, and does the <b>metal</b> — the elbow openings — line up with it. Anything else you saw on the roof:</p>
-    <div class="row optrow">
-      <div class="field opt"><label>Clearance to nearest obstacle on duct side <small>optional</small></label><input type="number" inputmode="decimal" id="pk_cl" placeholder="in"></div>
-      <div class="field opt"><label>Crane / lift needed?</label><select id="pk_crane"><option>Unknown</option><option>Yes</option><option>No</option></select></div>
-    </div>
-  </div>
   <div class="card hidden" id="standCard">
     <h2 id="standTitle">Existing stand &amp; transition</h2>
+    <details class="fold" id="metalFold"><summary><span class="car">&#9656;</span><span id="metalFoldTtl">Stand · elbow · jack</span><span class="fs" id="metalFoldSum">assumed from the old unit</span><span class="fe">Tap to edit</span></summary><div class="fb">
     <p class="help" id="standHelp">Tape the metal that's staying. Each box has a letter — find the same letter on the picture to see exactly what to measure. Leave blank what you can't reach.</p>
-    <div class="asmbar hidden" id="asmBar2"></div>
 
     <div class="sect grey"><div class="sh"><span class="sn"></span><span class="st" id="standLbl">Stand</span><span class="sd">Roof pitch only — the rest is assumed</span></div><div class="sb">
     <div class="row">
@@ -924,12 +998,13 @@ body.pack.full .footbar{display:block}
       <div class="chips" style="margin-top:8px"><span class="note" style="align-self:center">Typical jacks:</span><button class="chip sm" data-jk="50,20">50 × 20</button><button class="chip sm" data-jk="55,25">55 × 25</button><button class="chip sm" data-jk="45,15">45 × 15</button><button class="chip sm" data-jk="40,20">40 × 20</button><button class="chip sm" data-jk="30,15">30 × 15</button><span class="note" style="align-self:center">width × depth — the two penetrations sit inside, either side of the divider</span></div>
       </details>
     </div></div>
+    </div></details>
 
-    <div id="penBlock" class="sect eq"><div class="sh"><span class="sn"></span><span class="st" id="penLbl">The two holes inside the jack</span><span class="sd">Blank = same size as the duct</span></div><div class="sb">
-      <p class="help" id="penHelp" style="margin-top:0">These are the only jack numbers that matter. Tape a hole if it is <b>smaller</b> than the duct running through it — the tool marks a necked-down hole red. Blank = the same size as the duct.</p>
+    <div id="penBlock" class="sect eq"><div class="sh"><span class="sn"></span><span class="st" id="penLbl">The two holes inside the jack</span><span class="sd">The airflow runs through these</span></div><div class="sb">
+      <p class="help" id="penHelp" style="margin-top:0">Tape the two holes the air goes through — a hole smaller than its duct is a chokepoint.</p>
       <div class="row">
-        <div class="field"><label id="pn_rl"><span class="bg" style="background:#003963">R</span>Return hole <small>blank = same as the return duct</small></label><input id="pn_r" placeholder="16 (round) or 14x18 (square)"></div>
-        <div class="field"><label id="pn_sl"><span class="bg" style="background:#0f8b8b">S</span>Supply hole <small>blank = same as the supply duct</small></label><input id="pn_s" placeholder="14 or 12x16"></div>
+        <div class="field req"><label id="pn_rl"><span class="bg" style="background:#003963">R</span>Return hole <small>blank = same as the return duct</small></label><input id="pn_r" placeholder="16 (round) or 14x18 (square)"></div>
+        <div class="field req"><label id="pn_sl"><span class="bg" style="background:#0f8b8b">S</span>Supply hole <small>blank = same as the supply duct</small></label><input id="pn_s" placeholder="14 or 12x16"></div>
         <div class="field hidden" id="penFillF"><label>&nbsp;</label><div class="chips"><button class="chip sm" id="penFill">&#8627; Same as the curb openings</button></div></div>
       </div>
     </div></div>
@@ -938,24 +1013,22 @@ body.pack.full .footbar{display:block}
 
 <!-- ============ STEP 3 ============ -->
 <section class="panel" id="p3">
-  <div class="rbrflag"></div>
   <div class="card">
     <h2>What are you selling?</h2>
     <h3>Tonnage</h3>
     <div class="chips" id="tons"></div>
+    <div id="tonsSrc" class="note" style="margin-top:8px"></div>
     <div id="afueWrap"><h3>Furnace efficiency</h3>
       <div class="chips" id="afue"><button class="chip on" data-v="80">80% AFUE</button><button class="chip" data-v="90">90%+ AFUE</button></div></div>
     <div id="flowNote" class="note" style="margin-top:8px"></div>
   </div>
-  <div class="legend" style="padding:0 4px"><span><i style="background:var(--ok)"></i>Fits</span><span><i style="background:var(--warn)"></i>Tight fit</span><span><i style="background:var(--bad)"></i>May not fit</span><span>· Tap a card, then <b>View in 3D</b>. Open <b>Other cabinet options</b> to swap sizes.</span></div>
-  <div id="airBanner" class="hidden"></div>
+  <div class="legend" style="padding:0 4px"><span><i style="background:var(--ok)"></i>Fits</span><span><i style="background:var(--warn)"></i>Tight fit</span><span><i style="background:var(--bad)"></i>May not fit</span></div>
   <div class="tiers" id="tiers"></div>
 </section>
 
 <!-- ============ STEP 4 ============ -->
 <!-- ============ STEP 4 — FIT: does this equipment physically go in / on what is there ============ -->
 <section class="panel" id="p4">
-  <div class="rbrflag"></div>
   <div id="fitHero"></div>
   <div class="card" id="cmpCard"></div>
   <div class="card" id="pkgCard"></div>
@@ -971,7 +1044,7 @@ body.pack.full .footbar{display:block}
   <div id="planHero"></div>
   <div class="card hidden" id="supCfgNewCard">
     <h2 id="supCfgNewTitle">Proposed supply configuration</h2>
-    <p class="help" id="supCfgNewHelp">How the supply gets built on this job. The 3D below redraws to match, and it prints on the recommendation.</p>
+    <p class="help hidden" id="supCfgNewHelp"></p>
     <div class="seg" id="supCfgNew">
       <button data-v="cased"><b>Cased coil + supply plenum</b><span>Coil in its cabinet, plenum after it, ducts off the plenum</span></button>
       <button data-v="plenum_coil"><b>Plenum coil</b><span>Larger box with the coil inside — replaces the cased coil</span></button>
@@ -982,7 +1055,7 @@ body.pack.full .footbar{display:block}
       <div class="field" id="newSplenF"><label>Proposed supply plenum length (in)</label><input id="new_splen" type="number" inputmode="decimal" placeholder="24"></div>
       <div class="field" style="flex:2" id="newTkAddF"><label>Supply take-offs we're proposing to ADD</label><input id="new_tk_add" placeholder="8,10 — on top of what's there"></div>
       <div class="field" id="splenChips"><label>&nbsp;</label><div class="chips"><button class="chip sm" data-splen="24">24"</button><button class="chip sm" data-splen="36">36"</button><button class="chip sm" data-splen="48">48"</button><button class="chip sm" data-splen="60">5 ft</button></div></div>
-      <div class="field" style="flex:3" id="supCfgNoteF"><label>&nbsp;</label><div class="note" id="supCfgNote" style="padding:6px 0"></div></div>
+      <div class="field hidden" style="flex:3" id="supCfgNoteF"><label>&nbsp;</label><div class="note" id="supCfgNote" style="padding:6px 0"></div></div>
     </div>
   </div>
   <div class="card" style="padding:10px">
@@ -1004,9 +1077,9 @@ body.pack.full .footbar{display:block}
       </div>
       <div class="vleg"><span><i style="background:#9aa6b2"></i>Existing</span><span><i style="background:#3678A0"></i>Furnace / AHU / Unit</span><span><i style="background:#77B2D0"></i>Coil</span><span><i style="background:#ffd166"></i>Access / openings</span><span><i style="background:#d9e2ec"></i>Existing metal</span></div>
     </div>
-    <p class="help" style="margin:8px 4px 0" id="viewerHelp">Drag to rotate · pinch or scroll to zoom. Ghost = what's there now, solid = what you're proposing, drawn to the same scale in the same spot.</p>
-    <div class="pact" id="planActions"></div>
-    <p class="note" id="planActionsNote" style="margin:6px 4px 0"></p>
+    <p class="help" style="margin:8px 4px 0" id="viewerHelp">Drag to rotate · pinch to zoom. Ghost = today, solid = proposed.</p>
+    <div class="readout" id="planReadout"></div>
+    <div class="pstrip" id="planActions"></div>
   </div>
   <div class="card hidden" id="airCard"></div>
   <div class="card hidden" id="recCard"></div>
@@ -1027,7 +1100,7 @@ body.pack.full .footbar{display:block}
   </div>
     <div class="card" id="techCard">
     <h2>Send it to the tech</h2>
-    <p class="help">One file with the whole job in it — and, since v2.39, the whole tool. Text or email it to the technician: they open it on the iPad in front of the customer with no signal, and it opens on <b>Your system</b> — both 3D pictures, what is wrong, what we are doing about it, the score today &rarr; designed. Behind that, <b>3D Design</b> is this Plan tab itself: the live 3D, Design to 100, Fix ducts, the curb options. Anything they change there runs through the same Manual D engine and rewrites the story, the scope and the ServiceTitan text in front of the customer. <b>Tech pack</b> carries the worksheet, the chokepoints and the material list, with <b>Open in Fit Check</b> to drop their version back into the app.</p>
+    <p class="help">One self-contained file — the whole design and the whole tool. Text or email it: it opens on an iPad or a phone with no signal on <b>Your system</b>, the customer's page — two working 3Ds (today and the design, chokepoints called out), the install options to walk through together, the score today &rarr; designed, and <b>Save &amp; send</b> so the tech can text the agreed design to the customer. <b>3D Design</b> is this Plan tab; <b>Tech pack</b> holds the worksheet, the chokepoint table and <b>Open in Fit Check</b>.</p>
     <div class="row">
       <div class="field" style="flex:2"><label>Customer or address <small>goes on the cover and the file name</small></label><input id="techName" placeholder="Smith &mdash; 4412 Desert Inn"></div>
       <div class="field"><label>Service manager <small>optional</small></label><input id="techSm" placeholder="Your name"></div>
@@ -1378,7 +1451,7 @@ function accaTyp(slot){ return accaPair(slot)[0] } function accaMax(slot){ retur
 S.thr.coil=S.thr.coil||0.20; S.thr.filt=S.thr.filt||0.10; S.thr.spGoal=S.thr.spGoal||0.5; S.thr.cptFloor=S.thr.cptFloor||390; if(S.thr.damper==null) S.thr.damper=true; delete S.thr.spRet; delete S.thr.spSup; /* v2.28: Manual D design point 0.50", limit 0.70" (the CFM quoted), 390/ton floor, 450 aim, balancing dampers on */
 S.thr.gr=S.thr.gr||2; S.thr.retv=S.thr.retv||900; S.thr.supv=S.thr.supv||900; S.thr.opv=S.thr.opv||900; S.thr.cpt=S.thr.cpt||450; /* v2.10: design aim 450 CFM/ton (Goettl charges the blower up); 400/ton is the floor the unit needs */ S.fix=S.fix||{install:'reuse',insul:'none'}; if(S.view.attic==null) S.view.attic=true; if(S.view.info==null) S.view.info=true; if(S.view.flag==null) S.view.flag=true; /* v2.11: 3D note toggles — Info = everything that passes, Chokepoints = the red/orange notes */ // v2.3: stand relocation (along the ridge / leg height) + which object drag & nudge move ('unit' | 'stand')
 function save(){store.set(SKEY,JSON.stringify(S))}
-const FIELDS=['oldFurnModel','oF_h','oF_w','oF_d','oldCoilModel','oC_h','oC_w','oC_d','oldPkgModel','oP_l','oP_w','oP_h','oP_chassis','acc_w','acc_l','sp_1','sp_2','sp_3','pk_cl','pk_crane','st_l','st_w','st_h','tr_sw','tr_sh','tr_sx','tr_sz','tr_rw','tr_rh','tr_gap','tr_rz','rf_pitch','el_len','el_h','el_div','el_x','el_throat','el_run','jk_h','jk_w','jk_d','ex_sp','ex_motor','ex_tons','ex_ret_d','ex_ret_n','ex_ret_rect','ex_gr','ex_gr2','ex_gr_n','ex_sup_d','ex_sup_rect','ex_sup_n','ex_fdp','ex_cdp','in_depth','in_type','in_r','pn_r','pn_s','ex_tk','ex_trunk_ft','ex_rplen','new_trunk_ft','ex_splen','new_splen','new_tk_add','dr_ret','dr_sup','dr_br','dr_n'];
+const FIELDS=['oldFurnModel','oF_h','oF_w','oF_d','oldCoilModel','oC_h','oC_w','oC_d','oldPkgModel','oP_l','oP_w','oP_h','oP_chassis','acc_w','acc_l','sp_1','sp_2','sp_3','st_l','st_w','st_h','tr_sw','tr_sh','tr_sx','tr_sz','tr_rw','tr_rh','tr_gap','tr_rz','rf_pitch','el_len','el_h','el_div','el_x','el_throat','el_run','jk_h','jk_w','jk_d','ex_sp','ex_motor','ex_tons','ex_ret_d','ex_ret_n','ex_ret_rect','ex_gr','ex_gr2','ex_gr_n','ex_sup_d','ex_sup_rect','ex_sup_n','ex_fdp','ex_cdp','in_depth','in_type','in_r','pn_r','pn_s','ex_tk','ex_trunk_ft','ex_rplen','new_trunk_ft','ex_splen','new_splen','new_tk_add','dr_ret','dr_sup','dr_br','dr_n'];
 S.f=S.f||{};
 FIELDS.forEach(id=>{const el=$('#'+id); if(S.f[id]!=null) el.value=S.f[id]; el.addEventListener('input',()=>{S.f[id]=el.value;save();clearAuto(id);
   if(ELBOW_FACE.includes(id)) deriveJack();
@@ -1391,7 +1464,7 @@ const isHoriz=()=>S.orient==='horiz';
 function applySys(){
   $('#splitLoc').classList.toggle('hidden',!!isPkg()); $('#pkgSetup').classList.toggle('hidden',!isPkg());
   $('#oldSplit').classList.toggle('hidden',!!isPkg()); $('#oldPkg').classList.toggle('hidden',!isPkg());
-  $('#spaceSplit').classList.toggle('hidden',!!isPkg()); $('#spacePkg').classList.toggle('hidden',!isPkg()); $('#standCard').classList.toggle('hidden',!isPkg()||S.setup==='separate'); relabelStand();
+  $('#spaceSplit').classList.toggle('hidden',!!isPkg()); $('#standCard').classList.toggle('hidden',!isPkg()||S.setup==='separate'); relabelStand();
   $('#oldCoilBlock').classList.toggle('hidden',S.sys!=='split_gas');
   $('#oldFurnLbl').textContent=S.sys==='split_hp'?'Air handler':'Furnace';
   $('#afueWrap').classList.toggle('hidden',S.sys!=='split_gas');
@@ -1422,7 +1495,7 @@ function syncSupCfg(){ const split=!isPkg();
   // Only the three-layout / plenum-length half is split-only now; the take-off half and the proposal card are always shown.
   $('#supCfgBlock').classList.remove('hidden'); $('#supCfgNewCard').classList.remove('hidden');
   $('#supLayoutBlock').classList.toggle('hidden',!split); $('#exRplenF').classList.toggle('hidden',!split);
-  $('#supCfgNew').classList.toggle('hidden',!split); $('#supCfgNoteF').classList.toggle('hidden',!split);
+  $('#supCfgNew').classList.toggle('hidden',!split); /* v2.42: the layout note stays hidden — the 3D says it */
   $('#supCfgNewTitle').textContent= split?'Proposed supply configuration':'Proposed supply take-offs';
   $('#supCfgNewHelp').textContent= split?'How the supply gets built on this job. The 3D below redraws to match, and it prints on the recommendation.'
     :'The branches you are adding off the supply trunk on this job. They are graded against the ACCA supply-branch limit and print on the recommendation.';
@@ -1593,8 +1666,28 @@ function assumeSpace(){ if(!isPkg()||S.setup==='separate') return; const u=asmOl
 function autoAssume(){ assumeAirflow(); assumeSpace(); }
 function asmList(which){ const ids=which===1?['ex_ret_d','ex_gr','ex_sup_d','dr_ret','dr_sup','dr_br']:['st_l','st_w','st_h','jk_w','jk_d','jk_h','el_run'];
   const seen=[]; ids.forEach(id=>{ if(isAuto(id)){ const l=ASM_LABEL[id]||id; if(!seen.includes(l)) seen.push(l) } }); return seen }
-function asmBars(){ [[1,'#asmBar1'],[2,'#asmBar2']].forEach(([w,sel])=>{ const el=$(sel); if(!el) return; const L=asmList(w);
-  el.classList.toggle('hidden',!L.length); if(L.length) el.innerHTML=`<b>Assumed so you can keep moving:</b> ${L.join(' · ')}. These are averages for the equipment being removed — the 3D and the chokepoints are drawn from them. Type over anything you actually taped and the assumption drops out.` }); asmBadges() }
+// v2.42: the amber "Assumed so you can keep moving" bars are gone (Stephen 2026-09-20: no extra notes on the tool) — the small
+// badge on each assumed box is the whole signal, and the folded sections say "assumed" in their one-line summary.
+function asmBars(){ asmBadges(); foldSums() }
+// the one-line summaries on the folded sections (existing equipment on step 1, stand / elbow / jack on step 2)
+function foldSums(){
+  const sp=$('#oldSplitSum'); if(sp){ const p=oldParts(); const F=p&&p.F, C=p&&p.C; const hasF=F&&(F.h||F.w||F.d), hasC=C&&(C.h||C.w||C.d);
+    const nm=S.sys==='split_hp'?'Air handler':'Furnace'; const ttl=$('#oldSplitTtl'); if(ttl) ttl.textContent=S.sys==='split_gas'?'Furnace & coil':nm;
+    const fx=x=>[x.h,x.w,x.d].map(v=>v!=null?fmt(v):'?').join('×');
+    sp.textContent= hasF||hasC ? [hasF?`${nm.toLowerCase()} ${fx(F)}`:'', hasC?`coil ${fx(C)}`:''].filter(Boolean).join(' · ')+($('#oldFurnModel').value||$('#oldCoilModel').value?' · '+[$('#oldFurnModel').value,$('#oldCoilModel').value].filter(Boolean).join(' / '):'')
+      : 'Not entered — optional; the new equipment is judged against the space' }
+  const pk=$('#oldPkgSum'); if(pk){ const o=oldPkg(); const u=asmOldUnit();
+    pk.textContent= (o.l!=null&&o.w!=null) ? `${$('#oldPkgModel').value?$('#oldPkgModel').value+' · ':''}${fmt(o.l)}×${fmt(o.w)}×${fmt(o.h)}${o.c?' · '+o.c.label:''}`
+      : `Assumed ${fmt(u.l)}×${fmt(u.w)}×${fmt(u.h)} — the unit being sold; enter the old model # to get its real footprint and openings` }
+  const mf=$('#metalFoldSum'); if(mf){ if(!isPkg()||S.setup==='separate'){ mf.textContent=''; return }
+    const curb=isCurbSetup(), pitched=isPitched(); const st=standDims(); const rp=roofPitch(); const eo=existingOpenings0(); const f=elbowFace();
+    const parts=[]; parts.push(`${curb?'curb':'stand'} ${st.l!=null&&st.w!=null?fmt(st.l)+'×'+fmt(st.w):'?'}${isAuto('st_l')||isAuto('st_w')?' (assumed)':''}`);
+    if(!curb) parts.push(`${(S.elbowMode||'one')==='one'?'elbow':'openings'} ${f.A!=null&&f.B!=null?fmt(f.A)+'×'+fmt(f.B):'?'}${eo.src==='tape'?'':' ('+(eo.src==='spec'?"old unit's spec":'average')+')'}`);
+    if(!curb) parts.push(`jack ${num('jk_w')!=null&&num('jk_d')!=null?fmt(num('jk_w'))+'×'+fmt(num('jk_d')):'?'}${isAuto('jk_w')?' (assumed)':''}`);
+    if(pitched) parts.push(`roof ${Math.round(rp.p*10)/10}/12${rp.src==='assumed'?' (assumed)':''}`);
+    const ttl=$('#metalFoldTtl'); if(ttl) ttl.textContent=curb?'Curb · openings':'Stand · elbow · jack';
+    mf.textContent=parts.join(' · ') }
+}
 // v2.24: the badge on the box itself — v2.23 documented it but never rendered it. One <span class="asm"> per assumed field, in its label.
 function asmBadges(){ Object.keys(ASM_LABEL).forEach(id=>{ const el=$('#'+id); if(!el) return; const f=el.closest('.field'); const lab=f?f.querySelector('label'):null; if(!lab) return;
   let b=lab.querySelector('.asm'); const on=isAuto(id)&&String(el.value||'').trim()!=='';
@@ -1950,8 +2043,9 @@ function mdAreaFor(slot,M){ const f=mdFixSpec(slot,M); const sp=f?fixSpec(f):nul
 // ---- what the customer is told, in words (no inches of static anywhere)
 const mdBand=(pt)=>pt>=cptAim()-2?'aim':(pt>=cptFloor()?'band':'under');
 function mdStatement(M){ const md=M&&M.md; if(!md) return ''; const tapWord=md.vs?'airflow setting':'blower tap'; const bandP=mdBand(md.perTonP);
-  const cls=bandP==='under'?(md.blowerLimit?'warn':'bad'):''; const short=M.delivered<md.Qp-0.5;
-  return `<div class="mdline ${short?'bad':cls}"><span>Designed to <b>ACCA Manual D</b> at the <b>${md.espD.toFixed(2)}"</b> design static on ${tapWord} <b>${md.tap}</b>: the ${md.B.name} delivers <b>${CFM(md.Qd)} CFM</b> there (${md.perTonD} CFM/ton${mdBand(md.perTonD)==='aim'?', the aim':(mdBand(md.perTonD)==='band'?`, inside the ${cptFloor()}–${cptAim()} band`:` — under the ${cptFloor()}/ton floor`)}).</span> <span>At Goettl's <b>${md.espP.toFixed(2)}"</b> limit it still moves <b>${CFM(md.Qp)} CFM</b> (<b>${md.perTonP} CFM/ton</b>) — that is the number we stand behind${short?`, <b class="bad">but the ductwork as proposed passes only ${CFM(M.delivered)}</b> — open the chokepoints`:''}.</span>${md.tapNote?` <i>— ${md.tapNote}</i>`:''}</div>` }
+  const cls=bandP==='under'?(M.blowerBound?'':(md.blowerLimit?'warn':'bad')):''; const short=M.delivered<md.Qp-0.5;
+  // v2.42: one line, and the blower's own ceiling reads as what it is — the most this unit can push, delivered in full — not a shortfall
+  return `<div class="mdline ${short?'bad':cls}"><span><b>ACCA Manual D</b> at <b>${md.espD.toFixed(2)}"</b> on ${tapWord} <b>${md.tap}</b>: <b>${CFM(md.Qd)} CFM</b> (${md.perTonD}/ton) · at Goettl's <b>${md.espP.toFixed(2)}"</b> limit <b>${CFM(md.Qp)} CFM</b> (<b>${md.perTonP} CFM/ton</b>) — the number we stand behind${short?`, <b class="bad">but the ductwork as proposed passes only ${CFM(M.delivered)}</b> — open the chokepoints`:(M.blowerBound?' — the most this blower can push, and the ducts pass all of it':'')}.</span></div>` }
 function mdStatementTxt(M){ const md=M&&M.md; if(!md) return ''; return `ACCA Manual D design at ${md.espD.toFixed(2)}" ESP on ${md.vs?'setting':'tap'} ${md.tap}: ${CFM(md.Qd)} CFM (${md.perTonD}/ton) · At the ${md.espP.toFixed(2)}" limit it moves ${CFM(md.Qp)} CFM (${md.perTonP}/ton) — the number quoted${md.stepped?` · Designed at ${md.espD.toFixed(2)}"${md.espD>spLimit()+1e-9?` (the ${/CBK|AMST/.test(md.B.name)?'air handler':'furnace'}'s rated maximum with this coil)`:''}`:''}${md.blowerLimit?' · BLOWER IS THE LIMIT: '+md.tapNote:''}` }
 // the worksheet itself — for the SM and the file (banks and code officials read this part)
 function mdWorksheetHtml(M){ const md=M&&M.md; if(!md) return ''; const f2=v=>v.toFixed(2)+'"'; const s=md.sizes; const m=k=>md.mat[k]==='metal'?'metal':'flex';
@@ -1998,16 +2092,23 @@ function flowModel(o,fix){ fix=fix||{}; const tons=S.tons?tonNum(S.tons):null; i
   let Qb=design, basis='aim'; if(md){ if(fix.__noScope&&a.sp!=null&&!md.vs){ const r=tapCfmAt(md.B,md.tap,Math.min(a.sp,(md.B.esp||[0.8]).slice(-1)[0])); Qb=r?r.Q:md.Qp; basis='reading' } else { Qb=md.Qp; basis='limit' } }
   const choke=scoredC.length?scoredC.reduce((m,c)=>c.effMax<m.effMax?c:m):null; const chokes=comps.filter(c=>c.cls==='bad'); const necked=comps.filter(c=>c.neck);
   const deliv0= choke?Math.min(Qb,choke.effMax):Qb; const delivered= necked.length?Math.min(deliv0,...necked.map(c=>c.effMax)):deliv0;
+  // v2.42 — THE BLOWER'S CEILING IS A PASS (Stephen 2026-09-20): when the most the unit's blower can push on any tap is under the
+  // 390/ton floor and the ductwork passes every bit of it, the design has done all it can — that is a green pass and full airflow
+  // points, not a red "under the floor". The floor the ducts are held to is therefore the smaller of the unit's need and its blower.
+  // (only when the blower is read off its table at the limit — a low reading taken on today's choked ducts is the ducts' doing, not the blower's ceiling)
+  const blowerCap=!!(md&&basis==='limit'&&Qb<needs-0.5); const need2=blowerCap?Qb:needs; const blowerBound=blowerCap&&delivered>=Qb-0.5;
   // the two sides: the rule of thumb is the return flowing a little slower than the supply
   const sideCap=kk=>{ const cs=scoredC.filter(c=>c.side===kk); return cs.length?Math.min(...cs.map(c=>c.effMax)):null };
   const bal={ret:sideCap('r'),sup:sideCap('s')}; bal.ratio=(bal.ret!=null&&bal.sup)?bal.ret/bal.sup:null;
   const rm=comps.find(c=>c.slot==='ret'), sm=comps.find(c=>c.slot==='sup'); bal.vRet=rm?rm.vel:null; bal.vSup=sm?sm.vel:null; bal.slower=(bal.vRet!=null&&bal.vSup!=null)?bal.vRet<=bal.vSup+1e-9:null;
   bal.cls= bal.ratio==null?'':(bal.ratio>=1?'ok':((bal.slower&&bal.ratio>=0.85)?'ok':(bal.ratio>=0.9?'warn':'bad')));
   const ins=insulState(fix);
-  const score=comfortScore({tons,design,needs,delivered,comps,ins,removed});
+  const score=comfortScore({tons,design,needs,need2,delivered,comps,ins,removed});
   const sameBlower= a.sp!=null && a.motor===motor; const sameTon= a.tons!=null && Math.abs(a.tons-tons)<=0.5;
-  return {tons,design,needs,aim,nomQ:tons*400,motor,comps,choke,chokes,necked,bal,op:{Q:Qb,basis},Qb,basis,sameBlower,sameTon,delivered,perTon:Math.round(delivered/tons),ratio:delivered/design,ratioNeed:delivered/needs,ins,score,sp:a.sp,fix,md,pred:!!md};
+  return {tons,design,needs,need2,blowerCap,blowerBound,aim,nomQ:tons*400,motor,comps,choke,chokes,necked,bal,op:{Q:Qb,basis},Qb,basis,sameBlower,sameTon,delivered,perTon:Math.round(delivered/tons),ratio:delivered/design,ratioNeed:delivered/need2,ins,score,sp:a.sp,fix,md,pred:!!md};
 }
+// the airflow verdict class for a model: green when the ducts deliver the floor — or everything the blower can push
+function airCls(M){ if(!M) return ''; if(M.blowerBound) return 'ok'; return cptCls(M.perTon) }
 // grading — Manual D Table 3-1 per squeeze point, rigid or flex: OK at or under the maximum velocity for the design airflow, CHOKE over it. Two states (Stephen: a spot either restricts the CFM or it does not).
 function gradeComps(comps,design,needs){
   comps.forEach(c=>{ const [vt,vm]=tab31(c.slot,compMat(c.slot)); const sf=c.area/144;
@@ -2028,7 +2129,8 @@ function gradeComps(comps,design,needs){
 // and above (450 is the aim, not a scoring line), falling with the square below it (pressure goes with the square of the flow). Every
 // chokepoint fixed raises the CFM; nothing else is scored. Caps at 85; the attic is the last 15 and never touches the airflow.
 function comfortScore(m){
-  const cpt=m.delivered/Math.max(m.tons,0.5); const ac=85*Math.pow(clamp(cpt/cptFloor(),0,1),2);
+  const cpt=m.delivered/Math.max(m.tons,0.5); const need=(m.need2!=null?m.need2:m.needs)/Math.max(m.tons,0.5); // v2.42: the floor, or the blower's own ceiling when that is lower
+  const ac=85*Math.pow(clamp(cpt/Math.max(need,1),0,1),2);
   const R=m.ins.Rf; const ins= R==null?7.5:15*clamp(R/R_MIN,0,1);
   const scored=m.comps.filter(c=>!c.newMetal); const removed=m.removed||0;
   const unfixed=m.comps.filter(c=>!c.newMetal&&(c.cls==='bad'||c.neck)); const ductDone=!unfixed.length;
@@ -2072,11 +2174,35 @@ function insulRead(){ const el=$('#insulRead'); if(!el) return; const i=insulSta
 }
 
 // ============================================================ lineup → options
+// v2.42 — THE TONNAGE FOLLOWS THE LOAD (Stephen 2026-09-20). Step 1 already works the size out: the measured rooms when Room
+// by Room was done, otherwise the square-footage Manual J with the attic factored in. Step 3 used to show that as a mismatch
+// banner and leave the chip on 3 ton; now the chip is set to the load's size and the SM taps a different one only to override.
+// Returns {tons, why} or null when step 1 has nothing to size from (no square footage / build type).
+function loadTons(){ try{
+  const rec=rbrRecTons(); if(!rec) return null; const rooms=!!(RM&&RM.loadT&&S.rooms&&S.rooms.length);
+  const c=rbrSizeCall();
+  if(c){ // the house asks for a size above the square footage (measured rooms, or the pre-1980 rule) — as the house sits today that IS the size;
+         // the attic only takes it back down once it is at R-38 and it closes the gap, which is a Fix-insulation decision on the Plan tab
+    if(c.already) return {tons:c.askT,why:(c.why==='rooms'?'measured rooms':'pre-1980 build')+` · attic already R-${fmt(c.R)}`};
+    return {tons:c.askT,why:(c.why==='rooms'?'measured rooms':'pre-1980 build')+(c.known?` · attic R-${fmt(c.R)} under R-38 as it sits`:' · attic not entered')} }
+  const x=rbrStretchInfo(); const ld=x&&x.measured?'measured rooms':'Manual J';
+  if(x){ if(x.ok) return {tons:x.size,why:`${ld} ${x.raw.toFixed(2)} ton, held at ${x.size} · attic R-${fmt(x.R)} carries the stretch`};
+    if(!x.known) return {tons:x.size,why:`${ld} ${x.raw.toFixed(2)} ton, held at ${x.size} — a stretch; needs the attic at R-38`};
+    if(x.next) return {tons:x.next,why:`${ld} ${x.raw.toFixed(2)} ton · attic R-${fmt(x.R)} under R-38 cannot carry the ${x.size} stretch`};
+    return {tons:x.size,why:`${ld} ${x.raw.toFixed(2)} ton`} }
+  if(rooms) return {tons:RM.loadT,why:`measured rooms — ${CFM(RM.needTot)} CFM ÷ ${RM.cpt} CFM/ton`};
+  return {tons:rec,why:`Manual J — ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()}`};
+}catch(e){ return null } }
 function buildTons(){
   const rows=LINEUP.filter(r=>r.type===S.sys); const tons=[...new Set(rows.map(r=>r.tons))].sort((a,b)=>tonNum(a)-tonNum(b));
   const el=$('#tons'); el.innerHTML='';
+  // the load's size, unless the SM has tapped a chip on this check
+  const L=loadTons(); const auto=S.tonsAuto!==false;
+  if(L&&auto){ const want=L.tons+'T'; if(tons.includes(want)) S.tons=want; else { const n=tons.map(tonNum); const near=n.reduce((b,x)=>Math.abs(x-L.tons)<Math.abs(b-L.tons)?x:b,n[0]); S.tons=near+'T' } }
   if(!tons.includes(S.tons)) S.tons=tons.includes('3T')?'3T':tons[0];
-  tons.forEach(t=>{const b=document.createElement('button');b.className='chip'+(t===S.tons?' on':'');b.textContent=t.replace('T',' Ton');b.onclick=()=>{S.tons=t;save();buildTons();renderTiers()};el.appendChild(b)});
+  tons.forEach(t=>{const b=document.createElement('button');b.className='chip'+(t===S.tons?' on':'');b.textContent=t.replace('T',' Ton');b.onclick=()=>{S.tons=t;S.tonsAuto=(L&&L.tons+'T'===t)?true:false;save();buildTons();renderTiers()};el.appendChild(b)});
+  const src=$('#tonsSrc'); if(src){ src.innerHTML= L ? (auto||L.tons+'T'===S.tons ? `<b>${L.tons} ton</b> from the load on step 1 — ${L.why}.` : `Load on step 1 says <b>${L.tons} ton</b> (${L.why}) — you have <b>${tonNum(S.tons)} ton</b> selected. <button class="chip sm" id="tonsFollow">Use ${L.tons} ton</button>`) : 'Put the square footage and build type in on step 1 and the tonnage sets itself from the load.';
+    const f=$('#tonsFollow'); if(f) f.onclick=()=>{ S.tonsAuto=true; save(); buildTons(); renderTiers() } }
 }
 function rowsFor(){
   let rows=LINEUP.filter(r=>r.type===S.sys&&r.tons===S.tons);
@@ -2143,7 +2269,7 @@ function evaluate(o){
 }
 // ============================================================ render tiers (split)
 function renderTiers(){
-  renderAirBanner(); const byStar=rowsFor(); const el=$('#tiers'); el.innerHTML='';
+  const byStar=rowsFor(); const el=$('#tiers'); el.innerHTML='';
   const stars=Object.keys(byStar).map(Number).sort();
   if(!stars.length){el.innerHTML='<div class="card">No lineup rows for this combination in the Matchup Guide.</div>';return}
   stars.forEach(star=>{
@@ -2184,11 +2310,10 @@ function renderSplitTier(card,star,row,o){
     if(!(o.furnOpts&&o.furnOpts.length>1)&&!(o.coilOpts&&o.coilOpts.length>1)&&!(o.ahuOpts&&o.ahuOpts.length>1)) alts+='<div class="note" style="margin-top:6px">Only one AHRI-matched cabinet at this tonnage.</div>';
     alts+=`<div style="margin-top:8px"><button class="chip sm" data-reset="${star}">↺ Back to Goettl default</button></div></details>`;
   }
-  const tonsN=tonNum(S.tons);
-  card.innerHTML=`<div class="haze"></div><div class="head"><div><div class="stars">${'★'.repeat(star)}</div><div class="brand">${row.brand} · ${sub}</div></div><span style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${airPill(tonsN)}<span class="status ${st}">${{ok:'Fits',warn:'Tight',bad:'May not fit',na:'No reference'}[st]}</span></span></div>
+  // v2.42: the card is the option and whether it fits — no matchup notes, no airflow verdicts, no access paragraphs (Stephen 2026-09-20)
+  card.innerHTML=`<div class="haze"></div><div class="head"><div><div class="stars">${'★'.repeat(star)}</div><div class="brand">${row.brand} · ${sub}${o.isDefault?'':' · <span style="color:var(--warn)">alt</span>'}</div></div><span class="status ${st}">${{ok:'Fits',warn:'Tight',bad:'May not fit',na:'No reference'}[st]}</span></div>
     <div class="parts">${parts.join('')}</div>
-    <div class="note">${o.isDefault?'✓ Goettl default matchup':'⚠ Modified from default — confirm AHRI match in the Matchup Guide'}</div>
-    <div class="env">${dims}</div>${accMsg}${airMsg(tonsN)}${alts}
+    <div class="env">${dims}</div>${ev.acc.cls==='bad'||ev.acc.cls==='warn'?`<div class="msg ${ev.acc.cls}">Attic access: ${ev.acc.all.filter(a=>a.cls!=='ok').map(a=>`<b>${a.piece}</b> ${a.txt}`).join(' · ')}</div>`:''}${alts}
     <div class="actions"><button class="btn sm" data-view="${star}">View in 3D ›</button></div>`;
   wireTier(card);
 }
@@ -2333,7 +2458,7 @@ function judgePkg(m,pos){
     if(setup==='over_under'){ hard('warn'); msgs.push(`<b>Over-and-under: a TRANSITION BOX is required.</b> The metal leaves the roof stacked — supply on top, return underneath — and the unit's openings are side by side${n.c.ss?` (supply ${fmt(n.c.ss.w)}×${fmt(n.c.ss.h)}, return ${fmt(n.c.sr.w)}×${fmt(n.c.sr.h)})`:''}, so a transition box has to convert over-under to side-by-side at the unit.`) }
     if(setup==='reverse') msgs.push(`<b>Reverse flow:</b> supply on the left, return on the right looking uphill from downhill — the opposite of the standard. The new unit is set down that way; confirm it against the existing duct runs before ordering.`);
     else msgs.push(`Orientation: ${orientLine().toLowerCase()}.`);
-    if(setup==='elbow_flat'&&num('pk_cl')!=null&&dL!=null){ const cl=num('pk_cl')-Math.max(0,dL); if(cl<0){hard('bad');msgs.push(`Duct-side clearance short by ${fmt(-cl)}"`)} else if(cl<thr){hard('warn');msgs.push(`Only ${fmt(cl)}" duct-side clearance after growth`)} }
+    /* v2.42: the Roof notes card (duct-side clearance, crane) is gone — nothing else read it */
   }
   if(o.l==null&&o.w==null&&!o.chassis&&standDims().l==null) msgs.push('No existing unit or stand data yet — showing the new unit only.');
   return {cls,msgs,n,o,dL,dW,dH,boxes:[b1,b2],A};
@@ -2344,20 +2469,20 @@ function renderPkgTier(card,star,row,o){
   const wt=n.p.wt?(n.p.wt.ship||n.p.wt.operating||''):'';
   const boxes=j.boxes.map(b=>`<div class="dim ${b.cls==='na'?'':b.cls}"><div class="lbl">${b.lbl}</div><div class="val">${b.val}</div><div class="sub">${b.sub}</div></div>`).join('');
   const opts=o.unitOpts.map(m=>{const jj=judgePkg(m);const d=pkgDims(m);return `<button class="chip sm ${jj.manual||jj.cls==='na'?'':jj.cls} ${m===o.unit?'on':''}" data-kind="unit" data-m="${m}" data-star="${star}">${m} <span style="opacity:.75">${fmt(d.l)}×${fmt(d.w)}×${fmt(d.h)}</span></button>`}).join('');
-  const tonsN=tonNum(S.tons);
-  card.innerHTML=`<div class="haze"></div><div class="head"><div><div class="stars">${'★'.repeat(star)}</div><div class="brand">${n.c.brand} · ${sub}</div></div><span style="display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end">${airPill(tonsN)}<span class="status ${st}">${j.manual?'Manual review':{ok:'Fits',warn:'Check',bad:'Won\'t work',na:'No reference'}[st]}</span></span></div>
-    <div class="parts">${`<div class="part"><span class="k">Unit</span><span><span class="m">${o.unit}</span>${n.p.conf==='unverified'?'<span class="est">est.</span>':''}</span><span class="dims">${n.c.label} · ${fmt(n.l)}×${fmt(n.w)}×${fmt(n.h)}${wt?` · ${wt} lb`:''}</span></div>`}
-    <div class="part"><span class="k">Curb</span><span class="note" style="grid-column:span 2">${n.c.curb}</span></div></div>
-    <div class="note">${o.isDefault?'✓ Goettl default':'⚠ Alternate brand/chassis selected'}</div>
+  // v2.42: the card is the option and whether it fits — the stand / metal verdict boxes carry the why; the paragraph of notes is gone
+  card.innerHTML=`<div class="haze"></div><div class="head"><div><div class="stars">${'★'.repeat(star)}</div><div class="brand">${n.c.brand} · ${sub}${o.isDefault?'':' · <span style="color:var(--warn)">alt</span>'}</div></div><span class="status ${st}">${j.manual?'Manual review':{ok:'Fits',warn:'Check',bad:'Won\'t work',na:'No reference'}[st]}</span></div>
+    <div class="parts">${`<div class="part"><span class="k">Unit</span><span><span class="m">${o.unit}</span>${n.p.conf==='unverified'?'<span class="est">est.</span>':''}</span><span class="dims">${n.c.label} · ${fmt(n.l)}×${fmt(n.w)}×${fmt(n.h)}${wt?` · ${wt} lb`:''}</span></div>`}</div>
     <div class="env two">${boxes}</div>
-    <div class="msg ${st==='ok'||st==='na'?'':st}">${j.msgs.join('<br>')}</div>${airMsg(tonsN)}
+    ${j.manual?`<div class="msg">${j.msgs[0]||''}</div>`:''}
     <details class="alts"><summary>Other units at this tier ▾</summary><div class="chips" style="margin-top:8px">${opts}</div><div style="margin-top:8px"><button class="chip sm" data-reset="${star}">↺ Back to Goettl default</button></div></details>
     <div class="actions"><button class="btn sm" data-view="${star}">View in 3D ›</button></div>`;
   wireTier(card);
 }
 
 // ============================================================ 3D viewer (lightweight orthographic renderer)
-const cv=$('#c3d'), ctx=cv.getContext('2d'); const view={yaw:-0.75,pitch:0.42,zoom:1,pan:[0,0],touched:false};
+// v2.42: the renderer can draw into more than one viewer — the pack's customer page has a Today and a Design 3D side by side —
+// so the canvas, its context, its label layer and its camera are swappable (renderInto), not fixed to #c3d.
+let cv=$('#c3d'), ctx=cv.getContext('2d'), lblsEl=$('#lbls'); let view={yaw:-0.75,pitch:0.42,zoom:1,pan:[0,0],touched:false,lbl:null};
 const defaultView=()=>isPkg()?{yaw:2.35,pitch:0.46}:{yaw:-0.75,pitch:0.42};
 function resetView(){ const d=defaultView(); view.yaw=d.yaw; view.pitch=d.pitch; view.zoom=1; view.pan=[0,0]; view.touched=false; }
 let scene=[]; // boxes: {x,y,z,dx,dy,dz,color,alpha,label,cls,wire} · quads: {quad:[4 pts],color,stroke,nofit} · markers: {marker:true,label}
@@ -2387,7 +2512,7 @@ function draw(){
   view.pan=savePan;
   const narrow=r.width<520; // v2.18: a phone canvas is tall and narrow — use more of its width
   const sc=Math.min(r.width*(narrow?0.94:0.88)/Math.max(px1-px0,1), r.height*(narrow?0.70:0.80)/Math.max(py1-py0,1))*view.zoom; const cx=r.width/2-(px0+px1)/2*sc, cy=r.height/2-(py0+py1)/2*sc+6; // v2.24: fill the viewer — the picture is what the customer is looking at
-  const P=p=>project([p[0]-ctr[0],p[1]-ctr[1],p[2]-ctr[2]],cx,cy,sc); curP=P; const lbls=$('#lbls'); lbls.innerHTML='';
+  const P=p=>project([p[0]-ctr[0],p[1]-ctr[1],p[2]-ctr[2]],cx,cy,sc); if(!vwSecondary) curP=P; const lbls=lblsEl; lbls.innerHTML='';
   // roof / floor planes (quads) — always underneath, drawn first
   scene.filter(b=>b.quad).map(q=>{ const pts=q.quad.map(P); return {q,pts,depth:pts.reduce((s,p)=>s+p[2],0)/pts.length} }).sort((a,b)=>a.depth-b.depth).forEach(({q,pts})=>{ ctx.beginPath(); pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.closePath(); ctx.fillStyle=q.color; ctx.fill(); if(q.stroke){ctx.strokeStyle=q.stroke;ctx.lineWidth=1;ctx.stroke()} });
   // floor shadows (on the roof surface)
@@ -2418,8 +2543,9 @@ function draw(){
     else { const col=b.color; ctx.fillStyle=hexA(col,b.alpha,shade); ctx.fill(); ctx.strokeStyle=`rgba(255,255,255,${b.alpha<1?.35:.55})`; ctx.lineWidth=1; ctx.stroke(); }
   });
   // labels — v2.11: filtered by the Info / Chokepoints toggles. A red or orange note is a "chokepoint" note; everything else is Info.
-  const showLbl=c=>(c==='warn'||c==='bad')?S.view.flag!==false:S.view.info!==false;
-  scene.forEach(b=>{ if(!b.label||b.quad) return; if(!showLbl(b.cls)) return; const fx=b.la?b.la[0]:0.5, fz=b.la?b.la[1]:((b.wire||b.marker)?0:0.5), fy=(b.la&&b.la[2]!=null)?b.la[2]:1; const p=P([b.x+fx*b.dx,b.y+fy*b.dy+3,b.z+fz*b.dz]); const d=document.createElement('div'); d.className='lbl3 '+(b.cls||''); d.style.left=p[0]+'px'; d.style.top=(p[1]-8)+'px'; d.innerHTML=b.label; lbls.appendChild(d) });
+  // v2.42: a viewer can carry its own note mode — 'all' · 'flag' (problems only) · 'changes' (problems + what is new) · 'none' — else the Info / Chokepoints toggles decide
+  const showLbl=(c,b)=>{ const m=view.lbl; const prob=(c==='warn'||c==='bad'); if(m){ if(m==='none') return false; if(m==='all') return true; if(m==='flag') return prob; if(m==='changes') return prob||!!(b&&(b.nw||b.stat)); } return prob?S.view.flag!==false:S.view.info!==false };
+  scene.forEach(b=>{ if(!b.label||b.quad) return; if(!showLbl(b.cls,b)) return; const fx=b.la?b.la[0]:0.5, fz=b.la?b.la[1]:((b.wire||b.marker)?0:0.5), fy=(b.la&&b.la[2]!=null)?b.la[2]:1; const p=P([b.x+fx*b.dx,b.y+fy*b.dy+3,b.z+fz*b.dz]); const d=document.createElement('div'); d.className='lbl3 '+(b.cls||''); d.style.left=p[0]+'px'; d.style.top=(p[1]-8)+'px'; d.innerHTML=b.label; lbls.appendChild(d) });
   // dimension callouts for the primary "new" envelope
   const env=scene.find(b=>b.dimLabels); if(env){ const {x,y,z,dx,dy,dz}=env; const put=(pt,txt,cls)=>{if(!showLbl(cls)) return; const p=P(pt);const d=document.createElement('div');d.className='lbl3 '+(cls||'');d.style.left=p[0]+'px';d.style.top=p[1]+'px';d.textContent=txt;lbls.appendChild(d)};
     put([x+dx/2,y-4,z+dz+5],env.dimLabels[0].txt,env.dimLabels[0].cls); put([x-5,y+dy/2,z+dz+5],env.dimLabels[1].txt,env.dimLabels[1].cls); put([x+dx+7,y-4,z+dz/2],env.dimLabels[2].txt,env.dimLabels[2].cls); }
@@ -2453,9 +2579,9 @@ function moveMode(){ return (isPkg()&&S.setup!=='separate'&&!curbDesign()&&(view
 function setMoveMode(m){ view.mode=(view.mode===m)?'rot':m; if(view.mode!=='rot') { S.mv=view.mode; save() } syncMoveUi() }
 function syncMoveUi(){ const m=moveMode(); $('#v_mvu').classList.toggle('on',m==='unit'); $('#v_mvs').classList.toggle('on',m==='stand'); $('#viewer').classList.toggle('moving',m!=='rot');
   $('#v_mvu').classList.toggle('hidden',!isPkg()||S.setup==='separate'||curbDesign()); $('#v_mvs').classList.toggle('hidden',!isPkg()||isCurbSetup()||S.setup==='separate'||curbDesign());
-  const h=$('#viewerHelp'); if(h) h.innerHTML= m==='unit'?'<b>Move unit:</b> drag slides the new unit along the stand (left/right) and shims it up (up/down). Tap Move unit again to rotate.'
-    : m==='stand'?'<b>Move stand:</b> drag relocates the stand under the existing metal — left/right along the ridge, up/down changes the leg height. The metal, jack and roof stay put; the new unit rides with the stand. Tap Move stand again to rotate.'
-    : 'Drag to rotate · pinch or scroll to zoom. Ghost = what\'s there now, solid = what you\'re proposing, drawn to the same scale in the same spot.'+(isPkg()&&S.setup!=='separate'?' Use <b>Move unit</b> / <b>Move stand</b> to slide things into alignment in the 3D.':'')+' <b>&#9432; Info</b> and <b>&#9888; Chokepoints</b> turn the notes on and off — both off gives you the bare design, Chokepoints on its own shows only the problems'+(labelState()==='flag'?' (showing problems only)':(labelState()==='none'?' (all notes off)':''))+'.'; }
+  const h=$('#viewerHelp'); if(h) h.innerHTML= m==='unit'?'<b>Move unit:</b> drag slides the new unit along the stand and shims it up. Tap Move unit again to rotate.'
+    : m==='stand'?'<b>Move stand:</b> drag relocates the stand under the metal — along the ridge, and the leg height. Tap Move stand again to rotate.'
+    : 'Drag to rotate · pinch to zoom. Ghost = today, solid = proposed'+(labelState()==='flag'?' · showing problems only':(labelState()==='none'?' · notes off':''))+'.'; }
 function labelState(){ const i=S.view.info!==false, f=S.view.flag!==false; return i&&f?'all':(f?'flag':(i?'info':'none')) }
 $('#v_mvu').onclick=()=>setMoveMode('unit'); $('#v_mvs').onclick=()=>setMoveMode('stand');
 function moveAxes(){ // screen-pixel vectors for +1" along the duct face and +1" up (or in, on a curb) at the moved object
@@ -2487,11 +2613,37 @@ $('#v_iso').onclick=()=>{resetView();draw()};
 ['old','new','space','attic'].forEach(k=>{const b=$('#v_'+k);b.classList.toggle('on',S.view[k]);b.onclick=()=>{S.view[k]=!S.view[k];save();b.classList.toggle('on',S.view[k]);buildScene()}});
 // v2.11: note toggles — no geometry change, so just redraw the labels and re-take the recommendation shot so the card matches what is on screen
 ['info','flag'].forEach(k=>{const b=$('#v_'+k);b.classList.toggle('on',S.view[k]);b.onclick=()=>{S.view[k]=!S.view[k];save();b.classList.toggle('on',S.view[k]);draw();refreshRecShot();syncMoveUi()}});
-function refreshRecShot(){ const row=rowsFor()[S.star]; if(!row) return; const card=$('#recCard'); if(!card||card.classList.contains('hidden')) return; recShot=snapshot3D(); renderRecCard(pick(S.star,row)) }
+function refreshRecShot(){ /* v2.42: the Recommended design card no longer carries a shot — the live 3D is right above it */ }
 window.addEventListener('resize',draw);
+// ============================================================ v2.42 · MORE THAN ONE VIEWER
+// The pack's customer page shows TWO working 3Ds side by side — the system as it sits today and the design — and the
+// installed app keeps its own on the Plan tab. All of them are the same renderer: renderInto() points cv / ctx / the label
+// layer / the camera / the scene at another viewer for the duration of one build-and-draw, then puts the Plan tab's back.
+// A secondary viewer never touches the Plan tab's move buttons (syncMoveUi) and never becomes curP for the drag handlers.
+let vwSecondary=false;
+function makeViewer(canvas,lblLayer,cam){ return {cv:canvas,ctx:canvas.getContext('2d'),lbls:lblLayer,view:Object.assign({yaw:-0.75,pitch:0.42,zoom:1,pan:[0,0],touched:false,lbl:null},cam||{}),scene:[],sceneFloor:z=>0,sceneLines:null,dropped:0} }
+function renderInto(V,fn){ const s={cv,ctx,lblsEl,view,scene,sceneFloor,sceneLines,dropped:sceneDropped,sec:vwSecondary};
+  cv=V.cv; ctx=V.ctx; lblsEl=V.lbls; view=V.view; scene=V.scene||[]; sceneFloor=V.sceneFloor||(z=>0); sceneLines=V.sceneLines||null; vwSecondary=true;
+  try{ return fn() } finally { V.scene=scene; V.sceneFloor=sceneFloor; V.sceneLines=sceneLines; V.dropped=sceneDropped;
+    cv=s.cv; ctx=s.ctx; lblsEl=s.lblsEl; view=s.view; scene=s.scene; sceneFloor=s.sceneFloor; sceneLines=s.sceneLines; sceneDropped=s.dropped; vwSecondary=s.sec } }
+// build the scene for a viewer: mode 'today' = the system as it sits (no proposed fixes, no scope), 'design' = the design on screen
+function buildInto(V,mode){ renderInto(V,()=>{ if(mode==='today'){ const sf=JSON.stringify(S.fix), ss=JSON.stringify(S.scope||{}), rb=!!S.rbrNew;
+      S.fix={install:'reuse',insul:'none'}; S.scope={}; S.rbrNew=false; try{ buildScene() } finally { S.fix=JSON.parse(sf); S.scope=JSON.parse(ss); S.rbrNew=rb } }
+    else buildScene() }) }
+function drawInto(V){ renderInto(V,draw) }
+// rotate / zoom on a secondary viewer — the same feel as the Plan tab, without the move modes
+function wireViewer(V){ const c=V.cv; let dr=null, pn=null; if(c.dataset.wired) return; c.dataset.wired='1';
+  c.addEventListener('pointerdown',e=>{ dr={x:e.clientX,y:e.clientY}; try{ c.setPointerCapture(e.pointerId) }catch(_){} });
+  c.addEventListener('pointermove',e=>{ if(!dr||pn) return; V.view.touched=true; V.view.yaw+=(e.clientX-dr.x)*0.01; V.view.pitch=Math.max(0.05,Math.min(1.4,V.view.pitch+(e.clientY-dr.y)*0.01)); dr={x:e.clientX,y:e.clientY}; drawInto(V) });
+  const end=()=>{ dr=null }; c.addEventListener('pointerup',end); c.addEventListener('pointercancel',end);
+  c.addEventListener('wheel',e=>{ e.preventDefault(); V.view.zoom=Math.max(.4,Math.min(3,V.view.zoom*(e.deltaY>0?.9:1.1))); drawInto(V) },{passive:false});
+  c.addEventListener('touchstart',e=>{ if(e.touches.length===2){ pn=dist(e.touches); dr=null } },{passive:true});
+  c.addEventListener('touchmove',e=>{ if(e.touches.length===2&&pn){ const d=dist(e.touches); V.view.zoom=Math.max(.4,Math.min(3,V.view.zoom*d/pn)); pn=d; drawInto(V) } },{passive:true});
+  c.addEventListener('touchend',e=>{ pn=null; if(e.touches.length===0) dr=null; else if(e.touches.length===1) dr={x:e.touches[0].clientX,y:e.touches[0].clientY} });
+  c.addEventListener('touchcancel',()=>{ pn=null; dr=null }) }
 
 function buildScene(){
-  scene=[]; sceneFloor=z=>0; sceneLines=null; syncMoveUi(); const GHOST='#9aa6b2', FURN='#3678A0', COIL='#77B2D0', HATCH='#ffd166', SPACE='#77B2D0', METAL='#d9e2ec';
+  scene=[]; sceneFloor=z=>0; sceneLines=null; if(!vwSecondary) syncMoveUi(); const GHOST='#9aa6b2', FURN='#3678A0', COIL='#77B2D0', HATCH='#ffd166', SPACE='#77B2D0', METAL='#d9e2ec';
   if(isPkg()){ const row=rowsFor()[S.star]; if(!row) return draw(); const o=pick(S.star,row); const n=pkgDims(o.unit), old=oldPkg(); const j=judgePkg(o.unit); const A=j.A||alignState(o); const pos=A.pos;
     const AM=flowModel(o,S.fix); const comp=slot=>AM?AM.comps.find(c=>c.slot===slot):null; const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null; const tkTag=c=>` · ${c.spec.n} runs · ${CFM(Math.round(AM.design/Math.max(1,c.spec.n)))} CFM each`; // v2.33 — never a capacity sum on a set of branches
     const flowTag=c=>c?(c.newMetal?' · sized to the unit':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?tkTag(c):` · max ${CFM(c.max)} CFM`)):''; // v2.4 airflow colouring
@@ -2559,7 +2711,7 @@ function buildScene(){
       const cxH=holes.length?(Math.min(...holes.map(q=>q.x))+Math.max(...holes.map(q=>q.x+q.w)))/2:n.l/2;
       const bo=chassisOpenings(n.c,true,false); const cxO=bo.length?(Math.min(...bo.map(q=>q.x))+Math.max(...bo.map(q=>q.x+q.w)))/2:n.l/2; const czO=bo.length?bo.reduce((t,q)=>t+q.z+q.h/2,0)/bo.length:n.w/2;
       px=cxH-cxO; pz=zcH-czO; curbTop=sf(pz)+18; // curb sits 18" above the roof on the uphill (peak) side and runs level
-      const yLow=sf(pz+n.w); if(S.view.space){ scene.push({x:px,y:yLow,z:pz,dx:n.l,dy:curbTop-yLow,dz:n.w,color:'#6b7785',alpha:.95,noshadow:true,la:[0.12,1,0.98],cls:'ok',label:`New curb ${fmt(n.l)} × ${fmt(n.w)} · 18" above the roof uphill · level`});
+      const yLow=sf(pz+n.w); if(S.view.space){ scene.push({x:px,y:yLow,z:pz,dx:n.l,dy:curbTop-yLow,dz:n.w,color:'#6b7785',alpha:.95,noshadow:true,la:[0.12,1,0.98],cls:'ok',nw:true,label:`New curb ${fmt(n.l)} × ${fmt(n.w)} · 18" above the roof uphill · level`});
         holes.forEach(op=>scene.push({x:op.x,y:sf(zcH)+0.3,z:zj,dx:op.w,dy:0.4,dz:jd,color:'#ffd166',wire:true,dash:[3,3],lw:1,noshadow:true,label:null})); // the old roof holes the plenums drop through
         scene.push({marker:true,nofit:true,x:x0+14,y:sf(0)+2,z:2,dx:0,dy:0,dz:0,label:'stand · elbows · jack removed'}); }
       py=curbTop; }
@@ -2573,11 +2725,11 @@ function buildScene(){
       const insCls=ins.known?(ins.Rf<19?'bad':(ins.Rf<R_MIN?'warn':'ok')):''; const insCol=insCls==='bad'?'#c9532e':(insCls==='warn'?'#e0a05a':'#e8c98a');
       scene.push({x:x0,y:ceilY-4,z:z2+2,dx:x1-x0,dy:4,dz:z1-z2-4,color:'#b9bfc7',alpha:.55,noshadow:true,la:[0.5,0,0.9],label:'ceiling'});
       if(ins.known||true) scene.push({x:x0+1,y:ceilY,z:z2+3,dx:x1-x0-2,dy:Math.max(insD,0.5),dz:z1-z2-6,color:insCol,alpha:ins.known?.6:.3,noshadow:true,cls:insCls,la:[0.5,1,0.35],label:ins.known?`Insulation R-${fmt(ins.R)}${ins.Rf>ins.R?' → R-'+fmt(ins.Rf)+' proposed':''}${ins.src&&ins.src!=='entered'?' · '+ins.src:''}${ins.Rf<R_MIN?' · under R-38':''}`:'Insulation — depth not entered'});
-      if(insFixD>insD+0.1) scene.push({x:x0+1,y:ceilY+insD,z:z2+3,dx:x1-x0-2,dy:insFixD-insD,dz:z1-z2-6,color:'#f2e2b8',alpha:.5,wire:true,dash:[4,3],lw:1,noshadow:true,cls:'ok',la:[0.5,1,0.6],label:`+ top up to R-${fmt(ins.Rf)}`});
+      if(insFixD>insD+0.1) scene.push({x:x0+1,y:ceilY+insD,z:z2+3,dx:x1-x0-2,dy:insFixD-insD,dz:z1-z2-6,color:'#f2e2b8',alpha:.5,wire:true,dash:[4,3],lw:1,noshadow:true,cls:'ok',nw:true,la:[0.5,1,0.6],label:`+ top up to R-${fmt(ins.Rf)}`});
       const yT=ceilY+Math.max(insD,insFixD)+6; // trunks ride just above the insulation
       const cs=(sp,alongX)=>{ const q=specCS(sp); if(!q) return {a:14,b:14}; return q.round?{a:q.w,b:q.w,round:true}:(alongX?{a:q.w,b:q.h}:{a:q.h,b:q.w}) };
       const NEWM='#a9d9bd'; const isNew=c=>!!(c&&(c.fixed||c.newMetal)); // proposed / new metal draws slightly green so the customer can see what is new
-      const duct=(x,y,z,dx,dy,dz,c,label,la,cyl,forceNew)=>scene.push({x,y,z,dx,dy,dz,cyl:cyl||undefined,color:flowCol(c)||((forceNew||isNew(c))?NEWM:METAL),alpha:flowCol(c)?.85:((forceNew||isNew(c))?.8:.62),noshadow:true,cls:c?c.cls:'',la:la||[0.5,1,0.5],label});
+      const duct=(x,y,z,dx,dy,dz,c,label,la,cyl,forceNew)=>scene.push({x,y,z,dx,dy,dz,cyl:cyl||undefined,color:flowCol(c)||((forceNew||isNew(c))?NEWM:METAL),alpha:flowCol(c)?.85:((forceNew||isNew(c))?.8:.62),noshadow:true,cls:c?c.cls:'',la:la||[0.5,1,0.5],label,nw:!!(forceNew||isNew(c))});
       const cR=comp('ret'), cS=comp('sup'), cG=comp('grille');
       const rSpec=cR?cR.spec:null, sSpec=cS?cS.spec:null; const rcs=cs(rSpec,true), scs=cs(sSpec,true);
       const pR=comp('penR'), pS=comp('penS');
@@ -2594,7 +2746,7 @@ function buildScene(){
         else { const H=holeSrc(false); const ops=H.ops; if(ops.length){ const jd=jkD!=null?jkD:Math.max(...ops.map(q=>q.h)); const zj=-(run!=null?run:18)-jd; // elbow setups: the drops come down under the JACK, uphill of the elbow — never under the unit
           ops.forEach(op=>{ const pc=op.k==='s'?pS:pR; const sp=(pc&&pc.spec)||(op.k==='s'?sSpec:rSpec); const c=cs(sp,true); const dsp=op.k==='s'?sSpec:rSpec; drops.push({k:op.k,x:op.x+op.w/2-c.a/2,w:c.a,z:zj+jd/2-c.b/2,d:c.b,c:pc,sq:!c.round,nm:CD?'drop (existing, through the new curb)':'penetration',spec:sp,top:CD?curbTop:null,est:H.est,dspec:dsp,dcomp:op.k==='s'?cS:cR}) }) } } }
       drops.forEach(dp=>{ const yr=dp.top!=null?dp.top:sf(dp.z+dp.d/2); const yb=dp.bottom!=null?dp.bottom:yT; const c=dp.c; if(yr-yb<=1) return; const sz= /penetration|drop/.test(dp.nm)?`${dp.spec?' '+dp.spec.size:''}`:` ${fmt(dp.w)}×${fmt(dp.d)}`;
-        if(dp.plenum) scene.push({x:dp.x,y:yb,z:dp.z,dx:dp.w,dy:yr-yb,dz:dp.d,color:flowCol(c)||NEWM,alpha:.9,noshadow:true,cls:c?c.cls:'ok',la:[0.5,0.08,0.5],label:`${dp.k==='s'?'Supply':'Return'} plenum (new) ${fmt(dp.w)}×${fmt(dp.d)} · ${fmt(yr-yb)}" tall${flowTag(c)}`});
+        if(dp.plenum) scene.push({x:dp.x,y:yb,z:dp.z,dx:dp.w,dy:yr-yb,dz:dp.d,color:flowCol(c)||NEWM,alpha:.9,noshadow:true,cls:c?c.cls:'ok',nw:true,la:[0.5,0.08,0.5],label:`${dp.k==='s'?'Supply':'Return'} plenum (new) ${fmt(dp.w)}×${fmt(dp.d)} · ${fmt(yr-yb)}" tall${flowTag(c)}`});
         else { const side=dp.k==='s'?'Supply':'Return';
           const roofY=sf(dp.z+dp.d/2); const collarH=Math.min(6,Math.max(1.5,(yr-yb)*0.35)); // the hole is the roof deck and the few inches under it — nothing more
           const cTop=Math.min(yr,roofY), cBot=cTop-collarH;
@@ -2613,7 +2765,7 @@ function buildScene(){
       if(dR&&cR){ const len=48; const {xa,zc}=runs(dR,rSpec,rcs,cR,len,dir,`Return duct ${cR.size}${flowTag(cR)}`);
         const gx=dir>0?xa+len:xa; const gb=specBoxes(cG&&cG.spec?cG.spec:null,20,20); // v2.37: a 2-grille return draws as two grilles, each at its own size
         const bx=gx-(dir>0?0:rcs.a); duct(bx,ceilY+4,zc-rcs.a/2,rcs.a,Math.max(yT-(ceilY+4),1),rcs.a,cR,null,null,rcs.round?'y':null); // boot down to the grille
-        let gz=0; gb.forEach((q,g)=>{ scene.push({x:bx+rcs.a/2-q.w/2,y:ceilY-5,z:zc-q.h/2+gz,dx:q.w,dy:1.2,dz:q.h,color:flowCol(cG)||(isNew(cG)?NEWM:'#ffd166'),alpha:.95,noshadow:true,cls:cG?cG.cls:'',la:[0.5,0,0.5],label:g===0?(cG?`Return grille ${cG.size}${isNew(cG)?' (new)':''}${flowTag(cG)}`:'Return grille — size not entered'):null}); gz+=q.h+6 }); }
+        let gz=0; gb.forEach((q,g)=>{ scene.push({x:bx+rcs.a/2-q.w/2,y:ceilY-5,z:zc-q.h/2+gz,dx:q.w,dy:1.2,dz:q.h,color:flowCol(cG)||(isNew(cG)?NEWM:'#ffd166'),alpha:.95,noshadow:true,cls:cG?cG.cls:'',nw:isNew(cG),la:[0.5,0,0.5],label:g===0?(cG?`Return grille ${cG.size}${isNew(cG)?' (new)':''}${flowTag(cG)}`:'Return grille — size not entered'):null}); gz+=q.h+6 }); }
       // supply: the trunk the other way, with a branch per take-off at the size entered (v2.23 — the ones we ADD draw off the same trunk, in the new-metal green)
       if(dS&&cS){ const len=Math.max(40,Math.min(70,(dir>0?dS.x-x0:x1-(dS.x+dS.w))-6)); const {xa,zc}=runs(dS,sSpec,scs,cS,len,-dir,`Supply trunk ${cS.size}${flowTag(cS)}`);
         const cT=comp('takeoff'); const tk=(cT&&cT.spec&&cT.spec.items)?cT.spec.items.slice(0,12):[]; const isAdd=takeoffAdded();
@@ -2621,11 +2773,11 @@ function buildScene(){
           const step= slots<2?0 : Math.min(Math.max(9,maxD+4),Math.max(8,(len-12)/(slots-1)));
           tk.forEach((it,i)=>{ const d=it.d||Math.max(it.w,it.h); const side=i%2?1:-1; const slot=Math.floor(i/2); const nw=isAdd(it,i);
             const bx=xa+8+slot*step; const zz= side>0? zc+scs.a/2 : zc-scs.a/2-16;
-            scene.push({x:bx-d/2,y:yT+scs.b/2-d/2,z:zz,dx:d,dy:d,dz:16,cyl:'z',color:flowCol(cT)||(nw?NEWM:METAL),alpha:flowCol(cT)?.85:(nw?.85:.55),noshadow:true,cls:cT?cT.cls:'',
+            scene.push({x:bx-d/2,y:yT+scs.b/2-d/2,z:zz,dx:d,dy:d,dz:16,cyl:'z',color:flowCol(cT)||(nw?NEWM:METAL),alpha:flowCol(cT)?.85:(nw?.85:.55),noshadow:true,cls:cT?cT.cls:'',nw:nw||isNew(cT),
               la:[0.5,side>0?1:0,0.5],label: i===0?`Take-offs ${cT.size}${flowTag(cT)}`:(nw?`+ added ${it.d?'Ø'+fmt(it.d)+'"':fmt(it.w)+'×'+fmt(it.h)} (new — off the trunk)`:null)}) }) }
         else [0.25,0.55,0.85].forEach((f,i)=>{ const bx=xa+len*f; const side=i%2?1:-1; scene.push({x:bx-3,y:yT+scs.b/2-3,z:side>0?zc+scs.a/2:zc-scs.a/2-16,dx:6,dy:6,dz:16,cyl:'z',color:METAL,alpha:.5,noshadow:true}) }); }
       // what the unit wants vs what it gets
-      scene.push({marker:true,nofit:true,x:px+n.l+6,y:py+n.h*0.75,z:pz+n.w+4,dx:0,dy:0,dz:0,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
+      scene.push({marker:true,nofit:true,x:px+n.l+6,y:py+n.h*0.75,z:pz+n.w+4,dx:0,dy:0,dz:0,stat:true,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:AM.blowerBound?`blower max ${CFM(AM.Qb)} CFM · gets all of it${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
     }
     return draw(); }
   const row=rowsFor()[S.star]; if(!row) return draw(); const o=pick(S.star,row); const ev=evaluate(o); const env=ev.env, old=oldEnv(); const sp=spaceVals(); const h=isHoriz();
@@ -2656,9 +2808,9 @@ function buildScene(){
       const comp=s=>AM.comps.find(c=>c.slot===s); const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null;
       const NEWM='#a9d9bd', METAL='#d9e2ec'; const isNew=c=>!!(c&&(c.fixed||c.newMetal));
       const tag=c=>!c?'':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?` · ${c.spec.n} runs · ${CFM(Math.round(AM.design/Math.max(1,c.spec.n)))} CFM each`:` · max ${CFM(c.effMax!=null?c.effMax:c.max)} CFM`);
-      const put=(x,y,z,dx,dy,dz,c,label,cyl,la)=>scene.push({x,y,z,dx,dy,dz,cyl:cyl||undefined,color:flowCol(c)||(isNew(c)?NEWM:METAL),alpha:flowCol(c)?.85:(isNew(c)?.82:.6),noshadow:true,cls:c?c.cls:'',la:la||[0.5,1,0.5],label:label||null});
+      const put=(x,y,z,dx,dy,dz,c,label,cyl,la)=>scene.push({x,y,z,dx,dy,dz,cyl:cyl||undefined,color:flowCol(c)||(isNew(c)?NEWM:METAL),alpha:flowCol(c)?.85:(isNew(c)?.82:.6),noshadow:true,cls:c?c.cls:'',nw:isNew(c),la:la||[0.5,1,0.5],label:label||null});
       const dsz=(c,fb)=>{ const sp=c&&c.spec; if(!sp||sp.kind==='multi') return fb==null?{a:null,b:null}:{a:fb,b:fb}; return sp.kind==='round'?{a:sp.d,b:sp.d,round:true}:{a:sp.w,b:sp.h} };
-      const rpBox=(x,y,z,dx,dy,dz,label)=>{ const nw=!!(S.scope&&S.scope.rdrop); scene.push({x,y,z,dx,dy,dz,color:nw?'#a9d9bd':'#d9e2ec',alpha:nw?.78:.5,noshadow:true,la:[0.5,1,0.5],label}) }; // the return plenum is geometry, not a scored spot
+      const rpBox=(x,y,z,dx,dy,dz,label)=>{ const nw=!!(S.scope&&S.scope.rdrop); scene.push({x,y,z,dx,dy,dz,color:nw?'#a9d9bd':'#d9e2ec',alpha:nw?.78:.5,noshadow:true,nw,la:[0.5,1,0.5],label}) }; // the return plenum is geometry, not a scored spot
       const cS=comp('sup'), cR=comp('ret'), cG=comp('grille'), cT=comp('takeoff');
       const ins=AM.ins; const insD=ins.known?Math.min(Math.max(ins.depth!=null?ins.depth:(ins.R/2.8),0),18):6;
       const insFixD=(ins.Rf!=null&&ins.R!=null&&ins.Rf>ins.R)?Math.min(insD*(ins.Rf/Math.max(ins.R,1)),22):insD;
@@ -2672,7 +2824,7 @@ function buildScene(){
       const px0=-62, px1=Math.max(Lx,54)+34, pz0=zc-Math.max(Wz,48)/2-26, pz1=zc+Math.max(Wz,48)/2+26;
       scene.push({x:px0,y:ceilY-4,z:pz0,dx:px1-px0,dy:4,dz:pz1-pz0,color:'#b9bfc7',alpha:.5,noshadow:true,nofit:true,la:[0.06,0,0.92],label:attic?'ceiling':'ceiling'});
       if(attic) { scene.push({x:px0+1,y:ceilY,z:pz0+2,dx:px1-px0-2,dy:Math.max(insD,0.5),dz:pz1-pz0-4,color:insCol,alpha:ins.known?.42:.22,noshadow:true,nofit:true,cls:insCls,la:[0.08,1,0.35],label:ins.known?`Insulation R-${fmt(ins.R)}${ins.Rf>ins.R?' → R-'+fmt(ins.Rf)+' proposed':''}${ins.Rf<R_MIN?' · under R-38':''}`:'Insulation — depth not entered'});
-        if(insFixD>insD+0.1) scene.push({x:px0+1,y:ceilY+insD,z:pz0+2,dx:px1-px0-2,dy:insFixD-insD,dz:pz1-pz0-4,color:'#f2e2b8',alpha:.45,wire:true,dash:[4,3],lw:1,noshadow:true,nofit:true,cls:'ok',la:[0.08,1,0.6],label:`+ top up to R-${fmt(ins.Rf)}`}) }
+        if(insFixD>insD+0.1) scene.push({x:px0+1,y:ceilY+insD,z:pz0+2,dx:px1-px0-2,dy:insFixD-insD,dz:pz1-pz0-4,color:'#f2e2b8',alpha:.45,wire:true,dash:[4,3],lw:1,noshadow:true,nofit:true,cls:'ok',nw:true,la:[0.08,1,0.6],label:`+ top up to R-${fmt(ins.Rf)}`}) }
       if(flrY!=null) scene.push({x:px0,y:flrY-4,z:pz0,dx:px1-px0,dy:4,dz:pz1-pz0,color:'#b9bfc7',alpha:.5,noshadow:true,nofit:true,la:[0.06,0,0.92],label:'floor'});
       // ---- v2.13 supply: three layouts. The take-offs always come off the plenum; what changes is the plenum's form.
       //      cased       = cased coil, then a plenum on the discharge
@@ -2757,8 +2909,8 @@ function buildScene(){
       { const gb=specBoxes(cG&&cG.spec?cG.spec:null,20,20); // v2.37: one box per grille, each at its own size — a multi spec used to draw NaN and blank the canvas
         const gy=ceilY-4, {bx,by,bz}=retOut; const canTop=Math.max(by,gy), canBot=Math.min(by,gy);
         if(canTop-canBot>1) put(bx,canBot,bz,r.b,canTop-canBot,r.a,cR,null,r.round?'y':null);
-        let gz=0; gb.forEach((q,g)=>{ scene.push({x:bx+r.b/2-q.w/2,y:gy-1.4,z:bz+r.a/2-q.h/2+gz,dx:q.w,dy:1.2,dz:q.h,color:flowCol(cG)||(isNew(cG)?NEWM:'#ffd166'),alpha:.95,noshadow:true,cls:cG?cG.cls:'',la:[0.5,0,0.5],label:g===0?(cG?`Return grille + filter ${cG.size}${isNew(cG)?' (new)':''}${tag(cG)}`:'Return grille — size not entered'):null}); gz+=q.h+6 }); }
-      scene.push({marker:true,nofit:true,x:Lx+8,y:Hy*0.8,z:zc+Wz/2+6,dx:0,dy:0,dz:0,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
+        let gz=0; gb.forEach((q,g)=>{ scene.push({x:bx+r.b/2-q.w/2,y:gy-1.4,z:bz+r.a/2-q.h/2+gz,dx:q.w,dy:1.2,dz:q.h,color:flowCol(cG)||(isNew(cG)?NEWM:'#ffd166'),alpha:.95,noshadow:true,cls:cG?cG.cls:'',nw:isNew(cG),la:[0.5,0,0.5],label:g===0?(cG?`Return grille + filter ${cG.size}${isNew(cG)?' (new)':''}${tag(cG)}`:'Return grille — size not entered'):null}); gz+=q.h+6 }); }
+      scene.push({marker:true,nofit:true,x:Lx+8,y:Hy*0.8,z:zc+Wz/2+6,dx:0,dy:0,dz:0,stat:true,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:AM.blowerBound?`blower max ${CFM(AM.Qb)} CFM · gets all of it${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
     } }
   draw();
 }
@@ -2841,58 +2993,31 @@ function proposedChanges(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); 
   if(S.fix.insul&&S.fix.insul!=='none'&&M.ins.known&&M.ins.R<M.ins.Rf) L.push({k:'insul',txt:`Top up attic insulation R-${fmt(M.ins.R)} → <b>R-${fmt(M.ins.Rf)}</b> (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`,undo:()=>{S.fix.insul='none'}});
   return L }
 function renderAirCard(o){ const el=$('#airCard'); if(!el) return; const M=flowModel(o,S.fix); if(!M){ el.classList.add('hidden'); el.innerHTML=''; return } el.classList.remove('hidden');
-  const M0=flowModel(o,TODAY); const pkg=isPkg()&&S.setup!=='separate'; const inst=S.fix.install||'reuse'; const ins=M.ins;
-  const sc=M.score, sc0=M0.score; const anyFix=Object.keys(S.fix).some(k=>k!=='install'&&k!=='insul'&&S.fix[k])||inst!=='reuse'||(S.fix.insul&&S.fix.insul!=='none');
+  // v2.42 — the card is the chokepoint table and the proposed changes, nothing else (Stephen 2026-09-20: the per-piece notes, the red static
+  // flag, the supply-vs-return balance section and the rule-of-thumb prose were "distracting" — the Summary and the Tech pack carry the words).
+  const M0=flowModel(o,TODAY); const ins=M.ins; const sc=M.score, sc0=M0.score; const md=M.md;
+  const anyFix=Object.keys(S.fix).some(k=>k!=='install'&&k!=='insul'&&S.fix[k])||(S.fix.install||'reuse')!=='reuse'||(S.fix.insul&&S.fix.insul!=='none');
   const arrow=(a,b,f)=>anyFix&&a!==b?`${f(a)} <span style="opacity:.6">→</span> <b>${f(b)}</b>`:`<b>${f(b)}</b>`;
-  const md=M.md; const floorTxt=`${cptFloor()}–${cptAim()} CFM/ton`;
   const tiles=`<div class="env" style="grid-template-columns:repeat(4,1fr)">
     <div class="dim ${scoreCls(sc.total)}"><div class="lbl">Comfort score</div><div class="val">${arrow(sc0.total,sc.total,v=>v)}</div><div class="sub">${scoreBreak(sc)}</div></div>
-    <div class="dim ${cptCls(M.perTon)}"><div class="lbl">Airflow</div><div class="val">${arrow(M0.delivered,M.delivered,CFM)}</div><div class="sub"><b>${M.perTon} CFM/ton</b> · works at ${floorTxt}, ${cptAim()} the aim${md?` · ${md.B.name} ${md.vs?'setting':'tap'} <b>${md.tap}</b>: ${CFM(md.Qd)} CFM at the ${md.espD.toFixed(2)}" design point, <b>${CFM(md.Qp)}</b> at the ${md.espP.toFixed(2)}" limit — the number quoted${M0.basis==='reading'&&M0.sp!=null?` · today's ducts read at the ${M0.sp.toFixed(2)}" you measured`:''}`:' · velocity caps only — no blower table for this unit'}</div></div>
-    <div class="dim ${M.chokes.length?'bad':'ok'}"><div class="lbl">Chokepoints</div><div class="val">${arrow(M0.chokes.length,M.chokes.length,v=>String(v))}</div><div class="sub">${M.chokes.length?`${M.chokes.map(c=>c.name.replace(/ \(.*$/,'')).join(' · ')} — each one caps the CFM at what it passes`:'every squeeze point passes the design airflow'}</div></div>
-    <div class="dim ${ins.known?(ins.Rf<19?'bad':(ins.Rf<R_MIN?'warn':'ok')):''}"><div class="lbl">Attic insulation</div><div class="val">${ins.known?arrow(ins.R,ins.Rf,v=>'R-'+fmt(v)):'—'}</div><div class="sub">${ins.known?(ins.src&&ins.src!=='entered'?ins.src+' · ':'')+`min R-${R_MIN} · code R-${R_CODE}`:'enter depth on step 1'}</div></div></div>`;
-  const instChips= pkg?`<div class="row" style="margin-top:10px;gap:8px;align-items:center"><span class="note"><b>Install:</b></span><span class="mvchips">${[['reuse','Reuse existing roof metal'],['curb_old','New curb — existing drops'],['curb','New curb — new plenum drops']].map(([k,l])=>`<button data-inst="${k}" class="${inst===k?'on':''}">${l}</button>`).join('')}</span><span class="note">${inst==='curb'?'Cut two enlarged roof holes, set the curb, drop plenums sized to the unit into the attic and tie the existing supply/return back on — the penetrations score perfect, then it is all about the ducts.':inst==='curb_old'?'Set a new curb over the existing roof penetrations and reuse the existing supply/return drops — the penetrations are still judged as taped.':'Penetrations judged as taped (blank = same size as the ducts).'}</span></div>`:'';
-  const rowArr=M.comps.map(c=>{ const act=(c.cls!=='ok'&&!c.newMetal)?`<button class="btn sm" data-autofix="${c.slot}">Fix ▸</button>`:''; const matTxt=c.slot==='grille'?'filter face':(/^(pen|elb)/.test(c.slot)?'metal opening':c.mat);
-    return `<tr class="${c.cls}"><td><b>${c.name}</b>${c.fixed?' <span class="est" style="color:var(--ok)">proposed</span>':''}${c.newMetal?' <span class="est" style="color:var(--ok)">new — sized to the unit</span>':''}</td><td>${c.size}${c.neck?`<br><span class="note" style="color:var(--bad);font-weight:700">smaller than the ${c.feed.size} duct through it — open it to at least ${sqinTxt(c.feed.area)}</span>`:''}</td><td>${sqinTxt(c.area)}</td>${c.newMetal?`<td>—</td><td><span class="note" style="text-transform:none;letter-spacing:0">not graded</span></td><td><span class="note" style="text-transform:none;letter-spacing:0">the manufacturer's connection — sized for this unit, inside its rating</span></td>`:(c.slot==='takeoff'&&c.spec&&c.spec.n>1?`<td>${c.vel.toLocaleString()} fpm<br><span class="note" style="text-transform:none;letter-spacing:0">${CFM(Math.round(M.design/c.spec.n))} CFM per run</span></td><td><span class="note" style="text-transform:none;letter-spacing:0">${c.vtyp} recommended<br>${c.vmax} max · ${matTxt}</span></td><td><b>${CFM(Math.round(c.maxAbs/c.spec.n))}</b> CFM per run<br><span class="note" style="text-transform:none;letter-spacing:0">${c.spec.n} runs carry ${CFM(M.design)} together — the air the unit puts out</span></td>`:`<td>${c.vel.toLocaleString()} fpm</td><td><span class="note" style="text-transform:none;letter-spacing:0">${c.vtyp} recommended<br>${c.vmax} max · ${matTxt}</span></td><td><b>${CFM(c.maxAbs)}</b> CFM</td>`)}<td><span class="status ${c.cls}">${statusTxt(c,M)}</span>${act?`<div style="margin-top:6px">${act}</div>`:''}</td></tr>` });
-  const rowsR=M.comps.filter(c=>c.side==='r'), rowsS=M.comps.filter(c=>c.side==='s'); const rowHtml=c=>rowArr[M.comps.indexOf(c)];
-  const sideHead=(lbl)=>`<tr class="side"><td colspan="7"><b>${lbl}</b></td></tr>`;
-  const rowsSided=(rowsR.length?sideHead('Return side'):'')+rowsR.map(rowHtml).join('')+(rowsS.length?sideHead('Supply side'):'')+rowsS.map(rowHtml).join('');
-  const changes=proposedChanges(o); const necks=M.comps.filter(c=>c.neck); const stillShort=[]; if(necks.length) stillShort.push(`${necks.map(c=>c.name.toLowerCase()).join(' and ')} smaller than the duct through it`);
-  if(sc.total<100){ if(M.chokes.length) stillShort.push(`${M.chokes.length} chokepoint${M.chokes.length===1?'':'s'} still capping the CFM`); if(M.perTon<cptFloor()) stillShort.push(`airflow ${M.perTon} CFM/ton — under the ${cptFloor()}/ton floor${md&&md.blowerLimit&&!M.chokes.length?' (the blower is the limit, not the duct)':''}`); if(ins.known&&ins.Rf<R_MIN) stillShort.push(`insulation R-${fmt(ins.Rf)}`); if(!ins.known) stillShort.push('insulation not entered');
-    if(!isPkg()&&!(S.scope||{}).ducts&&M.chokes.some(c=>c.slot==='sup'||c.slot==='takeoff')) stillShort.push('enlarging alone will not clear it — tick <b>New supply duct system</b> in the install scope below') }
-  const checklist=`<div class="chk"><div class="row" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Proposed changes → score <b style="color:${sc.total>=80?'var(--ok)':(sc.total>=60?'#a35300':'var(--bad)')}">${sc.total}</b><span class="note" style="text-transform:none;letter-spacing:0;font-weight:600;margin-left:10px">airflow ${CFM(M0.delivered)} → <b>${CFM(M.delivered)} CFM</b> (${M.perTon}/ton) · works at ${floorTxt}${md?` · Manual D sizes at ${md.espD.toFixed(2)}"`:''}</span></h3><span style="display:flex;gap:6px"><button class="btn sm" id="design100">✦ Design to 100</button>${changes.length?'<button class="btn sm ghost" id="fixReset">↺ Clear</button>':''}</span></div>
-    ${changes.length?`<ol class="chklist">${changes.map((c,i)=>`<li><span class="tick">✓</span><span>${c.txt}</span><button class="x" data-undo="${i}" title="remove">✕</button></li>`).join('')}</ol>`:'<p class="note" style="margin:6px 0 0">Nothing proposed yet — tap <b>Fix ▸</b> on a red row, or <b>Design to 100</b> to put the Manual D size on every spot at once.</p>'}
-    ${necks.length?`<div class="msg bad" style="margin-top:8px"><b>${necks.every(c=>/^pen/.test(c.slot))?'Roof penetration too small.':'A hole in the path is too small.'}</b> ${necks.map(c=>`${c.name} is ${c.size} — the ${c.feed.size} it hands off to cannot pass through it.`).join(' ')} Every hole has to open up to at least what it feeds before this design is buildable — <b>each one is its own chokepoint</b>.</div>`:''}
-    ${sc.total>=100&&!necks.length?`<div class="msg" style="background:var(--okbg);color:var(--ok);font-weight:700;margin-top:8px">100 — every spot passes the design airflow, the unit delivers ${M.perTon} CFM/ton, and the attic is at R-38 or better.</div>`:(sc.ac>=85&&sc.total<100&&!necks.length?`<div class="msg" style="background:var(--okbg);color:var(--ok);font-weight:700;margin-top:8px">${sc.total} — the air conditioning side is complete (85 of 85: every spot clear, ${M.perTon} CFM/ton). The last ${100-sc.total} point${100-sc.total===1?'':'s'} ${ins.known?'are the attic — top it up to R-38':'need the insulation entered on step 1'}.</div>`:((changes.length||necks.length)?`<div class="note" style="margin-top:6px">Still short of a buildable 100: ${stillShort.join(' · ')||'—'}.</div>`:''))}</div>`;
-  const insChips= ins.known&&ins.R<R_MIN?`<div class="row" style="margin-top:10px;gap:8px;align-items:center"><span class="note"><b>Insulation:</b></span><span class="mvchips">${[['none','As is (R-'+fmt(ins.R)+')'],['38','Top up to R-38']].filter(([k])=>k==='none'||ins.R<R_MIN).map(([k,l])=>`<button data-insul="${k}" class="${(S.fix.insul||'none')===k?'on':''}">${l}</button>`).join('')}</span>${ins.gain?`<span class="note">cuts ceiling heat gain ≈ <b>${Math.round(ins.gain*100)}%</b></span>`:''}</div>`:'';
-  const recs=[]; const bal=M.bal;
-  if(bal&&bal.ratio!=null){ const pct=Math.round((bal.ratio-1)*100);
-    if(bal.ratio<1&&bal.cls==='ok') recs.push(`Return flows slower than the supply, as designed — return main <b>${bal.vRet.toLocaleString()} fpm</b> vs supply trunk <b>${bal.vSup.toLocaleString()} fpm</b> (by raw capacity the supply reads ${Math.abs(pct)}% ahead, ${CFM(bal.ret)} vs ${CFM(bal.sup)} CFM — inside the rule of thumb).`);
-    else if(bal.ratio<1) recs.push(`<b style="color:${bal.cls==='bad'?'var(--bad)':'#a35300'}">Supply and return are out of balance.</b> The return side passes <b>${CFM(bal.ret)} CFM</b> at its tightest and the supply side <b>${CFM(bal.sup)}</b> — ${Math.abs(pct)}% more supply than return. It is recommended to have <b>more return than supply</b>: open the return grille or the return duct rather than adding more supply.`);
-    else if(pct<10) recs.push(`Supply and return are even (return ${CFM(bal.ret)} CFM vs supply ${CFM(bal.sup)}) — balanced, as designed; the take-offs together carry the ${CFM(M.design)} the unit puts out, with the boots (cans) and register faces counted in the worksheet.`); }
-  if((S.tkEndOld==='bad')&&!(!isPkg()&&supOld()==='plenum_coil')) recs.push(`<b style="color:#a35300">The take-offs on the existing ${isPkg()?'trunk':'plenum'} run right to the end.</b> The last 8–12" should stay clear — a branch at the very end is fighting the static regain and starves. The proposed design pulls them back off the end.`);
-  M.chokes.forEach(c=>{
-    if(c.neck&&c.maxAbs>=M.needs){ recs.push(`<b style="color:var(--bad)">${c.name}</b> is ${c.size} — <b>smaller than the ${c.feed.size} ${c.slot==='penR'?'return':'supply'} duct running through it</b>. The hole has to open up to at least the duct size (≈ ${sqinTxt(c.feed.area)}); a duct necked down to get through the roof is a chokepoint whatever the rest of the system carries.`); return }
-    if(c.slot==='takeoff'){ recs.push(`<b style="color:var(--bad)">${c.name}</b> add up to ${sqinTxt(c.area)} — ${c.vel.toLocaleString()} fpm at ${CFM(M.design)}, over Manual D's ${c.vmax} fpm maximum for ${c.mat} branches. They pass ${CFM(c.maxAbs)} CFM.${equivTxt('takeoff',M)} <span class="note" style="text-transform:none;letter-spacing:0">Fix ▸ puts the Manual D branch set on it.</span>`); return }
-    if(c.slot==='elbR'||c.slot==='elbS'){ recs.push(`<b style="color:var(--bad)">${c.name}</b> is ${c.size.replace(/ \(.*\)$/,'')} — ${c.vel.toLocaleString()} fpm at ${CFM(M.design)}, over Manual D's ${c.vmax} fpm maximum for a ${ACCA_NAME[c.slot]}. <b>This is a hole in the metal at the roof line, and it is its own chokepoint</b> — it does not matter how big the duct below it is. ${equivTxt(c.slot,M)} Open it up, or build new transition metal.${c.neck?` It is also <b>smaller than the ${c.feed.size} it hands off to</b>.`:''}${c.est?' <i>Assumed from the old unit — tape the opening on step 2 to grade it properly.</i>':''}`); return }
-    recs.push(`<b style="color:var(--bad)">${c.name}</b> runs ${c.vel.toLocaleString()} fpm at ${CFM(M.design)} — over Manual D's ${c.vmax} fpm maximum for a ${c.mat==='metal'?'metal':'flex'} ${ACCA_NAME[c.slot]} (${c.vtyp} recommended). It passes ${CFM(c.maxAbs)} CFM; the unit needs ${CFM(M.needs)} and the design airflow is ${CFM(M.design)}.${equivTxt(c.slot,M)}${/^pen/.test(c.slot)?' On a roof hole you can also go to a new curb + plenums instead.':''}${c.neck?` It is also <b>smaller than the ${c.feed.size} it hands off to</b>.`:''}`) });
-  if(md&&md.sizes.br.d>=9&&/1"/.test(md.dpd.filterName||'')){ const alt=manualD(o,{tons:M.tons,comps:M.comps,filt:'m4'}); if(alt&&alt.sizes.br.d<md.sizes.br.d) recs.push(`<b>Why the branches come out Ø${md.sizes.br.d}":</b> the ${md.dpd.filterName} takes ${md.dpd.filter.toFixed(2)}" of the ${md.espD.toFixed(2)}" design static, leaving a friction rate of ${md.fr.toFixed(3)}. A <b>4" media filter</b> (${alt.dpd.filter.toFixed(2)}") lifts it to ${alt.fr.toFixed(3)} and brings the branches to <b>Ø${alt.sizes.br.d}"</b>${alt.sizes.sup.d<md.sizes.sup.d?` and the trunk to Ø${alt.sizes.sup.d}"`:''} — Manual D's own lever, and less metal in the attic.`) }
-  if(md&&md.blowerLimit) recs.push(`<b style="color:#a35300">The blower is the limit, not the duct.</b> ${md.tapNote}. Stephen's rule: ${cptFloor()}–${cptAim()} CFM/ton works; a unit that cannot reach the floor on any tap is an equipment choice, and no amount of duct fixes it.`);
-  if(md&&(md.frFlag==='low'||md.frFlag==='none')) recs.push(`<b style="color:#a35300">Manual D friction rate ${md.fr.toFixed(3)}"/100 ft${md.frFlag==='none'?' — no static left for duct':' — under the 0.06 floor of the design range'}.</b> The filter${md.dpd.coilInside?'':' and the coil'} take ${md.dpd.total.toFixed(2)}" of the ${md.espD.toFixed(2)}" design static, so the ducts come out large. Manual D remedies: a 4" media filter (about half the drop of a 1" pleated), a larger coil cabinet, fewer fittings, or a faster tap.`);
-  if(md&&md.frFlag==='high') recs.push(`Manual D friction rate ${md.fr.toFixed(3)}"/100 ft is over the 0.18 top of the design range — plenty of static in hand; the velocity limits govern the sizes.`);
-  if(ins.known&&ins.R<R_MIN&&(S.fix.insul||'none')==='none') recs.push(`Attic at <b>R-${fmt(ins.R)}</b> is under the R-38 minimum — topping up to R-38 cuts ceiling heat gain ≈ ${Math.round((1-Math.max(ins.R,1)/R_MIN)*100)}%, lowers the load on the new system and lifts the comfort score by ${Math.max(0,flowModel(o,Object.assign({},S.fix,{insul:'38'})).score.total-sc.total)} points.`);
-  if(sc.shortButClean&&!(md&&md.blowerLimit)) recs.push(`<b style="color:#a35300">Every squeeze point now passes the design airflow — the duct design is complete.</b> The unit still lands under ${cptFloor()} CFM/ton at the ${spLimit().toFixed(2)}" limit on this tap: that is equipment and tap selection, not ductwork.`);
-  if(!ins.known) recs.push('Insulation depth not entered — the comfort score assumes an average attic until it is.');
-  if(!M.comps.length) recs.push('No duct sizes entered on step 1 — add the return grille, return duct and supply size to see the chokepoints.');
-  if(!recs.length) recs.push('No chokepoints at this tonnage — the ductwork passes what the unit wants to move.');
+    <div class="dim ${airCls(M)}"><div class="lbl">Airflow</div><div class="val">${arrow(M0.delivered,M.delivered,CFM)}</div><div class="sub"><b>${M.perTon} CFM/ton</b>${M.blowerBound?' — all this blower can push':` · works at ${cptFloor()}–${cptAim()}`}</div></div>
+    <div class="dim ${M.chokes.length?'bad':'ok'}"><div class="lbl">Chokepoints</div><div class="val">${arrow(M0.chokes.length,M.chokes.length,v=>String(v))}</div><div class="sub">${M.chokes.length?M.chokes.map(c=>c.name.replace(/ \(.*$/,'').replace(/^Roof penetration — /,'roof hole — ')).join(' · '):'every spot passes'}</div></div>
+    <div class="dim ${ins.known?(ins.Rf<19?'bad':(ins.Rf<R_MIN?'warn':'ok')):''}"><div class="lbl">Attic insulation</div><div class="val">${ins.known?arrow(ins.R,ins.Rf,v=>'R-'+fmt(v)):'—'}</div><div class="sub">${ins.known?`min R-${R_MIN}`:'enter depth on step 1'}</div></div></div>`;
+  // one compact row per squeeze point: what it is · size · what it passes · verdict · Fix ▸
+  const row=c=>{ const act=(c.cls!=='ok'&&!c.newMetal)?`<button class="btn sm" data-autofix="${c.slot}">Fix ▸</button>`:'';
+    const per=(c.slot==='takeoff'&&c.spec&&c.spec.n>1);
+    return `<tr class="${c.cls}"><td><b>${c.name.replace(/ \(off the (plenum|trunk)\)/,'')}</b>${c.fixed?' <span class="est" style="color:var(--ok)">proposed</span>':''}${c.newMetal?' <span class="est" style="color:var(--ok)">new</span>':''}${c.neck?`<br><span class="note" style="color:var(--bad);font-weight:700">smaller than the ${c.feed.size} duct through it</span>`:''}</td><td>${c.size.replace(' (same as the duct)','').replace(' (unit opening)','')}${per?`<br><span class="note">${CFM(Math.round(M.design/c.spec.n))} CFM per run</span>`:''}</td><td class="num">${c.newMetal?'—':(per?`${CFM(Math.round(c.maxAbs/c.spec.n))} per run<br><span class="note">${c.spec.n} runs carry ${CFM(M.design)} together — the air the unit puts out</span>`:CFM(c.maxAbs))}</td><td><span class="status ${c.cls}">${c.newMetal?'sized to the unit':statusTxt(c,M)}</span></td><td>${act}</td></tr>` };
+  const rowsR=M.comps.filter(c=>c.side==='r'), rowsS=M.comps.filter(c=>c.side==='s');
+  const side=lbl=>`<tr class="side"><td colspan="5"><b>${lbl}</b></td></tr>`;
+  const table=`<div style="overflow-x:auto;margin-top:10px"><table class="airtbl compact" style="width:100%;border-collapse:collapse"><thead><tr style="color:var(--muted);text-align:left"><th>Where the air squeezes</th><th>Size</th><th class="num">Passes (CFM)</th><th></th><th></th></tr></thead><tbody>${(rowsR.length?side('Return side'):'')+rowsR.map(row).join('')+(rowsS.length?side('Supply side'):'')+rowsS.map(row).join('')}</tbody></table></div>`;
+  const changes=proposedChanges(o); const necks=M.comps.filter(c=>c.neck);
+  const checklist=`<div class="chk"><div class="row" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Proposed changes → score <b style="color:${sc.total>=80?'var(--ok)':(sc.total>=60?'#a35300':'var(--bad)')}">${sc.total}</b></h3><span class="note">airflow ${CFM(M0.delivered)} → <b>${CFM(M.delivered)} CFM</b> (${M.perTon}/ton)</span></div>
+    ${changes.length?`<ol class="chklist">${changes.map((c,i)=>`<li><span class="tick">✓</span><span>${c.txt.replace(/ <span class="note"[^>]*>[^]*?<\/span>/g,'')}</span><button class="x" data-undo="${i}" title="remove">✕</button></li>`).join('')}</ol>`:'<p class="note" style="margin:6px 0 0">Nothing proposed yet — <b>Fix ▸</b> on a red row, or <b>Design to 100</b> under the 3D.</p>'}
+    ${necks.length?`<div class="msg bad" style="margin-top:8px"><b>${necks.every(c=>/^pen/.test(c.slot))?'Roof penetration too small.':'A hole in the path is too small.'}</b> ${necks.map(c=>`${c.name} is ${c.size} — the ${c.feed.size} through it cannot pass.`).join(' ')}</div>`:''}
+    ${sc.total>=100&&!necks.length?`<div class="msg" style="background:var(--okbg);color:var(--ok);font-weight:700;margin-top:8px">100 — every spot passes, ${M.perTon} CFM/ton, attic at R-38 or better.</div>`:(sc.ac>=85&&sc.total<100&&!necks.length?`<div class="msg" style="background:var(--okbg);color:var(--ok);font-weight:700;margin-top:8px">${sc.total} — the air conditioning side is complete (85 of 85). The last ${100-sc.total} point${100-sc.total===1?'':'s'} ${ins.known?'are the attic — Fix insulation':'need the insulation entered on step 1'}.</div>`:'')}</div>`;
   el.innerHTML=`<h2>Airflow &amp; comfort <span class="status ${scoreCls(sc.total)}">Score ${sc.total}</span></h2>
-    <p class="help">Every place the air squeezes, in series: the filter grille, the return duct, ${isPkg()?'the two holes through the roof, the two holes in the '+(isCurbSetup()?'curb':'elbow')+' at the roof line, the supply duct':'the supply plenum'}${M.comps.some(c=>c.slot==='takeoff')?', and the take-offs off the '+(isPkg()?'trunk':'plenum'):''}. Green passes, <b>red is a chokepoint</b> and caps the CFM at what it passes. <b>Fix ▸</b> puts the Manual D size on one spot, <b>Design to 100</b> on all of them. Sizes come from the Friction Rate Worksheet below.</p>
-    ${airCompareHtml()}${tiles}${mdStatement(M)}${checklist}${instChips}
-    <div style="overflow-x:auto;margin-top:10px"><table class="airtbl" style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr style="color:var(--muted);text-align:left"><th>Where</th><th>Size</th><th>Area</th><th>Velocity @ ${CFM(M.design)}</th><th>Velocity limit</th><th>Passes</th><th></th></tr></thead><tbody>${rowsSided}</tbody></table></div>
-    ${mdWorksheetHtml(M)}
-    ${insChips}
-    <div class="msg ${M.chokes.length?'bad':(recs.some(r=>r.includes('a35300'))?'warn':'')}" style="margin-top:10px">${recs.join('<br>')}</div>
-    ${M.bal&&M.bal.ratio!=null?`<div class="row" style="margin-top:10px;gap:8px;align-items:center"><span class="note"><b>Supply vs return:</b></span><span class="status ${M.bal.cls}">${M.bal.ratio>1.02?'Return leads':(Math.abs(M.bal.ratio-1)<=0.02?'Even':(M.bal.cls==='ok'?'Return flows slower':'More supply than return'))}</span><span class="note">return side (grille · return main · return holes) passes ${CFM(M.bal.ret)} CFM at its tightest · supply side (holes · plenum / trunk · take-offs) ${CFM(M.bal.sup)}${M.bal.vRet!=null&&M.bal.vSup!=null?` · return main ${M.bal.vRet.toLocaleString()} fpm vs supply trunk ${M.bal.vSup.toLocaleString()} fpm`:''} — <b>slightly more return than supply</b> is the rule of thumb; the take-offs share the supply air between them, so their total is never the tight spot.</span></div>`:''}
-    <div class="row" style="margin-top:8px;justify-content:space-between"><span class="note">Score: ${scoreBreak(sc)} — airflow is the air conditioning side (85: full at ${cptFloor()} CFM/ton and above, every chokepoint fixed lifts it); the last 15 are the attic at R-38</span></div>`;
+    ${tiles}${mdStatement(M)}${checklist}${table}
+    ${mdWorksheetHtml(M)}`;
   wireAirCard(o);
 }
 // v2.11: a hole that carries the CFM but is smaller than its duct reads TOO SMALL, not CHOKE - different problem, different fix
@@ -2915,18 +3040,14 @@ function equivFor(slot,M){ const c=M.comps.find(x=>x.slot===slot); if(!c) return
 function equivTxt(slot,M){ const e=equivFor(slot,M); if(!e) return '';
   return ` <b>Short about ${sqinTxt(e.gap)}</b> — get it to ≈ ${sqinTxt(e.need)} and this spot carries <b>${CFM(e.after)} CFM</b>. Any of these does it: ${e.opts.join(' · ')}.` }
 function grilleSuggest(design){ const need=design*144/accaTyp('grille'); const one=grPick(GR_BUILD,need); if(one) return `${one[0]}×${one[1]}`; const two=grPick(GR_BUILD,need/2); return two?`2 × ${two[0]}×${two[1]}`:'more than one grille' }
-function wireAirCard(o){
-  $$('#airCard [data-inst]').forEach(b=>b.onclick=()=>{ S.fix.install=b.dataset.inst; save(); renderCompare() });
-  $$('#airCard [data-insul]').forEach(b=>b.onclick=()=>{ S.fix.insul=b.dataset.insul; save(); renderCompare() });
-  const rd=$('#fixReset'); if(rd) rd.onclick=()=>{ S.fix={install:'reuse',insul:'none'}; S.scope={}; save(); renderCompare() };
+function wireAirCard(o){ // v2.42: the install / insulation / Design to 100 / Clear buttons live in the design strip under the 3D
   $$('#airCard [data-autofix]').forEach(b=>b.onclick=()=>{ applyFix(b.dataset.autofix,o); renderCompare() });
-  const d100=$('#design100'); if(d100) d100.onclick=()=>{ designTo100(o); renderCompare() };
   const ch=proposedChanges(o); $$('#airCard [data-undo]').forEach(b=>b.onclick=()=>{ const c=ch[+b.dataset.undo]; if(c){ c.undo(); save(); renderCompare() } });
 }
 // ============================================================ v2.7 final recommendation card: 3D shot of the proposed design + what changes + old vs new score
 function snapshot3D(){ try{ const r=cv.getBoundingClientRect(); const off=document.createElement('canvas'); const k=2; off.width=r.width*k; off.height=r.height*k; const g=off.getContext('2d');
     g.drawImage(cv,0,0,off.width,off.height); g.scale(k,k); g.font='600 11px -apple-system,Segoe UI,Roboto,sans-serif'; g.textBaseline='middle';
-    $$('#lbls .lbl3').forEach(el=>{ const t=el.textContent; if(!t) return; const x=parseFloat(el.style.left), y=parseFloat(el.style.top); const w=g.measureText(t).width+12; const cls=el.className; const col=/bad/.test(cls)?'#ffb3b3':(/warn/.test(cls)?'#ffd8a8':(/ok/.test(cls)?'#c9f2d8':'#fff'));
+    [...lblsEl.querySelectorAll('.lbl3')].forEach(el=>{ const t=el.textContent; if(!t) return; const x=parseFloat(el.style.left), y=parseFloat(el.style.top); const w=g.measureText(t).width+12; const cls=el.className; const col=/bad/.test(cls)?'#ffb3b3':(/warn/.test(cls)?'#ffd8a8':(/ok/.test(cls)?'#c9f2d8':'#fff'));
       g.fillStyle='rgba(0,4,38,.78)'; g.beginPath(); g.roundRect(x-w/2,y-9,w,18,5); g.fill(); g.strokeStyle=/bad/.test(cls)?'#CD1E1F':(/warn/.test(cls)?'#e07b12':'rgba(255,255,255,.25)'); g.lineWidth=1; g.stroke(); g.fillStyle=col; g.textAlign='center'; g.fillText(t,x,y) });
     return off.toDataURL('image/png') }catch(e){ return null } }
 let recShot=null;
@@ -2961,26 +3082,10 @@ function wireScope(o){ $$('#recCard [data-scope]').forEach(cb=>cb.onchange=()=>{
     S.scope=S.scope||{}; S.scope[k]=cb.checked; save(); renderCompare() }); $$('#recCard [data-scinst]').forEach(r=>r.onchange=()=>{ S.fix.install=r.dataset.scinst; save(); renderCompare() }) }
 function recLines(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M) return null; const ch=proposedChanges(o); const strip=t=>String(t).replace(/<[^>]+>/g,'');
   return {M,M0,items:ch.map(c=>strip(c.txt)),score0:M0.score.total,score:M.score.total}; }
+// v2.42 — the Recommended design card is now just the build details (Stephen 2026-09-20: "way too much going on there that's
+// redundant" — the changes are in the checklist above, the buttons are under the 3D, the story is on 6 · Summary).
 function renderRecCard(o){ const el=$('#recCard'); if(!el) return; const R=recLines(o); if(!R){ el.classList.add('hidden'); el.innerHTML=''; return } el.classList.remove('hidden');
-  const {M,M0,items,score0,score}=R; if(!recShot) recShot=snapshot3D();
-  const stat=(a,b,f)=>a===b?`<b>${f(b)}</b>`:`${f(a)} <span style="opacity:.6">→</span> <b>${f(b)}</b>`;
-  el.innerHTML=`<h2 style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">Recommended design <span style="display:flex;gap:6px;align-items:center;font-family:var(--sans);font-size:13px"><span class="status ${scoreCls(score0)}">Today ${score0}</span><span style="color:var(--muted)">→</span><span class="status ${scoreCls(score)}">Proposed ${score}</span></span></h2>
-    <div class="recgrid">
-      <div><div class="recshot">${recShot?`<img src="${recShot}" alt="3D of the proposed design">`:'<div class="note" style="padding:20px">Open the 3D above, then tap Update shot.</div>'}</div><div class="row" style="margin-top:6px;gap:6px"><button class="btn sm ghost" id="recShotBtn">📷 Update shot from the 3D</button></div></div>
-      <div>
-        <h3 style="margin-top:0">${items.length?'What we recommend':(M.chokes.length?'Nothing proposed yet':'No changes needed')}</h3>
-        ${items.length?`<ol class="reclist">${items.map(t=>`<li>${t}</li>`).join('')}</ol>`
-          :(M.chokes.length?`<p class="note">There ${M.chokes.length===1?'is':'are'} still <b>${M.chokes.length} chokepoint${M.chokes.length===1?'':'s'}</b> in this system. Tap <b>Fix ▸</b> on a red row above, or <b>✦ Design to 100</b>, and the recommendation writes itself.</p>`
-            :'<p class="note">The unit gets its air through the ductwork as it is.</p>')}
-        <div class="kv" style="margin-top:10px"><b>Unit</b><span>${o.unit||[o.furn,o.coil,o.ahu].filter(Boolean).join(' + ')} · ${tons1(M.tons)} ton · aim ${CFM(M.design)} CFM (${S.thr.cpt}/ton) · needs ${CFM(M.needs)}</span>
-          <b>Airflow</b><span>${stat(M0.delivered,M.delivered,CFM)} CFM</span>
-          ${M.md?`<b>Manual D</b><span>${M.sp!=null?`old system measured ${staticMeasTxt(M)} · `:''}designed at ${M.md.espD.toFixed(2)}" ESP on ${M.md.vs?'setting':'tap'} ${M.md.tap} — ${CFM(M.md.Qd)} CFM (${M.md.perTonD}/ton); <b>${CFM(M.md.Qp)} CFM</b> (${M.md.perTonP}/ton) at the ${M.md.espP.toFixed(2)}" limit is the number quoted · friction rate ${M.md.fr.toFixed(3)} on ${M.md.tel.total} ft TEL</span>`:''}
-          ${M.ins.known?`<b>Insulation</b><span>${stat(M.ins.R,M.ins.Rf,v=>'R-'+fmt(v))}</span>`:''}
-          <b>Comfort score</b><span>${stat(score0,score,v=>v)} / 100</span></div>
-        <div class="note" style="margin-top:10px">Before / after, the export and the ServiceTitan text are on <b>6 · Summary</b>.</div>
-      </div></div>${scopeHtml()}${designDetailsHtml(o)}`;
-  wireScope(o);
-  $('#recShotBtn').onclick=()=>{ const s=withViewer(()=>{buildScene(); return snapshot3D()}); if(s){recShot=s; shotK=shotSig(o)} renderRecCard(o) };
+  el.innerHTML=designDetailsHtml(o)||'<p class="note">Nothing to build yet.</p>';
 }
 // ---- v2.8 Export to PDF: a print-ready report (before / after, 3D today vs proposed, each recommendation's cumulative effect on airflow, static and comfort score) rendered in-page and sent to the browser's print → Save as PDF
 function stepEffects(o){ // walk the steps backwards, undoing one item at a time, to get the design's numbers after each step. Insulation goes first in the story — it lifts the R-19 cap so the duct steps show their real gains.
@@ -3010,7 +3115,7 @@ function exportPdf(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M)
   const c0=sl=>M0.comps.find(c=>c.slot===sl); const compRows=M.comps.map(c=>{ const a=c0(c.slot); const pill=(x,mm)=>x?`<span class="pill ${x.cls}">${statusTxt(x,mm||M)}</span>`:'—'; return `<tr><td>${c.name.replace(/^New plenum — (\w+).*/,'Roof penetration — $1 (new plenum)')}</td><td>${a?a.size:'—'}</td><td class="num">${a?CFM(a.maxAbs):'—'}</td><td>${pill(a,M0)}</td><td>${c.size}</td><td class="num">${CFM(c.maxAbs)}</td><td>${pill(c,M)}</td></tr>` }).join('');
   const html=`<div class="ph"><div><div class="pbrand">Goettl Air Conditioning &amp; Plumbing · Las Vegas</div><h1>Recommended Design</h1><div class="psub">${sys} · ${unit} · ${tons1(M.tons)} ton · needs ${CFM(M.needs)} CFM</div></div><div class="pdate">${new Date().toLocaleDateString()}<br><span>Customer: ______________________</span></div></div>
     <div class="pscore"><div class="ps ${scoreCls(M0.score.total)}"><div class="pl">New AC on today's ducts</div><div class="big">${M0.score.total}</div><div class="pl2">${M0.chokes.length} chokepoint${M0.chokes.length===1?'':'s'}</div></div><div class="parrow">→</div><div class="ps ${scoreCls(M.score.total)}"><div class="pl">Goettl design</div><div class="big">${M.score.total}</div><div class="pl2">${M.chokes.length} chokepoint${M.chokes.length===1?'':'s'}</div></div>
-      <div class="ptiles">${tile('Airflow',CFM(M0.delivered)+' CFM',CFM(M.delivered)+' CFM',cptCls(M.perTon))}${tile('CFM per ton',M0.perTon,M.perTon+` <small>(works at ${cptFloor()}–${cptAim()})</small>`,cptCls(M.perTon))}${M.ins.known?tile('Attic insulation','R-'+fmt(M.ins.R),'R-'+fmt(M.ins.Rf)):''}${tile('Chokepoints',M0.chokes.length,M.chokes.length)}</div></div>
+      <div class="ptiles">${tile('Airflow',CFM(M0.delivered)+' CFM',CFM(M.delivered)+' CFM',airCls(M))}${tile('CFM per ton',M0.perTon,M.perTon+` <small>(works at ${cptFloor()}–${cptAim()})</small>`,airCls(M))}${M.ins.known?tile('Attic insulation','R-'+fmt(M.ins.R),'R-'+fmt(M.ins.Rf)):''}${tile('Chokepoints',M0.chokes.length,M.chokes.length)}</div></div>
     <p class="plead">A new unit on the ductwork as it is scores <b>${M0.score.total}</b> — the equipment is new, but the air still has to squeeze through the same ${M0.chokes.length} tight spot${M0.chokes.length===1?'':'s'}, so it runs at a higher static, moves less air and works harder than it was built to. The design below scores <b>${M.score.total}</b>${M.score.total>=100?` — every spot passes at its design airflow, the unit delivers ${M.perTon} CFM/ton, with the attic at R-38`:(M.score.ac>=85?` — the air conditioning side complete at 85 of 85; the last ${100-M.score.total} point${100-M.score.total===1?'':'s'} ${M.ins.known?'are the attic insulation':'need the attic insulation entered'}`:'')}.</p>
     ${M.md?`<p class="plead pmd">${mdStatementTxt(M).replace(/ · /g,'. ')}.</p>`:''}
     <div class="pshots"><div><div class="pcap">Today — where it chokes</div>${shotBefore?`<img src="${shotBefore}">`:''}</div><div><div class="pcap">Proposed — as built</div>${shotAfter?`<img src="${shotAfter}">`:''}</div></div>
@@ -3096,29 +3201,48 @@ function renderOutputs(o,light){
 // drops / curb with new plenums / keep the metal), one-tap duct and insulation fixes, Design to 100 and Clear.
 // Splits get the same fix buttons — the install radios are package-only because a split has no roof metal.
 function fixDucts(o){ designDucts(o) } // v2.28: the Manual D sizes on every spot the install keeps — insulation and the crew scope are left alone
-function renderPlanActions(o){ const el=$('#planActions'); if(!el) return; const note=$('#planActionsNote');
-  const M=flowModel(o,S.fix); if(!M){ el.innerHTML=''; if(note) note.textContent=''; return }
+// v2.42 — THE DESIGN STRIP. Every button that changes the design sits right under the 3D, in one strip (Stephen 2026-09-20: "if we change
+// a design, we see the 3D visual change and the CFMs"): the install method, the one-tap fixes, Design to 100 / Clear, the room-by-room
+// duct system, and the crew scope ticks that used to live at the bottom of the Recommended design card. The same strip renders on the
+// pack's customer page (mode 'story', without the crew scope row) so the tech can walk the customer through it on the two 3Ds.
+// The readout line above it is the live answer: airflow and score, today → this design.
+function planReadoutHtml(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M||!M0) return '';
+  const a=(x,y,f,cls)=>x===y?`<b class="${cls||''}">${f(y)}</b>`:`<span class="arw">${f(x)} →</span> <b class="${cls||''}">${f(y)}</b>`;
+  return `<span><span class="k">Airflow</span>${a(M0.delivered,M.delivered,CFM,airCls(M))} <span style="font-size:12px;color:var(--muted)">CFM · ${M.perTon}/ton${M.blowerBound?' — all this blower can push':''}</span></span>`
+    +`<span><span class="k">Chokepoints</span>${a(M0.chokes.length,M.chokes.length,String,M.chokes.length?'bad':'ok')}</span>`
+    +(M.ins.known?`<span><span class="k">Attic</span>${a(M.ins.R,M.ins.Rf,v=>'R-'+fmt(v),M.ins.Rf>=R_MIN?'ok':'warn')}</span>`:'')
+    +`<span><span class="k">Score</span>${a(M0.score.total,M.score.total,String,scoreCls(M.score.total))}</span>` }
+function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); if(!el) return; mode=mode||'plan';
+  const M=flowModel(o,S.fix); if(!M){ el.innerHTML=''; const ro=$('#planReadout'); if(ro&&mode==='plan') ro.innerHTML=''; return }
   const pkg=isPkg()&&S.setup!=='separate'; const inst=S.fix.install||'reuse'; const ins=M.ins;
-  const anyFix=Object.keys(S.fix).some(k=>k!=='install'&&k!=='insul'&&S.fix[k])||inst!=='reuse'||(S.fix.insul&&S.fix.insul!=='none')||Object.values(S.scope||{}).some(Boolean);
+  const anyFix=Object.keys(S.fix).some(k=>k!=='install'&&k!=='insul'&&S.fix[k])||inst!=='reuse'||(S.fix.insul&&S.fix.insul!=='none')||Object.values(S.scope||{}).some(Boolean)||!!S.rbrNew;
   const ductLeft=M.comps.some(c=>c.cls!=='ok'&&!c.newMetal);
   const insLeft=ins.known&&ins.Rf<R_MIN;
-  const b=(id,lbl,on,dis)=>`<button class="btn sm ${on?'':'ghost'}" data-pact="${id}"${dis?' disabled style="opacity:.45"':''}>${lbl}</button>`;
-  el.innerHTML=(pkg?[b('reuse','Keep existing roof metal',inst==='reuse'),b('curb_old','Curb — old drops',inst==='curb_old'),b('curb','Curb — new plenums',inst==='curb')].join('')+'<span class="note" style="width:8px"></span>':'')
-    +[b('d100','✦ Design to 100',false),b('ducts','Fix ducts',false,!ductLeft),b('insul','Fix insulation',false,!insLeft),b('clear','↺ Clear',false,!anyFix)].join('')
-    +(S.rooms&&S.rooms.length?'<span class="note" style="width:8px"></span>'+b('rbrnew',(S.rbrNew?'✓ ':'')+'New duct system',S.rbrNew):'');
-  $$('#planActions [data-pact]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.pact;
+  const b=(id,lbl,on,dis,extra)=>`<button class="btn sm ${on?'':'ghost'}" data-pact="${id}"${extra||''}${dis?' disabled style="opacity:.45"':''}>${lbl}</button>`;
+  const rowInst= pkg?`<div class="prow"><span class="plab">Install</span>${[b('reuse','Keep existing roof metal',inst==='reuse',false,' data-inst="reuse"'),b('curb_old','Curb — old drops',inst==='curb_old',false,' data-inst="curb_old"'),b('curb','Curb — new plenums',inst==='curb',false,' data-inst="curb"')].join('')}</div>`:'';
+  const rowFix=`<div class="prow"><span class="plab">Design</span>${[b('d100','✦ Design to 100',false,false,mode==='plan'?' id="design100"':''),b('ducts','Fix ducts',false,!ductLeft),b('insul',(S.fix.insul&&S.fix.insul!=='none')?'✓ Insulation to R-38':'Fix insulation',!!(S.fix.insul&&S.fix.insul!=='none'),!insLeft&&!(S.fix.insul&&S.fix.insul!=='none'),' data-insul="38"'),b('clear','↺ Clear',false,!anyFix,mode==='plan'?' id="fixReset"':'')].join('')}${S.rooms&&S.rooms.length?b('rbrnew',(S.rbrNew?'✓ ':'')+'New duct system',S.rbrNew):''}</div>`;
+  // crew scope — the ticks that size new metal to the unit (split) or replace the roof metal (package); Plan tab only
+  let rowScope=''; if(mode==='plan'){ const sc=scopeState();
+    const chip=i=>`<label class="sc ${i.on?'on':''} ${i.na?'na':''}" title="${i.na?(i.k==='hp'?'the system in the home is already a heat pump':'not on this setup'):(i.air?'new metal sized to the unit — it stops being a chokepoint':'')}"><input type="checkbox" data-scope="${i.k}" ${i.on?'checked':''} ${i.na?'disabled':''}> ${i.l}${i.air?' <span class="est" style="color:var(--ok)">sized to the unit</span>':''}${i.req?' <span class="est">required</span>':''}</label>`;
+    if(sc.split){ const lay=sc.items.filter(i=>i.cfg), rest=sc.items.filter(i=>!i.cfg);
+      rowScope=`<div class="prow"><span class="plab">Supply layout</span>${lay.map(chip).join('')}</div><div class="prow" id="planScope"><span class="plab">Crew replaces</span>${rest.map(chip).join('')}</div>`; }
+    else rowScope=`<div class="prow" id="planScope"><span class="plab">Crew replaces</span>${sc.items.map(i=>chip(Object.assign({},i,{l:i.l.replace(' — required for this setup','')}))).join('')}${sc.curb?'<span class="note">— a curb redesign replaces all of this</span>':''}</div>`; }
+  el.innerHTML=rowInst+rowFix+rowScope;
+  const ro=$('#planReadout'); if(ro&&mode==='plan') ro.innerHTML=planReadoutHtml(o);
+  el.querySelectorAll('[data-pact]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.pact;
     if(k==='reuse'||k==='curb_old'||k==='curb') S.fix.install=k;
     else if(k==='d100') designTo100(o);
     else if(k==='ducts') fixDucts(o);
-    else if(k==='insul') S.fix.insul='38';
+    else if(k==='insul') S.fix.insul=(S.fix.insul&&S.fix.insul!=='none')?'none':'38';
     else if(k==='clear'){ S.fix={install:'reuse',insul:'none'}; S.scope={}; S.rbrNew=false }
     else if(k==='rbrnew'){ S.rbrNew=!S.rbrNew; if(S.rbrNew&&!isPkg()){ S.scope=S.scope||{}; S.scope.ducts=true } if(S.rbrNew) rbrModel(); }
-    save(); renderCompare() });
+    save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() });
+  el.querySelectorAll('[data-scope]').forEach(cb=>cb.onchange=()=>{ const k=cb.dataset.scope;
+    if(k.indexOf('cfg:')===0){ S.supNew=k.slice(4); save(); syncSupCfg(); renderCompare(); return } // the three layouts are one choice, not three ticks
+    S.scope=S.scope||{}; S.scope[k]=cb.checked; save(); renderCompare() });
+  if(mode!=='plan') return;
   if(S.rooms&&S.rooms.length){ try{ rbrModel(); rbrPlan2D() }catch(e){} } // the room design follows the equipment the SM is quoting
-  rbrDuctViewSync(); rbrSizeFlag();
-  if(note) note.innerHTML= (S.rooms&&S.rooms.length?`<b>New duct system</b> redesigns the supply room by room — the 2D duct drawing appears above, the worksheet sizes to the ${RM?RM.vents:0} vents, and it prints on the recommendation, the summary and the export. `:'')+(pkg
-    ? `Change the design while you are looking at it — the 3D, the chokepoints and the recommendation all redraw. <b>Curb — old drops</b> sets a new curb over the existing roof holes; <b>Curb — new plenums</b> cuts two bigger holes and drops plenums sized to the unit.`
-    : `Change the design while you are looking at it — the 3D, the chokepoints and the recommendation all redraw. <b>Fix ducts</b> opens every squeeze point that is still over the ACCA limit; <b>Design to 100</b> does that plus the insulation.`);
+  rbrDuctViewSync();
 }
 
 // ---- 4 Fit ------------------------------------------------------------------
@@ -3152,17 +3276,17 @@ function renderPlanHero(o){ const el=$('#planHero'); if(!el) return;
   const stT=v=>v==null?'—':v.toFixed(2)+'"';
   const arw=(a,b,f)=>a===b?`${f(b)}`:`${f(a)} → <b>${f(b)}</b>`;
   const nch=M.chokes.length, nch0=M0.chokes.length; const necks=M.comps.filter(c=>c.neck).length;
-  const hs = necks ? 'A roof penetration is smaller than the duct running through it — that has to open up before any of this is buildable.'
-    : nch ? `${nch} chokepoint${nch>1?'s':''} left in the design. The table below says what each one costs and why; <b>Design to 100</b> sizes them all at once.`
-    : sc>=100 ? `Every spot passes the design airflow — the unit delivers ${M.perTon} CFM/ton — with the attic at R-38 or better.`
-    : (M.score.ac>=85 ? `The air conditioning side is complete — ${M.score.ac} of 85. The last ${100-sc} point${100-sc===1?'':'s'} ${M.ins.known?'are the attic: top it up to R-38.':'need the insulation entered on step 1.'}`
-    : 'No chokepoints left — what is still holding the score back is spelled out under the table.');
+  // v2.42: one line under the rail — the buttons under the 3D are where the design changes
+  const hs = necks ? 'A roof hole is smaller than the duct through it — open it before anything else.'
+    : nch ? `${nch} chokepoint${nch>1?'s':''} left — <b>Design to 100</b> under the 3D sizes them all.`
+    : sc>=100 ? `Every spot passes — ${M.perTon} CFM/ton — attic at R-38 or better.`
+    : (M.score.ac>=85 ? `Air side complete (85 of 85). The last ${100-sc} point${100-sc===1?'':'s'} ${M.ins.known?'are the attic — Fix insulation.':'need the insulation entered on step 1.'}`
+    : (M.blowerBound ? `Every spot passes — the ducts deliver all ${CFM(M.Qb)} CFM this blower can push.` : 'No chokepoints left.'));
   el.innerHTML=`<div class="hero ${cls}"><div class="hk">Step 5 · The plan</div>
     <div class="hv">Comfort score ${sc0} → ${sc}</div>
     <div class="rail"><i style="width:${Math.max(2,Math.min(100,sc))}%"></i><b style="left:${Math.max(0,Math.min(99,sc0))}%"></b></div>
     <div class="railkey"><span>new AC on today's ducts ${sc0}</span><span>this design ${sc}</span><span>100</span></div>
-    <div class="hs">${hs}</div>
-    <div class="hs" style="margin-top:6px;opacity:.85;max-width:none">Airflow ${arw(M0.delivered,M.delivered,CFM)} CFM (${arw(M0.perTon,M.perTon,v=>v+'/ton')})${M.md?` · ${M.md.B.name} at the ${M.md.espP.toFixed(2)}" limit on ${M.md.vs?'setting':'tap'} ${M.md.tap}`:''}${M.ins.known?` · attic ${arw(M.ins.R,M.ins.Rf,v=>'R-'+fmt(v))}`:''} · ${nch0===nch?nch:nch0+' → '+nch} chokepoint${nch===1?'':'s'}</div></div>`;
+    <div class="hs">${hs} Airflow ${arw(M0.delivered,M.delivered,CFM)} CFM · ${nch0===nch?nch:nch0+' → '+nch} chokepoint${nch===1?'':'s'}${M.ins.known?` · attic ${arw(M.ins.R,M.ins.Rf,v=>'R-'+fmt(v))}`:''}.</div></div>`;
 }
 function designDetailsHtml(o){
   const M=flowModel(o,S.fix); const L=[];
@@ -3189,7 +3313,7 @@ function designDetailsHtml(o){
     if(!(S.fix[sl]||c.newMetal||c.scopeNew)) return; add(c.name, `${c.size} — carries ${CFM(c.max)} CFM`) });
   if(M&&M.ins&&M.ins.known&&M.ins.Rf>M.ins.R) add('Attic insulation', `top up R-${fmt(M.ins.R)} → R-${fmt(M.ins.Rf)} (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`);
   const sc=scopeState(); if(sc.lines.length) add('Crew replaces', sc.lines.join(' · '));
-  return L.length?`<h3 style="margin-top:16px">How we build it — the details</h3><div class="kv" id="planDetails">${L.join('')}</div><p class="note" style="margin-top:6px">These are the decisions that print on the recommendation and go into the ServiceTitan summary, so the quote and the install crew get the same instructions.</p>`:'';
+  return L.length?`<h2>Build details</h2><div class="kv" id="planDetails">${L.join('')}</div>`:'';
 }
 
 // ---- 6 Summary --------------------------------------------------------------
@@ -3212,9 +3336,9 @@ function issuePairs(o){
     if(M0.ins.known&&M0.ins.R<R_MIN){ const done=M.ins.Rf>=R_MIN;
       push('Attic insulation','R-'+fmt(M0.ins.R),`Under the R-${R_MIN} minimum, so the ceiling keeps dumping heat into the rooms however well the system runs.`,
         done,'R-'+fmt(M.ins.Rf), done?`Topped up — cuts ceiling heat gain about ${Math.round(M.ins.gain*100)}% and lowers the load on the new system.`:'Not in the proposal yet — the insulation toggle is on the Plan tab.','warn','insul') }
-    if(M0.perTon<cptFloor()){ const done=M.perTon>=cptFloor(); const bl=!!(M.md&&M.md.blowerLimit&&!M.chokes.length);
+    if(M0.perTon<cptFloor()&&!M0.blowerBound){ const bl=!!M.blowerBound; const done=M.perTon>=cptFloor()||bl; // v2.42: everything the blower can push, delivered, is a pass
       push('Airflow per ton',`${M0.perTon} CFM/ton`,`Under the ${cptFloor()}/ton floor. The coil is starved: it runs cold, dehumidifies poorly and the rooms at the end of the runs never get their air.`,
-        done,`${M.perTon} CFM/ton`, done?`Inside the ${cptFloor()}–${cptAim()} band — every chokepoint opened to its Manual D size, so the unit moves what its blower table says.`:(bl?`Every spot passes at its size — the blower itself tops out here; an equipment or tap choice, not ductwork.`:'Still under the floor — chokepoints left to open.'),M0.perTon<cptFloor()*0.9?'bad':'warn') }
+        done,`${M.perTon} CFM/ton`, done?(bl?`Every spot passes — the ducts deliver every CFM this blower can push (${CFM(M.Qb)}). That is the most this unit can do.`:`Inside the ${cptFloor()}–${cptAim()} band — every chokepoint opened to its Manual D size, so the unit moves what its blower table says.`):'Still under the floor — chokepoints left to open.',M0.perTon<cptFloor()*0.9?'bad':'warn') }
     if(M0.bal&&M0.bal.ratio!=null&&M0.bal.ratio<1&&M0.bal.cls!=='ok'){ const leads=!!(M.bal&&(M.bal.ratio>=1||M.bal.cls==='ok')); const both=!!(M.bal&&M.bal.ret>=M.needs&&M.bal.sup>=M.needs); const done=leads||both; // v2.27: a return side at a lower static than the supply is the return flowing slower — answered // v2.24: both sides carrying what the unit needs answers it — the rule of thumb is a preference, not a chokepoint
       push('Supply vs return',`${CFM(M0.bal.ret)} return / ${CFM(M0.bal.sup)} supply`,
         'More supply than return. The system cannot give back what it cannot pull in, so rooms go uneven and the coil runs cold.',
@@ -3250,7 +3374,7 @@ function renderSumCard(o){
     <div class="hs">${P.length?(allDone?`Every one of the ${P.length} problems found on this system is answered by the design.`:`${solved} of ${P.length} problem${P.length===1?'':'s'} solved — ${P.length-solved} still open; the pairs below show which and what closes ${P.length-solved===1?'it':'them'}.`):'Nothing wrong found — the new equipment goes in as it sits and the ductwork carries what it wants to move.'}${gain>0?` A new unit alone would score <b>${sc0}</b>; this design scores <b>${sc}</b>.`:''}</div></div>`;
   const tile=(k,a,b,f,cls)=>`<div class="dim ${cls||''}"><div class="lbl">${k}</div><div class="val">${a===b?f(b):f(a)+' → '+f(b)}</div><div class="sub">${a===b?'unchanged':'new AC on today\'s ducts → this design'}</div></div>`;
   const tiles=[tile('Airflow',M0.delivered,M.delivered,CFM,M.delivered>=M.needs?'ok':'bad'),
-    tile('CFM per ton',M0.perTon,M.perTon,v=>String(v),cptCls(M.perTon)),
+    tile('CFM per ton',M0.perTon,M.perTon,v=>String(v),airCls(M)),
     (M.ins.known?tile('Insulation',M.ins.R,M.ins.Rf,v=>'R-'+fmt(v),M.ins.Rf>=R_MIN?'ok':'warn'):''),
     tile('Chokepoints',M0.chokes.length,M.chokes.length,v=>String(v),M.chokes.length?'bad':'ok')].filter(Boolean).join('');
   // the picture first — this is the wow
@@ -3342,63 +3466,97 @@ function tpShots(o){ let before=null, after=null;
   const f=(PACK&&PACK.shots)||{};
   return { before:before||f.before||null, after:after||f.after||null } }
 
+// ============================================================ v2.42 — THE CUSTOMER PAGE OF THE PACK
+// Stephen 2026-09-20: "give them 2 3D, before and after, with choke points called out ... in the field the tech can open it, and walk
+// the client through a few different ways we could do the install, and with the client see how that would affect their airflow. Then
+// the tech and client can agree on the design and final results predicted, hit save and the tech can send that design to the client."
+// So the page is built as a pitch: the two scores up top, then TWO WORKING 3Ds side by side — Today with every chokepoint called out,
+// the design redrawing as the install buttons under it are tapped — the live airflow / score readout, what we found and what we do
+// about it, the improvements in build order, the equipment, and Save & send. Same engine, same buttons, same numbers as the Plan tab.
+let PV={before:null,after:null}; // the two story viewers (kept across re-renders so a rotated view stays rotated)
 function tpStoryHtml(o){
   const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M||!M0) return '';
-  const meta=tpMeta(); const sh=tpShots(o);
-  const sysName=SYS_LABEL[S.sys]||''; const unit=o.unit||[o.furn,o.coil,o.ahu].filter(Boolean).join(' + ');
-  const pairs=issuePairs(o); const changes=proposedChanges(o); const open=pairs.filter(p=>!p.fixed).length;
+  const meta=tpMeta(); const sysName=SYS_LABEL[S.sys]||''; const unit=o.unit||[o.furn,o.coil,o.ahu].filter(Boolean).join(' + ');
   const cls=v=>v>=90?'good':(v>=70?'mid':'poor');
-  const tile=(k,a,b)=>`<div class="tile"><div class="k">${k}</div><div class="v">${a!=null&&String(a)!==String(b)?`<span class="was">${a} → </span>`:''}${b}</div></div>`;
-  const pairHtml=pairs.map(p=>`<div class="pair ${p.cls}"><div class="t">${p.t}</div>
-    <div class="was"><span class="lb">What is there now — ${tpEsc(p.was)}</span>${p.wasWhy}</div>
-    <div class="now${p.fixed?'':' open'}"><span class="lb">${p.fixed?'What we are doing':'Still open'} — ${tpEsc(p.now)}</span>${p.nowWhy}</div></div>`).join('');
-  return `<div class="tp">
-  <div class="card">
-    <h2>What this comes down to</h2>
-    <div class="scores">
-      <div class="sc ${cls(M0.score.total)}"><div class="k">New AC on today's ducts</div><div class="n">${M0.score.total}</div><div class="s">${M0.chokes.length} tight spot${M0.chokes.length===1?'':'s'}</div></div>
-      <div class="arw">→</div>
-      <div class="sc ${cls(M.score.total)}"><div class="k">The Goettl design</div><div class="n">${M.score.total}</div><div class="s">${M.chokes.length} tight spot${M.chokes.length===1?'':'s'}</div></div>
+  return `<div class="tp story">
+  <div class="phero" id="tpHero">${tpHeroInner(o,M,M0,cls)}</div>
+  <div class="card" style="padding:12px">
+    <h2 style="margin:2px 0 4px">Your system today, and the Goettl design</h2>
+    <p class="help" style="margin:0 0 6px">Both pictures turn — drag them. Red is where the air is being choked today. Tap the options under the design and watch the airflow and the score move.</p>
+    <div class="duo">
+      <div class="one"><div class="cap"><span>Today — new AC on the ducts as they are</span><span class="sb ${scoreCls(M0.score.total)}" id="tpSb0">${M0.score.total}</span></div>
+        <div class="viewer" id="tpV0"><canvas id="tpC0"></canvas><div class="lbls" id="tpL0"></div></div><div class="hint">Every red note is a spot the air has to squeeze through — the unit only gets what the tightest one lets past.</div></div>
+      <div class="one"><div class="cap"><span>The Goettl design</span><span class="sb ${scoreCls(M.score.total)}" id="tpSb1">${M.score.total}</span></div>
+        <div class="viewer" id="tpV1"><canvas id="tpC1"></canvas><div class="lbls" id="tpL1"></div></div><div class="hint">Green is what we build new or open up. Sized to ACCA Manual D for this exact unit.</div></div>
     </div>
-    <p style="margin-top:12px">A new ${sysName.toLowerCase()} dropped onto the ductwork as it sits today scores <b>${M0.score.total}</b>. The equipment is new, but the air still has to squeeze through the same ${M0.chokes.length} tight spot${M0.chokes.length===1?'':'s'} — so it moves less air than it was built to move and works harder doing it. The design below scores <b>${M.score.total}</b>.</p>
-    <div class="tiles">
-      ${tile('Air delivered',CFM(M0.delivered)+' CFM',CFM(M.delivered)+' CFM')}
-      ${tile('Air per ton',M0.perTon,M.perTon+' <small>(works at '+cptFloor()+'–'+cptAim()+')</small>')}
-      ${tile('Tight spots',M0.chokes.length,M.chokes.length)}
-      ${M.ins.known?tile('Attic insulation','R-'+fmt(M.ins.R),'R-'+fmt(M.ins.Rf)):''}
-    </div>
+    <div class="readout" id="tpReadout">${planReadoutHtml(o)}</div>
+    <div class="pstrip" id="storyActions"></div>
+    <p class="help noprint" style="margin:8px 4px 0">Try the install options together — every tap redraws the design, the airflow and the score. <b>3D Design</b> above has the full chokepoint table behind it.</p>
   </div>
-  <div class="card">
-    <h2>The system today, and the one we are proposing</h2>
-    <div class="shots">
-      <figure>${sh.before?`<img alt="The system as it is today" src="${sh.before}">`:''}<figcaption>Today — the red is where the air is being choked</figcaption></figure>
-      <figure>${sh.after?`<img alt="The proposed design" src="${sh.after}">`:''}<figcaption>The design — built to ACCA Manual D, drawn to the same scale</figcaption></figure>
-    </div>
-    ${packOn()?`<p class="help noprint" style="margin-top:10px">Both pictures redraw the moment anything changes on <b>3D Design</b> — walk the customer through it there and this page follows.</p>`:''}
-    ${M.md?`<p class="note" style="margin-top:12px">${mdStatementTxt(M)}</p>`:''}
-  </div>
-  <div class="card">
-    <h2>What we found, and what we are doing about it</h2>
-    <p class="help">Every problem on the left is answered on the right.${open?` ${open} ${open===1?'is':'are'} still open.`:''}</p>
-    ${pairHtml||'<p class="help">Nothing on this system is restricting the airflow.</p>'}
-  </div>
-  <div class="card">
-    <h2>The improvements, in the order they get built</h2>
-    <ol class="tpstep">${changes.map(c=>`<li>${c.txt.replace(/ <span class="note"[^>]*>[^]*?<\/span>/g,'')}${whyFor(c.k)?`<div class="w">${whyFor(c.k)}</div>`:''}</li>`).join('')}</ol>
-  </div>
+  <div class="card" id="tpFound">${tpFoundInner(o,M,M0)}</div>
+  <div class="card" id="tpSteps">${tpStepsInner(o,M,M0)}</div>
   <div class="card">
     <h2>The equipment</h2>
     <table><tbody>
       <tr><td>System</td><td><b>${tpEsc(sysName)}</b></td></tr>
       <tr><td>Model${unit.indexOf('+')>0?'s':''}</td><td><b>${tpEsc(unit)}</b></td></tr>
-      <tr><td>Size</td><td><b>${tons1(M.tons)} ton</b> — needs ${CFM(M.needs)} CFM to run the way it was built</td></tr>
-      ${M.md?`<tr><td>Air it will move</td><td><b>${CFM(M.md.Qp)} CFM</b> at Goettl's ${spLimit().toFixed(2)}" limit (${M.md.perTonP} CFM per ton)</td></tr>`:''}
+      <tr><td>Size</td><td><b>${tons1(M.tons)} ton</b>${M.md?` — <b>${CFM(M.md.Qp)} CFM</b> at Goettl's ${spLimit().toFixed(2)}" limit (${M.md.perTonP} CFM per ton)`:''}</td></tr>
     </tbody></table>
-    <p class="tpfoot">${tpEsc([meta.name,meta.sm].filter(Boolean).join(' · '))}${meta.name||meta.sm?' · ':''}${new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})}</p>
+    <p class="tpfoot">${tpEsc([meta.name,meta.sm].filter(Boolean).join(' · '))}${meta.name||meta.sm?' · ':''}${new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})} · Goettl Air Conditioning &amp; Plumbing · Las Vegas</p>
+  </div>
+  <div class="card savecard noprint">
+    <h2>Agreed? Save &amp; send this design</h2>
+    <p class="help">Locks in the design on screen and makes one file to text or email — it opens on any phone with no signal, 3Ds and all.</p>
+    <div class="row">
+      <div class="field" style="flex:2"><label>Customer or address</label><input class="tpname" id="tpName" value="${tpEsc(meta.name)}" placeholder="Smith — 4412 Desert Inn"></div>
+      <button class="btn" id="tpSave">&#128190; Save &amp; send</button>
+      <button class="btn sm ghost" id="tpOffice" title="Put the design back to the one the office built">↺ Office design</button>
+    </div>
+    <div class="note" id="tpSaveNote">Text it or email it. The customer keeps a working copy; the office gets the same file.</div>
   </div>
 </div>`;
 }
-
+function tpHeroInner(o,M,M0,cls){ const meta=tpMeta(); const sysName=SYS_LABEL[S.sys]||''; const gain=M.score.total-M0.score.total; const pairs=issuePairs(o); const solved=pairs.filter(p=>p.fixed).length;
+  return `<div class="pk">Goettl comfort design${meta.name?' · '+tpEsc(meta.name):''}</div>
+    <div class="pt">${M.score.total>=100?'Built to move every bit of air this system can':(M.score.total>=85?'Every squeeze point opened — the unit can breathe':'Fixing the air, not just the unit')}</div>
+    <div class="ps">A new ${tpEsc(sysName.toLowerCase())} on the ductwork as it sits today scores <b>${M0.score.total}</b> — the equipment is new, but the air still squeezes through ${M0.chokes.length===1?'the same tight spot':'the same '+M0.chokes.length+' tight spots'}. The design on this page scores <b>${M.score.total}</b>${M.blowerBound?' — every CFM this blower can push, delivered':''}.</div>
+    <div class="pscores"><div class="sc ${cls(M0.score.total)}"><div class="k">New AC on today's ducts</div><div class="n">${M0.score.total}</div><div class="s">${M0.chokes.length} tight spot${M0.chokes.length===1?'':'s'}</div></div><div class="arw">→</div><div class="sc ${cls(M.score.total)}"><div class="k">The Goettl design</div><div class="n">${M.score.total}</div><div class="s">${M.chokes.length} tight spot${M.chokes.length===1?'':'s'}${M.chokes.length?'':' · every spot clear'}</div></div></div>
+    <div class="pgain"><span>Airflow <b>${CFM(M0.delivered)} → ${CFM(M.delivered)} CFM</b></span><span>Per ton <b>${M0.perTon} → ${M.perTon}</b></span>${M.ins.known?`<span>Attic <b>R-${fmt(M.ins.R)}${M.ins.Rf>M.ins.R?' → R-'+fmt(M.ins.Rf):''}</b></span>`:''}<span>Problems solved <b>${solved} of ${pairs.length}</b></span>${gain>0?`<span>Score <b>+${gain}</b></span>`:''}</div>` }
+function tpFoundInner(o,M,M0){ const pairs=issuePairs(o); const open=pairs.filter(p=>!p.fixed).length;
+  const pairHtml=pairs.map(p=>`<div class="pair ${p.cls}"><div class="t">${p.t}</div>
+    <div class="was"><span class="lb">What is there now — ${tpEsc(p.was)}</span>${p.wasWhy}</div>
+    <div class="now${p.fixed?'':' open'}"><span class="lb">${p.fixed?'What we are doing':'Still open'} — ${tpEsc(p.now)}</span>${p.nowWhy}</div></div>`).join('');
+  return `<h2>What we found, and what we are doing about it</h2>
+    <p class="help">Every problem on the left is answered on the right.${open?` ${open} ${open===1?'is':'are'} still open — the options under the design close ${open===1?'it':'them'}.`:''}</p>
+    ${pairHtml||'<p class="help">Nothing on this system is restricting the airflow.</p>'}` }
+function tpStepsInner(o,M,M0){ const steps=stepEffects(o);
+  return `<h2>The improvements, in the order they get built</h2>
+    ${steps.length?`<ol class="steps2">${steps.map((s_,i)=>`<li><span class="n">${i+1}</span><div><div class="ct">${tpEsc(s_.txt.replace(/ — one way to get.*$/,''))}</div><div class="cw">${whyFor(s_.k)}</div><div class="ce"><span>airflow <b>${CFM(s_.cfm)}</b>${s_.dCfm>0?` <i>+${s_.dCfm}</i>`:''}</span><span>${Math.round(s_.cfm/M.tons)} <b>CFM/ton</b></span>${s_.R!=null&&s_.dR?`<span>attic <b>R-${fmt(s_.R)}</b></span>`:''}<span>score <b>${s_.score}</b>${s_.dScore>0?` <i>+${s_.dScore}</i>`:''}</span></div></div></li>`).join('')}</ol>`:'<p class="help">Nothing proposed yet — tap the options under the design.</p>'}` }
+// the two story viewers: created once per render of the page, redrawn on every design change
+function tpViewersInit(o){ const c0=$('#tpC0'), c1=$('#tpC1'); if(!c0||!c1) return;
+  const keep=(k,c,l,cam)=>{ const old=PV[k]; const V=makeViewer(c,l,old?Object.assign({},old.view):cam); PV[k]=V; wireViewer(V); return V };
+  const d=defaultView(); keep('before',c0,$('#tpL0'),Object.assign({},d,{lbl:'flag'})); keep('after',c1,$('#tpL1'),Object.assign({},d,{lbl:'changes'}));
+  tpViewersDraw(o) }
+function tpViewersDraw(o){ if(!PV.before||!PV.after) return; try{ buildInto(PV.before,'today'); buildInto(PV.after,'design') }catch(e){ console.error('story 3D',e) } }
+// after any design change made from the story's own buttons (or the Plan tab while a pack is open): redraw the numbers and both 3Ds in place
+function packStoryRefresh(){ if(!packOn()) return; const st=$('#packStory'); if(!st||!st.innerHTML||cur!==7) return;
+  const row=rowsFor()[S.star]; if(!row) return; const o=pick(S.star,row); const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M||!M0) return;
+  const cls=v=>v>=90?'good':(v>=70?'mid':'poor');
+  const h=$('#tpHero'); if(h) h.innerHTML=tpHeroInner(o,M,M0,cls);
+  const s0=$('#tpSb0'); if(s0){ s0.textContent=M0.score.total; s0.className='sb '+scoreCls(M0.score.total) }
+  const s1=$('#tpSb1'); if(s1){ s1.textContent=M.score.total; s1.className='sb '+scoreCls(M.score.total) }
+  const r=$('#tpReadout'); if(r) r.innerHTML=planReadoutHtml(o);
+  renderPlanActions(o,'#storyActions','story');
+  const f=$('#tpFound'); if(f) f.innerHTML=tpFoundInner(o,M,M0);
+  const k=$('#tpSteps'); if(k) k.innerHTML=tpStepsInner(o,M,M0);
+  tpViewersDraw(o) }
+function wirePackStory(o){
+  renderPlanActions(o,'#storyActions','story'); tpViewersInit(o);
+  const nm=$('#tpName'); if(nm) nm.addEventListener('input',()=>{ const t=$('#techName'); if(t){ t.value=nm.value; S.f&&(S.f.techName=nm.value) } });
+  const sv=$('#tpSave'); if(sv) sv.onclick=()=>{ const t=$('#techName'); if(t&&nm) t.value=nm.value; sendToTech(false,'#tpSave') };
+  const of=$('#tpOffice'); if(of) of.onclick=()=>{ if(!(PACK&&PACK.state)) return; const keep={thr:S.thr,view:S.view};
+    try{ S=JSON.parse(JSON.stringify(PACK.state)); S.thr=S.thr||keep.thr; S.view=S.view||keep.view; save() }catch(e){ return }
+    FIELDS.forEach(id=>{ const el=$('#'+id); if(el&&S.f&&S.f[id]!=null) el.value=S.f[id] }); applySys(); renderCompare(); renderPackTabs() } }
 function tpPackHtml(o){
   const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M||!M0) return '';
   const sysName=SYS_LABEL[S.sys]||'';
@@ -3450,7 +3608,7 @@ function renderPackTabs(){
   const row=rowsFor()[S.star];
   if(!row){ if(st) st.innerHTML='<div class="tp"><div class="card"><p class="help">Pick an option on step 3 first.</p></div></div>'; if(tk) tk.innerHTML=''; return }
   const o=pick(S.star,row);
-  try{ if(st) st.innerHTML=tpStoryHtml(o); }catch(e){ console.error('pack story',e) }
+  try{ if(st){ st.innerHTML=tpStoryHtml(o); wirePackStory(o) } }catch(e){ console.error('pack story',e) }
   try{ if(tk){ tk.innerHTML=tpPackHtml(o); wirePackTech(o) } }catch(e){ console.error('pack tech',e) }
 }
 function wirePackTech(o){
@@ -3492,7 +3650,7 @@ async function fcAppSource(){
 // Everything the app rendered while it was running has to come back out, or the pack carries a stale
 // copy of every card — and, worse, the two 1.6 MB print stills inside #printReport.
 const FC_DOM_RESET=['#airCard','#recCard','#sumCard','#sumHero','#fitHero','#planHero','#printReport','#savedWrap',
-  '#planActions','#planActionsNote','#lbls','#duct2d','#packStory','#packTech','#cmpCard','#pkgCard','#fitShot','#supCfgNote'];
+  '#planActions','#planReadout','#lbls','#duct2d','#packStory','#packTech','#cmpCard','#pkgCard','#fitShot','#supCfgNote','#tonsSrc','#tiers'];
 function fcDomSource(){
   const d=document.documentElement.cloneNode(true);
   FC_DOM_RESET.forEach(sel=>{ const e=d.querySelector(sel); if(e) e.innerHTML='' });
@@ -3520,18 +3678,15 @@ function fcPackInject(src,payload){
   return m ? s.slice(0,m.index+m[0].length)+'\n'+tag+s.slice(m.index+m[0].length) : tag+s;
 }
 async function fcPackPayload(o,meta){
-  const sh=tpShots(o);
-  // The two stills are the fallback only — the pack paints its own. 760 px at q0.70 keeps them honest
-  // without putting a megabyte of picture into a file that has to go through Messages.
-  const [before,after]=await Promise.all([shrinkShot(sh.before,760,.70), shrinkShot(sh.after,760,.70)]);
+  // v2.42: no stills ride along any more — the pack draws two WORKING 3Ds of its own, so the file is ~100 KB lighter for Messages
   const state=fcHandoffState();
   return { v:1, id:fcPackId(JSON.stringify(state)+(meta.name||'')), app:fcAppUrl()||((PACK&&PACK.app)||''),
-           meta:meta, state:state, shots:{before:before||null, after:after||null} };
+           meta:meta, state:state, shots:{} };
 }
 // Build it and hand it over: Share sheet on an iPad (Messages / Mail / AirDrop), a download everywhere else.
 async function sendToTech(preview,btnSel){
   const row=rowsFor()[S.star]; if(!row) return; const o=pick(S.star,row);
-  const btn=$(btnSel||(preview?'#techPreview':'#techSend')), note=$('#techNote'); const lbl=btn?btn.innerHTML:'';
+  const btn=$(btnSel||(preview?'#techPreview':'#techSend')), note=$(btnSel==='#tpSave'?'#tpSaveNote':'#techNote'); const lbl=btn?btn.innerHTML:'';
   if(btn){ btn.disabled=true; btn.innerHTML='Building…' }
   try{
     const meta=tpMeta();
@@ -3634,8 +3789,8 @@ function relabelStand(){ const curb=isCurbSetup(), pitched=isPitched(); const on
   lab('pn_rl','R',curb?'Return hole under the curb <small>blank = same as the return duct</small>':'Return penetration through the roof <small>blank = same as the return duct</small>','#003963');
   lab('pn_sl','S',curb?'Supply hole under the curb <small>blank = same as the supply duct</small>':'Supply penetration <small>blank = same as the supply duct</small>','#0f8b8b');
   $('#penFillF').classList.toggle('hidden',!curb);
-  $('#standHelp').innerHTML= curb ? 'Tape the curb that is staying. Each box has a letter — find the same letter on the picture to see what to measure. <b>Side to side</b> runs along the duct-side edge; <b>front to back</b> runs away from it. Openings are measured from the <b>left end</b> of the curb as you stand downhill and look uphill. Leave blank what you can\'t reach.'
-    : 'Same terms as the <b>Jack, Elbow &amp; Stand Measurement Sheet</b> — measure the METAL, not the old unit. Each box has a letter: find the same letter on the picture to see exactly what to tape. Everything is measured from the <b>left end</b> of the stand as you stand downhill and look uphill. Leave blank what you can\'t reach; if the old unit was looked up on step 1 its spec openings stand in (marked est.).';
+  $('#standHelp').innerHTML= curb ? 'Tape the curb that is staying — the letters match the pictures, measured from the <b>left end</b> looking uphill. Blank = assumed.'
+    : 'Measure the METAL, not the old unit — the letters match the pictures, from the <b>left end</b> of the stand looking uphill. Blank = assumed from the old unit.';
   const rp=roofPitch(); const pn=$('#pitchNote'); if(pn) pn.textContent=pitched?`using ${(Math.round(rp.p*10)/10)} / 12 · ${rp.src}`:'flat';
   $$('[data-pitch]').forEach(b=>b.classList.toggle('on',pitched&&rp.src==='entered'&&+b.dataset.pitch===rp.p));
   standDiag();
