@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-20 v2.42 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-20 v2.43 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -371,6 +371,8 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
 .packfull.on{background:var(--db);color:#fff;border-color:var(--db)}
 body.pack #steps,body.pack #btnReset,body.pack #btnInstall,body.pack #a2hsBar,body.pack #updBar{display:none!important}
 body.pack:not(.full) #btnSettings{display:none!important} /* v2.42: no thresholds dialog in front of a customer — Full tool brings it back */
+body.pack:not(.full) #btnOpenPack{display:none!important} /* v2.43: the open-a-design-file button is the app's, not the customer page's */
+#btnOpenPack{cursor:pointer}
 body.pack .footbar{display:none}
 body.pack.full #steps{display:grid!important}
 body.pack.full .footbar{display:block}
@@ -597,6 +599,7 @@ body.pack .tp .noapp{display:none}
   <div class="hspacer"></div>
   <span class="netpill" id="netPill" hidden title="No connection — running from the copy saved on this device">Offline</span>
   <button class="iconbtn" id="btnInstall" hidden title="Install Fit Check on this device">⤓ Install</button>
+  <label class="iconbtn" for="openPack" id="btnOpenPack" title="Open a design file — a Fit Check design texted or emailed to you">&#128194;</label><input type="file" id="openPack" accept=".html,.htm,text/html" hidden>
   <button class="iconbtn" id="btnSettings" title="Thresholds">⚙︎</button>
   <button class="iconbtn" id="btnReset" title="Start over">↺</button>
 </div></header>
@@ -621,6 +624,7 @@ body.pack .tp .noapp{display:none}
   <div class="pstep" data-pgo="5"><span class="t">3D Design</span></div>
   <div class="pstep" data-pgo="8"><span class="t">Tech pack</span></div>
   <button class="packfull" id="packFull" title="Open the whole tool — measurements, equipment, room by room">&#9974; Full tool</button>
+  <button class="packfull" id="packClose" hidden title="Close this design file and go back to your own check">&#10005; Close</button>
 </nav>
 
 <main>
@@ -1100,7 +1104,7 @@ body.pack .tp .noapp{display:none}
   </div>
     <div class="card" id="techCard">
     <h2>Send it to the tech</h2>
-    <p class="help">One self-contained file — the whole design and the whole tool. Text or email it: it opens on an iPad or a phone with no signal on <b>Your system</b>, the customer's page — two working 3Ds (today and the design, chokepoints called out), the install options to walk through together, the score today &rarr; designed, and <b>Save &amp; send</b> so the tech can text the agreed design to the customer. <b>3D Design</b> is this Plan tab; <b>Tech pack</b> holds the worksheet, the chokepoint table and <b>Open in Fit Check</b>.</p>
+    <p class="help">One self-contained file — the whole design and the whole tool — to text or email to the tech <i>or</i> the customer, with no signal. Tapped on a phone it opens as the customer's presentation: the score today &rarr; designed, the two 3Ds (today and the design, chokepoints called out) and every improvement. Opened in Fit Check on any iPad with the tool — <b>Open a design file</b> below — it is the working design: <b>Your system</b> with two working 3Ds and the install options to walk through together, then <b>Save &amp; send</b> so the tech can text the agreed design to the customer. <b>3D Design</b> is this Plan tab; <b>Tech pack</b> holds the worksheet, the chokepoint table and <b>Open in Fit Check</b>.</p>
     <div class="row">
       <div class="field" style="flex:2"><label>Customer or address <small>goes on the cover and the file name</small></label><input id="techName" placeholder="Smith &mdash; 4412 Desert Inn"></div>
       <div class="field"><label>Service manager <small>optional</small></label><input id="techSm" placeholder="Your name"></div>
@@ -1108,8 +1112,9 @@ body.pack .tp .noapp{display:none}
     <div class="actbar">
       <button class="btn" id="techSend">&#128228; Send to tech</button>
       <button class="btn sm ghost" id="techPreview">Open it here first</button>
+      <label class="btn sm ghost" for="openPack" id="openPackBtn" title="Load a texted design file into this Fit Check">&#128194; Open a design file</label>
     </div>
-    <div class="note" id="techNote">Builds one self-contained file &mdash; no signal needed to open it, nothing to log in to.</div>
+    <div class="note" id="techNote">One file: a presentation on any phone, the working design in Fit Check or a browser. No signal needed, nothing to log in to.</div>
   </div>
   <div class="card">
     <h2>Save this check</h2>
@@ -1387,6 +1392,28 @@ const fmt=n=>n==null||isNaN(n)?'—':(Math.round(n*4)/4).toString().replace(/\.5
 const num=id=>{const v=parseFloat($('#'+id).value);return isNaN(v)?null:v};
 const tonNum=t=>parseFloat(String(t).replace('T',''));
 const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+// ============================================================ v2.43 — THE FILE WITH JAVASCRIPT OFF
+// A texted or emailed .html lands in Quick Look on an iPhone or iPad (and in the Mail / Messages preview), and
+// Quick Look runs NO JavaScript. Until v2.43 that viewer showed the empty shell of the tool — Stephen 2026-09-20:
+// "it opens on the iPhone different ... nothing like what it is on desktop" / "the file the tech saved is
+// missing info". So a pack now carries a fully rendered customer presentation as the FIRST thing in <body>
+// (#fcStatic — scores, the two 3Ds as labelled stills, the findings, the improvements, the equipment), with a
+// one-line stylesheet that hides the app behind it while scripts are off. The moment a script runs, that block
+// is dropped and the working tool takes over — so the file is a presentation on a phone and the tool in a
+// browser or in Fit Check itself (Summary → Open a design file). Removed as an ELEMENT, never by a text scan.
+$$('#fcStatic').forEach(e=>{ try{ e.remove() }catch(_){} }); try{ document.body.classList.remove('js') }catch(_){}
+// ============================================================ v2.43 — A DESIGN FILE OPENED INTO THE INSTALLED APP
+// Summary → Open a design file reads the pack's boot block out of the chosen file and hands the job to this same
+// page through one of two IN-MEMORY routes — a #pk= fragment, or a one-shot storage key where storage works —
+// then reboots as a pack. Either way the payload is consumed here, before a single line of the app reads it, and
+// the hash is dropped so a refresh cannot re-apply it over the technician's edits (the pack's own key keeps those).
+(function(){ try{
+  const m=/[#&]pk=([A-Za-z0-9_-]+)/.exec(location.hash||'');
+  if(m){ const b=m[1].replace(/-/g,'+').replace(/_/g,'/'); const bin=atob(b+'==='.slice((b.length+3)%4)); const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i);
+    const o=JSON.parse(new TextDecoder().decode(u)); if(o&&typeof o==='object'&&o.state){ o.imported=true; window.FC_PACK=o }
+    try{ history.replaceState(null,'',location.pathname+location.search) }catch(e){ location.hash='' } return }
+  const raw=store.get('fitcheck_open_pack'); if(raw){ store.del('fitcheck_open_pack'); const o=JSON.parse(raw); if(o&&typeof o==='object'&&o.state){ o.imported=true; window.FC_PACK=o } }
+}catch(e){ try{ console.error('open design file',e) }catch(_){} } })();
 // ============================================================ v2.39 — PACK MODE
 // A tech pack is not a separate document any more: it is THIS app, written out with the job baked into a
 // one-line boot block in the head. So the tech designs on the real Plan tab, with the real Fix ▸ /
@@ -2179,6 +2206,11 @@ function insulRead(){ const el=$('#insulRead'); if(!el) return; const i=insulSta
 // banner and leave the chip on 3 ton; now the chip is set to the load's size and the SM taps a different one only to override.
 // Returns {tons, why} or null when step 1 has nothing to size from (no square footage / build type).
 function loadTons(){ try{
+  // v2.43 — the measured rooms count the moment they exist, wherever this is asked from. The room model is built
+  // here if it has not been yet, so the office page and a pack booting from the same job read the SAME load:
+  // until now a pack ran buildTons() before its room model existed, sized from the Manual J alone, and could land
+  // on a different tonnage — and a different unit, score and airflow — than the office had on screen.
+  if(S.rooms&&S.rooms.length&&!RM){ try{ rbrModel() }catch(e){} }
   const rec=rbrRecTons(); if(!rec) return null; const rooms=!!(RM&&RM.loadT&&S.rooms&&S.rooms.length);
   const c=rbrSizeCall();
   if(c){ // the house asks for a size above the square footage (measured rooms, or the pre-1980 rule) — as the house sits today that IS the size;
@@ -2193,12 +2225,17 @@ function loadTons(){ try{
   if(rooms) return {tons:RM.loadT,why:`measured rooms — ${CFM(RM.needTot)} CFM ÷ ${RM.cpt} CFM/ton`};
   return {tons:rec,why:`Manual J — ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()}`};
 }catch(e){ return null } }
+// the chip the load would pick for this system — null when the SM has tapped a chip on this check, or there is no load yet
+function tonsAutoPick(L){ if(S.tonsAuto===false||!S.sys) return null; L=L||loadTons(); if(!L) return null;
+  const tons=[...new Set(LINEUP.filter(r=>r.type===S.sys).map(r=>r.tons))].sort((a,b)=>tonNum(a)-tonNum(b)); if(!tons.length) return null;
+  const want=L.tons+'T'; if(tons.includes(want)) return want;
+  const n=tons.map(tonNum); const near=n.reduce((b,x)=>Math.abs(x-L.tons)<Math.abs(b-L.tons)?x:b,n[0]); return near+'T' }
 function buildTons(){
   const rows=LINEUP.filter(r=>r.type===S.sys); const tons=[...new Set(rows.map(r=>r.tons))].sort((a,b)=>tonNum(a)-tonNum(b));
   const el=$('#tons'); el.innerHTML='';
   // the load's size, unless the SM has tapped a chip on this check
   const L=loadTons(); const auto=S.tonsAuto!==false;
-  if(L&&auto){ const want=L.tons+'T'; if(tons.includes(want)) S.tons=want; else { const n=tons.map(tonNum); const near=n.reduce((b,x)=>Math.abs(x-L.tons)<Math.abs(b-L.tons)?x:b,n[0]); S.tons=near+'T' } }
+  { const w=tonsAutoPick(L); if(w) S.tons=w }
   if(!tons.includes(S.tons)) S.tons=tons.includes('3T')?'3T':tons[0];
   tons.forEach(t=>{const b=document.createElement('button');b.className='chip'+(t===S.tons?' on':'');b.textContent=t.replace('T',' Ton');b.onclick=()=>{S.tons=t;S.tonsAuto=(L&&L.tons+'T'===t)?true:false;save();buildTons();renderTiers()};el.appendChild(b)});
   const src=$('#tonsSrc'); if(src){ src.innerHTML= L ? (auto||L.tons+'T'===S.tons ? `<b>${L.tons} ton</b> from the load on step 1 — ${L.why}.` : `Load on step 1 says <b>${L.tons} ton</b> (${L.why}) — you have <b>${tonNum(S.tons)} ton</b> selected. <button class="chip sm" id="tonsFollow">Use ${L.tons} ton</button>`) : 'Put the square footage and build type in on step 1 and the tonnage sets itself from the load.';
@@ -3512,7 +3549,7 @@ function tpStoryHtml(o){
       <button class="btn" id="tpSave">&#128190; Save &amp; send</button>
       <button class="btn sm ghost" id="tpOffice" title="Put the design back to the one the office built">↺ Office design</button>
     </div>
-    <div class="note" id="tpSaveNote">Text it or email it. The customer keeps a working copy; the office gets the same file.</div>
+    <div class="note" id="tpSaveNote">Text it or email it. On a phone it opens as this presentation; in Fit Check or a desktop browser it is the working design.</div>
   </div>
 </div>`;
 }
@@ -3615,7 +3652,10 @@ function wirePackTech(o){
   const fc=$('#tpOpenFc'); if(fc) fc.onclick=()=>{ const app=(PACK&&PACK.app)||fcAppUrl();
     if(!app){ alert('This pack has no Fit Check address in it. Open Fit Check and use a saved check instead.'); return }
     // the EDITED state, not the one the office sent — whatever is on screen right now is what travels
-    location.href=app+'#'+FC_HASH+'='+fcEncode(JSON.stringify(fcHandoffState())) };
+    const h='#'+FC_HASH+'='+fcEncode(JSON.stringify(fcHandoffState()));
+    // v2.43 — a design file opened INTO the app is already at the app's own address: a hash alone does not reload, so force it
+    if(String(app).split('#')[0].split('?')[0]===fcAppUrl()){ location.hash=h.slice(1); location.reload(); return }
+    location.href=app+h };
   const pr=$('#tpPrint'); if(pr) pr.onclick=()=>window.print();
   const sd=$('#tpSend'); if(sd) sd.onclick=()=>sendToTech(false,'#tpSend');
   const cp=$('#tpCopy'); if(cp) cp.onclick=()=>{ const el=$('#tpSt'); if(!el) return; const txt=el.textContent;
@@ -3660,6 +3700,10 @@ function fcDomSource(){
     if(e&&e.dataset&&e.dataset.lbl!=null){ e.innerHTML=e.dataset.lbl; e.removeAttribute('disabled') } });
   d.querySelectorAll('img[src^="data:"]').forEach(e=>{ try{ e.remove() }catch(_){} });
   d.querySelectorAll('#fcPackBoot').forEach(e=>{ try{ e.remove() }catch(_){} }); // re-exporting from a pack
+  // v2.43 — the no-JavaScript presentation is rebuilt fresh for every export, and the clone must not carry the
+  // running page's body classes: `js` would hide the new presentation in Quick Look, `pack` / `full` are re-derived at boot
+  d.querySelectorAll('#fcStatic,#fcShotHost').forEach(e=>{ try{ e.remove() }catch(_){} });
+  const bd=d.querySelector('body'); if(bd) ['js','pack','full','printing'].forEach(c=>bd.classList.remove(c));
   return '<!DOCTYPE html>\n'+d.outerHTML;
 }
 // A short stable id per design, so two packs in the same Files folder keep separate saved checks.
@@ -3683,6 +3727,89 @@ async function fcPackPayload(o,meta){
   return { v:1, id:fcPackId(JSON.stringify(state)+(meta.name||'')), app:fcAppUrl()||((PACK&&PACK.app)||''),
            meta:meta, state:state, shots:{} };
 }
+// ============================================================ v2.43 — THE PRESENTATION THE FILE SHOWS WITH JAVASCRIPT OFF
+// Two labelled stills of the customer page's 3Ds — Today with its chokepoints called out, the design with what is new —
+// drawn by the same renderer into two off-screen viewers. They are drawn phone-sized on purpose: the notes are laid out at
+// the size a phone shows them, so a customer reading the file in Quick Look can actually read them.
+async function fcStoryShots(){
+  const host=document.createElement('div'); host.id='fcShotHost'; host.style.cssText='position:fixed;left:-4000px;top:0;width:420px;pointer-events:none;z-index:-1';
+  const vw='<div class="viewer" style="width:420px;height:340px!important;display:block"><canvas style="display:block;width:100%;height:100%"></canvas><div class="lbls"></div></div>';
+  host.innerHTML=vw+vw; document.body.appendChild(host);
+  const out={before:null,after:null};
+  try{ const vs=host.querySelectorAll('.viewer'); const d=defaultView();
+    const cam=(k,lbl)=>{ const v=PV[k]&&PV[k].view; const c=Object.assign({},d,v?{yaw:v.yaw,pitch:v.pitch,zoom:v.zoom,pan:(v.pan||[0,0]).slice()}:{}); c.lbl=lbl; c.zoom=(c.zoom||1)*1.12; return c };
+    const V0=makeViewer(vs[0].querySelector('canvas'),vs[0].querySelector('.lbls'),cam('before','flag'));
+    const V1=makeViewer(vs[1].querySelector('canvas'),vs[1].querySelector('.lbls'),cam('after','changes'));
+    buildInto(V0,'today'); buildInto(V1,'design');
+    const s0=renderInto(V0,snapshot3D), s1=renderInto(V1,snapshot3D);
+    out.before=await shrinkShot(s0,900,0.84); out.after=await shrinkShot(s1,900,0.84);
+  }catch(e){ console.error('story stills',e) } finally { try{ host.remove() }catch(_){} }
+  return out }
+// The presentation: the same hero, findings, improvements and equipment the customer page renders live, with the two
+// 3Ds as pictures and no buttons. It is the first child of <body>. Its own stylesheet hides the app behind it while
+// scripts are off; the one-line script inside it marks the body `js` the instant scripts run, and the app then removes
+// the whole block. Scripts are spelled out in pieces so this source can never be cut short by its own text.
+function fcStaticHtml(o,shots){
+  const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M||!M0) return '';
+  const meta=tpMeta(); const sysName=SYS_LABEL[S.sys]||''; const unit=o.unit||[o.furn,o.coil,o.ahu].filter(Boolean).join(' + ');
+  const cls=v=>v>=90?'good':(v>=70?'mid':'poor');
+  const pic=(src,alt)=>src?`<img class="fcshot" src="${src}" alt="${tpEsc(alt)}">`:`<div class="viewer" style="height:200px"></div>`;
+  const css='#fcStatic{display:block;max-width:920px;margin:0 auto;padding:10px 12px 40px}body.js #fcStatic{display:none!important}body:not(.js)>*:not(#fcStatic){display:none!important}#fcStatic .fcshot{display:block;width:100%;height:auto;border-radius:16px;box-shadow:var(--shadow)}#fcStatic .fctech{color:var(--muted);font-size:12px;text-align:center;margin:18px 4px 0;line-height:1.45}';
+  const js='document.body.classList.add("js")';
+  return `<div id="fcStatic"><style>${css}</style><`+`script>${js}<\/`+`script>
+<div class="tp story">
+  <div class="phero">${tpHeroInner(o,M,M0,cls)}</div>
+  <div class="card" style="padding:12px">
+    <h2 style="margin:2px 0 4px">Your system today, and the Goettl design</h2>
+    <p class="help" style="margin:0 0 6px">Red is where the air is being choked today. Green is what we build new or open up — sized to ACCA Manual D for this exact unit.</p>
+    <div class="duo">
+      <div class="one"><div class="cap"><span>Today — new AC on the ducts as they are</span><span class="sb ${scoreCls(M0.score.total)}">${M0.score.total}</span></div>${pic(shots.before,'Your system today, with every chokepoint called out')}<div class="hint">Every red note is a spot the air has to squeeze through — the unit only gets what the tightest one lets past.</div></div>
+      <div class="one"><div class="cap"><span>The Goettl design</span><span class="sb ${scoreCls(M.score.total)}">${M.score.total}</span></div>${pic(shots.after,'The Goettl design')}<div class="hint">Green is what we build new or open up.</div></div>
+    </div>
+    <div class="readout">${planReadoutHtml(o)}</div>
+  </div>
+  <div class="card">${tpFoundInner(o,M,M0)}</div>
+  <div class="card">${tpStepsInner(o,M,M0)}</div>
+  <div class="card">
+    <h2>The equipment</h2>
+    <table><tbody>
+      <tr><td>System</td><td><b>${tpEsc(sysName)}</b></td></tr>
+      <tr><td>Model${unit.indexOf('+')>0?'s':''}</td><td><b>${tpEsc(unit)}</b></td></tr>
+      <tr><td>Size</td><td><b>${tons1(M.tons)} ton</b>${M.md?` — <b>${CFM(M.md.Qp)} CFM</b> at Goettl's ${spLimit().toFixed(2)}" limit (${M.md.perTonP} CFM per ton)`:''}</td></tr>
+    </tbody></table>
+    <p class="tpfoot">${tpEsc([meta.name,meta.sm].filter(Boolean).join(' · '))}${meta.name||meta.sm?' · ':''}${new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})} · Goettl Air Conditioning &amp; Plumbing · Las Vegas</p>
+  </div>
+  <p class="fctech">Goettl technicians: to walk through the options or change this design, open this file in Fit Check on your iPad — Summary → <b>Open a design file</b>. In a desktop browser it opens as the working design.</p>
+</div></div>
+`;
+}
+// It goes in as the first child of the body ELEMENT — the source is parsed, never text-scanned. (The first attempt
+// searched the text for the body tag and found the one a CSS comment mentions, inside the stylesheet: the block landed
+// in the head, its <\/style> cut the app's stylesheet in half and its script ran before the body existed. The rule in
+// this file stands: a marker is an element, and the app's own words are never a place to cut.) DOMParser runs nothing.
+function fcStaticInject(src,block){ if(!block) return src;
+  try{ const d=new DOMParser().parseFromString(String(src),'text/html'); if(!d||!d.body||!d.documentElement) return src;
+    d.querySelectorAll('#fcStatic,#fcShotHost').forEach(e=>e.remove());
+    d.body.insertAdjacentHTML('afterbegin',block);
+    ['js','pack','full','printing'].forEach(c=>d.body.classList.remove(c));
+    return '<!DOCTYPE html>\n'+d.documentElement.outerHTML }
+  catch(e){ console.error('presentation inject',e); return src } }
+// ============================================================ v2.43 — OPEN A DESIGN FILE (the installed app)
+// The technician saves the texted file to Files and picks it here. The job is read out of the file's boot block as an
+// ELEMENT (DOMParser runs no scripts), never by scanning the text, then handed to this page through the in-memory
+// routes read at the top of the app — the storage key first where storage works, the #pk= fragment where it does not.
+function fcReadPackFile(text){ const d=new DOMParser().parseFromString(String(text||''),'text/html'); const el=d.querySelector('#fcPackBoot'); if(!el) return null;
+  const t=String(el.textContent||'').trim(); const i=t.indexOf('{'), j=t.lastIndexOf('}'); if(i<0||j<i) return null;
+  try{ const o=JSON.parse(t.slice(i,j+1)); return (o&&typeof o==='object'&&o.state)?o:null }catch(e){ return null } }
+function fcOpenPack(payload){ const json=JSON.stringify(payload);
+  try{ store.set('fitcheck_open_pack',json); if(store.get('fitcheck_open_pack')===json){ location.reload(); return } }catch(e){}
+  location.hash='pk='+fcEncode(json); location.reload() }
+{ const inp=$('#openPack'); if(inp) inp.addEventListener('change',()=>{ const f=inp.files&&inp.files[0]; if(!f) return;
+    const say=t=>{ const note=$('#techNote'); if(note) note.textContent=t; try{ flash(t) }catch(_){} };
+    const r=new FileReader(); r.onload=()=>{ const p=fcReadPackFile(r.result);
+      if(!p){ say('That file is not a Fit Check design — there is no design in it.'); inp.value=''; return }
+      say('Opening '+(p.meta&&p.meta.name?p.meta.name:'the design')+'…'); fcOpenPack(p) };
+    r.onerror=()=>{ say('Could not read that file.'); inp.value='' }; r.readAsText(f) }) }
 // Build it and hand it over: Share sheet on an iPad (Messages / Mail / AirDrop), a download everywhere else.
 async function sendToTech(preview,btnSel){
   const row=rowsFor()[S.star]; if(!row) return; const o=pick(S.star,row);
@@ -3692,7 +3819,9 @@ async function sendToTech(preview,btnSel){
     const meta=tpMeta();
     const payload=await fcPackPayload(o,meta);
     const src=await fcAppSource();
-    const html=fcPackInject(src,payload);
+    // v2.43 — the presentation the file shows where scripts do not run (Quick Look, the Mail / Messages preview)
+    let stat=''; try{ stat=fcStaticHtml(o,await fcStoryShots()) }catch(e){ console.error('presentation',e); stat='' }
+    const html=fcStaticInject(fcPackInject(src,payload),stat);
     if(!html||html.length<150000){ if(note) note.textContent='Could not read the app to build the pack — reload Fit Check and try again.'; return }
     const file=techFileName(meta.name||o.unit); const kb=Math.round(html.length/1024);
     const blob=new Blob([html],{type:'text/html'});
@@ -3703,8 +3832,8 @@ async function sendToTech(preview,btnSel){
       if(navigator.canShare&&navigator.canShare({files:[f]})&&navigator.share){ await navigator.share({files:[f],title:'Goettl — '+(meta.name||'comfort design')}); shared=true } }catch(e){ shared=false }
     if(!shared){ const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download=file; document.body.appendChild(a); a.click();
       setTimeout(()=>{ URL.revokeObjectURL(a.href); a.remove() },60000) }
-    if(note) note.innerHTML=shared?`Sent — <b>${file}</b> · ${kb} KB. The tech opens it straight from the message; it is the whole tool with this job in it.`
-      :`Saved — <b>${file}</b> · ${kb} KB. Attach it to a text or an email; it opens on any iPad or phone with no signal, and the tech can change the design in it.`;
+    if(note) note.innerHTML=shared?`Sent — <b>${file}</b> · ${kb} KB. On a phone it opens as the customer's presentation; opened in Fit Check (Summary → Open a design file) or a desktop browser it is the working design.`
+      :`Saved — <b>${file}</b> · ${kb} KB. Attach it to a text or an email. On a phone it opens as the customer's presentation; opened in Fit Check (Summary → Open a design file) or a desktop browser it is the working design, no signal needed.`;
     techLastFile=file;
   }catch(e){ if(note) note.textContent='Could not build the pack: '+(e&&e.message||e) }
   finally{ if(btn){ btn.disabled=false; btn.innerHTML=lbl } } }
@@ -5399,6 +5528,11 @@ function go(n){
   if(n>1){ autoAssume(); relabelStand(); refreshOld() }
   if(n===3){buildTons();renderTiers()}
   if(n>3&&!S.tons){buildTons();renderTiers()} // jumped straight to an output tab — make sure there is a tonnage and a lineup behind it
+  // v2.43 — the tonnage follows the load on EVERY output tab, not only when step 3 is open: measure the rooms on step 1
+  // after the options were viewed and the Plan tab, the Summary and the pack all move to the size the load now asks for
+  // (a chip tapped on step 3 still wins — that turns the auto pick off). Without this the office sat on the old size while
+  // the pack, booting from the same job, sized itself fresh — and the two disagreed on the unit and the score.
+  else if(n>3){ try{ const w=tonsAutoPick(); if(w&&w!==S.tons){ buildTons(); renderTiers() } }catch(e){} }
   if(n>3){ if(!view.touched) resetView(); renderCompare(); if(n===5) setTimeout(draw,50) }
   if(n===7||n===8) renderPackTabs(); // the story and the tech pack are re-rendered from live state, never cached
   window.scrollTo({top:0,behavior:'smooth'});
@@ -5435,6 +5569,9 @@ if(packOn()){ try{
   const full=$('#packFull');
   if(full) full.onclick=()=>{ const on=document.body.classList.toggle('full'); full.classList.toggle('on',on);
     if(on){ go(1) } else { go(7) } };
+  // v2.43 — a design file opened INTO the installed app: the handoff was consumed at the top of the page, so a plain
+  // reload is the way back to the Service Manager's own check. The technician's edits stay under the pack's own key.
+  const cl=$('#packClose'); if(cl&&PACK.imported){ cl.hidden=false; cl.onclick=()=>{ try{ save() }catch(_){} location.reload() } }
   go(7);
   // The story is the whole point of this file. If it did not come up — the job failed to load, or
   // rendering it threw — say so. A pack that quietly falls back to the blank six-step tool reads as
@@ -5447,7 +5584,7 @@ function packStuck(e){
   const why=(e&&e.message)?' ('+strip(String(e.message))+')':'';
   p.innerHTML='<div class="card"><h2>This design did not open</h2>'
     +'<p class="note">The job is inside this file — this viewer could not start it'+why+'.</p>'
-    +'<p class="note"><b>Open it in Safari or Chrome rather than the preview.</b> From Messages: tap and hold the file → Share → Open in Safari. It still works with no signal.</p></div>';
+    +'<p class="note"><b>Open it in Fit Check instead:</b> save the file to Files, then in Fit Check go to Summary → <b>Open a design file</b>. A desktop browser opens it directly. It still works with no signal.</p></div>';
 }
 
 // ============================================================ v2.20 PWA: service worker, update bar, install button, home-screen hint, offline pill
