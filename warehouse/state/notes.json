@@ -558,5 +558,26 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-09-18"
+ },
+ "fleet|anom|2026-09-21|113923": {
+  "note": "truck stock PO",
+  "ts": 1790086998571,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-22"
+ },
+ "fleet|anom|2026-09-21|578161": {
+  "note": "adjustment for truck stock inventory count",
+  "ts": 1790087095595,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-22"
+ },
+ "adj|2026-09-21|3275|LAS-578161-SVC-H_104 David Guerrero": {
+  "note": "adjustment for truck stock inventory count 1021",
+  "ts": 1790087134916,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-22"
  }
 }
