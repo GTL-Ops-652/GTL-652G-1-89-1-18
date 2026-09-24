@@ -579,5 +579,12 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-09-22"
+ },
+ "fleet|anom|2026-09-22|509668": {
+  "note": "truck stock PO",
+  "ts": 1790261617289,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-24"
  }
 }
