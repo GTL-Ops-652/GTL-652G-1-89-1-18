@@ -586,5 +586,12 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-09-24"
+ },
+ "adj|2026-09-22|3275|LAS-578161-SVC-H_104 David Guerrero": {
+  "note": "inventory count Adjustment",
+  "ts": 1790261915461,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-24"
  }
 }
