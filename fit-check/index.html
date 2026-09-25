@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-25 v2.47 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-25 v2.48 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -670,6 +670,14 @@ body.pack .tp .noapp{display:none}
 .ocard .oapprove{width:100%;padding:12px 14px;font-size:15px}
 .ocard.best .oapprove{background:var(--ok);border-color:var(--ok)}
 .ocard .oappd{background:var(--okbg);color:var(--ok);font-weight:800;border-radius:12px;padding:10px;text-align:center;font-size:13.5px}
+/* v2.48 — the two extra scores, the not-fully-balanced callout, the recommend button */
+.osc2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 12px 2px}
+.osc2>div{background:#f6f8fb;border:1px solid var(--line);border-radius:10px;padding:5px 8px;display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;min-width:0}
+.osc2 span{font-size:10.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;color:var(--muted)}
+.osc2 b{font-family:var(--serif);font-size:21px;font-weight:800;color:var(--ink)}.osc2 b.ok{color:var(--ok)}.osc2 b.warn{color:var(--warn)}.osc2 b.bad{color:var(--bad)}.osc2 b.na{color:var(--muted)}
+.osc2 small{font-size:10.5px;color:var(--muted)}
+.obal{margin:8px 12px 0;background:#fff7e6;border:1px solid #f1c46a;color:#6b4a00;border-radius:10px;padding:7px 9px;font-size:12px;line-height:1.4}.obal b{color:#8a5a00}
+.ocard .orecbtn{width:100%;margin-top:6px}.ocard .orecon{background:#fff4dc;color:#8a5a00;border:1px solid #f1c46a}
 .ocard .olinks{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center;justify-content:space-between}
 .ocard .olinks.otiers{justify-content:flex-start;gap:2px 8px;font-size:11.5px;color:var(--muted)}
 .olink{border:0;background:none;color:var(--mb);font-size:12px;font-weight:700;cursor:pointer;padding:3px 2px}
@@ -706,7 +714,7 @@ body.pack .tp .noapp{display:none}
   .optgrid{grid-auto-columns:minmax(252px,84%)} .ocard .optv{height:190px!important} }
 @media (max-width:640px) and (orientation:landscape){ .ocard .optv{height:180px!important} }
 @media print{ .obleed{width:auto;left:auto;transform:none} .optgrid{grid-auto-flow:row;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));overflow:visible}
-  .ocard{break-inside:avoid;box-shadow:none} .ocard .optv{height:170px} .ocard .olinks,.ocard .oapprove,.ocard .oexp,.ocard.add,.ohint{display:none}
+  .ocard{break-inside:avoid;box-shadow:none} .ocard .optv{height:170px} .ocard .olinks,.ocard .oapprove,.ocard .orecbtn,.ocard .oexp,.ocard.add,.ohint{display:none}
   .ocard input.oprice:placeholder-shown{display:none} }
 </style>
 </head>
@@ -2186,7 +2194,18 @@ function tab31(slot,mat){ if(slot==='grille') return [MD_TAB31.face.filt,MD_FACE
 function compMat(slot){ if(slot==='ret') return S.f.dr_retm||'flex'; if(slot==='sup') return S.f.dr_supm||'flex'; if(slot==='takeoff') return S.f.dr_brm||'flex'; return 'metal' }
 function accaPair(slot){ return tab31(slot,compMat(slot)) } function accaTyp(slot){ return accaPair(slot)[0] } function accaMax(slot){ return accaPair(slot)[1] }
 // Step 6 — the smallest standard round size that holds the friction rate at this airflow and stays inside Table 3-1 (parallel runs when one duct cannot)
-function mdSizeRound(Q,fr,mat,key){ const lim=(MD_TAB31[key]||MD_TAB31.sup)[mat==='flex'?'flex':'metal']; for(let n=1;n<=4;n++){ const q=Q/n; for(const D of MD_ROUND){ const a=roundArea(D); const v=q/(a/144); if(frDuct(q,D,mat)<=fr+1e-9&&v<=lim[1]+1e-9) return {d:D,n,vel:Math.round(v),area:a*n} } } const D=MD_ROUND[MD_ROUND.length-1]; return {d:D,n:4,vel:Math.round(Q/4/(roundArea(D)/144)),area:roundArea(D)*4} }
+// v2.48 — Goettl never specs a round duct over 20" (Stephen 2026-09-25: "cap it at a max of 20 — we dont do anything bigger, instead we go with
+// another duct. spec the needed air, and add another 8 or 10, whatever it needs"). Up to 20" it is one run, exactly as before. Past what a 20"
+// carries at the friction rate inside Table 3-1, the 20" runs full and the smallest run(s) that carry the rest go in beside it ({d:20, add:[{d}]}).
+const MD_MAX_D=20;
+function mdRoundCap(D,fr,mat,vmax){ const a=roundArea(D)/144; let hi=a*vmax; if(frDuct(hi,D,mat)<=fr+1e-9) return hi; let lo=0; for(let i=0;i<40;i++){ const m=(lo+hi)/2; if(frDuct(m,D,mat)<=fr+1e-9) lo=m; else hi=m } return lo }
+function mdSizeRound(Q,fr,mat,key){ const lim=(MD_TAB31[key]||MD_TAB31.sup)[mat==='flex'?'flex':'metal'];
+  for(const D of MD_ROUND){ if(D>MD_MAX_D) break; const a=roundArea(D); const v=Q/(a/144); if(frDuct(Q,D,mat)<=fr+1e-9&&v<=lim[1]+1e-9) return {d:D,n:1,vel:Math.round(v),area:a,q1:Q} }
+  const c20=Math.max(1,mdRoundCap(MD_MAX_D,fr,mat,lim[1])); const add=[]; let rest=Q-c20, g=0;
+  while(rest>0.5&&g++<6){ const r=mdSizeRound(rest,fr,mat,key); if(r.add&&r.add.length){ add.push({d:MD_MAX_D}); rest-=c20 } else { add.push({d:r.d}); rest=0 } }
+  return {d:MD_MAX_D,n:1,add,vel:Math.round(c20/(roundArea(MD_MAX_D)/144)),area:roundArea(MD_MAX_D)+add.reduce((s,x)=>s+roundArea(x.d),0),q1:c20,capped:true} }
+// "Ø20" + Ø10"" — a Manual D round size (or a duct down) in words, the added run(s) included
+function rdTxt(o,x){ if(!o) return ''; const q=x==null?'"':x; return `${o.n>1?o.n+(x==null?' × ':'x'):''}${x==null?'Ø':''}${o.d}${q}${(o.add||[]).map(a=>` + ${x==null?'Ø':''}${a.d}${q}`).join('')}` }
 // The design grille — Goettl build sizes ONLY (20×20 · 20×30 · 20×40 · 20×50, one or more of them). A grille already in the ceiling that is
 // one of those sizes is KEPT and topped up with a second duct and a small grille (14×14 or 20×20, bigger if the gap asks) rather than torn
 // out — Stephen 2026-09-14: "when there is already a 20×30 or 20×40 and we need some more, it's ok to add another duct". 25×25 is never used.
@@ -2239,7 +2258,7 @@ function manualD(o,ctx){ const B=blowerFor(o); if(!B) return null; const T=ctx.t
   const frUse=Math.max(fr,MD_WEDGE[0]); // when the equipment leaves less than that, the ducts are still drawn at the bottom of the wedge — the flags say the system will run above the design point until the filter / coil change
   // Step 6 — sizes
   const qBr=Qd/nBr; const sizes={ ret:mdSizeRound(Qd,frUse,mat.ret,'ret'), sup:mdSizeRound(Qd,frUse,mat.sup,'sup'), br:Object.assign(mdSizeRound(qBr,frUse,mat.br,'br'),{q:Math.round(qBr),nRuns:nBr,nAssumed,nHave,nAdded}), grille };
-  sizes.ret.fr=frDuct(Qd/sizes.ret.n,sizes.ret.d,mat.ret); sizes.sup.fr=frDuct(Qd/sizes.sup.n,sizes.sup.d,mat.sup); sizes.br.fr=frDuct(qBr/sizes.br.n,sizes.br.d,mat.br);
+  sizes.ret.fr=frDuct(sizes.ret.q1!=null?sizes.ret.q1:Qd/sizes.ret.n,sizes.ret.d,mat.ret); sizes.sup.fr=frDuct(sizes.sup.q1!=null?sizes.sup.q1:Qd/sizes.sup.n,sizes.sup.d,mat.sup); sizes.br.fr=frDuct(qBr/sizes.br.n,sizes.br.d,mat.br);
   sizes.grille.vel=Math.round(Qd/(grille.area/144));
   // v2.45 — the register face per run: the smallest Goettl square face that takes the branch neck AND passes the run at MD_REG_REC fpm through the
   // free area of the face type this design is built with (stamped 75% · bar 88%). One face per run; a run over MD_BR_MAX never exists.
@@ -2259,12 +2278,13 @@ function manualD(o,ctx){ const B=blowerFor(o); if(!B) return null; const T=ctx.t
 // the size Manual D gives a spot, in the shape S.fix stores (never smaller than what the spot hands off to)
 function mdFixSpec(slot,M){ const md=M&&M.md; if(!md) return null; const s=md.sizes;
   if(slot==='grille') return s.grille.list?{list:s.grille.list.map(a=>({w:a.w,h:a.h}))}:{w:s.grille.w,h:s.grille.h,n:s.grille.n};
-  if(slot==='ret') return {d:s.ret.d,n:s.ret.n}; if(slot==='sup') return {d:s.sup.d,n:s.sup.n};
+  const rd=x=>{ const f={d:x.d,n:x.n}; if(x.add&&x.add.length) f.add=x.add.map(a=>({d:a.d})); return f }; // v2.48: past 20" the added run rides along
+  if(slot==='ret') return rd(s.ret); if(slot==='sup') return rd(s.sup);
   if(slot==='takeoff') return {list:Array.from({length:s.br.nRuns},()=>({d:s.br.d}))};
   if(slot==='regs') return s.regs?{list:Array.from({length:s.regs.n},()=>({w:s.regs.w,h:s.regs.h}))}:null; // v2.45 — one Goettl square face per run
   const up={penR:'ret',elbR:'penR',elbS:'penS',penS:'sup'}; const f=M.comps.find(c=>c.slot===up[slot]); const ductArea=slot.endsWith('R')?s.ret.area:s.sup.area; const feedArea=Math.max(f?f.area:0,ductArea); // a hole is sized to the duct the design gives it (never smaller than what is already there)
   const cur=currentFixOrBase(slot)||{};
-  if(slot==='penR'||slot==='penS'){ if(cur.w&&!cur.d){ const h=cur.h||16; return {w:Math.ceil(feedArea/h*2)/2,h,n:1} } const one=MD_ROUND.find(d=>roundArea(d)>=feedArea-0.5); return one?{d:one,n:1}:{w:Math.ceil(feedArea/20*2)/2,h:20,n:1} }
+  if(slot==='penR'||slot==='penS'){ if(cur.w&&!cur.d){ const h=cur.h||16; return {w:Math.ceil(feedArea/h*2)/2,h,n:1} } const one=MD_ROUND.find(d=>d<=MD_MAX_D&&roundArea(d)>=feedArea-0.5); return one?{d:one,n:1}:{w:Math.ceil(feedArea/20*2)/2,h:20,n:1} }
   if(slot==='elbR'||slot==='elbS'){ const h=cur.h||14; return {w:Math.ceil(feedArea/h*2)/2,h,n:1} }
   return null }
 function mdAreaFor(slot,M){ const f=mdFixSpec(slot,M); const sp=f?fixSpec(f):null; return sp?sp.area:null }
@@ -2295,15 +2315,15 @@ function mdWorksheetHtml(M){ const md=M&&M.md; if(!md) return ''; const f2=v=>v.
    ${row('FR = ASP × 100 ÷ TEL',`<b>${md.fr.toFixed(3)}</b>`,`in. w.c. per 100 ft · Manual D design range ${MD_WEDGE[0]}–${MD_WEDGE[1]} → <b class="${md.frFlag==='ok'?'ok':'bad'}">${md.frFlag==='ok'?'inside':md.frFlag==='low'?'under (large duct)':md.frFlag==='high'?'over (velocity limits govern)':'no static left for duct'}</b>`)}
    <tr class="h"><td colspan="3">6 · Duct sizes at that friction rate (smallest standard size · checked against Table 3-1)</td></tr>
    ${row('Return grille (filter face 300 fpm)',`${grTxt(s.grille)}`,`${s.grille.vel} fpm face`)}
-   ${row(`Return main (${m('ret')})`,`${s.ret.n>1?s.ret.n+' × ':''}Ø${s.ret.d}"`,`${s.ret.vel} fpm · ${s.ret.fr.toFixed(3)}"/100 ft · ${tab31('ret',md.mat.ret)[0]} recommended / ${tab31('ret',md.mat.ret)[1]} max`)}
-   ${row(`Supply trunk (${m('sup')})`,`${s.sup.n>1?s.sup.n+' × ':''}Ø${s.sup.d}"`,`${s.sup.vel} fpm · ${s.sup.fr.toFixed(3)}"/100 ft · ${tab31('sup',md.mat.sup)[0]} recommended / ${tab31('sup',md.mat.sup)[1]} max`)}
+   ${row(`Return main (${m('ret')})`,`${rdTxt(s.ret)}${s.ret.capped?' <span class="note">— 20" max; the rest in a second run</span>':''}`,`${s.ret.vel} fpm · ${s.ret.fr.toFixed(3)}"/100 ft · ${tab31('ret',md.mat.ret)[0]} recommended / ${tab31('ret',md.mat.ret)[1]} max`)}
+   ${row(`Supply trunk (${m('sup')})`,`${rdTxt(s.sup)}${s.sup.capped?' <span class="note">— 20" max; the rest in a second run</span>':''}`,`${s.sup.vel} fpm · ${s.sup.fr.toFixed(3)}"/100 ft · ${tab31('sup',md.mat.sup)[0]} recommended / ${tab31('sup',md.mat.sup)[1]} max`)}
    ${row(`Supply branches (${m('br')})`,`${s.br.nRuns} × Ø${s.br.d}"${s.br.n>1?' (each '+s.br.n+' runs)':''}`,`${s.br.q} CFM each${s.br.nAssumed?' <span class="est">runs assumed — enter the count on step 1</span>':''} · ${s.br.vel} fpm · ${s.br.fr.toFixed(3)}"/100 ft · ${tab31('takeoff',md.mat.br)[0]} recommended / ${tab31('takeoff',md.mat.br)[1]} max`)}
    ${s.regs?row(`Supply register faces (${REG_FACE[s.regs.face].short})`,`${s.regs.n} × ${s.regs.w}×${s.regs.h}`,`${s.regs.q} CFM each · ${s.regs.vel} fpm through ${Math.round(s.regs.free*100)}% free area · ${MD_REG_REC} sized to / ${MD_TAB31.face.sup} max (Table 3-1 supply outlet)`):''}
    ${md.pkg?row('Roof holes / elbow openings','≥ the duct they pass','a hole smaller than its duct is a chokepoint on its own'):''}
   </tbody></table>
   <p class="note" style="margin:6px 0 0">Duct friction: Manual D duct equation (galvanized) FR = 0.109136·Q^1.9/D^5.02; flexible duct fully extended per ASHRAE roughness 0.01 ft (≈ 1.9× sheet metal). Field flex compressed 15% carries 3–4× the loss of stretched flex (LBNL) — install flex pulled tight. Fitting equivalent lengths (ft EL) are Manual D Appendix 3 typical values for the fittings assumed — Goettl's rooftop elbows are radiused, so the elbow + transition is charged 40 ft EL (a square-throat box would run 85–120); edit the actual runs on step 1.${md.notes.length?' <b>Notes:</b> '+md.notes.join(' · '):''}</p></details>` }
 function mdWorksheetTxt(M){ const md=M&&M.md; if(!md) return ''; const s=md.sizes; const g=grTxt(s.grille,'x');
-  return `MANUAL D WORKSHEET: ESP ${md.espD.toFixed(2)} · ${md.vs?'setting':'tap'} ${md.tap} ${CFM(md.Qd)} CFM (${md.perTonD}/ton) · DPD filter ${md.dpd.filter.toFixed(2)} + coil ${md.dpd.coil.toFixed(2)} + register ${md.dpd.reg.toFixed(2)} (${REG_FACE[md.reg||'stamped'].short}) + grille ${md.dpd.gr.toFixed(2)} + damper ${md.dpd.damper.toFixed(2)} = ${md.dpd.total.toFixed(2)} · ASP ${Math.max(0,md.asp).toFixed(2)} · TEL supply ${md.tel.sup.total} (${md.tel.sup.duct} ft duct + ${md.tel.sup.fit} ft EL fittings) + return ${md.tel.ret.total} (${md.tel.ret.duct} duct + ${md.tel.ret.fit} EL) = ${md.tel.total} ft (EL = equivalent length of a fitting, not its size) · FR ${md.fr.toFixed(3)} (${md.frFlag==='ok'?'inside 0.06–0.18':md.frFlag}) · SIZES: grille ${g}, return ${s.ret.n>1?s.ret.n+'x':''}${s.ret.d}" ${md.mat.ret}, supply trunk ${s.sup.n>1?s.sup.n+'x':''}${s.sup.d}" ${md.mat.sup}, ${s.br.nRuns} x ${s.br.d}" ${md.mat.br} branches (${s.br.q} CFM each)${s.regs?`, ${s.regs.n} x ${s.regs.w}x${s.regs.h} ${REG_FACE[s.regs.face].short} register faces (${s.regs.vel} fpm through the free area)`:''}${md.notes.length?' · NOTES: '+md.notes.join(' / '):''}` }
+  return `MANUAL D WORKSHEET: ESP ${md.espD.toFixed(2)} · ${md.vs?'setting':'tap'} ${md.tap} ${CFM(md.Qd)} CFM (${md.perTonD}/ton) · DPD filter ${md.dpd.filter.toFixed(2)} + coil ${md.dpd.coil.toFixed(2)} + register ${md.dpd.reg.toFixed(2)} (${REG_FACE[md.reg||'stamped'].short}) + grille ${md.dpd.gr.toFixed(2)} + damper ${md.dpd.damper.toFixed(2)} = ${md.dpd.total.toFixed(2)} · ASP ${Math.max(0,md.asp).toFixed(2)} · TEL supply ${md.tel.sup.total} (${md.tel.sup.duct} ft duct + ${md.tel.sup.fit} ft EL fittings) + return ${md.tel.ret.total} (${md.tel.ret.duct} duct + ${md.tel.ret.fit} EL) = ${md.tel.total} ft (EL = equivalent length of a fitting, not its size) · FR ${md.fr.toFixed(3)} (${md.frFlag==='ok'?'inside 0.06–0.18':md.frFlag}) · SIZES: grille ${g}, return ${rdTxt(s.ret,'"')} ${md.mat.ret}, supply trunk ${rdTxt(s.sup,'"')} ${md.mat.sup}, ${s.br.nRuns} x ${s.br.d}" ${md.mat.br} branches (${s.br.q} CFM each)${s.regs?`, ${s.regs.n} x ${s.regs.w}x${s.regs.h} ${REG_FACE[s.regs.face].short} register faces (${s.regs.vel} fpm through the free area)`:''}${md.notes.length?' · NOTES: '+md.notes.join(' / '):''}` }
 const mdTons=q=>{ const t=Math.round(q/400*10)/10; return Number.isInteger(t)?String(t):t.toFixed(1) };
 // ============================================================ the airflow model — what the ductwork PASSES, graded per Table 3-1
 // The unit only gets about what the tightest chokepoint passes (Stephen's rule): the manufacturer's table says what the blower would move,
@@ -2912,7 +2932,7 @@ function fanOutRuns(items,plane,opt){ if(!items.length) return; const NEWM='#a9d
     scene.push({x:it.x-can/2-1,y:up?plane.y+0.4:plane.y-5.4,z:cz-can/2-1,dx:can+2,dy:1.2,dz:can+2,color:'#eef3f7',alpha:.95,noshadow:true,nw:true,cls:'ok'}) }) }
 // with New duct system on, the take-offs drawn ARE the room design's runs — one per register, at the leg size the room design gave it
 function rbrTakeoffs(){ if(!(S.rbrNew&&RM&&S.rooms&&S.rooms.length)) return null; const out=[];
-  (RM.down||[]).forEach(x=>{ for(let k=0;k<x.n;k++) out.push({d:x.d,rbr:true,down:x.fl+1}) });                       // v2.46: the duct down comes off the plenum first
+  (RM.down||[]).forEach(x=>{ for(let k=0;k<x.n;k++) out.push({d:x.d,rbr:true,down:x.fl+1}); (x.add||[]).forEach(a=>out.push({d:a.d,rbr:true,down:x.fl+1})) });                       // v2.46: the duct down comes off the plenum first
   S.rooms.forEach(r=>{ const d=(r.leg&&r.leg.d)||8; for(let k=0;k<(r.nReg||1);k++){ const g=r.regs&&r.regs[k]; out.push({d,can:r.can||9,rbr:true,face:g?g.face:r.faceK,fw:g?g.w:r.can,fh:g?g.h:r.can,kind:g?g.kind:'new'}) } });
   return out.length?out.slice(0,12):null }
 // v2.46 — the faces the room design ends on (kept, swapped, enlarged, new — mixed free areas summed), for the register chokepoint
@@ -2920,7 +2940,7 @@ function rbrFanFaces(){ const rs=(S.rbrNew&&RM&&S.rooms&&S.rooms.length)?RM:null
   const kept=rs.keepN+rs.barN; return `${REG_FACE[regNew()].short} registers${kept?` (${kept} existing kept in place${rs.barN?', '+rs.barN+' swapped to bar type':''})`:''}${rs.enlN?` · ${rs.enlN} enlarged`:''}` }
 function rbrFaces(){ if(!(S.rbrNew&&RM&&S.rooms&&S.rooms.length)) return null; const items=[]; let free=0;
   S.rooms.forEach(r=>(r.regs||[]).forEach(g=>{ items.push({w:g.w,h:g.h}); free+=g.w*g.h*REG_FACE[g.face].free }));
-  (RM.down||[]).forEach(x=>{ for(let k=0;k<x.n;k++) items.push({d:x.d}); free+=roundArea(x.d)*x.n*0.85 });   // a drop ends in the downstairs registers — read as an 85%-free opening the size of the duct
+  (RM.down||[]).forEach(x=>{ for(let k=0;k<x.n;k++) items.push({d:x.d}); free+=roundArea(x.d)*x.n*0.85; (x.add||[]).forEach(a=>{ items.push({d:a.d}); free+=roundArea(a.d)*0.85 }) });   // a drop ends in the downstairs registers — read as an 85%-free opening the size of the duct
   const spec=takeoffFromItems(items); if(!spec) return null; return {spec,free,core:spec.area,mixed:true} }
 function fanCans(n,cfmPerRun,d){ if(S.rbrNew&&RM&&S.rooms&&S.rooms.length){ const out=[]; (S.rooms||[]).forEach(r=>{ for(let k=0;k<(r.nReg||1);k++) out.push(r.can||9) }); if(out.length) return out.slice(0,n) }
   const c=(typeof rbrCanFor==='function')?rbrCanFor(cfmPerRun,d):9; return Array.from({length:n},()=>c) }
@@ -3371,9 +3391,10 @@ function legacyFix(slot,need,cur){ cur=cur||{n:1}; const n=cur.n||1; // no blowe
   if(slot==='takeoff'){ const k=Math.max(1,Math.ceil(need/roundArea(8))); return {list:Array.from({length:k},()=>({d:8}))} }
   if(slot==='regs'){ const k=Math.max(1,(cur.list||[]).length||4); const per=need/k/REG_FACE[regNew()].free; const s=REG_SQ.map(x=>x[0]).find(x=>x*x>=per-0.5)||14; return {list:Array.from({length:k},()=>({w:s,h:s}))} } // v2.45
   if(slot==='elbR'||slot==='elbS'){ const h=cur.h||14; return {w:Math.ceil(need/h*2)/2,h,n:1} }
-  if(slot==='penR'||slot==='penS'){ const one=MD_ROUND.find(d=>roundArea(d)>=need*0.97); if(cur.d||!cur.w){ if(one) return {d:one,n:1} } const h=cur.h||16; return {w:Math.ceil(need/h*2)/2,h,n:1} }
+  if(slot==='penR'||slot==='penS'){ const one=MD_ROUND.find(d=>d<=MD_MAX_D&&roundArea(d)>=need*0.97); if(cur.d||!cur.w){ if(one) return {d:one,n:1} } const h=cur.h||16; return {w:Math.ceil(need/h*2)/2,h,n:1} }
   if(slot==='grille'){ for(let k=1;k<=4;k++){ const g=grPick(GR_BUILD,need/k); if(g) return {w:g[0],h:g[1],n:k} } const g=GR_BUILD[GR_BUILD.length-1]; return {w:g[0],h:g[1],n:Math.ceil(need/(g[0]*g[1]))} }
-  for(let k=1;k<=4;k++){ const one=MD_ROUND.find(d=>roundArea(d)*k>=need*0.97); if(one) return {d:one,n:k} } return {d:24,n:4} }
+  const one=MD_ROUND.find(d=>d<=MD_MAX_D&&roundArea(d)>=need*0.97); if(one) return {d:one,n:1};
+  const add=[]; let rest=need-roundArea(MD_MAX_D), g=0; while(rest>0.5&&g++<6){ const d=MD_ROUND.find(x=>x<=MD_MAX_D&&roundArea(x)>=rest*0.97)||MD_MAX_D; add.push({d}); rest-=roundArea(d) } return {d:MD_MAX_D,n:1,add} } // v2.48: never over 20" — a 20" plus what is missing
 // v2.45 — the register faces have a two-rung fix (Stephen 2026-09-21: leave the stamped faces alone; switch to bar type when the flow needs it):
 // rung 1 is the face type — the same faces in bar type pass 17% more before they are over Table 3-1; rung 2, only if that is not enough, is
 // bigger Goettl square faces. Returns true when the spot is answered after rung 1 (nothing else to size).
@@ -3420,13 +3441,13 @@ function proposedChanges(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); 
   [['grille','Filter grille'],['ret','Return duct'],['sup',isPkg()?'Supply duct':'Supply plenum / trunk'],['takeoff','Supply take-offs'],['penR','Roof penetration — return'],['penS','Roof penetration — supply'],['elbR',(isCurbSetup()?'Curb':'Elbow')+' opening — return'],['elbS',(isCurbSetup()?'Curb':'Elbow')+' opening — supply']].forEach(([sl,nm])=>{ if(!S.fix[sl]) return; if(inst==='curb'&&/^(pen|elb)/.test(sl)) return; /* new plenums replace the penetrations AND the elbow / curb openings */ if(inst!=='reuse'&&/^elb/.test(sl)) return; /* v2.25: any curb removes the elbow */ const a=c0(sl), b=c1(sl); if(sl==='takeoff'&&b&&M.md){ const br=M.md.sizes.br; const per=Math.round(M.design/Math.max(1,(b.spec&&b.spec.n)||br.nRuns)); const vel=Math.round(per/(roundArea(br.d)/144)); const aVel=a?Math.round(M.design/Math.max(1,(a.spec&&a.spec.n)||1)/((a.area/Math.max(1,(a.spec&&a.spec.n)||1))/144)):null; L.push({k:sl,txt:`${nm}: ${a?a.size+(aVel?` (${CFM(Math.round(M.design/((a.spec&&a.spec.n)||1)))} CFM per run at ${aVel.toLocaleString()} fpm)`:''):'none'} → <b>${b.size}</b> — <b>${CFM(per)} CFM per run</b> at ${vel.toLocaleString()} fpm${(()=>{ const ra=c0('regs'), rb=c1('regs'); return (rb&&!S.fix.regs&&rb.est&&(!ra||ra.spec.size!==rb.spec.size))?` · new <b>${rb.spec.size}</b> cans and ${REG_FACE[rb.face].short} registers to take the bigger necks`:'' })()} <span class="note" style="text-transform:none;letter-spacing:0">— together they carry the ${CFM(M.design)} the unit puts out</span>`,undo:()=>{delete S.fix[sl]}}); return }
     if(sl==='grille'&&b&&M.md&&M.md.sizes.grille&&M.md.sizes.grille.kept){ const ad=M.md.sizes.grille.add; // v2.32 — the grille that is there stays; a second duct and a small grille go in beside it
       L.push({k:sl,txt:`${nm}: keep the <b>${a?a.size:''}</b> that is there and add a second return duct with a <b>${ad.w}×${ad.h}</b> grille beside it — <b>${sqinTxt(b.area)}</b> of filter face together (max ${CFM(b.max)} CFM)`,undo:()=>{delete S.fix[sl]}}); return }
-    L.push({k:sl,txt:`${nm}: ${a?a.size+' (max '+CFM(a.max)+' CFM)':'none'} → <b>${b?b.size:''}</b> (max ${b?CFM(b.max):'—'} CFM)${b&&b.spec&&b.spec.add?(a&&a.spec&&a.spec.kind==='round'&&b.spec.d===a.spec.d&&b.spec.n===a.spec.n?' — keep the existing run and add ':' — main run plus ')+b.spec.add.map(x=>x.size).join(' + '):''}${b?` <span class="note" style="text-transform:none;letter-spacing:0">— one way to get ${sqinTxt(b.area)}; anything equivalent works</span>`:''}`,undo:()=>{delete S.fix[sl]}}) });
+    L.push({k:sl,txt:`${nm}: ${a?a.size+' (max '+CFM(a.max)+' CFM)':'none'} → <b>${b?b.size:''}</b> (max ${b?CFM(b.max):'—'} CFM)${b&&b.spec&&b.spec.add?(a&&a.spec&&a.spec.kind==='round'&&b.spec.d===a.spec.d&&b.spec.n===a.spec.n?' — keep the existing run and add ':(b.spec.kind==='round'&&b.spec.d===MD_MAX_D&&!b.spec.add.some(x=>x.d>MD_MAX_D)?' — 20" is the biggest round duct Goettl runs, so the rest goes in a second run beside it: ':' — main run plus '))+b.spec.add.map(x=>x.size).join(' + '):''}${b?` <span class="note" style="text-transform:none;letter-spacing:0">— one way to get ${sqinTxt(b.area)}; anything equivalent works</span>`:''}`,undo:()=>{delete S.fix[sl]}}) });
   // v2.45 — new register FACES (sized up): one line that names the faces and the type; the face-type line below is for a swap on the faces that stay
   if(S.fix.regs){ const a=c0('regs'), b=c1('regs'); if(b){ const per=b.spec&&b.spec.n?CFM(Math.round(b.maxAbs/b.spec.n)):null;
     L.push({k:'regs',txt:`Supply registers: ${a?a.size.replace(/ \(assumed.*\)$/,'')+' (the faces pass '+CFM(a.maxAbs)+' CFM)':'none'} → <b>${b.size}</b> (${CFM(b.maxAbs)} CFM${per?`, ${per} per face`:''}) <span class="note" style="text-transform:none;letter-spacing:0">— Goettl square faces, one per run, ${MD_REG_REC} fpm through the free area</span>`,undo:()=>{ delete S.fix.regs }}) } }
   // v2.47 — the added runs: one line each, with what the run carries on its own
   if(!newDuctSystem()) (S.fix.addSup||[]).forEach(a=>{ const s=addRunFace(a.d);
-    L.push({k:'addsup',txt:`Add a supply run: one new <b>Ø${fmt(a.d)}"</b> off ${addRunFrom('s')} to its own <b>${s}×${s}</b> ${REG_FACE[regFor(S.fix)].short} register — the ducts that are there stay <span class="note" style="text-transform:none;letter-spacing:0">— up to ${CFM(addRunCfm('s',a))} CFM more supply, less static on the rest</span>`,undo:()=>{ S.fix.addSup=(S.fix.addSup||[]).filter(x=>x!==a); if(!S.fix.addSup.length) delete S.fix.addSup }}) });
+    L.push({k:'addsup',txt:`Add a supply run: one new <b>Ø${fmt(a.d)}"</b> off ${addRunFrom('s')} to its own <b>${s}×${s}</b> ${REG_FACE[regFor(S.fix)].short} register — the ducts that are there stay <span class="note" style="text-transform:none;letter-spacing:0">— up to ${CFM(addRunCfm('s',a))} CFM more supply, less static on the rest</span><div class="obal" style="margin-top:6px"><b>Not fully balanced.</b> ${addSupNote(M,true)}</div>`,undo:()=>{ S.fix.addSup=(S.fix.addSup||[]).filter(x=>x!==a); if(!S.fix.addSup.length) delete S.fix.addSup }}) });
   (S.fix.addRet||[]).forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d);
     L.push({k:'addret',txt:`Add a return: one new <b>Ø${fmt(a.d)}"</b> return duct with its own <b>${g[0]}×${g[1]}</b> filter grille, into ${addRunFrom('r')} — the return that is there stays <span class="note" style="text-transform:none;letter-spacing:0">— up to ${CFM(addRunCfm('r',a))} CFM more return, less static</span>`,undo:()=>{ S.fix.addRet=(S.fix.addRet||[]).filter(x=>x!==a); if(!S.fix.addRet.length) delete S.fix.addRet }}) });
   if(S.fix.insul&&S.fix.insul!=='none'&&M.ins.known&&M.ins.R<M.ins.Rf) L.push({k:'insul',txt:`Top up attic insulation R-${fmt(M.ins.R)} → <b>R-${fmt(M.ins.Rf)}</b> (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`,undo:()=>{S.fix.insul='none'}});
@@ -3468,7 +3489,7 @@ function statusTxt(c,M){ return c.cls==='ok'?'OK':((c.neck&&(c.maxAbs||c.max)>=M
 function equivFor(slot,M){ if(slot==='regs') return null; /* v2.45: the faces have their own line */ const c=M.comps.find(x=>x.slot===slot); if(!c) return null;
   const need=needAreaFor(slot,M); const gap=need-c.area; if(!(gap>0.5)) return null;
   const v=accaTyp(slot); const after=Math.round(need*v/144); const sp=c.spec; const opts=[];
-  const R=[6,8,10,12,14,16,18,20,22,24];
+  const R=[6,8,10,12,14,16,18,20]; // v2.48: nothing over 20"
   if(slot==='grille'){ const g=grPick(GR_ADD.concat(GR_BUILD),gap); if(g) opts.push(`add a second duct and a <b>${g[0]}×${g[1]}</b> grille beside the one that is there`);
     const one=grPick(GR_BUILD,need); if(one) opts.push(`or one <b>${one[0]}×${one[1]}</b> on its own`); }
   else if(slot==='takeoff'){ const d=ROUND_ADD.find(dd=>roundArea(dd)>=gap); if(d) opts.push(`add one more <b>Ø${d}"</b> branch`);
@@ -3772,7 +3793,7 @@ function designDetailsHtml(o){
     const rp=(typeof retPlenLen==='function')?retPlenLen():null; if(rp) add('Return plenum', `${fmt(rp)}" long at the full return face`);
   }
   const tk=takeoffSpec(val('new_tk_add')); if(tk) add('Supply take-offs added', tk.size+' — on top of what is there');
-  if(!newDuctSystem()) (S.fix.addSup||[]).forEach(a=>{ const s=addRunFace(a.d); add('Added supply run', `Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}×${s} register — the ducts that are there stay`) });
+  if(!newDuctSystem()) (S.fix.addSup||[]).forEach(a=>{ const s=addRunFace(a.d); add('Added supply run', `Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}×${s} register — the ducts that are there stay. ${addSupNote(M)}`) });
   (S.fix.addRet||[]).forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); add('Added return', `Ø${fmt(a.d)}" return duct + ${g[0]}×${g[1]} filter grille into ${addRunFrom('r')} — the return that is there stays`) });
   if(M) [['grille'],['ret'],['sup'],['takeoff'],['regs'],['penR'],['penS']].forEach(([sl])=>{ const c=M.comps.find(x=>x.slot===sl); if(!c) return;
     if(!(S.fix[sl]||c.newMetal||c.scopeNew||(sl==='regs'&&regNew()!==regOld()))) return; add(c.name, `${c.size} — ${sl==='regs'?'the faces pass '+CFM(c.maxAbs)+' CFM':'carries '+CFM(c.max)+' CFM'}`) });
@@ -3906,6 +3927,29 @@ const PLAN_TIER={perfect:{k:'perfect',rib:'Best',name:'Perfect design',sub:'Ever
                  minimum:{k:'minimum',rib:'Good',name:'Minimum',sub:'The essentials — some air still left on the table',cls:'good'}};
 S.plans=Array.isArray(S.plans)?S.plans.filter(p=>p&&p.id&&p.d&&typeof p.d==='object').slice(0,PLAN_MAX):[];
 if(S.planApproved&&!S.plans.some(p=>p.id===S.planApproved)) S.planApproved=null;
+// v2.48 — THE RECOMMENDED PLAN IS PICKED (Stephen 2026-09-25: "when we display all the options on the options tab, let us select the recommended
+// package"). S.planRec = a plan id (that plan carries ★ Goettl recommends and leads the row) · 'none' (no plan carries it) · unset (the old
+// automatic rule: the best plan, when it scores 100). Recommending is not approving — Approve is still the customer's yes.
+if(S.planRec&&S.planRec!=='none'&&!S.plans.some(p=>p.id===S.planRec)) delete S.planRec;
+function planRecId(rows,E){ if(S.planRec==='none') return null; if(S.planRec&&rows.some(p=>p.id===S.planRec)) return S.planRec;
+  const best=rows.slice().sort((a,b)=>E[b.id].M.score.total-E[a.id].M.score.total||a.at-b.at)[0]; return best&&E[best.id].M.score.total>=100?best.id:null }
+function planRows(E){ const rows=S.plans.filter(p=>E[p.id]).sort((a,b)=>E[b.id].M.score.total-E[a.id].M.score.total||a.at-b.at); const rec=planRecId(rows,E);
+  if(rec){ const i=rows.findIndex(p=>p.id===rec); if(i>0) rows.unshift(rows.splice(i,1)[0]) } return {rows,rec} }
+// v2.48 — TWO MORE SCORES on every option (Stephen 2026-09-25): SYSTEM AIRFLOW — the air the system gets against what it needs, 0–100 (the
+// airflow part of the comfort score, on its own scale) — and WEAR & TEAR, off the attic: at code (R-49, 2021 IECC as Clark County adopted it)
+// it is 100, because the system does not run as much and lasts longer; below code it falls in a straight line (R-38 = 78, R-19 = 39).
+function optScores(M){ const cpt=M.delivered/Math.max(M.tons,0.5), need=(M.need2!=null?M.need2:M.needs)/Math.max(M.tons,0.5);
+  const air=Math.round(100*Math.pow(clamp(cpt/Math.max(need,1),0,1),2)); const R=M.ins&&M.ins.Rf;
+  return {air, wear:R==null?null:Math.round(100*clamp(R/R_CODE,0,1)), R} }
+function optScoresHtml(M){ const s=optScores(M);
+  return `<div class="osc2"><div title="The air the system gets against what it needs — 100 is every CFM it needs"><span>System airflow</span><b class="${scoreCls(s.air)}">${s.air}</b></div>`
+    +`<div title="Off the attic insulation: at code (R-49) the system runs less and lasts longer — 100"><span>Wear &amp; tear</span>${s.wear==null?'<b class="na">—</b><small>attic depth?</small>':`<b class="${scoreCls(s.wear)}">${s.wear}</b><small>R-${fmt(s.R)} of R-${R_CODE}</small>`}</div></div>` }
+// v2.48 — an ADDED SUPPLY instead of new ducts (Stephen 2026-09-25): the air is there, but it is not fully balanced — one added run carries the
+// extra, so the customer gets to say where it goes: a room that never got enough air, or the kitchen, or the master.
+function addSupNote(M,short){ const got=M&&M.delivered>=(M.need2!=null?M.need2:M.needs)-0.5;
+  return short?`${got?'The airflow it needs':'More airflow'}, not fully balanced — one added run carries the extra air. You pick where it goes: a room that never got enough air, the kitchen, or the master.`
+    :`${got?'This reaches the airflow the system needs':'This adds airflow'}, but the house will not be fully balanced — we are adding one run, not redoing the ducts, so the extra air all goes to one place. The trade-off: you get to tell us where. We would put it in a room that never got enough air, or the kitchen, or the master bedroom.` }
+function planAddSup(){ return newDuctSystem()?0:((S.fix&&S.fix.addSup)||[]).filter(a=>a&&a.d>0).length }
 const pClone=x=>x===undefined?undefined:JSON.parse(JSON.stringify(x));
 function planCapture(){ const d={}; PLAN_KEYS.forEach(k=>{ if(S[k]!==undefined) d[k]=pClone(S[k]) }); d.f={}; PLAN_F.forEach(id=>{ d.f[id]=String(val(id)||'') }); return d }
 function planApply(d){ PLAN_KEYS.forEach(k=>{ if(d[k]===undefined) delete S[k]; else S[k]=pClone(d[k]) });
@@ -3927,7 +3971,7 @@ function planPriceNum(p){ const m=String((p&&p.price)||'').replace(/[, ]/g,'').m
 function planPriceTxt(p){ const v=planPriceNum(p); if(v==null) return String((p&&p.price)||'').trim(); return '$'+Math.round(v).toLocaleString() }
 // the working design as a plan: evaluate it with the same engine the Plan tab uses
 function planEval(p){ return withPlan(p.d,()=>{ const o=curOpt(); if(!o) return null; const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M||!M0) return null;
-  return {o,M,M0,ch:planChangeList(o,M,M0),eq:planEquip(o,M),sig:planSig(p.d)} }) }
+  return {o,M,M0,ch:planChangeList(o,M,M0),eq:planEquip(o,M),sig:planSig(p.d),addS:planAddSup()} }) }
 function planEquip(o,M){ const row=rowsFor()[S.star]||{}; const unit=o.unit||[o.furn,o.coil,o.ahu].filter(Boolean).join(' + ');
   return {stars:S.star||0,brand:row.brand||'',tons:tons1(M.tons),unit,sys:SYS_LABEL[S.sys]||'',afue:S.sys==='split_gas'?(S.afue==='90'?'90%+ AFUE':'80% AFUE'):'',upsize:!!o.upsize} }
 // "what we are doing" in a few words a customer reads at a glance — the same list proposedChanges() makes, said short
@@ -3956,7 +4000,7 @@ function planSaveNew(){ if(S.plans.length>=PLAN_MAX) return null; const o=curOpt
   const p={id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),letter:planLetter(),name:'',tier:null,price:'',at:Date.now(),d:planCapture()};
   S.plans.push(p); S.planEdit=p.id; save(); return p }
 function planUpdate(id){ const p=planById(id); if(!p) return null; p.d=planCapture(); p.at=Date.now(); save(); return p }
-function planDelete(id){ S.plans=S.plans.filter(p=>p.id!==id); if(S.planApproved===id) S.planApproved=null; if(S.planEdit===id) S.planEdit=null; save() }
+function planDelete(id){ S.plans=S.plans.filter(p=>p.id!==id); if(S.planApproved===id) S.planApproved=null; if(S.planRec===id) delete S.planRec; if(S.planEdit===id) S.planEdit=null; save() }
 function planUse(id,approve){ const p=planById(id); if(!p) return null; planApply(p.d); S.planEdit=p.id; if(S.tonsAuto!==false){ try{ const w=tonsAutoPick(); if(w&&w!==S.tons) S.tonsAuto=false }catch(e){} } if(approve){ S.planApproved=p.id; p.approvedAt=Date.now() }
   save(); if(S.rooms&&S.rooms.length){ try{ rbrModel() }catch(e){} }
   try{ $$('#afue .chip').forEach(x=>x.classList.toggle('on',x.dataset.v===S.afue)) }catch(e){} try{ syncSupCfg() }catch(e){} try{ buildTons(); renderTiers() }catch(e){}
@@ -3974,8 +4018,8 @@ function renderOptions(){ const hero=$('#optHero'), body=$('#optBody'); if(!hero
   if(!o||!M0){ OV.list=[]; hero.innerHTML=`<div class="ohero"><div class="pk">Step 6 · Options</div><div class="pt">Nothing to compare yet</div><div class="ps">Put the job in on the first steps and design it on <b>5 · Plan</b> — then save the plans you want to show.</div></div>`; body.innerHTML=''; return }
   const meta=tpMeta(); const sysName=(SYS_LABEL[S.sys]||'system').toLowerCase();
   const E={}; S.plans.forEach(p=>{ try{ E[p.id]=planEval(p) }catch(e){ console.error('plan',e); E[p.id]=null } });
-  const rows=S.plans.filter(p=>E[p.id]).sort((a,b)=>E[b.id].M.score.total-E[a.id].M.score.total||a.at-b.at);
-  const ap=planApproved(); const top=rows[0]&&E[rows[0].id].M.score.total>=100?rows[0].id:null;
+  const {rows,rec}=planRows(E); const top=rec;
+  const ap=planApproved();
   const base=M0.delivered, tonsN=M0.tons;
   hero.innerHTML=`<div class="ohero"><div class="pk">Your options${meta.name?' · '+tpEsc(meta.name):''}</div>
     <div class="pt">${rows.length>1?`${['','','Two','Three','Four'][rows.length]} ways to fix the air in this house`:(rows.length?'The plan for the air in this house':'Build the options, then show them side by side')}</div>
@@ -3986,7 +4030,7 @@ function renderOptions(){ const hero=$('#optHero'), body=$('#optBody'); if(!hero
     <div class="ohd"><div class="oname ro">Your system today</div><div class="osub">A new AC on the ducts as they are</div></div>
     <div class="viewer optv" id="ovT"><canvas role="img" aria-label="3D of the system today"></canvas><div class="lbls"></div><button class="oexp" data-oexp="T" title="Look closer">&#10530;</button></div>
     <div class="oscore">${oRing(M0.score.total,scoreCls(M0.score.total))}<div class="ometa"><div><b>${CFM(M0.delivered)}</b> CFM</div><div>${M0.perTon} CFM/ton</div><div class="${M0.chokes.length?'bad':''}">${M0.chokes.length} chokepoint${M0.chokes.length===1?'':'s'}</div></div></div>
-    ${oBar(M0,null)}
+    ${oBar(M0,null)}${optScoresHtml(M0)}
     <ul class="odo">${M0.chokes.slice(0,5).map(c=>`<li class="no">${tpEsc(strip(c.name).replace(/ \(.*\)$/,''))}</li>`).join('')}${M0.chokes.length>5?`<li class="no more">+ ${M0.chokes.length-5} more</li>`:''}${M0.ins.known&&M0.ins.R<R_MIN?`<li class="no">Attic R-${fmt(M0.ins.R)} — under R-38</li>`:''}${!M0.chokes.length&&!(M0.ins.known&&M0.ins.R<R_MIN)?'<li>Nothing restricting the air</li>':''}</ul>
     ${M0.sp!=null?`<div class="oeq">Measured on the old system: <b>${M0.sp.toFixed(2)}"</b> static</div>`:''}
   </article>`;
@@ -3997,18 +4041,20 @@ function renderOptions(){ const hero=$('#optHero'), body=$('#optBody'); if(!hero
       <div class="ohd">${top===p.id?'<div class="orec">★ Goettl recommends</div>':''}<input class="oname" data-oname="${p.id}" value="${tpEsc(planName(p))}" aria-label="Plan name" maxlength="40"><div class="osub">${T.sub}</div></div>
       <div class="viewer optv" id="ov${i}"><canvas role="img" aria-label="3D of ${tpEsc(planName(p))}"></canvas><div class="lbls"></div><button class="oexp" data-oexp="${i}" title="Look closer">&#10530;</button></div>
       <div class="oscore">${oRing(M.score.total,scoreCls(M.score.total))}<div class="ometa"><div><b>${CFM(M.delivered)}</b> CFM</div><div>${M.perTon} CFM/ton</div><div class="${M.chokes.length?'bad':'ok'}">${M.chokes.length?M.chokes.length+' chokepoint'+(M.chokes.length===1?'':'s')+' left':'every spot clear'}</div></div></div>
-      ${oBar(M,base)}
+      ${oBar(M,base)}${optScoresHtml(M)}
       <div class="oeq">${oStars(X.eq.stars)} <b>${tpEsc(X.eq.brand)}</b> · ${X.eq.tons} ton${X.eq.afue?' · '+X.eq.afue:''}<br><span class="om">${tpEsc(X.eq.unit)}</span></div>
+      ${X.addS?`<div class="obal"><b>Not fully balanced.</b> ${tpEsc(addSupNote(M,true))}</div>`:''}
       ${oList(X.ch.map(c=>`<li>${tpEsc(c.t)}</li>`).concat(left.map(n=>`<li class="no">Still choking: ${tpEsc(n)}</li>`)),'<li class="none">A new unit on the ducts as they are — nothing opened up</li>')}
       <div class="ofoot">
         <input class="oprice" data-oprice="${p.id}" value="${tpEsc(planPriceTxt(p))}" placeholder="Add price" inputmode="decimal" aria-label="Price for ${tpEsc(planName(p))}">
         ${apOn?`<div class="oappd">✓ Approved — this is the plan on the Summary</div><button class="btn sm ghost" data-ogo="6">Go to the Summary ›</button>`:`<button class="btn oapprove" data-oapprove="${p.id}">${isAp?'Approve again':'Approve this plan'}</button>`}
+        <button class="btn sm ${top===p.id?'orecon':'ghost'} orecbtn" data-orec="${p.id}" title="${top===p.id?(S.planRec===p.id?'Tap to take the recommendation off':'Recommended automatically (it scores 100) — tap to take it off'):'Make this the plan Goettl recommends'}">${top===p.id?'★ Recommended':'☆ Recommend this plan'}</button>
         <div class="olinks"><button class="olink" data-oedit="${p.id}">✎ Edit on Plan</button><button class="olink del" data-odel="${p.id}" title="Delete this plan">Delete</button></div>
         <div class="olinks otiers"><span>Show as</span>${Object.values(PLAN_TIER).map(t=>`<button class="olink${T.k===t.k?' on':''}" data-otier="${p.id}:${t.k}" title="${p.tier===t.k?'Back to the automatic label':'Label it '+t.name}">${t.name.split(' ')[0]}</button>`).join('')}</div>
       </div></article>` };
   const empty=rows.length<PLAN_MAX?`<article class="ocard add"><div class="oaddin"><div class="oplus">+</div><div class="oname ro">${rows.length?'Add another option':'Save your first plan'}</div><p class="osub">Design it on <b>5 · Plan</b>, then tap <b>💾 Save plan</b> under the 3D. Change the install, the ducts or the equipment and save again — up to ${PLAN_MAX}.</p><button class="btn sm" data-ogo="5">Go to 5 · Plan ›</button></div></article>`:'';
   body.innerHTML=`<div class="obleed"><div class="optgrid" style="--n:${1+rows.length+(empty?1:0)}">${todayCard}${rows.map(card).join('')}${empty}</div>
-    <p class="ohint">Drag any 3D — they all turn together, so every option is seen from the same side. &#10530; opens one big.</p></div>
+    <p class="ohint">Drag any 3D — they all turn together, so every option is seen from the same side. &#10530; opens one big.<br><b>System airflow</b> is the air the system gets against what it needs. <b>Wear &amp; tear</b> is the attic: at code (R-${R_CODE}) it is 100 — the system runs less and lasts longer. ☆ picks the plan Goettl recommends.</p></div>
     ${rows.length?optTableHtml(rows,E,M0):''}`;
   // the 3Ds: one shared camera; Today and every plan built through the same renderer (each plan's design swapped in for its build)
   const cam=Object.assign({},OV.cam||shotCam()); OV.list=[];
@@ -4026,8 +4072,11 @@ function optTableHtml(rows,E,M0){ const cols=rows.map(p=>({p,X:E[p.id],T:planTie
   const sc=v=>`<span class="opill ${scoreCls(v)}">${v}</span>`;
   const priced=cols.some(c=>planPriceNum(c.p)!=null||String(c.p.price||'').trim());
   const r=(k,t,f)=>`<tr><th>${k}</th><td class="t">${t}</td>${cols.map(f).join('')}</tr>`;
-  return `<div class="card otable"><h2>Side by side</h2><div class="otscroll"><table class="otbl"><thead><tr><th></th><th class="t">Today</th>${cols.map(c=>`<th class="${c.T.cls}"><span class="oth">${tpEsc(planName(c.p))}</span><small>${c.T.rib} · ${c.T.name}</small></th>`).join('')}</tr></thead><tbody>
+  const recId=planRecId(rows,E);
+  return `<div class="card otable"><h2>Side by side</h2><div class="otscroll"><table class="otbl"><thead><tr><th></th><th class="t">Today</th>${cols.map(c=>`<th class="${c.T.cls}"><span class="oth">${recId===c.p.id?'★ ':''}${tpEsc(planName(c.p))}</span><small>${c.T.rib} · ${c.T.name}${recId===c.p.id?' · Goettl recommends':''}</small></th>`).join('')}</tr></thead><tbody>
     ${r('Comfort score',sc(M0.score.total),c=>`<td>${sc(c.X.M.score.total)}</td>`)}
+    ${r('System airflow',sc(optScores(M0).air),c=>`<td>${sc(optScores(c.X.M).air)}</td>`)}
+    ${r('Wear &amp; tear',optScores(M0).wear==null?'—':sc(optScores(M0).wear),c=>{ const w=optScores(c.X.M).wear; return `<td>${w==null?'—':sc(w)}</td>` })}
     ${r('Airflow',`${CFM(M0.delivered)} CFM`,c=>`<td><b>${CFM(c.X.M.delivered)}</b> CFM</td>`)}
     ${r('Per ton',`${M0.perTon}`,c=>`<td>${c.X.M.perTon}</td>`)}
     ${r('Chokepoints',`${M0.chokes.length}`,c=>`<td class="${c.X.M.chokes.length?'bad':'ok'}">${c.X.M.chokes.length}</td>`)}
@@ -4052,6 +4101,8 @@ function wireOptions(rows){ const body=$('#optBody'); if(!body) return;
   const rerender=()=>{ renderOptions(); try{ syncPackNav(cur) }catch(e){} };
   body.querySelectorAll('[data-oapprove]').forEach(b=>b.onclick=()=>{ if(!planGuard(planById(b.dataset.oapprove))) return; const p=planUse(b.dataset.oapprove,true); if(!p) return; renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh(); rerender();
     try{ flash('Approved — '+planName(p)+' is the plan on the Summary') }catch(e){} });
+  body.querySelectorAll('[data-orec]').forEach(b=>b.onclick=()=>{ const id=b.dataset.orec; const on=b.classList.contains('orecon'); S.planRec=on?'none':id; save(); rerender();
+    try{ flash(on?'No plan is marked as recommended':'★ '+planName(planById(id))+' is the plan Goettl recommends') }catch(e){} });
   body.querySelectorAll('[data-oedit]').forEach(b=>b.onclick=()=>{ if(!planGuard(planById(b.dataset.oedit))) return; if(planUse(b.dataset.oedit,false)) go(5) });
   body.querySelectorAll('[data-odel]').forEach(b=>b.onclick=()=>{ const p=planById(b.dataset.odel); if(!p) return; if(!confirm('Delete '+planName(p)+'?')) return; planDelete(p.id); rerender() });
   body.querySelectorAll('[data-otier]').forEach(b=>b.onclick=()=>{ const [id,k]=b.dataset.otier.split(':'); const p=planById(id); if(!p) return; p.tier=(p.tier===k)?null:k; save(); rerender() });
@@ -4084,19 +4135,19 @@ async function fcOptionShots(){ const out={today:null,plans:{}}; if(!S.plans.len
   return out }
 function fcOptionsStaticHtml(shots){ if(!S.plans.length) return ''; const o=curOpt(); if(!o) return ''; const M0=flowModel(o,TODAY); if(!M0) return '';
   const E={}; S.plans.forEach(p=>{ try{ E[p.id]=planEval(p) }catch(e){ E[p.id]=null } });
-  const rows=S.plans.filter(p=>E[p.id]).sort((a,b)=>E[b.id].M.score.total-E[a.id].M.score.total||a.at-b.at); if(!rows.length) return '';
-  const ap=planApproved(); const top=E[rows[0].id].M.score.total>=100?rows[0].id:null; const base=M0.delivered;
+  const {rows,rec}=planRows(E); if(!rows.length) return '';
+  const ap=planApproved(); const top=rec; const base=M0.delivered;
   const pic=(src,alt)=>src?`<img class="fcoshot" src="${src}" alt="${tpEsc(alt)}">`:'';
   const cards=`<article class="ocard today"><div class="orib"><span>Today</span></div><div class="ohd"><div class="oname ro">Your system today</div><div class="osub">A new AC on the ducts as they are</div></div>${pic(shots&&shots.today,'Your system today')}
-      <div class="oscore">${oRing(M0.score.total,scoreCls(M0.score.total))}<div class="ometa"><div><b>${CFM(M0.delivered)}</b> CFM</div><div>${M0.perTon} CFM/ton</div><div class="bad">${M0.chokes.length} chokepoint${M0.chokes.length===1?'':'s'}</div></div></div>${oBar(M0,null)}</article>`
+      <div class="oscore">${oRing(M0.score.total,scoreCls(M0.score.total))}<div class="ometa"><div><b>${CFM(M0.delivered)}</b> CFM</div><div>${M0.perTon} CFM/ton</div><div class="bad">${M0.chokes.length} chokepoint${M0.chokes.length===1?'':'s'}</div></div></div>${oBar(M0,null)}${optScoresHtml(M0)}</article>`
     +rows.map(p=>{ const X=E[p.id], M=X.M, T=planTier(p,X); const apOn=ap&&ap.p.id===p.id&&ap.same; const pr=planPriceTxt(p);
       return `<article class="ocard ${T.cls}${apOn?' approved':''}"><div class="orib"><span>${T.rib} · ${T.name}</span></div>
         <div class="ohd">${top===p.id?'<div class="orec">★ Goettl recommends</div>':''}<div class="oname ro">${tpEsc(planName(p))}</div><div class="osub">${T.sub}</div></div>${pic(shots&&shots.plans[p.id],planName(p))}
-        <div class="oscore">${oRing(M.score.total,scoreCls(M.score.total))}<div class="ometa"><div><b>${CFM(M.delivered)}</b> CFM</div><div>${M.perTon} CFM/ton</div><div class="${M.chokes.length?'bad':'ok'}">${M.chokes.length?M.chokes.length+' left':'every spot clear'}</div></div></div>${oBar(M,base)}
-        <div class="oeq">${oStars(X.eq.stars)} <b>${tpEsc(X.eq.brand)}</b> · ${X.eq.tons} ton</div>
+        <div class="oscore">${oRing(M.score.total,scoreCls(M.score.total))}<div class="ometa"><div><b>${CFM(M.delivered)}</b> CFM</div><div>${M.perTon} CFM/ton</div><div class="${M.chokes.length?'bad':'ok'}">${M.chokes.length?M.chokes.length+' left':'every spot clear'}</div></div></div>${oBar(M,base)}${optScoresHtml(M)}
+        <div class="oeq">${oStars(X.eq.stars)} <b>${tpEsc(X.eq.brand)}</b> · ${X.eq.tons} ton</div>${X.addS?`<div class="obal"><b>Not fully balanced.</b> ${tpEsc(addSupNote(M,true))}</div>`:''}
         <ul class="odo">${X.ch.map(c=>`<li>${tpEsc(c.t)}</li>`).join('')||'<li class="none">A new unit on the ducts as they are</li>'}${M.chokes.map(c=>`<li class="no">Still choking: ${tpEsc(strip(c.name).replace(/ \(.*\)$/,''))}</li>`).join('')}</ul>
         ${pr||apOn?`<div class="ofoot">${pr?`<div class="oprice ro">${tpEsc(pr)}</div>`:''}${apOn?'<div class="oappd">✓ Approved</div>':''}</div>`:''}</article>` }).join('');
-  return `<div class="card" style="padding:12px"><h2 style="margin:2px 0 4px">Your options</h2><p class="help" style="margin:0 0 8px">Every option starts from the same house. Red is where the air still chokes; green is what we build new or open up.</p>
+  return `<div class="card" style="padding:12px"><h2 style="margin:2px 0 4px">Your options</h2><p class="help" style="margin:0 0 8px">Every option starts from the same house. Red is where the air still chokes; green is what we build new or open up. <b>System airflow</b> is the air the system gets against what it needs; <b>wear &amp; tear</b> is the attic — at code (R-${R_CODE}) it is 100, the system runs less and lasts longer.</p>
     <div class="optgrid static" style="--n:${1+rows.length}">${cards}</div></div>${optTableHtml(rows,E,M0)}` }
 
 // ============================================================ v2.37 · Send to tech
@@ -4879,8 +4930,9 @@ function summaryText(o){
   L.push(`FIT CHECK — ${sys} · ${S.tons.replace('T',' Ton')} · ${'★'.repeat(S.star)}`);
   { const pl=(S.plans||[]); if(pl.length&&(curTab()===6||curTab()===8)){ const ap=planApproved(); // v2.47 — the options presented, and the one the customer approved (graded live — only where the text is read: the Summary and the Tech pack)
       if(ap) L.push(`APPROVED OPTION: ${planName(ap.p)}${ap.same?'':' — CHANGED SINCE IT WAS APPROVED (this summary is the design on the Plan tab)'}`); else L.push('OPTIONS PRESENTED — none approved yet (this summary is the design on the Plan tab)');
+      let recP=null; try{ const E2={}; pl.forEach(p=>{ E2[p.id]=planEval(p) }); recP=planRecId(pl.filter(p=>E2[p.id]),E2) }catch(e){}
       try{ pl.forEach(p=>{ const X=planEval(p); if(!X) return; const T=planTier(p,X); const pr=planPriceTxt(p);
-        L.push(`  ${planName(p)} · ${T.name} · score ${X.M.score.total} · ${CFM(X.M.delivered)} CFM (${X.M.perTon}/ton) · ${X.eq.brand} ${X.eq.tons} ton ${'★'.repeat(X.eq.stars)}${pr?' · '+pr:''}${ap&&ap.p.id===p.id?' · APPROVED':''} — ${X.ch.map(c=>c.t).join('; ')||'new unit on the ducts as they are'}`) }) }catch(e){} } }
+        L.push(`  ${planName(p)} · ${T.name} · score ${X.M.score.total} · ${CFM(X.M.delivered)} CFM (${X.M.perTon}/ton) · ${X.eq.brand} ${X.eq.tons} ton ${'★'.repeat(X.eq.stars)}${pr?' · '+pr:''}${ap&&ap.p.id===p.id?' · APPROVED':''}${recP===p.id?' · GOETTL RECOMMENDS':''} · airflow ${optScores(X.M).air} · wear & tear ${optScores(X.M).wear==null?'—':optScores(X.M).wear} — ${X.ch.map(c=>c.t).join('; ')||'new unit on the ducts as they are'}${X.addS?' · NOT FULLY BALANCED (one added supply run — customer picks where the extra air goes)':''}`) }) }catch(e){} } }
   if(isPkg()){ const j=judgePkg(o.unit); const n=j.n; const A=j.A; const strip=s=>String(s).replace(/<[^>]+>/g,'');
     L.push(`New: ${o.unit} (${n.c.label}) ${fmt(n.l)} side to side × ${fmt(n.w)} front to back × ${fmt(n.h)} H`); if(j.o.l) L.push(`Existing: ${j.o.c?j.o.c.label+' ':''}${fmt(j.o.l)} × ${fmt(j.o.w)} × ${fmt(j.o.h)}`);
     L.push(`Setup: ${S.setup||'curb'} → ${j.manual?'MANUAL REVIEW':j.cls.toUpperCase()}`);
@@ -4914,7 +4966,7 @@ function summaryText(o){
     { const sc=scopeState(); if(sc.lines.length) L.push(`INSTALL SCOPE: ${sc.lines.join(' · ')}`); }
     if(M.bal&&M.bal.ratio!=null) L.push(`Supply vs return: return side ${CFM(M.bal.ret)} CFM at its tightest vs supply ${CFM(M.bal.sup)} → ${M.bal.ratio>=1?'return leads (good)':'MORE SUPPLY THAN RETURN — open the return side'}`);
     { const add=takeoffSpec($('#new_tk_add').value); if(add&&!S.fix.takeoff) L.push(`Proposed added supply take-offs: ${add.size}`) }
-    if(!newDuctSystem()) (S.fix.addSup||[]).forEach(a=>{ const s=addRunFace(a.d); L.push(`ADDED SUPPLY RUN: Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}x${s} register (up to ${CFM(addRunCfm('s',a))} CFM) — existing ducts stay`) });
+    if(!newDuctSystem()) (S.fix.addSup||[]).forEach(a=>{ const s=addRunFace(a.d); L.push(`ADDED SUPPLY RUN: Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}x${s} register (up to ${CFM(addRunCfm('s',a))} CFM) — existing ducts stay. NOT FULLY BALANCED: one added run carries the extra air — customer picks where it goes (a room that never got enough air, the kitchen or the master)`) });
     (S.fix.addRet||[]).forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); L.push(`ADDED RETURN: Ø${fmt(a.d)}" return duct + ${g[0]}x${g[1]} filter grille into ${addRunFrom('r')} (up to ${CFM(addRunCfm('r',a))} CFM) — existing return stays`) });
     M.comps.forEach(c=>L.push(`  ${c.name}: ${strip(c.size)} · ${sqinTxt(c.area)}${c.newMetal?' · manufacturer connection, sized to the unit → OK':` · ${c.vel} fpm · max ${CFM(c.max)} CFM → ${statusTxt(c,M).toUpperCase()}`}${c.neck?` (smaller than the ${strip(c.feed.size)} duct through it — must be enlarged)`:''}${c.fixed?' (PROPOSED)':''}${c.newMetal?' (NEW)':''}`));
     if(M.ins.known) L.push(`Insulation: R-${fmt(M.ins.R)}${M.ins.src&&M.ins.src!=='entered'?' ('+M.ins.src+')':''}${M.ins.R<R_MIN?' — UNDER R-38 minimum':''}${M.ins.target?` → top up to R-${M.ins.target} (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`:''}`); } }
@@ -4941,7 +4993,7 @@ function summaryText(o){
       L.push(`  CROSS-CHECK: ${CFM(RM.needTot)} CFM ÷ ${RM.cpt} CFM/ton (${RM.cptSrc}) = ${(RM.needTot/RM.cpt).toFixed(2)} → ${RM.loadT} ton${(function(){ const oo=curOpt(); return oo&&oo.upsize?' · divides by the Matchup Guide default indoor — the airflow upsize never shrinks the condenser':'' })()}`);
       S.rooms.forEach(r=>L.push(`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.ld} load · ${CFM(r.cfm)} CFM · ${r.nReg} × ${r.can}×${r.can} can · ${rbrDuctTxt(r).replace(/<[^>]+>/g,'')}`));
       if(S.rbrNew){ L.push(`NEW DUCT SYSTEM — REDOING THE ROOM-BY-ROOM DUCTS to ensure adequate flow to each room.`);
-        L.push(`  Trunk: ${RM.segs.map(x=>x.tag+' Ø'+x.d+'" '+CFM(x.carry)+' CFM '+Math.round(x.len)+' ft').join(' · ')}`);
+        L.push(`  Trunk: ${RM.segs.map(x=>x.tag+' '+rdTxt(x)+' '+CFM(x.carry)+' CFM '+Math.round(x.len)+' ft').join(' · ')}`);
         L.push(`  ${RM.taps} take-offs (collar + balancing damper each) · ${RM.tysTot} TY splits · ${RM.vents} square cans at ${RM.cap} CFM max per vent`);
         const m=RM.mat; const li=(t,o,u)=>{ const k=Object.keys(o); if(k.length) L.push(`  ${t}: ${k.map(x=>(u==='ft'?'Ø'+x+'" '+Math.round(o[x])+' ft':x+' ×'+o[x])).join(' · ')}`) };
         li('Trunk',m.trunk,'ft'); li('Branch/leg flex',m.flex,'ft'); li('Collars+dampers',m.coll,'ea'); li('TYs',m.ty,'ea'); li('Cans',m.can,'ea'); li('Grilles',m.gr,'ea'); }
@@ -5418,7 +5470,7 @@ function fcFloorsHtml(){
   const downRow=(f,i)=>{ const d=f.down||{d:'',n:1}; const r=D.find(x=>x.fl===i); const est=!(parseFloat(d.d)>0);
     return `<div class="fcdown" data-i="${i}"><div class="row" style="align-items:flex-end">
       <div class="field" style="max-width:190px"><label>Duct down to floor ${i+1}${est?' <span class="asm">assumed</span>':''}</label>
-        <select class="fcdn" data-i="${i}" data-k="d"><option value="">assume — Ø${r?r.spec.d:'—'}"</option>${MD_ROUND.map(v=>`<option value="${v}"${String(v)===String(d.d)?' selected':''}>Ø${v}"</option>`).join('')}</select></div>
+        <select class="fcdn" data-i="${i}" data-k="d"><option value="">assume — ${r?rdTxt(r.spec):'Ø—"'}</option>${MD_ROUND.map(v=>`<option value="${v}"${String(v)===String(d.d)?' selected':''}>Ø${v}"</option>`).join('')}</select></div>
       <div class="field" style="max-width:110px"><label>How many</label><select class="fcdn" data-i="${i}" data-k="n">${[1,2,3].map(v=>`<option value="${v}"${v===(d.n|0||1)?' selected':''}>${v}</option>`).join('')}</select></div>
       <div class="field" style="flex:2;min-width:200px"><label>&nbsp;</label><div class="note" style="padding:6px 0">${r?fcDownNote(r):'Floor '+(i+1)+' is not measured room by room — it gets one duct down, sized to its square footage.'}</div></div>
     </div></div>` };
@@ -5434,9 +5486,9 @@ function fcFloorsHtml(){
 // one line on the drop: what the floor wants, what the duct carries, and where any shortfall goes
 function fcDownNote(r){
   const what=`Floor ${r.fl+1} wants <b>${CFM(r.need)} CFM</b>`;
-  if(!r.entered) return `${what} — assumed ${r.n>1?r.n+' × ':''}Ø${r.d}" ${r.mat}, sized to carry it at the worksheet friction rate. Pick the size that is there if you know it.`;
-  if(r.short>0) return `${what} · ${r.n>1?r.n+' × ':''}Ø${r.d}" carries <b>${CFM(r.cap)}</b> at ${r.vel.toLocaleString()} fpm — <b>${CFM(r.short)} CFM short</b>; that air goes upstairs. To carry it all: ${r.spec.n>1?r.spec.n+' × ':''}Ø${r.spec.d}".`;
-  return `${what} · ${r.n>1?r.n+' × ':''}Ø${r.d}" carries it (<b>${CFM(r.cfm)}</b> at ${r.vel.toLocaleString()} fpm).`;
+  if(!r.entered) return `${what} — assumed ${rdTxt(r)} ${r.mat}, sized to carry it at the worksheet friction rate. Pick the size that is there if you know it.`;
+  if(r.short>0) return `${what} · ${rdTxt(r)} carries <b>${CFM(r.cap)}</b> at ${r.vel.toLocaleString()} fpm — <b>${CFM(r.short)} CFM short</b>; that air goes upstairs. To carry it all: ${rdTxt(r.spec)}.`;
+  return `${what} · ${rdTxt(r)} carries it (<b>${CFM(r.cfm)}</b> at ${r.vel.toLocaleString()} fpm).`;
 }
 // the CFM a round duct carries at the worksheet friction rate, inside Table 3-1 for a supply trunk in that material
 function fcDuctCap(d,n,fr,mat){ const lim=MD_TAB31.sup[mat==='flex'?'flex':'metal'][1]; const a=roundArea(d)/144;
@@ -5637,15 +5689,15 @@ function rbrModel(){
   const down=[];
   S.home.floors.forEach((f,i)=>{ if(i>=top) return; const sf=parseFloat(f.sf); if(!(sf>0)) return;
     const need=sf*B.base, spec=mdSizeRound(need,A.fr,mat,'sup'), entered=parseFloat(f.down&&f.down.d)>0;
-    const d=entered?+f.down.d:spec.d, n=entered?Math.max(1,f.down.n|0):spec.n;
-    down.push({fl:i,sf,need,mat,spec,entered,d,n,cap:fcDuctCap(d,n,A.fr,mat),rise:(top-i)*10}) });
+    const d=entered?+f.down.d:spec.d, n=entered?Math.max(1,f.down.n|0):spec.n, add=entered?[]:(spec.add||[]); // v2.48: assumed past 20" = a 20" + the run that carries the rest
+    down.push({fl:i,sf,need,mat,spec,entered,d,n,add,cap:fcDuctCap(d,n,A.fr,mat)+add.reduce((s,a)=>s+fcDuctCap(a.d,1,A.fr,mat),0),rise:(top-i)*10}) });
   const needDown=down.reduce((s,x)=>s+x.need,0), needTot=needUp+needDown;
   const ratio=needTot>0?Math.min(1,A.Qd/needTot):1;
   down.forEach(x=>{ x.want=x.need*ratio; x.cfm=Math.min(x.want,x.entered?x.cap:x.want) });
   // an entered duct with headroom takes the unit's surplus before it lands upstairs (Stephen: capped by the duct, the rest goes up)
   let extra=A.Qd-needUp*ratio-down.reduce((s,x)=>s+x.cfm,0);
   down.forEach(x=>{ if(extra>0&&x.entered){ const add=Math.min(extra,Math.max(0,x.cap-x.cfm)); x.cfm+=add; extra-=add } });
-  down.forEach(x=>{ x.cfm=Math.round(x.cfm); x.short=Math.max(0,Math.round(x.want-x.cfm)); x.vel=Math.round(x.cfm/x.n/(roundArea(x.d)/144)); x.short2=x.cfm<x.need-0.5 });
+  down.forEach(x=>{ x.cfm=Math.round(x.cfm); x.short=Math.max(0,Math.round(x.want-x.cfm)); x.vel=Math.round(x.cfm/((roundArea(x.d)*x.n+(x.add||[]).reduce((s,a)=>s+roundArea(a.d),0))/144)); x.short2=x.cfm<x.need-0.5 });
   const downCfm=down.reduce((s,x)=>s+x.cfm,0);
   const Qup=Math.max(0,Math.round(A.Qd)-downCfm);
   const A0=rbrAirBase(); const cpt=rbrCpt(A0), cptSrc=rbrCptSrc(A0); // the unit's own CFM/ton, off its own blower table — v2.44: the Matchup Guide DEFAULT indoor for this condenser, so an indoor sized up for airflow never shrinks the tonnage
@@ -5691,7 +5743,7 @@ function rbrModel(){
       const carry=arm.slice(i).reduce((s,r)=>s+r.cfm,0), x=rbrCx(arm[i]), len=Math.abs(x-prev);
       if(len<0.5&&i>0) continue;
       const sz=mdSizeRound(Math.max(carry,1),A.fr,mat,'sup');
-      segs.push({arm:k,from:prev,to:x,len:Math.max(len,1),carry,d:sz.d,vel:sz.vel,first:i===0,room:arm[i].n});
+      segs.push({arm:k,from:prev,to:x,len:Math.max(len,1),carry,d:sz.d,n:1,add:sz.add||[],vel:sz.vel,first:i===0,room:arm[i].n}); // v2.48: a segment past 20" is a 20" + a second run
       prev=x; } });
   rooms.forEach(r=>{ r.run=Math.round(Math.abs(rbrCy(r)-uy)+3); r.legFt=r.tys>0?Math.round((r.w+r.d)/4+3):0 });
   RM={B,A,cap,tmat:mat,segs,needTot,needRooms,needUp,needDown,hall,roomSf,loadT,cpt,cptSrc,ux,uy,
@@ -5714,9 +5766,9 @@ function rbrGeom(r){ const taps=[];
   for(let j=0;j<r.nReg;j++){ const k=Math.min(r.nTap-1,Math.floor(j*r.nTap/r.nReg)); taps[k].regs.push({x:r.x+r.w*(j+0.5)/r.nReg,g:(r.regs&&r.regs[j])||{kind:'new',w:r.can,h:r.can,face:r.faceK||'stamped'}}) }
   return taps; }
 function rbrMaterials(){ const flex={},trunk={},ty={},can={},gr={},coll={},swap={},boot={}; const bump=(o,k,v)=>o[k]=(o[k]||0)+v;
-  RM.segs.forEach(s=>bump(trunk,s.d,s.len));
+  RM.segs.forEach(s=>{ bump(trunk,s.d,s.len); (s.add||[]).forEach(a=>bump(trunk,a.d,s.len)) });
   // v2.46 — the duct down to each lower floor: a collar off the plenum and the drop itself
-  (RM.down||[]).forEach(x=>{ bump(coll,x.d,x.n); bump(flex,x.d,(x.rise+6)*x.n) });
+  (RM.down||[]).forEach(x=>{ bump(coll,x.d,x.n); bump(flex,x.d,(x.rise+6)*x.n); (x.add||[]).forEach(a=>{ bump(coll,a.d,1); bump(flex,a.d,x.rise+6) }) });
   S.rooms.forEach(r=>{ bump(coll,r.branch.d,r.nTap); bump(flex,r.branch.d,r.run*r.nTap);
     if(r.tys>0){ bump(ty,r.tyName,r.tys); bump(flex,r.leg.d,r.legFt*r.nReg) }
     // v2.46 — only NEW and ENLARGED faces take a can and a grille; a kept face stays, a bar-type swap is a face only, a bigger leg is a new boot
@@ -5792,7 +5844,7 @@ function rbrPlanSvg(S_){
   // v2.46 — the duct down to each lower floor: a tagged riser symbol under the plenum
   (RM.down||[]).forEach((x,i)=>{ const dx=u[0]+3*SC, dy=u[1]+6*SC+8+i*22;
     s+=`<rect x="${(dx-3*SC).toFixed(1)}" y="${dy.toFixed(1)}" width="${6*SC}" height="18" rx="3" fill="#fff" stroke="#003963" stroke-width="2" stroke-dasharray="5 3"/>`;
-    s+=`<text x="${dx.toFixed(1)}" y="${(dy+12.5).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#003963">${x.tag} ▼ ${x.n>1?x.n+'×':''}Ø${x.d}" DOWN · FLOOR ${x.fl+1} · ${CFM(x.cfm)} CFM${x.short>0?' (SHORT '+CFM(x.short)+')':''}</text>`;
+    s+=`<text x="${dx.toFixed(1)}" y="${(dy+12.5).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#003963">${x.tag} ▼ ${rdTxt(x).replace(/ × /,'×')} DOWN · FLOOR ${x.fl+1} · ${CFM(x.cfm)} CFM${x.short>0?' (SHORT '+CFM(x.short)+')':''}</text>`;
     placed.push({x1:dx-3*SC,x2:dx+3*SC,y1:dy,y2:dy+18}); });
 
   RM.segs.forEach(sg=>{ const a=p(sg.from,RM.uy), b=p(sg.to,RM.uy);
@@ -5823,7 +5875,7 @@ function rbrPlanSvg(S_){
 
   RM.segs.forEach(sg=>{ const a=p(sg.from,RM.uy), b=p(sg.to,RM.uy);
     if(Math.abs(b[0]-a[0])<34) return;
-    s+=T((a[0]+b[0])/2, a[1]-sg.d*SC/24-8, sg.tag+'  Ø'+sg.d+'"  '+CFM(sg.carry)+' CFM', {s:10,f:'#8a6a00',side:'y'}); });
+    s+=T((a[0]+b[0])/2, a[1]-sg.d*SC/24-8, sg.tag+'  '+rdTxt(sg)+'  '+CFM(sg.carry)+' CFM', {s:10,f:'#8a6a00',side:'y'}); });
   rooms.forEach(r=>{ r.taps.forEach(tp=>{
     const t=tp.px, c=tp.cc;
     s+=T(t[0],(t[1]+c[1])/2, tp.tag+'  Ø'+r.branch.d+'"  '+CFM(r.perTap)+' CFM  ·  '+rbrFtin(r.run)+' RUN', {s:9.5,f:'#0a5c5c',side:'x'});
@@ -5897,8 +5949,8 @@ function rbrDuctTxt(r){ if(r.nReg===1) return 'Ø'+r.branch.d+'" → can';
 function rbrTrunkTbl(){
   let t='<thead><tr><th>Tag</th><th>Segment</th><th class="num">Length</th><th class="num">Carries</th><th>Size</th><th class="num">Velocity</th></tr></thead><tbody>';
   RM.segs.forEach(s=>{ t+=`<tr><td><b>${s.tag}</b></td><td>${s.first?'Plenum → ':'to '}${rbrEsc(s.room)} <span class="note">(${s.arm==='L'?'left':'right'} arm)</span></td>`+
-    `<td class="num">${Math.round(s.len)} ft</td><td class="num">${CFM(s.carry)} CFM</td><td>Ø${s.d}" ${RM.tmat}</td><td class="num">${s.vel.toLocaleString()} fpm</td></tr>` });
-  (RM.down||[]).forEach(x=>{ t+=`<tr><td><b>${x.tag}</b></td><td>Plenum → down to floor ${x.fl+1} <span class="note">(riser)</span></td><td class="num">${x.rise+6} ft</td><td class="num">${CFM(x.cfm)} CFM</td><td>${x.n>1?x.n+' × ':''}Ø${x.d}" ${x.mat}${x.entered?'':' <span class="asm">assumed</span>'}</td><td class="num">${x.vel.toLocaleString()} fpm${x.short>0?` <span class="status bad">${CFM(x.short)} short</span>`:''}</td></tr>` });
+    `<td class="num">${Math.round(s.len)} ft</td><td class="num">${CFM(s.carry)} CFM</td><td>${rdTxt(s)} ${RM.tmat}</td><td class="num">${s.vel.toLocaleString()} fpm</td></tr>` });
+  (RM.down||[]).forEach(x=>{ t+=`<tr><td><b>${x.tag}</b></td><td>Plenum → down to floor ${x.fl+1} <span class="note">(riser)</span></td><td class="num">${x.rise+6} ft</td><td class="num">${CFM(x.cfm)} CFM</td><td>${rdTxt(x)} ${x.mat}${x.entered?'':' <span class="asm">assumed</span>'}</td><td class="num">${x.vel.toLocaleString()} fpm${x.short>0?` <span class="status bad">${CFM(x.short)} short</span>`:''}</td></tr>` });
   t+=`<tr class="tot"><td colspan="2">${RM.segs.length} segments${RM.down&&RM.down.length?' + '+RM.down.length+' drop'+(RM.down.length>1?'s':''):''}</td><td class="num">${Math.round(RM.segs.reduce((a,s)=>a+s.len,0))} ft</td><td colspan="3">a reducing trunk — it steps down every time a room takes its air</td></tr></tbody>`;
   return t;
 }
@@ -6166,7 +6218,7 @@ function rbrOut(){
   if(!S.rooms.length) return;
   const A=RM.A, pct=Math.round(RM.pct*100), cls=pct>=95?'ok':(pct>=85?'warn':'bad');
   const dn=RM.down||[];
-  const downTxt=dn.length?` · ${dn.map(x=>`floor ${x.fl+1} gets <b>${CFM(x.cfm)} CFM</b> down ${x.n>1?x.n+' × ':''}Ø${x.d}"${x.entered?'':' (assumed)'}${x.short>0?` — <b>${CFM(x.short)} short</b>, that air goes upstairs`:''}`).join(' · ')} · the rooms upstairs share <b>${CFM(RM.Qup)}</b>${RM.spill>0?` (${CFM(RM.spill)} more than they ask for)`:''}`:'';
+  const downTxt=dn.length?` · ${dn.map(x=>`floor ${x.fl+1} gets <b>${CFM(x.cfm)} CFM</b> down ${rdTxt(x)}${x.entered?'':' (assumed)'}${x.short>0?` — <b>${CFM(x.short)} short</b>, that air goes upstairs`:''}`).join(' · ')} · the rooms upstairs share <b>${CFM(RM.Qup)}</b>${RM.spill>0?` (${CFM(RM.spill)} more than they ask for)`:''}`:'';
   $('#rbrBanner').innerHTML=`<div class="banner ${cls}">${dn.length?'The house wants':'Rooms want'} ${CFM(RM.needTot)} CFM · the ${rbrEsc(A.name)} delivers ${CFM(A.Qd)} · <b>${pct}% of design</b>${downTxt}<br><span style="font-weight:600;font-size:12.5px">Every room is designed to its share of the ${CFM(dn.length?RM.Qup:A.Qd)} CFM ${dn.length?'that reaches its floor':'the unit puts out'} at the ${A.esp.toFixed(2)}" design static. At Goettl's ${spLimit().toFixed(2)}" limit the house carries ${CFM(A.Qp)} CFM and every can holds the same share of it.</span></div>`;
   const st=$('#rbrStorey'); if(st){ st.style.display=dn.length?'':'none'; st.innerHTML=dn.length?`<b>Two storeys:</b> the rooms here are the <b>top floor</b> — that is where the room-by-room load is done. ${dn.map(x=>`Floor ${x.fl+1} is one duct down: ${fcDownNote(x)}`).join(' ')}`:'' }
   $('#rbrVentVal').textContent=RM.cap;
@@ -6310,7 +6362,7 @@ function rbrLine(){
     `${RM.segs.length}-segment reducing trunk, ${RM.taps} take-offs with balancing dampers, ${RM.tysTot} TY split${RM.tysTot===1?'':'s'}, `+
     `${RM.vents} vents balanced to the ${CFM(RM.Qup)} CFM that reaches the rooms (${RM.cap} CFM max per vent)`+
     (RM.keepN+RM.barN+RM.enlN?` — ${RM.keepN} existing register${RM.keepN===1?'':'s'} kept in place${RM.barN?`, ${RM.barN} swapped to bar type`:''}${RM.enlN?`, ${RM.enlN} enlarged`:''}, ${RM.newN} new square can${RM.newN===1?'':'s'}`:'')+
-    (dn.length?`; ${dn.map(x=>`floor ${x.fl+1} fed by ${x.n>1?x.n+' × ':''}Ø${x.d}" down (${CFM(x.cfm)} CFM${x.short>0?`, ${CFM(x.short)} short — needs Ø${x.spec.d}"`:''})`).join(', ')}`:'');
+    (dn.length?`; ${dn.map(x=>`floor ${x.fl+1} fed by ${rdTxt(x)} down (${CFM(x.cfm)} CFM${x.short>0?`, ${CFM(x.short)} short — needs ${rdTxt(x.spec)}`:''})`).join(', ')}`:'');
 }
 function rbrSizeFlag(){
   const els=$$('.rbrflag'); if(!els.length) return;
