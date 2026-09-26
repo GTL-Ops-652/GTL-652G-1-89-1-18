@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-25 v2.48 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-25 v2.49 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -549,6 +549,7 @@ details.fold>.fb>.sect:first-child{margin-top:8px}
 .pstrip{display:flex;flex-direction:column;gap:8px;margin:10px 4px 0}
 .pstrip .prow{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .pstrip .plab{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-right:4px;flex:none}
+.pstrip .insr{display:inline-flex;gap:3px;margin-left:-2px}.pstrip .insr .btn{padding-left:8px;padding-right:8px;font-size:11px}
 .pstrip .sc{padding:6px 10px;font-size:12.5px;border-radius:10px}
 .pstrip .sc.on{border-color:var(--db);background:#eaf2f9;font-weight:700}
 .pstrip .sc.na{opacity:.45;cursor:default}
@@ -961,7 +962,7 @@ body.pack .tp .noapp{display:none}
 
     <div class="sect ret"><div class="sh"><span class="sn"></span><span class="st">Return plenum or main duct</span><span class="sd">The big duct bringing air back to the unit</span></div><div class="sb">
     <div class="row">
-      <div class="field req"><label>Round return plenum / main — size</label><select id="ex_ret_d"><option value="">Not checked</option><option value="10">10"</option><option value="12">12"</option><option value="14">14" — good to 2 ton</option><option value="16">16" — good to 3 ton</option><option value="18">18" — good to 4 ton</option><option value="20">20" — good to 5 ton</option><option value="22">22"</option><option value="24">24"</option></select></div>
+      <div class="field req"><label>Round return plenum / main — size</label><select id="ex_ret_d"><option value="">Not checked</option><option value="10">10"</option><option value="12">12"</option><option value="14">14"</option><option value="16">16"</option><option value="18">18"</option><option value="20">20"</option><option value="22">22"</option><option value="24">24"</option></select></div>
       <div class="field"><label>How many returns</label><input type="number" inputmode="numeric" id="ex_ret_n" placeholder="1" min="1"></div>
       <div class="field"><label>Rectangular instead? <small>W × H</small></label><input id="ex_ret_rect" placeholder="e.g. 20x25"></div>
       <div class="field opt" id="exRplenF"><label>Return plenum before the furnace <small>in · optional</small></label><input type="number" inputmode="decimal" id="ex_rplen" placeholder="24"></div>
@@ -1984,10 +1985,10 @@ function fixSpec(f){ if(!f) return null; if(f.list) return takeoffFromItems(f.li
   if(f.add&&f.add.length){ b.add=f.add.map(a=>a.d?ductSpec(a.d,null,1):ductSpec(null,`${a.w}x${a.h}`,1)).filter(Boolean); b.add.forEach(a=>{ b.area+=a.area; b.size+=' + '+a.size }) } return b }
 const R_PER_IN={unknown:2.8,blown_fg:2.5,cellulose:3.5,batts:3.2,spray:6,none:0};
 const INSUL_NAME={unknown:'insulation',blown_fg:'blown fiberglass',cellulose:'blown cellulose',batts:'fiberglass batts',spray:'spray foam',none:'no insulation'};
-const R_MIN=38, R_CODE=49;
+const R_MIN=38, R_CODE=49, R_MAX=60; const INS_TARGETS={'38':R_MIN,'49':R_CODE,'60':R_MAX}; // v2.49: Fix insulation offers R-38 · R-49 · R-60 (Stephen 2026-09-25)
 function insulState(fix){ fix=fix||{}; const r0=num('in_r'); const depth=num('in_depth'); const type=$('#in_type').value||'unknown';
   let R=null, src=null; if(r0!=null) { R=r0; src='entered' } else if(type==='none') { R=0; src='none' } else if(depth!=null) { R=Math.round(depth*R_PER_IN[type]*10)/10; src=`${fmt(depth)}" of ${INSUL_NAME[type]}` }
-  const target= fix.insul==='49'?R_CODE:(fix.insul==='38'?R_MIN:null); const Rf= target!=null?Math.max(R||0,target):R;
+  const target= INS_TARGETS[fix.insul]||null; const Rf= target!=null?Math.max(R||0,target):R;
   return {R,Rf,src,depth,type,target,known:R!=null,gain:(R!=null&&Rf!=null&&R>0)?(1-R/Rf):(R===0&&Rf?1:0)};
 }
 function newMotorType(o){ const m=[o&&o.unit,o&&o.furn,o&&o.ahu].filter(Boolean).join(' ').toUpperCase(); if(/GPGM5|GPHM5|GPHH5|LRP15|LRP16|GMVC|GMVM|GCVC|GCVM|SL280|EL296|EL297|EL18|EL19|ARVM|AVPTC|CBA38|CBA25|EL16/.test(m)) return 'vs_ecm'; return 'ct_ecm' }
@@ -3681,10 +3682,12 @@ function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); i
   const pkg=isPkg()&&S.setup!=='separate'; const inst=S.fix.install||'reuse'; const ins=M.ins;
   const anyFix=Object.keys(S.fix).some(k=>k!=='install'&&k!=='insul'&&S.fix[k])||inst!=='reuse'||(S.fix.insul&&S.fix.insul!=='none')||Object.values(S.scope||{}).some(Boolean)||!!S.rbrNew;
   const ductLeft=M.comps.some(c=>c.cls!=='ok'&&!c.newMetal);
-  const insLeft=ins.known&&ins.Rf<R_MIN;
+  const insOn=!!(S.fix.insul&&S.fix.insul!=='none');
+  // v2.49: the target is a choice — R-38 (Las Vegas minimum) · R-49 (2021 IECC code) · R-60. A chip whose target the attic already meets is greyed.
+  const insChips=`<span class="insr">${['38','49','60'].map(k=>`<button class="btn sm ${S.fix.insul===k?'':'ghost'}" data-insulr="${k}"${(!ins.known||(ins.R!=null&&ins.R>=INS_TARGETS[k]))?' disabled style="opacity:.45"':''}>R-${k}</button>`).join('')}</span>`;
   const b=(id,lbl,on,dis,extra)=>`<button class="btn sm ${on?'':'ghost'}" data-pact="${id}"${extra||''}${dis?' disabled style="opacity:.45"':''}>${lbl}</button>`;
   const rowInst= pkg?`<div class="prow"><span class="plab">Install</span>${[b('reuse','Keep existing roof metal',inst==='reuse',false,' data-inst="reuse"'),b('curb_old','Curb — old drops',inst==='curb_old',false,' data-inst="curb_old"'),b('curb','Curb — new plenums',inst==='curb',false,' data-inst="curb"')].join('')}</div>`:'';
-  const rowFix=`<div class="prow"><span class="plab">Design</span>${[b('d100','✦ Design to 100',false,false,mode==='plan'?' id="design100"':''),b('ducts','Fix ducts',false,!ductLeft),b('insul',(S.fix.insul&&S.fix.insul!=='none')?'✓ Insulation to R-38':'Fix insulation',!!(S.fix.insul&&S.fix.insul!=='none'),!insLeft&&!(S.fix.insul&&S.fix.insul!=='none'),' data-insul="38"'),b('regbar',(regNew()==='bar'?'✓ ':'')+'Bar-type registers',regNew()==='bar',false,' data-reg="bar" title="Swap the faces there today for bar-type aluminum — 17% more free area at every vent. Design to 100 does this first when the register faces are the tight spot."'),b('clear','↺ Clear',false,!anyFix,mode==='plan'?' id="fixReset"':'')].join('')}${S.rooms&&S.rooms.length?b('rbrnew',(S.rbrNew?'✓ ':'')+'New duct system',S.rbrNew):''}</div>`;
+  const rowFix=`<div class="prow"><span class="plab">Design</span>${[b('d100','✦ Design to 100',false,false,mode==='plan'?' id="design100"':''),b('ducts','Fix ducts',false,!ductLeft),b('insul',insOn?'✓ Insulation to R-'+INS_TARGETS[S.fix.insul]:'Fix insulation',insOn,!ins.known&&!insOn,' data-insul="38"')+insChips,b('regbar',(regNew()==='bar'?'✓ ':'')+'Bar-type registers',regNew()==='bar',false,' data-reg="bar" title="Swap the faces there today for bar-type aluminum — 17% more free area at every vent. Design to 100 does this first when the register faces are the tight spot."'),b('clear','↺ Clear',false,!anyFix,mode==='plan'?' id="fixReset"':'')].join('')}${S.rooms&&S.rooms.length?b('rbrnew',(S.rbrNew?'✓ ':'')+'New duct system',S.rbrNew):''}</div>`;
   // crew scope — the ticks that size new metal to the unit (split) or replace the roof metal (package); Plan tab only
   let rowScope=''; if(mode==='plan'){ const sc=scopeState();
     const chip=i=>`<label class="sc ${i.on?'on':''} ${i.na?'na':''}" title="${i.na?(i.k==='hp'?'the system in the home is already a heat pump':'not on this setup'):(i.air?'new metal sized to the unit — it stops being a chokepoint':'')}"><input type="checkbox" data-scope="${i.k}" ${i.on?'checked':''} ${i.na?'disabled':''}> ${i.l}${i.air?' <span class="est" style="color:var(--ok)">sized to the unit</span>':''}${i.req?' <span class="est">required</span>':''}</label>`;
@@ -3718,6 +3721,7 @@ function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); i
     else if(k==='pupd'){ const p=planUpdate(btn.dataset.pid); if(p){ try{ flash(planName(p)+' updated') }catch(e){} } }
     else if(k==='popts'){ go(9); return }
     save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() });
+  el.querySelectorAll('[data-insulr]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.insulr; S.fix.insul=(S.fix.insul===k)?'none':k; save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() });
   el.querySelectorAll('[data-addstep]').forEach(btn=>btn.onclick=()=>{ const [kind,i,dir]=btn.dataset.addstep.split(':'); addRunStep(kind,+i,+dir); save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() });
   el.querySelectorAll('[data-addrm]').forEach(btn=>btn.onclick=()=>{ const [kind,i]=btn.dataset.addrm.split(':'); addRunRemove(kind,+i); save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() });
   el.querySelectorAll('[data-pload]').forEach(btn=>btn.onclick=()=>{ if(!planGuard(planById(btn.dataset.pload))) return; const p=planUse(btn.dataset.pload,false); if(!p) return; renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh(); try{ flash(planName(p)+' is back up on the 3D') }catch(e){} });
@@ -4066,7 +4070,7 @@ function renderOptions(){ const hero=$('#optHero'), body=$('#optBody'); if(!hero
 }
 function optTableHtml(rows,E,M0){ const cols=rows.map(p=>({p,X:E[p.id],T:planTier(p,E[p.id])}));
   const cats=[]; const seen={}; cols.forEach(c=>c.X.ch.forEach(it=>{ if(!seen[it.cat]){ seen[it.cat]=1; cats.push(it) } }));
-  const CAT={curb:'Roof curb redesign',rbr:'New duct system, room by room',grille:'Return grille / filter',ret:'Return duct',sup:isPkg()?'Supply duct':'Supply trunk',takeoff:'Supply take-offs',regs:'Supply registers',pen:'Roof holes opened',elb:'Openings at the roof',addsup:'Added supply run',addret:'Added return + filter',insul:'Attic insulation to R-38'};
+  const CAT={curb:'Roof curb redesign',rbr:'New duct system, room by room',grille:'Return grille / filter',ret:'Return duct',sup:isPkg()?'Supply duct':'Supply trunk',takeoff:'Supply take-offs',regs:'Supply registers',pen:'Roof holes opened',elb:'Openings at the roof',addsup:'Added supply run',addret:'Added return + filter',insul:'Attic insulation top-up'};
   const catName=it=>CAT[it.cat]||it.t.replace(/ Ø.*$/,'').replace(/ R-.*$/,'');
   const cell=(c,cat)=>{ const hit=c.X.ch.filter(x=>x.cat===cat); return hit.length?`<td class="y" title="${tpEsc(hit.map(h=>h.t).join(' · '))}"><span class="ck">✓</span></td>`:'<td class="n">—</td>' };
   const sc=v=>`<span class="opill ${scoreCls(v)}">${v}</span>`;
