@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-26 v2.52 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-26 v2.53 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -1216,13 +1216,14 @@ body.pack .tp .noapp{display:none}
         <button id="v_info" class="on" title="Notes on everything that passes — names, sizes, dimensions, max CFM">&#9432; Info</button>
         <button id="v_flag" class="on" title="Red / orange notes only — chokepoints and fit problems">&#9888; Chokepoints</button>
         <button id="v_flow" class="on" title="Airflow — arrows drift with the air through every duct and in or out of the vents; red where a spot chokes it">&#8776; Airflow</button>
+        <button id="v_focus" class="on" title="What the picture is framed on and turns around — the unit and its plenums, the new duct system, or both">&#8982; Focus: Unit</button>
         <button id="v_iso">Reset view</button>
         <button id="v_mvu" class="hidden mv" title="Drag slides the new unit on the stand">✥ Move unit</button>
         <button id="v_mvs" class="hidden mv" title="Drag relocates the stand under the metal (along the ridge · leg height)">✥ Move stand</button>
       </div>
       <div class="vleg"><span><i style="background:#9aa6b2"></i>Existing</span><span><i style="background:#3678A0"></i>Furnace / AHU / Unit</span><span><i style="background:#77B2D0"></i>Coil</span><span><i style="background:#ffd166"></i>Access / openings</span><span><i style="background:#d9e2ec"></i>Existing metal</span></div>
     </div>
-    <p class="help" style="margin:8px 4px 0" id="viewerHelp">Drag to rotate · pinch to zoom. Ghost = today, solid = proposed.</p>
+    <p class="help" style="margin:8px 4px 0" id="viewerHelp">Drag to rotate · pinch to zoom · Focus frames the unit, the ducts or both. Ghost = today, solid = proposed.</p>
     <div class="readout" id="planReadout"></div>
     <div class="pstrip" id="planActions"></div>
   </div>
@@ -1620,7 +1621,7 @@ S.thr.acca=S.thr.acca||{}; Object.keys(ACCA).forEach(k=>{ const v=S.thr.acca[k];
 function accaPair(slot){ return (S.thr.acca&&S.thr.acca[slot])||ACCA[slot]||ACCA.sup }
 function accaTyp(slot){ return accaPair(slot)[0] } function accaMax(slot){ return accaPair(slot)[1] }
 S.thr.coil=S.thr.coil||0.20; S.thr.filt=S.thr.filt||0.10; S.thr.spGoal=S.thr.spGoal||0.5; S.thr.cptFloor=S.thr.cptFloor||390; if(S.thr.damper==null) S.thr.damper=true; delete S.thr.spRet; delete S.thr.spSup; /* v2.28: Manual D design point 0.50", limit 0.70" (the CFM quoted), 390/ton floor, 450 aim, balancing dampers on */
-S.thr.gr=S.thr.gr||2; S.thr.retv=S.thr.retv||900; S.thr.supv=S.thr.supv||900; S.thr.opv=S.thr.opv||900; S.thr.cpt=S.thr.cpt||450; /* v2.10: design aim 450 CFM/ton (Goettl charges the blower up); 400/ton is the floor the unit needs */ S.fix=S.fix||{install:'reuse',insul:'none'}; if(S.view.attic==null) S.view.attic=true; if(S.view.info==null) S.view.info=true; if(S.view.flag==null) S.view.flag=true; if(S.view.flow==null) S.view.flow=true; /* v2.50: the Airflow chip — arrows on every 3D, on by default */ /* v2.11: 3D note toggles — Info = everything that passes, Chokepoints = the red/orange notes */ // v2.3: stand relocation (along the ridge / leg height) + which object drag & nudge move ('unit' | 'stand')
+S.thr.gr=S.thr.gr||2; S.thr.retv=S.thr.retv||900; S.thr.supv=S.thr.supv||900; S.thr.opv=S.thr.opv||900; S.thr.cpt=S.thr.cpt||450; /* v2.10: design aim 450 CFM/ton (Goettl charges the blower up); 400/ton is the floor the unit needs */ S.fix=S.fix||{install:'reuse',insul:'none'}; if(S.view.attic==null) S.view.attic=true; if(S.view.info==null) S.view.info=true; if(S.view.flag==null) S.view.flag=true; if(S.view.flow==null) S.view.flow=true; /* v2.50: the Airflow chip — arrows on every 3D, on by default */ if(!S.view.focus) S.view.focus='unit'; /* v2.53: the Focus chip — the picture frames the unit by default; Ducts / Both widen it */ /* v2.11: 3D note toggles — Info = everything that passes, Chokepoints = the red/orange notes */ // v2.3: stand relocation (along the ridge / leg height) + which object drag & nudge move ('unit' | 'stand')
 let PLAN_SWAP=0; // v2.47 — > 0 while a saved plan's design is swapped in for one read (withPlan): nothing swapped in may ever be written as the job
 function save(){ if(PLAN_SWAP>0) return; store.set(SKEY,JSON.stringify(S)) }
 const FIELDS=['oldFurnModel','oF_h','oF_w','oF_d','oldCoilModel','oC_h','oC_w','oC_d','oldPkgModel','oP_l','oP_w','oP_h','oP_chassis','acc_w','acc_l','sp_1','sp_2','sp_3','st_l','st_w','st_h','tr_sw','tr_sh','tr_sx','tr_sz','tr_rw','tr_rh','tr_gap','tr_rz','rf_pitch','el_len','el_h','el_div','el_x','el_throat','el_run','jk_h','jk_w','jk_d','ex_sp','ex_motor','ex_tons','ex_ret_d','ex_ret_n','ex_ret_rect','ex_gr','ex_gr2','ex_gr_n','ex_sup_d','ex_sup_rect','ex_sup_n','ex_fdp','ex_cdp','in_depth','in_type','in_r','pn_r','pn_s','ex_tk','ex_reg','ex_trunk_ft','ex_rplen','new_trunk_ft','ex_splen','new_splen','new_tk_add','dr_ret','dr_sup','dr_br','dr_n'];
@@ -1667,7 +1668,7 @@ const SUP_TRANS=10; // v2.52: a round supply main never lands on a cased coil's 
 // length of the split system to fit — that includes both return and supply plenums"). In an attic (horizontal, or upflow on a platform) the
 // fit envelope is return plenum + furnace + coil + supply plenum, and the 3D's white fit box spans the same. A garage / closet install is
 // still the equipment alone: its supply plenum leaves through the ceiling (or the floor on a downflow), so it never has to fit the room.
-function supMainRound(fix){ try{ const sd=(fix&&fix.sup&&fixSpec(fix.sup))||ductSpec(parseFloat($('#ex_sup_d').value)||null,$('#ex_sup_rect').value,$('#ex_sup_n').value); return !!(sd&&sd.kind==='round') }catch(e){ return false } }
+function supMainRound(fix){ try{ if(fix&&newDuctSystem()) return false; /* v2.53: a new duct system comes off a square plenum — there is no round main (Stephen 2026-09-26: "all the trunk lines come right to the plenum, nothing in between") */ const sd=(fix&&fix.sup&&fixSpec(fix.sup))||ductSpec(parseFloat($('#ex_sup_d').value)||null,$('#ex_sup_rect').value,$('#ex_sup_n').value); return !!(sd&&sd.kind==='round') }catch(e){ return false } }
 function supInline(cfg,coilL,pl,round){ // what the supply side adds past the coil: cased = the plenum (+ the transition when the main is round) · plenum coil = what its box adds past where the cased coil ended · extended plenum = the head of the trunk in line with the unit
   if(cfg==='plenum_coil') return Math.max(coilL+6,pl)-coilL; if(cfg==='trunk') return isHoriz()?24:14; return pl+(round?SUP_TRANS:0) }
 function plenumsIn(){ return S.orient==='horiz'||S.orient==='up_attic' }
@@ -2070,6 +2071,14 @@ function buildComps(o,fix){ fix=fix||{}; const C=[]; const T=S.thr;
     const mark=(sl,on)=>{ if(!on) return; const c=C.find(q=>q.slot===sl); const a=needA(sl); if(!c||a==null) return; c.newMetal=true; c.scopeNew=true; c.area=Math.max(c.area,a); c.mdSpec=mdSpecFor(sl,c.area); c.size=c.size+' → new, sized to the unit' };
     mark('grille',sc.grille); mark('ret',sc.rdrop); mark('sup',sc.splen||sc.ducts); mark('takeoff',sc.ducts); mark('regs',sc.ducts); // v2.45: a new supply duct system ends in new faces, sized to the unit
     if(sc.ducts&&!C.some(q=>q.slot==='takeoff')&&design!=null) C.push({slot:'takeoff',side:'s',name:'Supply take-offs (off the plenum)',size:'new, sized to the unit',area:needA('takeoff'),cap:{fpm:T.supv},newMetal:true,scopeNew:true,mdSpec:mdSpecFor('takeoff',needA('takeoff'))}); }
+  // v2.53 — ON A PACKAGE a new duct system (room by room) is new supply metal too (Stephen 2026-09-26: "a supply main would only be if there were no plenums
+  // coming down — then something has to come down from the roof, usually round; if the square metal is coming down, all the duct comes right off that"):
+  // the take-offs are the new system's runs, and on a new curb with new plenums there is no main left to grade — the arms come straight off the plenum.
+  // On a kept jack the round drop IS what comes down from the roof, so it stays graded.
+  if(isPkg()&&!fix.__noScope&&S.rbrNew&&S.rooms&&S.rooms.length){ const design=S.tons?Math.round(tonNum(S.tons)*(T.cpt||450)):null; const inst=fix.install||'reuse';
+    const needA=sl=>design==null?null:design*144/accaTyp(sl==='takeoff'?'takeoff':'sup');
+    const mark=(sl,on)=>{ if(!on) return; const c=C.find(q=>q.slot===sl); const a=needA(sl); if(!c||a==null) return; c.newMetal=true; c.scopeNew=true; c.area=Math.max(c.area,a); c.mdSpec=sl==='takeoff'?{kind:'multi',items:Array.from({length:Math.max(1,Math.ceil(a/roundArea(8)))},()=>({d:8})),n:Math.max(1,Math.ceil(a/roundArea(8))),area:roundArea(8)*Math.max(1,Math.ceil(a/roundArea(8)))}:{kind:'round',d:Math.sqrt(4*a/Math.PI),n:1,area:a}; c.size=c.size+' → new, sized to the unit' };
+    mark('takeoff',true); mark('sup',inst==='curb'); }
   // air path: grille → return duct → roof hole → elbow hole → UNIT → elbow hole → roof hole → supply trunk → branches
   const order={grille:0,ret:1,penR:2,elbR:3,elbS:4,penS:5,sup:6,takeoff:7,regs:8}; C.sort((a,b)=>order[a.slot]-order[b.slot]); return C;
 }
@@ -2856,7 +2865,11 @@ function draw(){
   const finiteBox=b=>b.quad?b.quad.every(pt=>pt.every(v=>isFinite(v))):['x','y','z','dx','dy','dz'].every(k=>isFinite(b[k]));
   const dropped=scene.filter(b=>!finiteBox(b)); sceneDropped=dropped.length;
   if(dropped.length){ scene=scene.filter(finiteBox); try{ console.warn('Fit Check: dropped',dropped.length,'3D item(s) with bad geometry:',dropped.map(b=>b.label||'(unlabelled)').join(' · ')) }catch(e){} }
-  const fitItems=scene.filter(b=>!b.nofit&&!b.marker);
+  // v2.53 — FOCUS (Stephen 2026-09-26: "with all the ducts running so far horizontal, the 3D loses focus on the AC unit — can we have the view more
+  // centred on where the main unit is"): the frame — and the point the picture turns around — is the unit and what hangs on it (`unit`, the default),
+  // the new duct system alone (`ducts`), or everything (`both`). The duct system is drawn whatever the focus; only what the camera frames changes.
+  const focus=(S.view&&S.view.focus)||'unit';
+  let fitItems=scene.filter(b=>!b.marker&&(focus==='unit'?(!b.nofit&&!b.duct):(focus==='ducts'?!!b.duct:(!b.nofit||!!b.duct)))); if(!fitItems.length) fitItems=scene.filter(b=>!b.nofit&&!b.marker);
   const bb=fitItems.reduce((m,b)=>({x0:Math.min(m.x0,b.x),y0:Math.min(m.y0,b.y),z0:Math.min(m.z0,b.z),x1:Math.max(m.x1,b.x+b.dx),y1:Math.max(m.y1,b.y+b.dy),z1:Math.max(m.z1,b.z+b.dz)}),{x0:0,y0:0,z0:0,x1:40,y1:40,z1:40});
   const ctr=[(bb.x0+bb.x1)/2,(bb.y0+bb.y1)/2,(bb.z0+bb.z1)/2];
   // auto-fit: project every box corner at unit scale, then scale to the canvas
@@ -2879,6 +2892,7 @@ function draw(){
   const faces=[];
   scene.forEach(b=>{ if(b.quad||b.marker) return; const {x,y,z,dx,dy,dz}=b;
     if(b.bend){ bendFaces(b,P,faces); return } // v2.44 radiused elbow
+    if(b.tube){ tubeFaces(b,P,faces); return } // v2.53 a straight duct in any direction (a wye leg at 45°)
     if(b.poly){ const pts=b.poly.map(P); faces.push({pts,depth:pts.reduce((s_,p)=>s_+p[2],0)/pts.length,b,nrm:b.nrm||[0,1,0]}); return } // v2.52 a slanted slab (the A-coil), sorted with the faces
     if(b.cyl){ // v2.5 round duct: a 12-sided prism along axis b.cyl ('x' | 'y' | 'z') inside the item's bounding box
       const N=12, r0=[], r1=[], nr=[]; for(let i=0;i<N;i++){ const t=i/N*2*Math.PI, c=Math.cos(t), sn=Math.sin(t);
@@ -2914,11 +2928,14 @@ function draw(){
 // centrelines would meet, u / v: unit vectors from that corner along each leg, R: the centreline radius, a: the duct size across the bend axis,
 // h: the size in the bend plane, round}. A 90° sweep of the cross-section about the bend axis — NT arcs × NP sides — dropped into the same
 // painter's list as the boxes and cylinders so it sorts with everything else. Normals feed the shading only.
-function bendFaces(b,P,faces){ const {c,u,v,R,a,h,round}=b.bend; const n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]; const O=[c[0]+(u[0]+v[0])*R,c[1]+(u[1]+v[1])*R,c[2]+(u[2]+v[2])*R];
-  const NT=4, NP=round?12:4; const rings=[], radial=[], mids=[];
-  for(let i=0;i<=NT;i++){ const th=i/NT*Math.PI/2, ct=Math.cos(th), st=Math.sin(th); const m=[-v[0]*ct-u[0]*st,-v[1]*ct-u[1]*st,-v[2]*ct-u[2]*st]; const pc=[O[0]+m[0]*R,O[1]+m[1]*R,O[2]+m[2]*R]; const ring=[], nr=[];
-    for(let j=0;j<NP;j++){ let dm,dn; if(round){ const ph=j/NP*2*Math.PI; dm=Math.cos(ph)*h/2; dn=Math.sin(ph)*a/2; nr.push([m[0]*Math.cos(ph)+n[0]*Math.sin(ph),m[1]*Math.cos(ph)+n[1]*Math.sin(ph),m[2]*Math.cos(ph)+n[2]*Math.sin(ph)]) }
-      else { const sq=[[1,1],[-1,1],[-1,-1],[1,-1]][j]; dm=sq[0]*h/2; dn=sq[1]*a/2; nr.push(null) }
+// v2.53 — a bend may sweep less than 90° (b.bend.th, radians — a 45° wye leg) and taper (b.bend.a2 / h2 = the size at its far end), so a
+// TY reads as the round reducing wye it is: the branch size in, the leg size out, one smooth radius (Stephen 2026-09-26: "a 12" coming in
+// then splits left and right, round clean long radius bend to the smaller duct"). Everything already drawn passes neither and is unchanged.
+function bendFaces(b,P,faces){ const {c,u,v,R,a,h,round}=b.bend; const th0=b.bend.th||Math.PI/2, a2=b.bend.a2!=null?b.bend.a2:a, h2=b.bend.h2!=null?b.bend.h2:h; const n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]; const O=[c[0]+(u[0]+v[0])*R,c[1]+(u[1]+v[1])*R,c[2]+(u[2]+v[2])*R];
+  const NT=th0<1.2?3:4, NP=round?12:4; const rings=[], radial=[], mids=[];
+  for(let i=0;i<=NT;i++){ const f=i/NT, th=f*th0, ct=Math.cos(th), st=Math.sin(th); const ai=a+(a2-a)*f, hi=h+(h2-h)*f; const m=[-v[0]*ct-u[0]*st,-v[1]*ct-u[1]*st,-v[2]*ct-u[2]*st]; const pc=[O[0]+m[0]*R,O[1]+m[1]*R,O[2]+m[2]*R]; const ring=[], nr=[];
+    for(let j=0;j<NP;j++){ let dm,dn; if(round){ const ph=j/NP*2*Math.PI; dm=Math.cos(ph)*hi/2; dn=Math.sin(ph)*ai/2; nr.push([m[0]*Math.cos(ph)+n[0]*Math.sin(ph),m[1]*Math.cos(ph)+n[1]*Math.sin(ph),m[2]*Math.cos(ph)+n[2]*Math.sin(ph)]) }
+      else { const sq=[[1,1],[-1,1],[-1,-1],[1,-1]][j]; dm=sq[0]*hi/2; dn=sq[1]*ai/2; nr.push(null) }
       ring.push([pc[0]+m[0]*dm+n[0]*dn,pc[1]+m[1]*dm+n[1]*dn,pc[2]+m[2]*dm+n[2]*dn]) }
     rings.push(ring); radial.push(nr); mids.push(m) }
   for(let i=0;i<NT;i++) for(let j=0;j<NP;j++){ const k=(j+1)%NP; const pts=[rings[i][j],rings[i][k],rings[i+1][k],rings[i+1][j]].map(P); let nrm;
@@ -2942,11 +2959,33 @@ function aCoilIn(x,y,z,dx,dy,dz,axis,dir){ const i=1.6, TH=1.4; if(!(dx>6&&dy>6&
     slab([[x+i,yb,z+i],[x+dx-i,yb,z+i],[x+dx-i,ya,zm-TH],[x+i,ya,zm-TH]],[0,dir*n,-n]); slab([[x+i,yb,z+dz-i],[x+dx-i,yb,z+dz-i],[x+dx-i,ya,zm+TH],[x+i,ya,zm+TH]],[0,dir*n,n]) } }
 // push a bend into the scene with a bounding box (for the auto-fit and the safety net) taken off its sampled surface
 function pushBend(C,u,v,cs,R,color,alpha,extra){ const n=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]; const O=[C[0]+(u[0]+v[0])*R,C[1]+(u[1]+v[1])*R,C[2]+(u[2]+v[2])*R];
-  const mn=[1e9,1e9,1e9], mx=[-1e9,-1e9,-1e9]; const h=cs.h, a=cs.a;
-  for(let i=0;i<=4;i++){ const th=i/4*Math.PI/2, ct=Math.cos(th), st=Math.sin(th); const m=[-v[0]*ct-u[0]*st,-v[1]*ct-u[1]*st,-v[2]*ct-u[2]*st]; const pc=[O[0]+m[0]*R,O[1]+m[1]*R,O[2]+m[2]*R];
-    [[1,1],[-1,1],[-1,-1],[1,-1]].forEach(([sm,sn])=>{ for(let k=0;k<3;k++){ const q=pc[k]+m[k]*sm*h/2+n[k]*sn*a/2; if(q<mn[k]) mn[k]=q; if(q>mx[k]) mx[k]=q } }) }
+  const mn=[1e9,1e9,1e9], mx=[-1e9,-1e9,-1e9]; const h=cs.h, a=cs.a; const th0=cs.th||Math.PI/2, a2=cs.a2!=null?cs.a2:a, h2=cs.h2!=null?cs.h2:h; // v2.53: sweep + taper
+  for(let i=0;i<=4;i++){ const f=i/4, th=f*th0, ct=Math.cos(th), st=Math.sin(th); const ai=a+(a2-a)*f, hi=h+(h2-h)*f; const m=[-v[0]*ct-u[0]*st,-v[1]*ct-u[1]*st,-v[2]*ct-u[2]*st]; const pc=[O[0]+m[0]*R,O[1]+m[1]*R,O[2]+m[2]*R];
+    [[1,1],[-1,1],[-1,-1],[1,-1]].forEach(([sm,sn])=>{ for(let k=0;k<3;k++){ const q=pc[k]+m[k]*sm*hi/2+n[k]*sn*ai/2; if(q<mn[k]) mn[k]=q; if(q>mx[k]) mx[k]=q } }) }
   if(!mn.every(isFinite)||!mx.every(isFinite)) return null;
-  return sceneAdd(Object.assign({bend:{c:C,u,v,R,a,h,round:!!cs.round},x:mn[0],y:mn[1],z:mn[2],dx:Math.max(mx[0]-mn[0],0.1),dy:Math.max(mx[1]-mn[1],0.1),dz:Math.max(mx[2]-mn[2],0.1),color,alpha,noshadow:true},extra||{})) }
+  const bd={c:C,u,v,R,a,h,round:!!cs.round}; if(cs.th) bd.th=cs.th; if(cs.a2!=null){ bd.a2=a2; bd.h2=h2 }
+  return sceneAdd(Object.assign({bend:bd,x:mn[0],y:mn[1],z:mn[2],dx:Math.max(mx[0]-mn[0],0.1),dy:Math.max(mx[1]-mn[1],0.1),dz:Math.max(mx[2]-mn[2],0.1),color,alpha,noshadow:true},extra||{})) }
+// v2.53 — a bend stated the way a fitter would: it starts at P0 heading dIn, turns toward `side` (a unit vector square to dIn) on a centreline
+// radius R through `th` radians, and hands back where it ends and which way it is heading, so the next straight can be laid from there.
+// Sizes: cs.a / cs.h at the start, cs.a2 / cs.h2 at the end (a reducing wye leg), cs.round. Same primitive underneath as pushBend.
+function bendFrom(P0,dIn,side,R,th,cs,color,alpha,extra){ const u=[-dIn[0],-dIn[1],-dIn[2]], v=side; const C=[P0[0]+dIn[0]*R,P0[1]+dIn[1]*R,P0[2]+dIn[2]*R];
+  const b=pushBend(C,u,v,Object.assign({},cs,{th}),R,color,alpha,extra); const ct=Math.cos(th), st=Math.sin(th);
+  const O=[C[0]+(u[0]+v[0])*R,C[1]+(u[1]+v[1])*R,C[2]+(u[2]+v[2])*R]; const end=[O[0]-(v[0]*ct+u[0]*st)*R,O[1]-(v[1]*ct+u[1]*st)*R,O[2]-(v[2]*ct+u[2]*st)*R];
+  const dir=[v[0]*st+dIn[0]*ct,v[1]*st+dIn[1]*ct,v[2]*st+dIn[2]*ct]; return {b,end,dir} }
+// v2.53 — a straight duct between two points in ANY direction (the leg of a wye running on at 45°). The cyl item is axis-aligned, so this is its own
+// item: b.tube = {p0,p1,a,h,round}; drawn as a 12-sided (or 4-sided) prism about the p0→p1 axis, sorted with the faces like everything else.
+function tubeBasis(p0,p1){ const ax=[p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]]; const L=Math.hypot(ax[0],ax[1],ax[2])||1; const a=[ax[0]/L,ax[1]/L,ax[2]/L]; const ref=Math.abs(a[1])<0.9?[0,1,0]:[1,0,0];
+  let e1=[ref[1]*a[2]-ref[2]*a[1],ref[2]*a[0]-ref[0]*a[2],ref[0]*a[1]-ref[1]*a[0]]; const l1=Math.hypot(e1[0],e1[1],e1[2])||1; e1=[e1[0]/l1,e1[1]/l1,e1[2]/l1]; const e2=[a[1]*e1[2]-a[2]*e1[1],a[2]*e1[0]-a[0]*e1[2],a[0]*e1[1]-a[1]*e1[0]]; return {a,e1,e2,L} }
+function tubeRings(t){ const {p0,p1,a,h,round}=t; const B=tubeBasis(p0,p1); const NP=round?12:4; const r0=[],r1=[],nr=[];
+  for(let j=0;j<NP;j++){ let dm,dn; if(round){ const ph=j/NP*2*Math.PI; dm=Math.cos(ph)*h/2; dn=Math.sin(ph)*a/2 } else { const sq=[[1,1],[-1,1],[-1,-1],[1,-1]][j]; dm=sq[0]*h/2; dn=sq[1]*a/2 }
+    const off=[B.e1[0]*dm+B.e2[0]*dn,B.e1[1]*dm+B.e2[1]*dn,B.e1[2]*dm+B.e2[2]*dn]; r0.push([p0[0]+off[0],p0[1]+off[1],p0[2]+off[2]]); r1.push([p1[0]+off[0],p1[1]+off[1],p1[2]+off[2]]); const ln=Math.hypot(off[0],off[1],off[2])||1; nr.push([off[0]/ln,off[1]/ln,off[2]/ln]) }
+  return {r0,r1,nr,B,NP} }
+function tubeFaces(b,P,faces){ const {r0,r1,nr,B,NP}=tubeRings(b.tube);
+  for(let i=0;i<NP;i++){ const j=(i+1)%NP; const pts=[r0[i],r0[j],r1[j],r1[i]].map(P); faces.push({pts,depth:pts.reduce((s_,p)=>s_+p[2],0)/4,b,nrm:[(nr[i][0]+nr[j][0])/2,(nr[i][1]+nr[j][1])/2,(nr[i][2]+nr[j][2])/2]}) }
+  [[r0,B.a.map(v=>-v)],[r1,B.a]].forEach(([ring,nn])=>{ const pts=ring.map(P); faces.push({pts,depth:pts.reduce((s_,p)=>s_+p[2],0)/pts.length,b,nrm:nn}) }) }
+function pushTube(p0,p1,cs,color,alpha,extra){ const t={p0,p1,a:cs.a,h:cs.h,round:!!cs.round}; const {r0,r1}=tubeRings(t); const all=r0.concat(r1); if(!all.every(p=>p.every(isFinite))) return null;
+  const mn=[0,1,2].map(k=>Math.min(...all.map(p=>p[k]))), mx=[0,1,2].map(k=>Math.max(...all.map(p=>p[k])));
+  return sceneAdd(Object.assign({tube:t,x:mn[0],y:mn[1],z:mn[2],dx:Math.max(mx[0]-mn[0],0.1),dy:Math.max(mx[1]-mn[1],0.1),dz:Math.max(mx[2]-mn[2],0.1),color,alpha,noshadow:true},extra||{})) }
 // v2.44 — THE FULL NEW DUCT SYSTEM ON THE 3D (Stephen 2026-09-20: "if we did a full duct system, illustrate that in some way").
 // v2.52 — DRAWN THE WAY THE MANUAL D 2D DESIGNS IT (Stephen 2026-09-26: "don't try to bring 10 ducts all back to the plenum — however many
 // ducts are needed, bring them back to the plenum like the Manual D 2D says, TYed back properly"). One reducing trunk arm off each side of the
@@ -2972,28 +3011,36 @@ function ductTreeFromRuns(items,AM){ // no room design: the runs, dealt over two
       return {d:sz.d,add:sz.add||[],carry,room:null,taps:[{d,side:i%2?-1:1,run:12+i*3,legs:[{d,can:null,face:null}]}]} }); arms.push({k,segs}) });
   return {arms,runs:n,per,rbr:false} }
 function trunkOutRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms.length) return; const NEWM='#a9d9bd'; const up=!!plane.up; const dn=up?1:-1; const FAR=72; // base = {x: where the arms tee off the plenum, y: its centreline, zA / zB: its two side faces}
-  const add=o=>sceneAdd(Object.assign({color:NEWM,alpha:.85,noshadow:true,nw:true,cls:'ok'},o));
+  const add=o=>sceneAdd(Object.assign({color:NEWM,alpha:.85,noshadow:true,nw:true,cls:'ok',duct:true},o)); // v2.53: every piece of the new duct system is tagged `duct` so the Focus chip can frame the unit without it, or it alone
   const cyl=(x,y,z,dx,dy,dz,ax,o)=>add(Object.assign({x,y,z,dx,dy,dz,cyl:ax},o||{}));
-  const bend=(C,u,v,d,R)=>pushBend(C,u,v,{a:d,h:d,round:true},R,NEWM,.85,{nw:true,cls:'ok'});
+  const bend=(C,u,v,d,R,o)=>pushBend(C,u,v,{a:d,h:d,round:true},R,NEWM,.85,Object.assign({nw:true,cls:'ok',duct:true},o||{}));
   const yC=base.y, vAvail=Math.abs(yC-plane.y); let first=true, canLbl=true, tyLbl=true;
   const regCls=(opt.regCls==='bad'||opt.regCls==='warn')?opt.regCls:'';
   // the last leg: from the corner on its line, sweep down onto the ceiling (or up to a floor) and land on a square can with its register
-  const land=(x,z,d,can,face,u,far)=>{ const R=bendR({a:d,b:d,round:true},14,vAvail*0.8); if(vAvail<R+1) return false;
-    flB(bend([x,yC,z],u,[0,dn,0],d,R),1,'s'); const yA=up?yC+R:plane.y, yB=up?plane.y:yC-R; if(yB-yA>0.5) fl(cyl(x-d/2,yA,z-d/2,d,yB-yA,d,'y',{nofit:far}),'y',dn,'s');
+  const legR=d=>bendR({a:d,b:d,round:true},12,vAvail*0.8); // the radius of the bend that turns a leg down — sized once, used by the straight leg and the bend alike
+  const land=(x,z,d,can,face,u,far,R)=>{ R=R||legR(d); if(vAvail<R+1) return false;
+    flB(bend([x,yC,z],u,[0,dn,0],d,R,{nofit:far}),1,'s'); const yA=up?yC+R:plane.y, yB=up?plane.y:yC-R; if(yB-yA>0.5) fl(cyl(x-d/2,yA,z-d/2,d,yB-yA,d,'y',{nofit:far}),'y',dn,'s');
     const cy=up?plane.y-6:plane.y-4; fl(add({x:x-can/2,y:cy,z:z-can/2,dx:can,dy:6,dz:can,alpha:.9,nofit:far,la:[0.5,up?0:1,0.5],label:canLbl?`${can}×${can} can · ${REG_FACE[face||regNew()].short} register`:null}),'y',dn,'s'); canLbl=false;
     flV(add({x:x-can/2-1,y:up?plane.y+0.4:plane.y-5.4,z:z-can/2-1,dx:can+2,dy:1.2,dz:can+2,color:'#eef3f7',alpha:.95,nofit:far}),'out',[0,dn,0],'s',regCls); return true };
   T.arms.forEach(arm=>{ const dir=arm.k==='L'?-1:1; const z0=dir>0?base.zA:base.zB; let z=z0;
-    arm.segs.forEach((sg,si)=>{ const D=sg.d||8; const head=si===0?16:10; const pitch=sg.taps.map(tp=>(tp.legs&&tp.legs.length>1)?30:14); const len=head+pitch.reduce((s,p)=>s+p,0)+2; const far=Math.abs(z-z0)>FAR;
+    arm.segs.forEach((sg,si)=>{ const D=sg.d||8; const head=si===0?16:10; const room=sg.taps.map(tp=>(tp.legs&&tp.legs.length>1)?24:0); const len=head+sg.taps.reduce((s,tp,i)=>s+room[i]*2+14,0)+2; const far=Math.abs(z-z0)>FAR; // v2.53: a TY's two legs reach along the trunk both ways, so its tap gets room either side
       fl(cyl(base.x-D/2,yC-D/2,Math.min(z,z+dir*len),D,D,len,'z',{nofit:far,la:[0.5,1,0.5],label:first?opt.label:(sg.room?`Ø${fmt(D)}" trunk → ${sg.room}${sg.carry?' · '+CFM(sg.carry)+' CFM':''}`:null)}),'z',dir,'s'); first=false; // the trunk steps down here
       (sg.add||[]).forEach((a,ai)=>{ const ad=a.d||8; fl(cyl(base.x-ad/2,yC+D/2+2+ai*(ad+2),Math.min(z,z+dir*len),ad,ad,len,'z',{nofit:far}),'z',dir,'s') }); // v2.48: a 20" plus the run that carries the rest, beside it
-      let at=head; sg.taps.forEach((tp,ti)=>{ const zt=z+dir*at; at+=pitch[ti]; const s=tp.side||1, d=tp.d||8; const xs=base.x+s*D/2; const L=Math.max(18,Math.min(44,14+(tp.run||12)*1.8)); const xe=xs+s*L; const legs=(tp.legs&&tp.legs.length)?tp.legs:[{d}];
+      let at=head; sg.taps.forEach((tp,ti)=>{ const zt=z+dir*(at+room[ti]); at+=room[ti]*2+14; const s=tp.side||1, d=tp.d||8; const xs=base.x+s*D/2; const L=Math.max(18,Math.min(44,14+(tp.run||12)*1.8)); const xe=xs+s*L; const legs=(tp.legs&&tp.legs.length)?tp.legs:[{d}];
         if(legs.length<2){ const lg=legs[0]; const can=lg.can||rbrCanFor(T.per,lg.d||d); const R=bendR({a:d,b:d,round:true},L,vAvail*0.8); if(vAvail<R+1) return; // one leg: the branch runs out and turns down onto its can
-          fl(cyl(Math.min(xs,xe-s*R),yC-d/2,zt-d/2,Math.max(L-R,2),d,d,'x',{nofit:far}),'x',s,'s'); land(xe,zt,d,can,lg.face,[-s,0,0],far) }
-        else { fl(cyl(Math.min(xs,xe),yC-d/2,zt-d/2,L,d,d,'x',{nofit:far}),'x',s,'s'); const ld=legs[0].d||d; const ty=Math.max(d,ld)+3; // a TY at the end of the branch; its legs go either way along the trunk's line, then down
-          add({x:Math.min(xe,xe+s*ty),y:yC-ty/2,z:zt-ty/2,dx:ty,dy:ty,dz:ty,alpha:.92,nofit:far,la:[0.5,1,0.5],label:tyLbl?`TY ${fmt(d)}×${fmt(ld)}×${fmt(ld)}`:null}); tyLbl=false;
-          const xc=xe+s*ty/2; legs.slice(0,3).forEach((lg,li)=>{ const can=lg.can||rbrCanFor(T.per,ld); const R=bendR({a:ld,b:ld,round:true},12,vAvail*0.8); if(vAvail<R+1) return;
-            if(li<2){ const dz_=li?-1:1; const LL=12; const zE=zt+dz_*(ty/2+LL); const za=zt+dz_*ty/2, zb=zE-dz_*R; fl(cyl(xc-ld/2,yC-ld/2,Math.min(za,zb),ld,ld,Math.max(Math.abs(zb-za),1),'z',{nofit:far}),'z',dz_,'s'); land(xc,zE,ld,can,lg.face,[0,0,-dz_],far) }
-            else { const xE=xe+s*(ty+12); fl(cyl(Math.min(xe+s*ty,xE-s*R),yC-ld/2,zt-ld/2,Math.max(12-R,1),ld,ld,'x',{nofit:far}),'x',s,'s'); land(xE,zt,ld,can,lg.face,[-s,0,0],far) } }) } });
+          fl(cyl(Math.min(xs,xe-s*R),yC-d/2,zt-d/2,Math.max(L-R,2),d,d,'x',{nofit:far}),'x',s,'s'); land(xe,zt,d,can,lg.face,[-s,0,0],far,R) }
+        else { const ld=legs[0].d||d; // v2.53 — a ROUND REDUCING WYE (Stephen 2026-09-26: "a 12" coming in then splits left and right, round clean long radius bend to the smaller duct"):
+          // the branch runs to the wye's inlet; each leg leaves it through a 45° long-radius bend that tapers from the branch size to the leg size, runs on
+          // at 45° (the Y), turns the last 45° through a second bend so it lies along the trunk's line, and then sweeps down onto its can and register.
+          const Rw=Math.max(ld,Math.min(1.5*ld,L*0.45)), Ls=8, Rw2=Math.max(4,ld*0.9), LL=4; const xIn=xs+s*Math.max(L-10,6);
+          fl(cyl(Math.min(xs,xIn),yC-d/2,zt-d/2,Math.max(Math.abs(xIn-xs),2),d,d,'x',{nofit:far}),'x',s,'s');
+          legs.slice(0,3).forEach((lg,li)=>{ const can=lg.can||rbrCanFor(T.per,ld); const R2=legR(ld); if(vAvail<R2+1) return;
+            if(li<2){ const dz_=li?-1:1; const w=bendFrom([xIn,yC,zt],[s,0,0],[0,0,dz_],Rw,Math.PI/4,{a:d,h:d,a2:ld,h2:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:far,la:[0.5,1,0.5],label:(tyLbl&&li===0)?`TY ${fmt(d)}×${fmt(ld)}×${fmt(ld)}`:null}); if(!w.b) return; flB(w.b,1,'s'); tyLbl=false; // the wye's own leg — the metal fitting, reducing as it goes
+              const e1=w.end, d1=w.dir; const p2=[e1[0]+d1[0]*Ls,e1[1],e1[2]+d1[2]*Ls]; flT(pushTube(e1,p2,{a:ld,h:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:far}),1,'s'); // the Y: the leg runs on at 45°
+              const w2=bendFrom(p2,d1,[-s*Math.SQRT1_2,0,dz_*Math.SQRT1_2],Rw2,Math.PI/4,{a:ld,h:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:far}); if(!w2.b) return; flB(w2.b,1,'s'); // the 45° elbow that lays it along the trunk's line
+              const e2=w2.end; const zEnd=e2[2]+dz_*(LL+R2); const za=e2[2], zb=zEnd-dz_*R2; if(Math.abs(zb-za)>0.5) fl(cyl(e2[0]-ld/2,yC-ld/2,Math.min(za,zb),ld,ld,Math.abs(zb-za),'z',{nofit:far}),'z',dz_,'s');
+              land(e2[0],zEnd,ld,can,lg.face,[0,0,-dz_],far,R2) }
+            else { const x0=xIn, xE=xIn+s*(14+R2), x1=xE-s*R2; fl(cyl(Math.min(x0,x1),yC-ld/2,zt-ld/2,Math.max(Math.abs(x1-x0),1),ld,ld,'x',{nofit:far}),'x',s,'s'); land(xE,zt,ld,can,lg.face,[-s,0,0],far,R2) } }) } });
       z+=dir*len }) }) }
 // with New duct system on, the take-offs drawn ARE the room design's runs — one per register, at the leg size the room design gave it
 function rbrTakeoffs(){ if(!(S.rbrNew&&RM&&S.rooms&&S.rooms.length)) return null; const out=[];
@@ -3039,6 +3086,7 @@ const flowNow=()=>(((typeof performance!=='undefined'&&performance.now)?performa
 const flowStill=()=>{ try{ return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches) }catch(e){ return false } };
 function fl(it,axis,dir,k){ if(it) it.flow={axis,dir:dir<0?-1:1,k:k||null}; return it }          // a straight duct — the air runs along `axis` in direction `dir`
 function flB(it,dir,k){ if(it) it.flow={bend:true,dir:dir<0?-1:1,k:k||null}; return it }          // a radiused bend — +1 from its u leg to its v leg
+function flT(it,dir,k){ if(it) it.flow={tube:true,dir:dir<0?-1:1,k:k||null}; return it }          // v2.53 a tube — +1 from p0 to p1
 function flV(it,vent,n,k,cls){ if(it) it.flow={vent,n,k:k||null,cls:cls||''}; return it }          // a face: 'out' blows into the room along n, 'in' draws from the room along −n
 const FLOW_COL={bad:'#ff4d4d',warn:'#ffa142','':'#d2f6ff'}; const FLOW_RGB={bad:'255,77,77',warn:'255,161,66','':'210,246,255'};
 // v2.51 — THE INDICATORS REDRAWN (Stephen 2026-09-26: the wavy arrows were too large and awkward, and overpowered the picture — the 3D has
@@ -3061,9 +3109,11 @@ function flowPaths(P,faces){ const out=[]; const d2=(a,b)=>Math.hypot(a[0]-b[0],
       [-1,0,1].forEach((s,j)=>{ const near=[c[0]+n[0]*1.2,c[1]+n[1]*1.2,c[2]+n[2]*1.2]; const far=[c[0]+n[0]*(L-(s?2.5:0))+side[0]*s*S_,c[1]+n[1]*(L-(s?2.5:0))+side[1]*s*S_,c[2]+n[2]*(L-(s?2.5:0))+side[2]*s*S_];
         const p0=sgn>0?near:far, p1=sgn>0?far:near; const pts3=[]; for(let i=0;i<=3;i++) pts3.push([p0[0]+(p1[0]-p0[0])*i/3,p0[1]+(p1[1]-p0[1])*i/3,p0[2]+(p1[2]-p0[2])*i/3]);
         add(pts3,c,n,[side[0]*2,side[1]*2,side[2]*2],cls,'vent',f.k,j,b,f.vent) }); return }
-    if(f.bend){ const {c,u,v,R,a,h}=b.bend; const nn=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]; const O=[c[0]+(u[0]+v[0])*R,c[1]+(u[1]+v[1])*R,c[2]+(u[2]+v[2])*R]; const pts3=[]; const N=6;
-      for(let i=0;i<=N;i++){ let th=i/N*Math.PI/2; if(f.dir<0) th=Math.PI/2-th; const ct=Math.cos(th),st=Math.sin(th); const m=[-v[0]*ct-u[0]*st,-v[1]*ct-u[1]*st,-v[2]*ct-u[2]*st]; pts3.push([O[0]+m[0]*R,O[1]+m[1]*R,O[2]+m[2]*R]) }
-      const rr=Math.min(a,h)/2; const mid=pts3[N/2]; const tg=f.dir<0?u:v; add(pts3,mid,tg,[nn[0]*rr,nn[1]*rr,nn[2]*rr],cls,'duct',f.k,0,b); return }
+    if(f.bend){ const {c,u,v,R,a,h}=b.bend; const th0=b.bend.th||Math.PI/2; const nn=[u[1]*v[2]-u[2]*v[1],u[2]*v[0]-u[0]*v[2],u[0]*v[1]-u[1]*v[0]]; const O=[c[0]+(u[0]+v[0])*R,c[1]+(u[1]+v[1])*R,c[2]+(u[2]+v[2])*R]; const pts3=[]; const N=6;
+      for(let i=0;i<=N;i++){ let th=i/N*th0; if(f.dir<0) th=th0-th; const ct=Math.cos(th),st=Math.sin(th); const m=[-v[0]*ct-u[0]*st,-v[1]*ct-u[1]*st,-v[2]*ct-u[2]*st]; pts3.push([O[0]+m[0]*R,O[1]+m[1]*R,O[2]+m[2]*R]) }
+      const rr=Math.min(a,h)/2; const mid=pts3[N/2]; const ce=Math.cos(th0), se=Math.sin(th0); const tg=f.dir<0?u:[v[0]*se-u[0]*ce,v[1]*se-u[1]*ce,v[2]*se-u[2]*ce]; add(pts3,mid,tg,[nn[0]*rr,nn[1]*rr,nn[2]*rr],cls,'duct',f.k,0,b); return } // v2.53: a partial sweep ends heading where its arc does
+    if(f.tube){ const t=b.tube; const B=tubeBasis(t.p0,t.p1); const q0=f.dir<0?t.p1:t.p0, q1=f.dir<0?t.p0:t.p1; const N=Math.max(2,Math.min(12,Math.ceil(B.L/10))); const pts3=[]; for(let i=0;i<=N;i++) pts3.push([q0[0]+(q1[0]-q0[0])*i/N,q0[1]+(q1[1]-q0[1])*i/N,q0[2]+(q1[2]-q0[2])*i/N]);
+      const rr=Math.min(t.a,t.h)/2; const c=[(t.p0[0]+t.p1[0])/2,(t.p0[1]+t.p1[1])/2,(t.p0[2]+t.p1[2])/2]; const tg=B.a.map(v=>v*f.dir); add(pts3,c,tg,[B.e1[0]*rr,B.e1[1]*rr,B.e1[2]*rr],cls,'duct',f.k,0,b); return } // v2.53
     const ax=f.axis; if(!AX[ax]) return; const A=AX[ax]; const {x,y,z,dx,dy,dz}=b; const c=[x+dx/2,y+dy/2,z+dz/2]; const half={x:dx,y:dy,z:dz}[ax]/2; const s=f.dir;
     const p0=[c[0]-A[0]*half*s,c[1]-A[1]*half*s,c[2]-A[2]*half*s], p1=[c[0]+A[0]*half*s,c[1]+A[1]*half*s,c[2]+A[2]*half*s];
     const cross=ax==='x'?[dy,dz]:(ax==='y'?[dx,dz]:[dx,dy]); const rr=Math.min(cross[0],cross[1])/2; const perp=ax==='y'?[1,0,0]:[0,1,0];
@@ -3133,11 +3183,11 @@ const curOpt=()=>{ const row=rowsFor()[S.star]; return row?pick(S.star,row):null
 const curbDesign=()=>isPkg()&&S.setup!=='separate'&&!isCurbSetup()&&['curb','curb_old'].includes((S.fix&&S.fix.install)||'reuse'); // v2.9: curb redesign of an elbow/stand setup — the above-roof scene is redrawn
 function moveMode(){ return (isPkg()&&S.setup!=='separate'&&!curbDesign()&&(view.mode==='unit'||(view.mode==='stand'&&!isCurbSetup())))?view.mode:'rot' }
 function setMoveMode(m){ view.mode=(view.mode===m)?'rot':m; if(view.mode!=='rot') { S.mv=view.mode; save() } syncMoveUi() }
-function syncMoveUi(){ const m=moveMode(); $('#v_mvu').classList.toggle('on',m==='unit'); $('#v_mvs').classList.toggle('on',m==='stand'); $('#viewer').classList.toggle('moving',m!=='rot');
+function syncMoveUi(){ const m=moveMode(); if(typeof syncFocusChip==='function') syncFocusChip(); /* v2.53: the Focus chip follows the state whenever the viewer is refreshed (a loaded design file carries its own) */ $('#v_mvu').classList.toggle('on',m==='unit'); $('#v_mvs').classList.toggle('on',m==='stand'); $('#viewer').classList.toggle('moving',m!=='rot');
   $('#v_mvu').classList.toggle('hidden',!isPkg()||S.setup==='separate'||curbDesign()); $('#v_mvs').classList.toggle('hidden',!isPkg()||isCurbSetup()||S.setup==='separate'||curbDesign());
   const h=$('#viewerHelp'); if(h) h.innerHTML= m==='unit'?'<b>Move unit:</b> drag slides the new unit along the stand and shims it up. Tap Move unit again to rotate.'
     : m==='stand'?'<b>Move stand:</b> drag relocates the stand under the metal — along the ridge, and the leg height. Tap Move stand again to rotate.'
-    : 'Drag to rotate · pinch to zoom. Ghost = today, solid = proposed'+(labelState()==='flag'?' · showing problems only':(labelState()==='none'?' · notes off':''))+'.'; }
+    : 'Drag to rotate · pinch to zoom · Focus frames the unit, the ducts or both. Ghost = today, solid = proposed'+(labelState()==='flag'?' · showing problems only':(labelState()==='none'?' · notes off':''))+'.'; }
 function labelState(){ const i=S.view.info!==false, f=S.view.flag!==false; return i&&f?'all':(f?'flag':(i?'info':'none')) }
 $('#v_mvu').onclick=()=>setMoveMode('unit'); $('#v_mvs').onclick=()=>setMoveMode('stand');
 function moveAxes(){ // screen-pixel vectors for +1" along the duct face and +1" up (or in, on a curb) at the moved object
@@ -3171,6 +3221,9 @@ $('#v_iso').onclick=()=>{resetView();draw()};
 ['info','flag'].forEach(k=>{const b=$('#v_'+k);b.classList.toggle('on',S.view[k]);b.onclick=()=>{S.view[k]=!S.view[k];save();b.classList.toggle('on',S.view[k]);draw();refreshRecShot();syncMoveUi()}});
 // v2.50: the Airflow chip — no geometry change, so the picture redraws with the arrows on or off; every other viewer reads S.view.flow on its next draw
 { const b=$('#v_flow'); b.classList.toggle('on',S.view.flow!==false); b.onclick=()=>{ S.view.flow=!(S.view.flow!==false); save(); b.classList.toggle('on',S.view.flow!==false); draw() } }
+// v2.53: the Focus chip — Unit → Ducts → Both; no geometry change, the camera re-frames and every other viewer reads S.view.focus on its next draw
+function syncFocusChip(){ const b=$('#v_focus'); if(!b) return; const FN={unit:'Unit',ducts:'Ducts',both:'Both'}; const f=(S.view&&FN[S.view.focus])?S.view.focus:'unit'; b.innerHTML='&#8982; Focus: '+FN[f] }
+{ const b=$('#v_focus'); const FOC=['unit','ducts','both']; syncFocusChip(); b.onclick=()=>{ const f=FOC.includes(S.view.focus)?S.view.focus:'unit'; S.view.focus=FOC[(FOC.indexOf(f)+1)%FOC.length]; save(); syncFocusChip(); draw(); syncMoveUi() } }
 function refreshRecShot(){ /* v2.42: the Recommended design card no longer carries a shot — the live 3D is right above it */ }
 window.addEventListener('resize',draw);
 // ============================================================ v2.42 · MORE THAN ONE VIEWER
@@ -3305,6 +3358,10 @@ function buildScene(){
           const H=holeSrc(true); H.ops.forEach(op=>{ const pc=op.k==='s'?pS:pR; const sp=(pc&&pc.spec)||(op.k==='s'?sSpec:rSpec); const c=cs(sp,true); const dsp=op.k==='s'?sSpec:rSpec; drops.push({k:op.k,x:op.x+op.w/2-c.a/2,w:c.a,z:op.z+op.h/2-c.b/2,d:c.b,c:pc,sq:!c.round,nm:'drop (through the curb)',spec:sp,top:0,est:H.est,dspec:dsp,dcomp:op.k==='s'?cS:cR}) }) }
         else { const H=holeSrc(false); const ops=H.ops; if(ops.length){ const jd=jkD!=null?jkD:Math.max(...ops.map(q=>q.h)); const zj=-(run!=null?run:18)-jd; // elbow setups: the drops come down under the JACK, uphill of the elbow — never under the unit
           ops.forEach(op=>{ const pc=op.k==='s'?pS:pR; const sp=(pc&&pc.spec)||(op.k==='s'?sSpec:rSpec); const c=cs(sp,true); const dsp=op.k==='s'?sSpec:rSpec; drops.push({k:op.k,x:op.x+op.w/2-c.a/2,w:c.a,z:zj+jd/2-c.b/2,d:c.b,c:pc,sq:!c.round,nm:CD?'drop (existing, through the new curb)':'penetration',spec:sp,top:CD?curbTop:null,est:H.est,dspec:dsp,dcomp:op.k==='s'?cS:cR}) }) } } }
+      // v2.53: the new duct system is decided before the drops draw — on a kept jack the supply drop stops at the wye that splits it into the two arms
+      const pkCT=comp('takeoff'); let pkTk=(pkCT&&pkCT.spec&&pkCT.spec.items)?pkCT.spec.items.filter(it=>!it.hide).slice(0,12):[]; const pkRbrTk=rbrTakeoffs(); if(pkRbrTk) pkTk=pkRbrTk; // v2.44: with New duct system on the take-offs are the room design's runs
+      const pkTree=S.rbrNew?(ductTree(AM)||ductTreeFromRuns(pkTk,AM)):null; if(pkTree) pkTk=pkTk.filter(it=>it.down); // v2.52: only a duct down still lands on the plenum / drop itself
+      const pkArmMax=pkTree?pkTree.arms.reduce((m,a)=>Math.max(m,(a.segs[0]&&a.segs[0].d)||8),8):0;
       const dS=drops.find(d=>d.k==='s'), dR=drops.find(d=>d.k==='r'); const dir=(dR&&dS)?(dR.x>=dS.x?1:-1):1; // which way each side runs off its drop (v2.44: known before the drops draw, so the bend can be shaped)
       drops.forEach(dp=>{ const yr=dp.top!=null?dp.top:sf(dp.z+dp.d/2); const yb=dp.bottom!=null?dp.bottom:yT; const c=dp.c; if(yr-yb<=1) return; const sz= /penetration|drop/.test(dp.nm)?`${dp.spec?' '+dp.spec.size:''}`:` ${fmt(dp.w)}×${fmt(dp.d)}`;
         const fdn=dp.k==='s'?-1:1; // v2.50: supply air comes down the drop, return air goes up it
@@ -3316,7 +3373,7 @@ function buildScene(){
           const dx=dp.x+dp.w/2-dcs.a/2, dz=dp.z+dp.d/2-dcs.b/2;
           if(yr-cTop>1) fl(duct(dx,cTop,dz,dcs.a,yr-cTop,dcs.b,dc,null,[0.5,0.5,0.5],dcs.round?'y':null),'y',fdn,dp.k);            // above the roof (a curb redesign sits the unit up on a curb)
           fl(duct(dp.x,cBot,dp.z,dp.w,collarH,dp.d,c,`${side} ${dp.nm}${sz}${flowTag(c)}${c&&c.neck?` · TOO SMALL for the ${c.feed.size} duct`:''}${dp.est?' · est. position':''}`,[0.5,0.5,0.5],dp.sq?null:'y'),'y',fdn,dp.k); // the hole
-          { const yC=yT+dcs.b/2; const avail=cBot-yC; dp.R=avail>6?bendR(dcs,60,avail):0; dp.yBend=yC+dp.R; dp.cs=dcs; } // v2.44 — the leg stops short of the run's centreline; a radiused bend (drawn with the run) fills the corner
+          { const wye=!!(pkTree&&dp.k==='s'); const yC=yT+(wye?Math.max(dcs.b,pkArmMax):dcs.b)/2; const avail=cBot-yC; dp.R=avail>6?bendR(dcs,60,avail):0; dp.yBend=yC+dp.R; dp.cs=dcs; dp.wyeY=yC; } // v2.44 — the leg stops short of the run's centreline; a radiused bend (drawn with the run) fills the corner · v2.53: or the wye's inlet, when the drop splits into the arms
           const ybL=dp.R?dp.yBend:yb; if(cBot-ybL>1) fl(duct(dx,ybL,dz,dcs.a,cBot-ybL,dcs.b,dc,null,[0.5,0.5,0.5],dcs.round?'y':null),'y',fdn,dp.k) } });         // the duct on down to where it bends away
       const runs=(dp,spec,csz,c,len,toward,label,k,onAdd)=>{ // a horizontal run off a drop (round → cylinder), plus any added parallel ducts from a "keep it and add one" fix
         const xc=dp.x+dp.w/2, zc=dp.z+dp.d/2; const R=dp.R||0; // v2.44: off a drop the run starts R past the drop's centreline and a radiused bend fills the corner; off a plenum body it still comes straight out of the side
@@ -3343,18 +3400,30 @@ function buildScene(){
         const bx=gx-rcs.a/2; const bTop=yC-R2; if(bTop-(ceilY+4)>1) fl(duct(bx,ceilY+4,zc-rcs.a/2,rcs.a,bTop-(ceilY+4),rcs.a,cR,null,null,rcs.round?'y':null),'y',1,'r'); // boot down to the grille
         gb.forEach((q,g)=>{ flV(sceneAdd({x:bx+rcs.a/2-q.w/2,y:ceilY-5,z:zc-q.h/2+gbz[g],dx:q.w,dy:1.2,dz:q.h,color:flowCol(cG)||((isNew(cG)||q.add)?NEWM:'#ffd166'),alpha:.95,noshadow:true,cls:cG?cG.cls:'',nw:isNew(cG)||!!q.add,la:[0.5,0,0.5],label:g===0?(cG?`Return grille ${cG.size}${isNew(cG)?' (new)':''}${flowTag(cG)}`:'Return grille — size not entered'):(q.add?`+ added grille ${fmt(q.w)}×${fmt(q.h)} + filter (new)`:null)}),'in',[0,-1,0],'r',cG?cG.cls:'') }); }
       // supply: the trunk the other way, with a branch per take-off at the size entered (v2.23 — the ones we ADD draw off the same trunk, in the new-metal green)
-      if(dS&&cS){ const len=Math.max(40,Math.min(70,(dir>0?dS.x-x0:x1-(dS.x+dS.w))-6)); const {xa,zc}=runs(dS,sSpec,scs,cS,len,-dir,`Supply trunk ${cS.size}${flowTag(cS)}`,'s');
-        const cT=comp('takeoff'); let tk=(cT&&cT.spec&&cT.spec.items)?cT.spec.items.filter(it=>!it.hide).slice(0,12):[]; const isAdd=takeoffAdded(); const rbrTk=rbrTakeoffs(); if(rbrTk) tk=rbrTk; // v2.44: with New duct system on the take-offs are the room design's runs
-        const tree=S.rbrNew?(ductTree(AM)||ductTreeFromRuns(tk,AM)):null; if(tree) tk=tk.filter(it=>it.down); // v2.52: a new duct system is a trunk off the drop, not a take-off per register — only a duct down still lands on the trunk itself
+      // v2.53 — WITH A NEW DUCT SYSTEM THERE IS NO SUPPLY MAIN IN BETWEEN (Stephen 2026-09-26: "the square plenum coming down is the plenum, then whatever duct
+      // sizes are needed come off the plenum — there's no other round in between them"). The trunk arms tee straight off the plenum's two faces; on a kept
+      // jack or curb the drop itself splits at its foot through a pair of round reducing bends (a pants wye) into the two arms. No main, no added run beside it.
+      if(dS&&cS){ const tree=pkTree; const tk=pkTk;
+        if(tree){ const nAll=tree.runs, per=tree.per; const cans=fanCans(nAll,per,8); const arms=tree.arms.length; const armMax=tree.arms.reduce((m,a)=>Math.max(m,(a.segs[0]&&a.segs[0].d)||8),8);
+          const lbl=`New duct system — ${nAll} runs to the rooms, off ${arms} trunk arm${arms>1?'s':''} · ${CFM(per)} CFM each · ${cans[0]}×${cans[0]} cans · ${rbrFanFaces()}`;
+          const xc=dS.x+dS.w/2, zc=dS.z+dS.d/2; let base;
+          if(dS.plenum){ base={x:xc,y:yT+armMax/2,zA:dS.z+dS.d,zB:dS.z} } // a new plenum: the arms come off its two faces, the biggest riding on the insulation line
+          else { const yC=dS.wyeY, R=dS.R||0; const cs0=dS.cs||scs; // a kept drop: it comes down to the wye and splits both ways along the trunk's line
+            [1,-1].forEach((dz_,i)=>{ const armD=(tree.arms[i]&&tree.arms[i].segs[0]&&tree.arms[i].segs[0].d)||armMax; const w=bendFrom([xc,yC+R,zc],[0,-1,0],[0,0,dz_],Math.max(R,2),Math.PI/2,{a:cs0.a,h:cs0.b,a2:armD,h2:armD,round:!!cs0.round},flowCol(cS)||NEWM,flowCol(cS)?.85:.85,{nw:true,cls:cS?cS.cls:'ok',duct:true,la:[0.5,1,0.5],label:i===0?`Wye off the drop — ${fmt(cs0.a)}×${fmt(armMax)}×${fmt(tree.arms[1]&&tree.arms[1].segs[0]?tree.arms[1].segs[0].d:armMax)}`:null}); if(w.b) flB(w.b,1,'s') });
+            base={x:xc,y:yC,zA:zc+Math.max(R,2),zB:zc-Math.max(R,2)} }
+          // a duct down to a lower floor still lands on the plenum / the drop, off its free side (away from the return)
+          tk.forEach((it,i)=>{ const d=it.d||Math.max(it.w,it.h); const xf=dS.plenum?(dir>0?dS.x:dS.x+dS.w):xc; const yD=base.y+armMax/2+d/2+3;
+            fl(sceneAdd({x:Math.min(xf,xf-dir*18),y:yD-d/2,z:zc-d/2-i*(d+3),dx:18,dy:d,dz:d,cyl:'x',color:NEWM,alpha:.85,noshadow:true,cls:'ok',nw:true,duct:true,la:[dir>0?0:1,1,0.5],label:it.down?`Ø${fmt(d)}" down to floor ${it.down} (${RM&&RM.down?CFM((RM.down.find(x=>x.fl+1===it.down)||{}).cfm||0):''} CFM)`:null}),'x',-dir,'s') });
+          trunkOutRuns(base,{y:ceilY,up:false},{tree,regCls:(comp('regs')||{}).cls,label:lbl}) }
+        else { const len=Math.max(40,Math.min(70,(dir>0?dS.x-x0:x1-(dS.x+dS.w))-6)); const {xa,zc}=runs(dS,sSpec,scs,cS,len,-dir,`Supply trunk ${cS.size}${flowTag(cS)}`,'s');
+        const cT=pkCT; const isAdd=takeoffAdded(); const rbrTk=pkRbrTk;
         if(tk.length){ const slots=Math.max(1,Math.ceil(tk.length/2)); const maxD=tk.reduce((m,it)=>Math.max(m,it.d||Math.max(it.w||0,it.h||0)),8);
           const step= slots<2?0 : Math.min(Math.max(9,maxD+4),Math.max(8,(len-12)/(slots-1)));
           tk.forEach((it,i)=>{ const d=it.d||Math.max(it.w,it.h); const side=i%2?1:-1; const slot=Math.floor(i/2); const nw=isAdd(it,i)||!!it.rbr;
             const bx=xa+8+slot*step; const zz= side>0? zc+scs.a/2 : zc-scs.a/2-16;
             fl(sceneAdd({x:bx-d/2,y:yT+scs.b/2-d/2,z:zz,dx:d,dy:d,dz:16,cyl:'z',color:flowCol(cT)||(nw?NEWM:METAL),alpha:flowCol(cT)?.85:(nw?.85:.55),noshadow:true,cls:cT?cT.cls:'',nw:nw||isNew(cT),
               la:[0.5,side>0?1:0,0.5],label: it.down?`Ø${fmt(d)}" down to floor ${it.down} (${RM&&RM.down?CFM((RM.down.find(x=>x.fl+1===it.down)||{}).cfm||0):''} CFM)`:i===0?(rbrTk?`Take-offs — ${(RM&&RM.vents)||tk.length} runs, room by room (new)`:`Take-offs ${cT.size}${flowTag(cT)}`):(nw&&!it.rbr?`+ added ${it.d?'Ø'+fmt(it.d)+'"':fmt(it.w)+'×'+fmt(it.h)} (new — off the trunk)`:null)}),'z',side,'s') }) }   // v2.46: the duct down is a take-off, not a run to a register
-        if(tree){ const nAll=tree.runs, per=tree.per; const cans=fanCans(nAll,per,8); const arms=tree.arms.length; // v2.52 — the full new duct system: a reducing trunk arm off each side of the supply trunk, branches teeing off it, every leg down to its can
-          trunkOutRuns({x:xa+(dir<0?0.42:0.58)*len,y:yT+scs.b/2,zA:zc+scs.a/2,zB:zc-scs.a/2},{y:ceilY,up:false},{tree,regCls:(comp('regs')||{}).cls,label:`New duct system — ${nAll} runs to the rooms, off ${arms} trunk arm${arms>1?'s':''} · ${CFM(per)} CFM each · ${cans[0]}×${cans[0]} cans · ${rbrFanFaces()}`}) }
-        if(!tk.length&&!tree) [0.25,0.55,0.85].forEach((f,i)=>{ const bx=xa+len*f; const side=i%2?1:-1; fl(sceneAdd({x:bx-3,y:yT+scs.b/2-3,z:side>0?zc+scs.a/2:zc-scs.a/2-16,dx:6,dy:6,dz:16,cyl:'z',color:METAL,alpha:.5,noshadow:true}),'z',side,'s') }); }
+        if(!tk.length) [0.25,0.55,0.85].forEach((f,i)=>{ const bx=xa+len*f; const side=i%2?1:-1; fl(sceneAdd({x:bx-3,y:yT+scs.b/2-3,z:side>0?zc+scs.a/2:zc-scs.a/2-16,dx:6,dy:6,dz:16,cyl:'z',color:METAL,alpha:.5,noshadow:true}),'z',side,'s') }); } }
       // what the unit wants vs what it gets
       scene.push({marker:true,nofit:true,x:px+n.l+6,y:py+n.h*0.75,z:pz+n.w+4,dx:0,dy:0,dz:0,stat:true,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:AM.blowerBound?`blower max ${CFM(AM.Qb)} CFM · gets all of it${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
     }
@@ -3424,9 +3493,14 @@ function buildScene(){
       const band=len=>Math.max(len-TKHEAD-TKTAIL,6); // take-off band: start TKHEAD off the discharge (v2.52 — never on the coil's face), leave the last foot of the plenum clear
       const r=dsz(cR,14); const rpl=retPlenLen();
       let tkBase=null, retOut=null;
+      // v2.53 — the new duct system is decided BEFORE the supply draws (Stephen 2026-09-26: "same as a split system — all the trunk lines come right to
+      // the plenum, nothing in between"): with it on, a round main is drawn as the square plenum the arms come off, and the coil-face box goes away
+      const cT0=comp('takeoff'); let tk0=(cT0&&cT0.spec&&cT0.spec.items)?cT0.spec.items.filter(it=>!it.hide).slice(0,12):[]; if(cT0&&!tk0.length&&cT0.area){ const k=Math.max(2,Math.min(8,Math.round(cT0.area/roundArea(10)))); for(let i=0;i<k;i++) tk0.push({d:10,syn:true}) }
+      const rbrTk0=rbrTakeoffs(); if(rbrTk0) tk0=rbrTk0; const treeS=(S.rbrNew||(S.scope&&S.scope.ducts))?(ductTree(AM)||ductTreeFromRuns(tk0,AM)):null;
+      const supSpec=cS0=>{ const q=dsz(cS0,null); return (treeS&&cfg==='cased'&&q.round)?{a:null,b:null,round:false,forced:true}:q };
       if(h){ // ===================== attic horizontal =====================
         const coilL=ch_?ch_.l:0, faceH=ch_?ch_.h:F.w, faceW=ch_?ch_.w:F.d;
-        const s=dsz(cS,null); const pH=s.a?s.b:faceH, pW=s.a?s.a:faceW;                 // plenum cross-section: what was taped, else the coil face
+        const s=supSpec(cS); const pH=s.a?s.b:faceH, pW=s.a?s.a:faceW;                 // plenum cross-section: what was taped, else the coil face (v2.53: the coil face when a new duct system replaces a round main)
         const startX= cfg==='plenum_coil'? F.h : F.h+coilL;                             // a plenum coil starts where the cased coil would
         const bH= cfg==='plenum_coil'? F.w : pH, bW= cfg==='plenum_coil'? F.d : pW;     // and is built to the furnace face
         const pl=plenLenFor(cfg,coilL,trunkL,splenNew());
@@ -3436,8 +3510,8 @@ function buildScene(){
         if(tr) fl(sceneAdd({x:startX,y:0,z:zc-faceW/2,dx:tr,dy:faceH,dz:faceW,color:isNew(cS)?NEWM:METAL,alpha:isNew(cS)?.82:.62,noshadow:true,nw:isNew(cS),la:[0.5,1,0.5],label:`Plenum ${fmt(faceW)}×${fmt(faceH)} on the ${ch_?'coil':'air handler'} — the main comes off it`}),'x',1,'s');
         box(mx,py,pz,pl,bH,bW,cS, cfg==='plenum_coil'?`Plenum coil ${fmt(bW)}×${fmt(bH)} — coil inside${tag(cS)}`
             : cfg==='trunk'?`Supply trunk ${fmt(trunkFtNew())} ft · ${cS?cS.size:fmt(bW)+'×'+fmt(bH)}${tag(cS)}`
-            : `Supply ${tr?'main':'plenum'} ${cS?cS.size:fmt(bW)+'×'+fmt(bH)} · ${fmt(pl)}" long${tag(cS)}`, s.round&&cfg!=='plenum_coil'?'x':null,[0.5,1,0.5],['x',1]);
-        tkBase={along:'x',x0:mx+(cfg==='plenum_coil'?6:TKHEAD),y:py+bH/2,z:pz+bW,half:bW/2,len:cfg==='plenum_coil'?Math.max(pl-12,8):band(pl),spread:cfg!=='cased'}; // a plenum coil spreads them evenly end to end — the clear-the-last-foot rule is a plenum thing; v2.52: the first collar sits TKHEAD past the start, never on the coil
+            : `Supply ${tr?'main':'plenum'} ${(cS&&!s.forced)?cS.size:fmt(bW)+'×'+fmt(bH)}${s.forced?' (new)':''} · ${fmt(pl)}" long${tag(cS)}`, s.round&&cfg!=='plenum_coil'?'x':null,[0.5,1,0.5],['x',1]);
+        tkBase={along:'x',x0:mx+(cfg==='plenum_coil'?6:TKHEAD),y:py+bH/2,z:pz+bW,half:bW/2,len:cfg==='plenum_coil'?Math.max(pl-12,8):band(pl),spread:cfg!=='cased',mid:mx+pl/2}; // v2.53: mid = where the trunk arms tee off when nothing else lands on the plenum // a plenum coil spreads them evenly end to end — the clear-the-last-foot rule is a plenum thing; v2.52: the first collar sits TKHEAD past the start, never on the coil
         if(cfgOld!==cfg||splenOld()!==splenNew()){ const plO=plenLenFor(cfgOld,coilL,trunkLO,splenOld()); const sxO= cfgOld==='plenum_coil'? F.h : F.h+coilL;
           ghost(sxO,0,zc-faceW/2,plO,cfgOld==='plenum_coil'?F.w:faceH,cfgOld==='plenum_coil'?F.d:faceW,`today: ${SUPCFG[cfgOld].toLowerCase()}${cfgOld==='trunk'?' '+fmt(trunkFtOld())+' ft':''}`) }
         // return plenum before the furnace, then the duct off its outboard face
@@ -3447,7 +3521,7 @@ function buildScene(){
         retOut={bx:-rpl-runL,by:ry,bz:rz,R:Rr};
       } else { // ===================== upflow / downflow =====================
         const coilL=C?C.h:0, faceW=C?C.w:F.w, faceD=C?C.d:F.d;
-        const s=dsz(cS,null); const pD=s.a?s.b:faceD, pW=s.a?s.a:faceW;
+        const s=supSpec(cS); const pD=s.a?s.b:faceD, pW=s.a?s.a:faceW; // v2.53: the coil face when a new duct system replaces a round main
         const startY= down? -plenLenFor(cfg,coilL,24,splenNew()) : (cfg==='plenum_coil'? F.h : F.h+coilL);
         const bD= cfg==='plenum_coil'? F.d : pD, bW= cfg==='plenum_coil'? F.w : pW;
         const upThrough=!attic&&!down; const disY= cfg==='plenum_coil'? F.h : F.h+coilL;
@@ -3459,13 +3533,13 @@ function buildScene(){
         const y0= down? -(rH+tr) : disY+tr;
         if(tr) fl(sceneAdd({x:0,y:down?-tr:disY,z:zc-faceW/2,dx:faceD,dy:tr,dz:faceW,color:isNew(cS)?NEWM:METAL,alpha:isNew(cS)?.82:.62,noshadow:true,nw:isNew(cS),la:[0.5,1,0.5],label:`Plenum ${fmt(faceW)}×${fmt(faceD)} on the ${C?'coil':'air handler'} — the main comes off it`}),'y',down?-1:1,'s');
         box(px,y0,pz,bD,rH,bW,cS, cfg==='plenum_coil'?`Plenum coil ${fmt(bW)}×${fmt(bD)} — coil inside${tag(cS)}`
-            : cfg==='trunk'?`Supply riser to the trunk${tag(cS)}`:`Supply ${tr?'main':'plenum'} ${cS?cS.size:fmt(bW)+'×'+fmt(bD)} · ${fmt(rH)}" long${upThrough?' — up through the ceiling':''}${tag(cS)}`, s.round&&cfg!=='plenum_coil'?'y':null,[0.5,1,0.5],['y',down?-1:1]);
+            : cfg==='trunk'?`Supply riser to the trunk${tag(cS)}`:`Supply ${tr?'main':'plenum'} ${(cS&&!s.forced)?cS.size:fmt(bW)+'×'+fmt(bD)}${s.forced?' (new)':''} · ${fmt(rH)}" long${upThrough?' — up through the ceiling':''}${tag(cS)}`, s.round&&cfg!=='plenum_coil'?'y':null,[0.5,1,0.5],['y',down?-1:1]);
         if(cfg==='trunk'){ // the flat run in the attic (or under the floor on a downflow), take-offs off it
           const ty= down? y0-bD : y0+rH; const tl=trunkL;
           box(px,ty-(down?0:0),pz,tl,bD,bW,cS,`Supply trunk ${fmt(trunkFtNew())} ft · ${cS?cS.size:fmt(bW)+'×'+fmt(bD)}${tag(cS)}`,null,[0.5,1,0.5],['x',1]);
           tkBase={along:'x',x0:px+TKHEAD,y:ty+bD/2,z:pz+bW,half:bW/2,len:band(tl),spread:true};
         } else { const lo= upThrough? ceilY+6 : (down? y0+4 : y0+TKHEAD), hi=y0+rH-4-(upThrough?0:TKTAIL); // above the ceiling on a garage / closet upflow, and the tail of the plenum stays clear
-          tkBase={along:'y',startY:lo,x0:px+bD/2,z:pz+bW,half:bW/2,len:Math.max(hi-lo,6),spread:false} }
+          tkBase={along:'y',startY:lo,x0:px+bD/2,z:pz+bW,half:bW/2,len:Math.max(hi-lo,6),spread:false,mid:upThrough?null:y0+rH/2} }
         if(cfgOld!==cfg||splenOld()!==splenNew()) ghost(px,down?-plenLenFor(cfgOld,coilL,24,splenOld()):(cfgOld==='plenum_coil'?F.h:F.h+coilL),zc-faceW/2,faceD,plenLenFor(cfgOld,coilL,24,splenOld()),faceW,`today: ${SUPCFG[cfgOld].toLowerCase()} ${fmt(splenOld())}"`);
         // return plenum under (upflow) or over (downflow) the furnace, duct off its side
         const rpy= down? topY : -rpl;
@@ -3490,7 +3564,7 @@ function buildScene(){
       if(cT&&!tkItems.length&&cT.area) { const k=Math.max(2,Math.min(8,Math.round(cT.area/roundArea(10)))); for(let i=0;i<k;i++) tkItems.push({d:10,syn:true}) }
       const rbrTk=rbrTakeoffs(); if(rbrTk) tkItems=rbrTk; // v2.44: with New duct system on the take-offs are the room design's runs
       // v2.52 — a new duct system is a reducing trunk off the plenum (drawn below, the way the 2D designs it), not one take-off per register: only a duct down to a lower floor still lands on the plenum itself
-      const tree=(S.rbrNew||(S.scope&&S.scope.ducts))?(ductTree(AM)||ductTreeFromRuns(tkItems,AM)):null; if(tree) tkItems=tkItems.filter(it=>it.down);
+      const tree=treeS; if(tree) tkItems=tkItems.filter(it=>it.down); // v2.53: decided above, before the supply drew
       { const slots=Math.max(1,Math.ceil(tkItems.length/2)); const maxD=tkItems.reduce((m,it)=>Math.max(m,it.d||Math.max(it.w||0,it.h||0)),8); const span=Math.max(tkBase.len-maxD,8); // the collars' centres run from TKHEAD + half a collar past the start to half a collar short of the tail
         // a plenum gets them at a natural pitch starting at the discharge end (compressed only if they will not fit); a long trunk spreads them out
         const step= slots<2?0 : (tkBase.spread? Math.max(7,span/(slots-1)) : Math.min(Math.max(9,maxD+4), span/(slots-1)));
@@ -3502,7 +3576,8 @@ function buildScene(){
           else { const by=tkBase.startY+maxD/2+slot*step; fl(put(tkBase.x0-d/2,by-d/2,zz,d,d,18,cT,lbl,'z',[0.5,side>0?1:0,0.5]),'z',side,'s'); } });   // v2.46: the duct down is a take-off, not a run to a register
         if(tree){ const nAll=tree.runs, per=tree.per; const cans=fanCans(nAll,per,8); const arms=tree.arms.length; const off=tkItems.length?maxD+16:0; // v2.52 — the full new duct system: a reducing trunk arm off each side of the plenum, past any duct down, the branches teeing off it, every leg down to its can
           const plane= down?{y:flrY-4,up:true}:{y:ceilY,up:false};
-          const base= tkBase.along==='x'?{x:tkBase.x0+maxD/2+off+8,y:tkBase.y,zA:tkBase.z,zB:tkBase.z-2*tkBase.half}:{x:tkBase.x0,y:tkBase.startY+maxD/2+off+8,zA:tkBase.z,zB:tkBase.z-2*tkBase.half};
+          const mid=(!tkItems.length&&tkBase.mid!=null)?tkBase.mid:null; // v2.53: the arms tee off the middle of the plenum unless a duct down already sits on it
+          const base= tkBase.along==='x'?{x:mid!=null?mid:tkBase.x0+maxD/2+off+8,y:tkBase.y,zA:tkBase.z,zB:tkBase.z-2*tkBase.half}:{x:tkBase.x0,y:mid!=null?mid:tkBase.startY+maxD/2+off+8,zA:tkBase.z,zB:tkBase.z-2*tkBase.half};
           trunkOutRuns(base,plane,{tree,regCls:(comp('regs')||{}).cls,label:`New duct system — ${nAll} runs to the rooms, off ${arms} trunk arm${arms>1?'s':''} · ${CFM(per)} CFM each · ${cans[0]}×${cans[0]} cans · ${rbrFanFaces()}`}) } }
       // ---- the can down to the ceiling, and the return grille + filter facing down into the room
       { const gb=specBoxes(cG&&cG.spec?cG.spec:null,20,20).filter(q=>!q.add); // v2.37: one box per grille, each at its own size — a multi spec used to draw NaN and blank the canvas · v2.47: an added return's grille draws at the end of its own duct (below)
