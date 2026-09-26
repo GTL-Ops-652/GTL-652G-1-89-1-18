@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-26 v2.53 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-26 v2.54 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -250,6 +250,17 @@ dialog .in{padding:18px}
 .fcwrap.zoom svg{position:absolute;inset:0;width:100%;height:100%}
 .gridwrap .fcaer{position:absolute;pointer-events:none;z-index:0;opacity:.34;max-width:none;filter:saturate(.7)}
 .gridwrap .fcenv{position:absolute;left:0;top:0;pointer-events:none;z-index:0}
+.gridwrap .fcplan{position:absolute;left:0;top:0;pointer-events:none;z-index:0}
+.gridwrap.plan{background:#f7f9fb}
+.scanbox{display:flex;gap:12px;align-items:center;margin-top:10px;padding:14px 16px;border:2px dashed var(--db);border-radius:14px;background:rgba(0,57,99,.04)}
+.scanbox.mini{padding:8px 12px;border-width:1.5px;border-style:solid;border-color:var(--line);background:#fff}
+.scanbox .scanico{font-size:26px;color:var(--db);line-height:1}.scanbox.mini .scanico{font-size:18px}
+.scanbox .scantxt{flex:1;min-width:160px}.scanbox .scantxt b{display:block;font-size:14px;color:var(--db)}.scanbox .scantxt span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+.scanbox label.btn{cursor:pointer}
+.scanbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;padding:10px 14px;border:1.5px solid #7fcaa0;border-radius:12px;background:#eefaf3}
+.scanbar .sb1{font-size:14px;color:var(--db)}.scanbar .sb1 .asm{margin-left:6px}.scanbar .sb2{flex:1;min-width:200px;font-size:13px;color:var(--ink)}.scanbar .sb3{display:flex;gap:6px}.scanbar label.btn{cursor:pointer}
+.rrow input[readonly]{background:#f2f5f8;color:var(--muted)}
+.lbl3.plan{background:rgba(0,4,38,.45);color:#dfe8f2;font-size:10px;padding:1px 5px;border-color:rgba(255,255,255,.18)}
 .gridwrap .fcenv path{fill:rgba(0,57,99,.05);stroke:var(--db);stroke-width:2;stroke-dasharray:6 4;stroke-linejoin:round}
 .gridwrap .tile{z-index:1}
 .gridwrap .tile.unc{border:2px dashed var(--gray);background:repeating-linear-gradient(45deg,rgba(192,184,182,.18),rgba(192,184,182,.18) 6px,transparent 6px,transparent 12px)}
@@ -759,20 +770,17 @@ body.pack .tp .noapp{display:none}
 <section class="panel active" id="p1">
   <div class="card" id="homeCard">
     <h2>The home</h2>
-    <p class="help">Square footage and how the house is built give the Manual&nbsp;J size &mdash; the tonnage to recommend on this job. Open <b>Room by room</b> to measure the rooms and design the duct all the way to every register. Leave it closed and the tool works exactly as it always has.</p>
     <div class="sect stat"><div class="sh"><span class="sn"></span><span class="st">Size, build &amp; attic</span><span class="sd">Sets the tonnage, and the way out of it</span></div><div class="sb">
       <div class="fcrow">
         <div class="field" style="flex:2;min-width:220px"><label>Address <small>optional</small></label><input id="fcAddr" type="text" inputmode="text" autocomplete="off" placeholder="5482 N Jones Blvd"></div>
         <div class="field" style="max-width:120px"><label>&nbsp;</label><button class="btn sm" id="fcGo" style="width:100%">Look up</button></div>
         <div class="field" style="max-width:150px"><label>Storeys</label><select id="fcStorey"><option value="1">1 storey</option><option value="2">2 storeys</option><option value="3">3 storeys</option></select></div>
       </div>
-      <p class="note" style="margin:6px 0 0">Pulls the county record and an aerial photo, so the square footage and the shape of the house come off the record instead of being typed. Skip it and everything below works exactly as it always has.</p>
       <div class="msg" id="fcStat" style="display:none;margin-top:8px"></div>
       <div id="fcBox"></div>
       <div id="fcFloors"></div>
       <div class="row">
         <div class="field req" style="max-width:240px"><label>Total conditioned sq ft</label><input id="homeSf" type="number" inputmode="numeric" min="300" step="25" placeholder="1450"></div>
-        <div class="field" style="flex:2"><label>&nbsp;</label><div class="note" style="padding:8px 0">Whole house, heated and cooled. Garage and patio do not count.</div></div>
       </div>
       <h4 class="sub">How is the house built?</h4>
       <div class="seg" id="buildSeg">
@@ -781,13 +789,11 @@ body.pack .tp .noapp{display:none}
         <button data-v="hieff"><b>High&#8209;efficiency home</b><span>Attic ceiling insulated and sealed &middot; 600 sq ft / ton</span></button>
       </div>
       <h4 class="sub">How much attic insulation is there?</h4>
-      <p class="note" style="margin:0 0 8px">Eyeball it over the ceiling joists. This is what tells us whether a bigger unit is the answer, or whether topping the attic up gets the house there on the Manual&nbsp;J size.</p>
       <div class="row">
         <div class="field"><label>Depth <small>inches</small></label><input type="number" inputmode="decimal" id="in_depth" placeholder="8"></div>
         <div class="field"><label>Type</label><select id="in_type"><option value="unknown">Unknown / mixed (&asymp;R-2.8 per in)</option><option value="blown_fg">Blown fiberglass (&asymp;R-2.5 per in)</option><option value="cellulose">Blown cellulose (&asymp;R-3.5 per in)</option><option value="batts">Fiberglass batts (&asymp;R-3.2 per in)</option><option value="spray">Spray foam (&asymp;R-6 per in)</option><option value="none">None</option></select></div>
         <div class="field opt"><label>Or R-value if known <small>optional</small></label><input type="number" inputmode="decimal" id="in_r" placeholder="R-19"></div>
       </div>
-      <p class="help" style="margin:8px 0 0">2&times;6 joists are 5&frac12;" &mdash; insulation flush with the top of a 2&times;6 is about R-14 blown fiberglass. Las Vegas minimum R-38; today's code (2021 IECC, Clark County) is R-49 on new construction.</p>
       <div class="msg" id="insulRead" style="margin-top:10px"></div>
 
       <div id="mjOut"></div>
@@ -795,19 +801,22 @@ body.pack .tp .noapp{display:none}
 
     <button class="rbrbtn" id="rbrBtn" aria-expanded="false" aria-controls="rbrPanel">
       <span class="car">&#9656;</span>
-      <span>Room by room<span class="sub">Measure the rooms and we design the duct all the way to the register &mdash; TYs, square cans, balanced CFM, the 2D duct drawing and the material list. Put in the vents each room has today and the design lands on them where it can. Two storeys: the top floor room by room, one duct down to the floor below.</span></span>
+      <span>Room by room<span class="sub">Upload the floor plan of the area this system serves and the duct is designed to every register.</span></span>
       <span class="cnt" id="rbrCnt">not used</span>
     </button>
 
     <div id="rbrPanel" class="hidden">
+      <input type="file" id="rbrDxf" style="display:none">
+      <div id="rbrScan"></div>
+      <div class="msg" id="rbrScanStat" style="display:none;margin-top:8px"></div>
+      <div id="rbrBody">
       <div class="row" style="margin-top:10px;gap:10px;align-items:center">
         <span class="cap" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)">Register faces today</span>
         <div class="chips" id="rbrFaceSeg"><button class="chip sm" data-v="stamped">Stamped</button><button class="chip sm" data-v="bar">Bar type</button></div>
-        <span class="note">Older homes are stamped face. A room can be flipped to bar type on its own when it needs a little more.</span>
       </div>
       <div id="rbrStorey" class="msg" style="display:none"></div>
       <div class="rlist" id="rbrList"></div>
-      <div class="row" style="margin-top:10px;gap:8px">
+      <div class="row" style="margin-top:10px;gap:8px" id="rbrTools">
         <button class="btn sm ghost" id="rbrAdd">+ Add room</button>
         <button class="btn sm ghost" id="rbrArr">Auto-arrange grid</button>
         <button class="btn sm ghost" id="rbrClr">Clear all rooms</button>
@@ -815,8 +824,7 @@ body.pack .tp .noapp{display:none}
       </div>
       <div class="msg" id="rbrTot"></div>
 
-      <h3>Arrange the rooms the way the house actually sits</h3>
-      <p class="note" style="margin:0 0 6px">1 square = 2 ft. <b>Drag a tile</b> to move it, <b>drag the navy handle on its right edge</b> to stretch it longer or shorter &mdash; the sq ft never changes, only the shape. Drag the navy <b>UNIT</b> tile to where the air drops in. That layout is what the duct gets designed and drawn on.</p>
+      <h3 id="rbrGridTitle">Arrange the rooms the way the house actually sits</h3>
       <div class="gridwrap" id="rbrGrid"></div>
 
       <div id="rbrOut" class="hidden">
@@ -824,7 +832,6 @@ body.pack .tp .noapp{display:none}
           <div><div class="vlab">CFM per vent</div><div class="vval" id="rbrVentVal">150</div><div class="vsub" id="rbrVentSub"></div></div>
           <div class="stepper"><button id="rbrVentDn" aria-label="Lower the CFM per vent by 5 percent">&minus;</button><button id="rbrVentUp" aria-label="Raise the CFM per vent by 5 percent">+</button></div>
           <button class="btn sm ghost" id="rbrVentRst">Reset to 150</button>
-          <div class="note" style="flex:1;min-width:200px">Each press moves it 5%. Raise it and rooms fold onto fewer, larger cans; lower it and the air spreads over more. The room CFM never changes &mdash; only how many drops carry it.</div>
         </div>
         <div id="rbrBanner"></div>
         <h3>Every room</h3>
@@ -836,7 +843,6 @@ body.pack .tp .noapp{display:none}
         <div class="tblwrap"><table class="dt" id="rbrBranchTbl"></table></div>
         <h3>Can &amp; grille schedule &mdash; every numbered tag</h3>
         <div class="tblwrap"><table class="dt" id="rbrCanTbl"></table></div>
-        <div class="note" style="margin-top:6px">Locations are measured from the room&rsquo;s top-left corner as the plan is drawn &mdash; <b>in</b> from the left wall, <b>back</b> from the front wall.</div>
         <h3>Duct design &mdash; plan view</h3>
         <div id="rbrPlanBox"></div>
         <h3>Material list</h3>
@@ -844,8 +850,8 @@ body.pack .tp .noapp{display:none}
         <div class="msg" id="rbrMatMsg"></div>
         <div class="row" style="margin-top:12px">
           <button class="btn" id="rbrExport">Export duct design &amp; material list</button>
-          <span class="note" style="align-self:center">The plan drawing, all four schedules and the material list on one sheet &mdash; print or Save as PDF.</span>
         </div>
+      </div>
       </div>
     </div>
   </div>
@@ -884,7 +890,6 @@ body.pack .tp .noapp{display:none}
   <div class="card" id="oldSplit">
     <h2>Existing equipment</h2>
     <details class="fold" id="oldSplitFold"><summary><span class="car">&#9656;</span><span id="oldSplitTtl">Furnace &amp; coil</span><span class="fs" id="oldSplitSum">Not entered — optional</span><span class="fe">Tap to enter</span></summary><div class="fb">
-    <p class="help">Type the model number and tap <b>Look up</b> — the sizes fill in. Or tape it and type the inches. Leave blank what you can't get.</p>
     <div class="sect furn"><div class="sh"><span class="sn"></span><span class="st" id="oldFurnLbl">Furnace</span><span class="sd">Model # or tape it</span></div><div class="sb">
     <div class="row">
       <div class="field" style="flex:2"><label>Model # (optional)</label><input class="mono" id="oldFurnModel" placeholder="e.g. GMS80804BN or ML180UH090E48B"></div>
@@ -942,7 +947,6 @@ body.pack .tp .noapp{display:none}
 
   <div class="card" id="airflowCard">
     <h2>Existing airflow</h2>
-    <p class="help" style="margin-bottom:4px">The <b>return</b>, the <b>grille</b>, the <b>supply</b> and its <b>take-offs</b> are what the design is built on. Anything not checked is assumed for the tonnage and can be typed over.</p>
     <div class="reqkey"><i></i> Tinted = needed for the design · plain = optional</div>
 
     <div class="sect stat"><div class="sh"><span class="sn"></span><span class="st">Static pressure</span><span class="sd">Measured on the old unit — used only for the "new AC on today's ducts" picture</span></div><div class="sb">
@@ -951,11 +955,10 @@ body.pack .tp .noapp{display:none}
       <div class="field opt"><label>Old blower motor <small>optional</small></label><select id="ex_motor"><option value="auto">Auto (from model / age)</option><option value="psc">PSC (most pre-2015)</option><option value="ct_ecm">Constant-torque ECM (X13 type)</option><option value="vs_ecm">Variable-speed ECM</option></select></div>
       <div class="field opt"><label>Existing tonnage <small>optional</small></label><select id="ex_tons"><option value="">Auto (from model, else same as new)</option><option value="1.5">1.5 ton</option><option value="2">2 ton</option><option value="2.5">2.5 ton</option><option value="3">3 ton</option><option value="3.5">3.5 ton</option><option value="4">4 ton</option><option value="5">5 ton</option></select></div>
     </div>
-    <details class="adv" id="advStatic"><summary>Filter &amp; coil drop <span class="note">— normally leave these alone</span></summary>
+    <details class="adv" id="advStatic"><summary>Filter &amp; coil drop</summary>
     <div class="row optrow" style="margin-top:8px">
       <div class="field opt"><label>Filter drop <small>in. w.c. · optional</small></label><input type="number" inputmode="decimal" step="0.01" id="ex_fdp" placeholder="0.10"></div>
       <div class="field opt"><label>Coil drop <small>in. w.c. · optional</small></label><input type="number" inputmode="decimal" step="0.01" id="ex_cdp" placeholder="0.25"></div>
-      <div class="field" style="flex:2"><label>&nbsp;</label><div class="note" style="padding:6px 0">Only used to read the old system. The design takes the filter and coil drops from manufacturer data.</div></div>
     </div>
     </details>
     </div></div>
@@ -976,7 +979,6 @@ body.pack .tp .noapp{display:none}
       <div class="field hidden" id="exGr2F"><label>Second grille size <small>W × H · if it is a different size</small></label><input id="ex_gr2" placeholder="e.g. 20x20"></div>
       <div class="field"><label>&nbsp;</label><div class="chips"><button class="chip sm" data-gr="14x14">14×14</button><button class="chip sm" data-gr="16x16">16×16</button><button class="chip sm" data-gr="20x20">20×20</button><button class="chip sm" data-gr="20x25">20×25</button><button class="chip sm" data-gr="20x30">20×30</button><button class="chip sm" data-gr="20x40">20×40</button></div></div>
     </div>
-    <div class="note" id="grNote" style="margin-top:6px">Two different sizes? Put the first in <b>Grille size</b> and the second in <b>Second grille size</b> — they are added together.</div>
     </div></div>
 
     <div class="sect sup"><div class="sh"><span class="sn"></span><span class="st" id="supLbl">Supply plenum / supply main duct</span><span class="sd">Where the air leaves the unit</span></div><div class="sb">
@@ -996,14 +998,12 @@ body.pack .tp .noapp{display:none}
       <div class="row" style="margin-top:8px">
         <div class="field" id="exTrunkF"><label>Trunk length today <small>ft, up to 30</small></label><input type="number" inputmode="decimal" id="ex_trunk_ft" placeholder="12"></div>
         <div class="field" id="exSplenF"><label>Supply plenum length today <small>in</small></label><input type="number" inputmode="decimal" id="ex_splen" placeholder="24"></div>
-        <div class="field" style="flex:2"><label>&nbsp;</label><div class="note" style="padding:6px 0">This is what's there now — you pick what you're <b>proposing</b> at the top of the last step.</div></div>
       </div>
       </div>
       <h4 class="sub" id="tkOldTitle">Take-offs coming off the plenum</h4>
       <div class="row">
-        <div class="field req" style="flex:2"><label>Take-off sizes</label><input id="ex_tk" placeholder="6,6,8,8,10"></div>
+        <div class="field req" style="flex:2"><label>Take-off sizes <small>4@6 = four 6" · 12x8 = rectangular</small></label><input id="ex_tk" placeholder="6,6,8,8,10 or 4@6, 12x8"></div>
         <div class="field" style="flex:2"><label>Register faces <small>one per run</small></label><input id="ex_reg" placeholder="4x10, 4x12, 6@10x10"></div>
-        <div class="field" style="flex:3"><label>&nbsp;</label><div class="note" style="padding:6px 0">Every branch, comma separated. <b>4@6</b> = four 6&quot; rounds · <b>12x8</b> = a rectangular take-off. Registers blank = one per run, matched to its neck (assumed).</div></div>
       </div>
       <div class="chips" id="tkEndOld" style="margin-top:8px">
         <span class="note" style="align-self:center" id="tkEndLbl">Do they clear the last 8–12&quot; of the plenum?</span>
@@ -1015,12 +1015,11 @@ body.pack .tp .noapp{display:none}
         <span class="note" style="align-self:center">Supply register faces today</span>
         <button class="chip sm" data-v="stamped">Stamped face</button>
         <button class="chip sm" data-v="bar">Bar type</button>
-        <span class="note" style="align-self:center">Stamped steel is what most homes have · bar type is what Goettl installs — less friction, more air out of every vent</span>
       </div>
     </div>
     </div></div>
 
-    <details class="adv" id="advRuns" style="margin-top:10px"><summary>Duct runs &amp; filter <span class="note">— the Manual D inputs; assumed from the tonnage until you type them</span></summary>
+    <details class="adv" id="advRuns" style="margin-top:10px"><summary>Duct runs &amp; filter</summary>
     <div class="row optrow" style="margin-top:8px">
       <div class="field opt"><label>Return run <small>ft · grille to unit</small></label><input type="number" inputmode="decimal" id="dr_ret" placeholder="20"></div>
       <div class="field opt"><label>Supply trunk <small>ft · unit to last take-off</small></label><input type="number" inputmode="decimal" id="dr_sup" placeholder="30"></div>
@@ -1033,7 +1032,6 @@ body.pack .tp .noapp{display:none}
       <div class="field opt"><label>Branches</label><div class="chips"><button class="chip sm" data-mat="dr_brm:flex">Flex</button><button class="chip sm" data-mat="dr_brm:metal">Metal</button></div></div>
       <div class="field opt"><label>Filter going in</label><div class="chips"><button class="chip sm" data-mat="dr_filt:p1">1&quot; pleated</button><button class="chip sm" data-mat="dr_filt:p1_11">1&quot; MERV 11</button><button class="chip sm" data-mat="dr_filt:m4">4&quot; media</button></div></div>
     </div>
-    <div class="note" style="margin-top:6px">ACCA Manual D Friction Rate Worksheet: the blower table at the design static gives the airflow; the filter, coil, register, grille and damper drops come off it; what is left, spread over the longest supply and return paths (these lengths plus the equivalent length of every fitting — grille box, elbows, the roof-line metal, take-off collar, branch bend, boot), is the friction rate every duct is sized to. Flex is sized as flex (about one size up on metal) and must be installed pulled tight. No run count entered → one supply run per ~150 CFM.</div>
     </details>
     <div class="msg" id="airflowRead" style="margin-top:10px"></div>
   </div>
@@ -1528,6 +1526,201 @@ function ringAreaSqFt(ring) {
 
 window.FCProp={lookupAddress,lookupCandidate,bounds,ringAreaSqFt,RELAY};
 })();
+</script>
+<script>
+// fcdxf.js — v2.54 floor-plan import. Reads a DXF (3D Snap / RoomPlan, magicplan, AutoCAD) into
+// walls, doors, windows, furniture and the enclosed rooms, all in FEET on the plan's own axes.
+// No dependencies. Written to be inlined into template.html (classic script) — the last line hangs
+// the entry point on window when a window exists, and on module.exports under node.
+(function(){
+'use strict';
+const TOL=0.05;            // metres — endpoints closer than this are one point
+const GAP_MAX=3.6;         // metres — the widest opening a dangling wall end is closed across
+const M2FT=3.280839895;
+
+// ---------- 1. the group-code stream
+function parseDxf(text){
+  const lines=text.split(/\r\n|\r|\n/); const n=lines.length;
+  const pairs=[]; for(let i=0;i+1<n;i+=2){ const c=parseInt(lines[i].trim(),10); if(isNaN(c)) continue; pairs.push([c,lines[i+1].trim()]) }
+  const out={units:0, header:{}, blocks:{}, ents:[]};
+  let i=0, sec=null;
+  const readEntity=(start)=>{ // pairs[start] is [0,TYPE]; returns {type, g:{code:[values]}, end}
+    const e={type:pairs[start][1], g:{}}; let j=start+1;
+    for(;j<pairs.length && pairs[j][0]!==0;j++){ const [c,v]=pairs[j]; (e.g[c]=e.g[c]||[]).push(v) }
+    e.end=j; return e };
+  const num=(e,c,d)=>{ const v=e.g[c]; return v&&v.length?parseFloat(v[0]):d };
+  const str=(e,c,d)=>{ const v=e.g[c]; return v&&v.length?v[0]:d };
+  const toEnt=(e,list)=>{
+    const layer=str(e,8,'0');
+    if(e.type==='LINE') list.push({t:'LINE',layer,x1:num(e,10,0),y1:num(e,20,0),x2:num(e,11,0),y2:num(e,21,0)});
+    else if(e.type==='LWPOLYLINE'){ const xs=e.g[10]||[], ys=e.g[20]||[]; const pts=xs.map((x,k)=>[parseFloat(x),parseFloat(ys[k])]);
+      list.push({t:'PL',layer,pts,closed:(parseInt(str(e,70,'0'),10)&1)===1}) }
+    else if(e.type==='INSERT') list.push({t:'INSERT',layer,name:str(e,2,''),x:num(e,10,0),y:num(e,20,0),sx:num(e,41,1),sy:num(e,42,1),rot:num(e,50,0)});
+    else if(e.type==='TEXT'||e.type==='MTEXT') list.push({t:'TEXT',layer,x:num(e,10,0),y:num(e,20,0),h:num(e,40,0.2),text:str(e,1,'')});
+    else if(e.type==='CIRCLE') list.push({t:'CIRCLE',layer,x:num(e,10,0),y:num(e,20,0),r:num(e,40,0)});
+    else if(e.type==='ARC') list.push({t:'ARC',layer,x:num(e,10,0),y:num(e,20,0),r:num(e,40,0),a0:num(e,50,0),a1:num(e,51,0)});
+  };
+  while(i<pairs.length){
+    const [c,v]=pairs[i];
+    if(c===0&&v==='SECTION'){ sec=pairs[i+1]&&pairs[i+1][0]===2?pairs[i+1][1]:null; i+=2; continue }
+    if(c===0&&v==='ENDSEC'){ sec=null; i++; continue }
+    if(sec==='HEADER'&&c===9){ const name=v; let j=i+1; while(j<pairs.length&&pairs[j][0]!==9&&pairs[j][0]!==0){ if(pairs[j][0]===70||pairs[j][0]===40) out.header[name]=parseFloat(pairs[j][1]); j++ } i=j; continue }
+    if(sec==='BLOCKS'&&c===0&&v==='BLOCK'){ const b=readEntity(i); const name=str(b,2,''); const blk={name,bx:num(b,10,0),by:num(b,20,0),ents:[]}; let j=b.end;
+      while(j<pairs.length&&!(pairs[j][0]===0&&pairs[j][1]==='ENDBLK')){ const e=readEntity(j);
+        if(e.type==='POLYLINE'){ const pts=[]; let k=e.end; let closed=(parseInt(str(e,70,'0'),10)&1)===1;
+          while(k<pairs.length&&pairs[k][0]===0&&pairs[k][1]==='VERTEX'){ const ve=readEntity(k); pts.push([num(ve,10,0),num(ve,20,0)]); k=ve.end }
+          if(k<pairs.length&&pairs[k][1]==='SEQEND'){ k=readEntity(k).end } blk.ents.push({t:'PL',pts,closed}); j=k; continue }
+        toEnt(e,blk.ents); j=e.end }
+      out.blocks[name]=blk; i=j+1; continue }
+    if(sec==='ENTITIES'&&c===0){ const e=readEntity(i);
+      if(e.type==='POLYLINE'){ const pts=[]; let k=e.end; const layer=str(e,8,'0'); const closed=(parseInt(str(e,70,'0'),10)&1)===1;
+        while(k<pairs.length&&pairs[k][0]===0&&pairs[k][1]==='VERTEX'){ const ve=readEntity(k); pts.push([num(ve,10,0),num(ve,20,0)]); k=ve.end }
+        if(k<pairs.length&&pairs[k][1]==='SEQEND') k=readEntity(k).end; out.ents.push({t:'PL',layer,pts,closed}); i=k; continue }
+      toEnt(e,out.ents); i=e.end; continue }
+    i++;
+  }
+  out.units=out.header.$INSUNITS||0;
+  return out;
+}
+
+// ---------- 2. geometry helpers
+const dist=(a,b)=>Math.hypot(a[0]-b[0],a[1]-b[1]);
+function segInter(p,q,r,s){ // proper/touching intersection of segments pq and rs → point or null
+  const d=(q[0]-p[0])*(s[1]-r[1])-(q[1]-p[1])*(s[0]-r[0]); if(Math.abs(d)<1e-12) return null;
+  const t=((r[0]-p[0])*(s[1]-r[1])-(r[1]-p[1])*(s[0]-r[0]))/d, u=((r[0]-p[0])*(q[1]-p[1])-(r[1]-p[1])*(q[0]-p[0]))/d;
+  const e=1e-6; if(t<-e||t>1+e||u<-e||u>1+e) return null; return [p[0]+t*(q[0]-p[0]),p[1]+t*(q[1]-p[1])] }
+function projT(p,a,b){ const dx=b[0]-a[0],dy=b[1]-a[1]; const L2=dx*dx+dy*dy; if(L2<1e-12) return 0; return ((p[0]-a[0])*dx+(p[1]-a[1])*dy)/L2 }
+function ptSegDist(p,a,b){ const t=Math.max(0,Math.min(1,projT(p,a,b))); return dist(p,[a[0]+t*(b[0]-a[0]),a[1]+t*(b[1]-a[1])]) }
+function polyArea(P){ let a=0; for(let i=0,n=P.length;i<n;i++){ const p=P[i],q=P[(i+1)%n]; a+=p[0]*q[1]-q[0]*p[1] } return a/2 }
+function polyCent(P){ let a=0,cx=0,cy=0; for(let i=0,n=P.length;i<n;i++){ const p=P[i],q=P[(i+1)%n]; const w=p[0]*q[1]-q[0]*p[1]; a+=w; cx+=(p[0]+q[0])*w; cy+=(p[1]+q[1])*w } a/=2; if(Math.abs(a)<1e-9){ return [P.reduce((s,p)=>s+p[0],0)/P.length,P.reduce((s,p)=>s+p[1],0)/P.length] } return [cx/(6*a),cy/(6*a)] }
+function pointIn(P,pt){ let inside=false; for(let i=0,j=P.length-1;i<P.length;j=i++){ const xi=P[i][0],yi=P[i][1],xj=P[j][0],yj=P[j][1]; const hit=((yi>pt[1])!==(yj>pt[1]))&&(pt[0]<(xj-xi)*(pt[1]-yi)/(yj-yi)+xi); if(hit) inside=!inside } return inside }
+function bbox(P){ let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity; P.forEach(p=>{ x0=Math.min(x0,p[0]); y0=Math.min(y0,p[1]); x1=Math.max(x1,p[0]); y1=Math.max(y1,p[1]) }); return {x0,y0,x1,y1,w:x1-x0,d:y1-y0} }
+// the widest axis-aligned rectangle-ish "min width" of a polygon: shortest of the bbox sides is good enough for hall / sliver tests
+function simplify(P,tol){ // drop collinear / duplicate vertices
+  const out=[]; const n=P.length; for(let i=0;i<n;i++){ const a=P[(i+n-1)%n],b=P[i],c=P[(i+1)%n]; if(dist(a,b)<tol) continue; const cr=(b[0]-a[0])*(c[1]-b[1])-(b[1]-a[1])*(c[0]-b[0]); const L=dist(a,b)*dist(b,c); if(L>0&&Math.abs(cr)/L<0.02) continue; out.push(b) } return out.length>=3?out:P }
+
+// ---------- 3. the wall graph → rooms
+function buildRooms(segs){ // segs in metres [[x1,y1,x2,y2],...]
+  // 3a — snap endpoints
+  const V=[]; const vid=(p)=>{ for(let i=0;i<V.length;i++) if(dist(V[i],p)<TOL) return i; V.push([p[0],p[1]]); return V.length-1 };
+  let E=[]; segs.forEach(s=>{ const a=vid([s[0],s[1]]), b=vid([s[2],s[3]]); if(a!==b) E.push([a,b]) });
+  // 3b — split at crossings and T-junctions (iterate until stable)
+  for(let pass=0;pass<6;pass++){
+    let changed=false; const NE=[];
+    const cuts=E.map(()=>[]);
+    for(let i=0;i<E.length;i++){ const [a,b]=E[i]; const A=V[a],B=V[b];
+      // vertices lying on the segment interior
+      for(let k=0;k<V.length;k++){ if(k===a||k===b) continue; const t=projT(V[k],A,B); if(t>0.001&&t<0.999&&ptSegDist(V[k],A,B)<TOL) cuts[i].push(k) }
+      for(let j=i+1;j<E.length;j++){ const [c,d]=E[j]; if(c===a||c===b||d===a||d===b) continue; const X=segInter(A,B,V[c],V[d]); if(!X) continue;
+        const k=vid(X); if(k!==a&&k!==b&&projT(V[k],A,B)>0.001&&projT(V[k],A,B)<0.999) cuts[i].push(k); if(k!==c&&k!==d&&projT(V[k],V[c],V[d])>0.001&&projT(V[k],V[c],V[d])<0.999) cuts[j].push(k) } }
+    for(let i=0;i<E.length;i++){ const [a,b]=E[i]; const ks=[...new Set(cuts[i])]; if(!ks.length){ NE.push([a,b]); continue } changed=true;
+      ks.sort((p,q)=>projT(V[p],V[a],V[b])-projT(V[q],V[a],V[b])); let prev=a; ks.forEach(k=>{ if(k!==prev) NE.push([prev,k]); prev=k }); if(prev!==b) NE.push([prev,b]) }
+    E=dedupe(NE); if(!changed) break }
+  // 3c — close openings: a wall end that touches nothing is a cased opening or a wall the scan missed.
+  // Close it to the nearest CORNER that is square or in line with the wall it hangs from (the other side of a
+  // doorway, or the corner of the wall the scan dropped); failing that, extend it straight to the wall it points at.
+  const adj=()=>{ const d=V.map(()=>[]); E.forEach(([a,b],i)=>{ d[a].push(i); d[b].push(i) }); return d };
+  const crosses=(p,q)=>E.some(([c,d])=>{ if(dist(V[c],p)<TOL||dist(V[d],p)<TOL||dist(V[c],q)<TOL||dist(V[d],q)<TOL) return false; return !!segInter(p,q,V[c],V[d]) });
+  for(let pass=0;pass<3;pass++){ const D=adj(); let added=false;
+    for(let v=0,nV=V.length;v<nV;v++){ if(!D[v]||D[v].length!==1) continue; const [a,b]=E[D[v][0]]; const o=a===v?b:a; const dir=[V[v][0]-V[o][0],V[v][1]-V[o][1]]; const L=Math.hypot(dir[0],dir[1]); if(L<1e-9) continue; dir[0]/=L; dir[1]/=L;
+      let best=null;
+      for(let w=0;w<nV;w++){ if(w===v||w===o||!D[w]||!D[w].length) continue; const dd=dist(V[v],V[w]); if(dd<TOL||dd>GAP_MAX) continue;
+        const u=[(V[w][0]-V[v][0])/dd,(V[w][1]-V[v][1])/dd]; const dot=u[0]*dir[0]+u[1]*dir[1]; const sq=Math.abs(dot)<0.17||Math.abs(dot)>0.985; if(!sq) continue; if(dot<-0.985) continue; // never fold back down its own wall
+        if(crosses(V[v],V[w])) continue; const score=dd*(D[w].length===1?0.8:1); if(!best||score<best.s) best={s:score,w} }
+      if(best){ E.push([v,best.w]); added=true; continue }
+      const far=[V[v][0]+dir[0]*GAP_MAX,V[v][1]+dir[1]*GAP_MAX]; let hit=null;
+      for(let i=0;i<E.length;i++){ if(i===D[v][0]) continue; const [c,d]=E[i]; if(c===v||d===v) continue; const X=segInter(V[v],far,V[c],V[d]); if(!X) continue; const dd=dist(V[v],X); if(dd>TOL&&(!hit||dd<hit.d)) hit={d:dd,X,i} }
+      if(hit){ const k=vid(hit.X); if(k!==v){ const [c,d]=E[hit.i]; if(k!==c&&k!==d){ E[hit.i]=[c,k]; E.push([k,d]) } E.push([v,k]); added=true } } }
+    E=dedupe(E); if(!added) break }
+  // 3d — faces by the left-hand walk
+  const D=adj(); const half=[]; E.forEach(([a,b])=>{ half.push([a,b]); half.push([b,a]) });
+  const out=V.map(()=>[]); half.forEach((h,i)=>out[h[0]].push(i));
+  const ang=(a,b)=>Math.atan2(V[b][1]-V[a][1],V[b][0]-V[a][0]);
+  out.forEach((lst,v)=>lst.sort((i,j)=>ang(v,half[i][1])-ang(v,half[j][1])));
+  const used=new Array(half.length).fill(false); const faces=[];
+  for(let s=0;s<half.length;s++){ if(used[s]) continue; const cyc=[]; let h=s; let guard=0;
+    while(!used[h]&&guard++<5000){ used[h]=true; cyc.push(half[h][0]); const [a,b]=half[h]; const lst=out[b]; const back=lst.findIndex(i=>half[i][1]===a); const nx=lst[(back-1+lst.length)%lst.length]; h=nx }
+    if(cyc.length>=3) faces.push(cyc) }
+  const rooms=[];
+  faces.forEach(cyc=>{ const P=simplify(cyc.map(i=>V[i]),TOL); const A=polyArea(P); if(A<=0) return; // clockwise = the outer boundary (left-hand walk); interior faces come out counter-clockwise
+    const bb=bbox(P); if(A<0.6) return; if(Math.min(bb.w,bb.d)<0.35) return; // slivers between near-duplicate walls
+    rooms.push({poly:P,area:A,bb}) });
+  // an "outer" face that contains every other face is the outline, not a room (happens when the walls ring the house twice)
+  const big=rooms.filter(r=>rooms.every(o=>o===r||!pointIn(r.poly,polyCent(o.poly))||o.area>=r.area)); // rooms that contain no other room
+  return {rooms:big, V, E};
+}
+function dedupe(E){ const seen=new Set(); const o=[]; E.forEach(([a,b])=>{ if(a===b) return; const k=a<b?a+'-'+b:b+'-'+a; if(seen.has(k)) return; seen.add(k); o.push([a,b]) }); return o }
+
+// ---------- 4. the plan
+const KIND=[[/toilet|wc|bath(tub)?|shower/i,'toilet'],[/dishwasher|stove|oven|range|fridge|refrigerator|cooktop/i,'kitchen'],[/washer|dryer|laundry/i,'washer'],[/sink/i,'sink'],[/bed\b|bed_|_bed|mattress/i,'bed'],[/sofa|couch/i,'sofa'],[/television|tv\b/i,'tv'],[/table|desk/i,'table'],[/chair|stool/i,'chair'],[/storage|cabinet|closet|wardrobe|shelf|shelves|dresser/i,'storage']];
+function kindOf(name){ for(const [re,k] of KIND) if(re.test(name)) return k; return 'other' }
+function unitsToM(units, extentMax){
+  const f={1:0.0254,2:0.3048,3:1609.344,4:0.001,5:0.01,6:1,8:2.54e-8,9:2.54e-5,10:914.4,14:0.1}[units];
+  // sanity: a house is 5–60 m across. If the header disagrees with the numbers, believe the numbers.
+  const cands=[[6,1],[2,0.3048],[1,0.0254],[4,0.001],[5,0.01],[14,0.1]];
+  const ok=(k)=>{ const m=extentMax*k; return m>=4&&m<=80 };
+  if(f&&ok(f)) return f;
+  for(const [u,k] of cands) if(ok(k)) return k;
+  return f||1;
+}
+function planFromDxf(text){
+  const d=parseDxf(text);
+  const isWall=e=>/wall|mur|wand|pared/i.test(e.layer)||(e.layer==='0'&&e.t==='LINE');
+  const isDim=e=>/dim|text|annot|label|hatch/i.test(e.layer);
+  let segsRaw=[];
+  d.ents.forEach(e=>{ if(isDim(e)) return; if(e.t==='LINE'&&isWall(e)) segsRaw.push([e.x1,e.y1,e.x2,e.y2]);
+    else if(e.t==='PL'&&isWall(e)){ for(let i=0;i+1<e.pts.length;i++) segsRaw.push([e.pts[i][0],e.pts[i][1],e.pts[i+1][0],e.pts[i+1][1]]); if(e.closed&&e.pts.length>2){ const a=e.pts[e.pts.length-1],b=e.pts[0]; segsRaw.push([a[0],a[1],b[0],b[1]]) } } });
+  if(!segsRaw.length) d.ents.forEach(e=>{ if(isDim(e)) return; if(e.t==='LINE') segsRaw.push([e.x1,e.y1,e.x2,e.y2]) });
+  if(!segsRaw.length) return {ok:false, why:'No wall lines found in the file. Export the floor plan as a DXF with the walls on a WALLS layer (3D Snap ▸ Export ▸ DXF).'};
+  let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity; segsRaw.forEach(s=>{ x0=Math.min(x0,s[0],s[2]); y0=Math.min(y0,s[1],s[3]); x1=Math.max(x1,s[0],s[2]); y1=Math.max(y1,s[1],s[3]) });
+  const k=unitsToM(d.units, Math.max(x1-x0,y1-y0));
+  // the DXF's y runs up the page; the plan's runs down it (screen / grid / sheet), so it is flipped here once and every angle with it
+  const toM=(x,y)=>[(x-x0)*k,(y1-y)*k];
+  const segs=segsRaw.map(s=>{ const a=toM(s[0],s[1]), b=toM(s[2],s[3]); return [a[0],a[1],b[0],b[1]] }).filter(s=>Math.hypot(s[2]-s[0],s[3]-s[1])>0.02);
+  const G=buildRooms(segs);
+  // inserts: doors / windows / furniture — a block is a unit square scaled by sx/sy and turned by rot
+  const doors=[],wins=[],furn=[];
+  d.ents.forEach(e=>{ if(e.t!=='INSERT') return; const nm=(e.name||'')+' '+(e.layer||''); const p=toM(e.x,e.y); const blk=d.blocks[e.name]; let bw=1,bh=1; if(blk&&blk.ents.length){ const pts=[]; blk.ents.forEach(b=>{ if(b.t==='PL') pts.push(...b.pts); else if(b.t==='LINE') pts.push([b.x1,b.y1],[b.x2,b.y2]) }); if(pts.length){ const bb=bbox(pts); bw=bb.w||1; bh=bb.d||1 } }
+    const w=Math.abs(e.sx)*bw*k, h=Math.abs(e.sy)*bh*k, rot=-(e.rot||0);   // flipped with the y axis
+    const r=rot*Math.PI/180; const sy=e.sy<0?1:-1; /* the block's +y (its depth) points the other way once the page is flipped */ const c=[p[0]+(w/2)*Math.cos(r)-(h/2)*Math.sin(r)*sy, p[1]+(w/2)*Math.sin(r)+(h/2)*Math.cos(r)*sy];
+    if(/door/i.test(nm)) doors.push({x:p[0],y:p[1],w,rot,closed:/closed|slid/i.test(nm)});
+    else if(/window|fen/i.test(nm)) wins.push({x:p[0],y:p[1],w,rot});
+    else furn.push({kind:kindOf(nm),name:e.name,x:p[0],y:p[1],w,h,rot,c}) });
+  // rooms: name from what is inside
+  const rooms=G.rooms.map((r,i)=>{ const inside=furn.filter(f=>pointIn(r.poly,f.c)); const has=kd=>inside.some(f=>f.kind===kd); const cnt=kd=>inside.filter(f=>f.kind===kd).length;
+    const sf=r.area*M2FT*M2FT; const bbf={w:r.bb.w*M2FT,d:r.bb.d*M2FT}; const minW=Math.min(bbf.w,bbf.d);
+    const nDoors=doors.filter(dd=>{ const rr=dd.rot*Math.PI/180; const m=[dd.x+dd.w/2*Math.cos(rr),dd.y+dd.w/2*Math.sin(rr)]; return ptPolyDist(r.poly,m)<0.15 }).length;
+    let name,kind='room';
+    if(has('toilet')) { name='Bathroom'; kind='bath' }
+    else if(has('washer')) { name='Laundry'; kind='laundry' }
+    else if(has('kitchen')) { name='Kitchen'; kind='kitchen' }
+    else if(has('bed')) { name='Bedroom'; kind='bed' }
+    else if(has('sofa')||has('tv')) { name=sf>250?'Living room':'Family room'; kind='living' }
+    else if(has('table')&&cnt('chair')>=3) { name='Dining'; kind='dining' }
+    else if(sf<45&&(has('storage')||!nDoors)) { name='Closet'; kind='closet' }
+    else if(minW<5.5&&sf<140&&nDoors>=2) { name='Hall'; kind='hall' }
+    else if(has('table')||has('chair')) { name=sf>200?'Great room':'Office'; kind=sf>200?'living':'office' }
+    else if(sf>=90) { name='Bedroom'; kind='bed' }
+    else { name='Room'; kind='room' }
+    return {poly:r.poly.map(p=>[p[0]*M2FT,p[1]*M2FT]), sf:Math.round(sf), name, kind, nDoors, items:inside.map(f=>f.kind), c:polyCent(r.poly).map(v=>v*M2FT), w:bbf.w, d:bbf.d} });
+  // number duplicates
+  const seen={}; rooms.sort((a,b)=>(a.c[1]-b.c[1])||(a.c[0]-b.c[0])); rooms.forEach(r=>{ seen[r.name]=(seen[r.name]||0)+1 }); const idx={}; rooms.forEach(r=>{ if(seen[r.name]>1){ idx[r.name]=(idx[r.name]||0)+1; r.name+=' '+idx[r.name] } });
+  const W=(x1-x0)*k*M2FT, Dp=(y1-y0)*k*M2FT;
+  const totalSf=rooms.reduce((s,r)=>s+r.sf,0);
+  return {ok:true, units:d.units, scale:k, w:W, d:Dp, rooms, totalSf,
+    walls:segs.map(s=>s.map(v=>v*M2FT)), doors:doors.map(o=>({x:o.x*M2FT,y:o.y*M2FT,w:o.w*M2FT,rot:o.rot,closed:o.closed})), windows:wins.map(o=>({x:o.x*M2FT,y:o.y*M2FT,w:o.w*M2FT,rot:o.rot})),
+    furniture:furn.map(f=>({kind:f.kind,x:f.x*M2FT,y:f.y*M2FT,w:f.w*M2FT,h:f.h*M2FT,rot:f.rot,c:f.c.map(v=>v*M2FT)})),
+    outline:outlineOf(rooms) };
+}
+function ptPolyDist(P,pt){ let m=Infinity; for(let i=0;i<P.length;i++){ m=Math.min(m,ptSegDist(pt,P[i],P[(i+1)%P.length])) } return m }
+// the union outline of the rooms — the convex-ish hull is enough for the aerial / grid; the walls themselves draw the real edges
+function outlineOf(rooms){ const pts=[]; rooms.forEach(r=>pts.push(...r.poly)); if(!pts.length) return []; return hull(pts) }
+function hull(P){ const pts=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]); const cross=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]); const lo=[]; for(const p of pts){ while(lo.length>=2&&cross(lo[lo.length-2],lo[lo.length-1],p)<=0) lo.pop(); lo.push(p) } const up=[]; for(let i=pts.length-1;i>=0;i--){ const p=pts[i]; while(up.length>=2&&cross(up[up.length-2],up[up.length-1],p)<=0) up.pop(); up.push(p) } up.pop(); lo.pop(); return lo.concat(up) }
+
+const api={parseDxf,planFromDxf,polyArea,polyCent,pointIn,bbox};
+if(typeof module!=='undefined'&&module.exports) module.exports=api; else if(typeof window!=='undefined') window.FCDxf=api;
+})();
+
 </script>
 <script>
 // ============================================================ helpers
@@ -2844,7 +3037,7 @@ function renderPkgTier(card,star,row,o){
 // v2.42: the renderer can draw into more than one viewer — the pack's customer page has a Today and a Design 3D side by side —
 // so the canvas, its context, its label layer and its camera are swappable (renderInto), not fixed to #c3d.
 let cv=$('#c3d'), ctx=cv.getContext('2d'), lblsEl=$('#lbls'); let view={yaw:-0.75,pitch:0.42,zoom:1,pan:[0,0],touched:false,lbl:null};
-const defaultView=()=>isPkg()?{yaw:2.35,pitch:0.46}:{yaw:-0.75,pitch:0.42};
+const defaultView=()=>{ const d=isPkg()?{yaw:2.35,pitch:0.46}:{yaw:-0.75,pitch:0.42}; if(S.plan&&S.rbrNew&&S.view&&S.view.focus&&S.view.focus!=='unit'){ d.pitch=0.95; d.yaw=-1.35 } return d }; // yaw −π/2 puts the plan's x to the right and its y down the screen — the same way up as the 2D drawing // v2.54: framed on the house, the picture tips toward a plan view
 function resetView(){ const d=defaultView(); view.yaw=d.yaw; view.pitch=d.pitch; view.zoom=1; view.pan=[0,0]; view.touched=false; }
 let scene=[]; // boxes: {x,y,z,dx,dy,dz,color,alpha,label,cls,wire} · quads: {quad:[4 pts],color,stroke,nofit} · markers: {marker:true,label}
 const sceneAdd=o=>{ scene.push(o); return o }; // v2.50: push and hand the item back, so a duct can be tagged with the air it carries (fl / flB / flV below)
@@ -2914,9 +3107,10 @@ function draw(){
   // labels — v2.11: filtered by the Info / Chokepoints toggles. A red or orange note is a "chokepoint" note; everything else is Info.
   // v2.42: a viewer can carry its own note mode — 'all' · 'flag' (problems only) · 'changes' (problems + what is new) · 'none' — else the Info / Chokepoints toggles decide
   const showLbl=(c,b)=>{ const m=view.lbl; const prob=(c==='warn'||c==='bad'); if(m){ if(m==='none') return false; if(m==='all') return true; if(m==='flag') return prob; if(m==='changes') return prob||!!(b&&(b.nw||b.stat)); } return prob?S.view.flag!==false:S.view.info!==false };
-  scene.forEach(b=>{ if(!b.label||b.quad) return; if(!showLbl(b.cls,b)) return; const fx=b.la?b.la[0]:0.5, fz=b.la?b.la[1]:((b.wire||b.marker)?0:0.5), fy=(b.la&&b.la[2]!=null)?b.la[2]:1; const p=P([b.x+fx*b.dx,b.y+fy*b.dy+3,b.z+fz*b.dz]); const d=document.createElement('div'); d.className='lbl3 '+(b.cls||''); d.style.left=p[0]+'px'; d.style.top=(p[1]-8)+'px'; d.innerHTML=b.label; lbls.appendChild(d) });
+  const planWide=focus!=='unit'&&scene.some(b=>b.quad&&b.duct); // v2.54: framed on the whole house, the notes stand back — only the room names stay on the picture
+  scene.forEach(b=>{ if(!b.label||b.quad) return; if(planWide&&b.cls!=='plan') return; if(!showLbl(b.cls,b)) return; const fx=b.la?b.la[0]:0.5, fz=b.la?b.la[1]:((b.wire||b.marker)?0:0.5), fy=(b.la&&b.la[2]!=null)?b.la[2]:1; const p=P([b.x+fx*b.dx,b.y+fy*b.dy+3,b.z+fz*b.dz]); if(b.duct&&(p[0]<-30||p[0]>r.width+30||p[1]<-30||p[1]>r.height+30)) return; /* v2.54: a note for a duct piece that is off the picture is noise, not a note */ const d=document.createElement('div'); d.className='lbl3 '+(b.cls||''); d.style.left=p[0]+'px'; d.style.top=(p[1]-8)+'px'; d.innerHTML=b.label; lbls.appendChild(d) });
   // dimension callouts for the primary "new" envelope
-  const env=scene.find(b=>b.dimLabels); if(env){ const {x,y,z,dx,dy,dz}=env; const put=(pt,txt,cls)=>{if(!showLbl(cls)) return; const p=P(pt);const d=document.createElement('div');d.className='lbl3 '+(cls||'');d.style.left=p[0]+'px';d.style.top=p[1]+'px';d.textContent=txt;lbls.appendChild(d)};
+  const env=planWide?null:scene.find(b=>b.dimLabels); if(env){ const {x,y,z,dx,dy,dz}=env; const put=(pt,txt,cls)=>{if(!showLbl(cls)) return; const p=P(pt);const d=document.createElement('div');d.className='lbl3 '+(cls||'');d.style.left=p[0]+'px';d.style.top=p[1]+'px';d.textContent=txt;lbls.appendChild(d)};
     put([x+dx/2,y-4,z+dz+5],env.dimLabels[0].txt,env.dimLabels[0].cls); put([x-5,y+dy/2,z+dz+5],env.dimLabels[1].txt,env.dimLabels[1].cls); put([x+dx+7,y-4,z+dz/2],env.dimLabels[2].txt,env.dimLabels[2].cls); }
   // v2.24: DECLUTTER — the notes used to pile on top of each other over the unit. Each note keeps its anchor, is slid
   // up or down until it overlaps nothing, is kept inside the canvas, and gets a thin leader back to the spot it describes
@@ -2996,13 +3190,13 @@ function pushTube(p0,p1,cs,color,alpha,extra){ const t={p0,p1,a:cs.a,h:cs.h,roun
 // Draws only when New duct system is on (rooms designed) or a new supply duct system is in the crew scope; the Today picture never carries it.
 function ductTree(AM){ // → {arms:[{k,segs:[{d,add,carry,room,taps:[{d,side,run,legs:[{d,can,face}]}]}]}],runs,per} from the room design, else null
   if(!(S.rbrNew&&RM&&S.rooms&&S.rooms.length)) return null; const ux=RM.ux, uy=RM.uy; const byArm={L:[],R:[]};
-  S.rooms.forEach(r=>{ (rbrCx(r)<ux?byArm.L:byArm.R).push(r) }); byArm.L.sort((a,b)=>rbrCx(b)-rbrCx(a)); byArm.R.sort((a,b)=>rbrCx(a)-rbrCx(b)); // the 2D's arm order: nearest the plenum first
+  S.rooms.filter(r=>!r.nr).forEach(r=>{ (rbrCx(r)<ux?byArm.L:byArm.R).push(r) }); byArm.L.sort((a,b)=>rbrCx(b)-rbrCx(a)); byArm.R.sort((a,b)=>rbrCx(a)-rbrCx(b)); // the 2D's arm order: nearest the plenum first · v2.54: a hall / closet has no run
   const arms=[]; ['L','R'].forEach(k=>{ const rooms=byArm[k]; if(!rooms.length) return; let prevD=null; const segs=[];
     rooms.forEach(r=>{ const sg=(RM.segs||[]).find(s=>s.arm===k&&s.room===r.n); const d=sg?sg.d:(prevD||8); prevD=d; const side=rbrCy(r)<uy?1:-1; // rooms past the trunk line branch forward, rooms behind it branch back
-      const taps=((r.taps&&r.taps.length)?r.taps:rbrGeom(r)).map(tp=>({d:(r.branch&&r.branch.d)||8,side,run:r.run||12,legs:(tp.regs||[]).map(x=>({d:(r.leg&&r.leg.d)||8,can:r.can||9,face:(x.g&&x.g.face)||r.faceK}))}));
-      segs.push({d,add:sg?(sg.add||[]):[],carry:sg?sg.carry:null,room:r.n,taps}) });
+      const taps=((r.taps&&r.taps.length)?r.taps:rbrGeom(r)).map(tp=>({d:(r.branch&&r.branch.d)||8,side,run:r.run||12,px:tp.x,py:tp.y!=null?tp.y:rbrCy(r),legs:(tp.regs||[]).map(x=>({d:(r.leg&&r.leg.d)||8,can:r.can||9,face:(x.g&&x.g.face)||r.faceK,px:x.x,py:x.y!=null?x.y:rbrCy(r)}))}));
+      segs.push({d,add:sg?(sg.add||[]):[],carry:sg?sg.carry:null,room:r.n,taps,pz0:sg?sg.from:null,pz1:sg?sg.to:rbrCx(r)}) });  // v2.54: pz0/pz1 · px/py = the real plan positions, in feet
     arms.push({k,segs}) });
-  return arms.length?{arms,runs:RM.vents,per:Math.round(RM.Qup/Math.max(1,RM.vents)),rbr:true}:null }
+  return arms.length?{arms,runs:RM.vents,per:Math.round(RM.Qup/Math.max(1,RM.vents)),rbr:true,plan:!!S.plan}:null }
 function ductTreeFromRuns(items,AM){ // no room design: the runs, dealt over two arms; the trunk sized for what each segment still carries
   const runs=(items||[]).filter(it=>!it.down); if(!runs.length) return null; const n=runs.length; const per=Math.round(AM.design/Math.max(1,n));
   const fr=(AM.md&&AM.md.frUse)||0.08, mat=S.f.dr_supm||'flex'; const byArm={L:[],R:[]}; runs.forEach((it,i)=>(i%2?byArm.R:byArm.L).push(it));
@@ -3010,7 +3204,7 @@ function ductTreeFromRuns(items,AM){ // no room design: the runs, dealt over two
     const segs=rs.map((it,i)=>{ const d=it.d||Math.max(it.w||8,it.h||8); const carry=per*(rs.length-i); const sz=mdSizeRound(Math.max(carry,1),fr,mat,'sup');
       return {d:sz.d,add:sz.add||[],carry,room:null,taps:[{d,side:i%2?-1:1,run:12+i*3,legs:[{d,can:null,face:null}]}]} }); arms.push({k,segs}) });
   return {arms,runs:n,per,rbr:false} }
-function trunkOutRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms.length) return; const NEWM='#a9d9bd'; const up=!!plane.up; const dn=up?1:-1; const FAR=72; // base = {x: where the arms tee off the plenum, y: its centreline, zA / zB: its two side faces}
+function trunkOutRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms.length) return; if(T.plan&&S.plan){ planDuctRuns(base,plane,opt); return } const NEWM='#a9d9bd'; const up=!!plane.up; const dn=up?1:-1; const FAR=72; // base = {x: where the arms tee off the plenum, y: its centreline, zA / zB: its two side faces}
   const add=o=>sceneAdd(Object.assign({color:NEWM,alpha:.85,noshadow:true,nw:true,cls:'ok',duct:true},o)); // v2.53: every piece of the new duct system is tagged `duct` so the Focus chip can frame the unit without it, or it alone
   const cyl=(x,y,z,dx,dy,dz,ax,o)=>add(Object.assign({x,y,z,dx,dy,dz,cyl:ax},o||{}));
   const bend=(C,u,v,d,R,o)=>pushBend(C,u,v,{a:d,h:d,round:true},R,NEWM,.85,Object.assign({nw:true,cls:'ok',duct:true},o||{}));
@@ -3042,6 +3236,58 @@ function trunkOutRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms
               land(e2[0],zEnd,ld,can,lg.face,[0,0,-dz_],far,R2) }
             else { const x0=xIn, xE=xIn+s*(14+R2), x1=xE-s*R2; fl(cyl(Math.min(x0,x1),yC-ld/2,zt-ld/2,Math.max(Math.abs(x1-x0),1),ld,ld,'x',{nofit:far}),'x',s,'s'); land(xE,zt,ld,can,lg.face,[-s,0,0],far,R2) } }) } });
       z+=dir*len }) }) }
+// v2.54 — THE DUCT SYSTEM ON THE REAL PLAN (Stephen 2026-09-26: "the duct design overlaid over the actual home floor plan … the 3D duct design on the
+// plan tab"). With a scanned floor plan the 3D no longer draws the compressed topology: the plan is laid flat at the ceiling under the unit at true
+// scale (12" to the foot — a 40 ft run IS 40 ft), every room a translucent slab with its name, every wall a line, and the trunk arms, take-offs,
+// wyes and legs run to each register's real position. The drop the SM placed on the plan is where the plenum is. The Focus chip frames it:
+// Unit stays tight on the equipment, Ducts / Both take in the whole house. Every piece is `duct` and `nofit` — the fit check never sees the house.
+function planDuctRuns(base,plane,opt){ const T=opt.tree, P=S.plan; if(!P||!RM||!T||!T.arms||!T.arms.length) return; const NEWM='#a9d9bd'; const up=!!plane.up; const dn=up?1:-1; const K=12;
+  const add=o=>sceneAdd(Object.assign({color:NEWM,alpha:.85,noshadow:true,nw:true,cls:'ok',duct:true,nofit:true},o));
+  const cyl=(x,y,z,dx,dy,dz,ax,o)=>add(Object.assign({x,y,z,dx,dy,dz,cyl:ax},o||{}));
+  const bend=(C,u,v,d,R,o)=>pushBend(C,u,v,{a:d,h:d,round:true},R,NEWM,.85,Object.assign({nw:true,cls:'ok',duct:true,nofit:true},o||{}));
+  const ux=RM.ux, uy=RM.uy, zc=(base.zA+base.zB)/2;
+  const SZ=px=>zc+(px-ux)*K, SX=py=>base.x-(py-uy)*K;           // plan x runs along the trunk (scene z); plan y runs across it (scene x)
+  const yC=base.y, vAvail=Math.abs(yC-plane.y);
+  // ---- the house, at the ceiling: rooms as slabs, walls as lines, names as notes
+  const yP=up?plane.y+7:plane.y-7;
+  S.rooms.filter(r=>r.poly).forEach(r=>{ const pts=r.poly.map(p=>[SX(p[1]),yP,SZ(p[0])]); const xs=pts.map(p=>p[0]), zs=pts.map(p=>p[2]);
+    scene.push({quad:pts,color:r.nr?'rgba(150,160,170,.22)':(r.ld==='high'?'rgba(255,190,120,.26)':'rgba(120,175,225,.26)'),stroke:'rgba(255,255,255,.45)',x:Math.min(...xs),y:yP,z:Math.min(...zs),dx:Math.max(...xs)-Math.min(...xs),dy:0.1,dz:Math.max(...zs)-Math.min(...zs),nofit:true,duct:true});
+    scene.push({marker:true,label:rbrEsc(r.n)+(r.nr?'':' · '+CFM(r.cfm)+' CFM'),cls:'plan',x:SX(r.cy),y:yP,z:SZ(r.cx),dx:0,dy:0,dz:0,nofit:true,duct:true}) });
+  const lines=(sceneLines||[]).slice(); P.walls.forEach(w=>lines.push([[SX(w[1]),yP,SZ(w[0])],[SX(w[3]),yP,SZ(w[2])],2.2])); sceneLines=lines;
+  // ---- the runs
+  let first=true, canLbl=true, tyLbl=true; const regCls=(opt.regCls==='bad'||opt.regCls==='warn')?opt.regCls:'';
+  const legR=d=>bendR({a:d,b:d,round:true},12,vAvail*0.8);
+  const land=(x,z,d,can,face,u,R)=>{ R=R||legR(d); if(vAvail<R+1) return false;
+    flB(bend([x,yC,z],u,[0,dn,0],d,R),1,'s'); const yA=up?yC+R:plane.y, yB=up?plane.y:yC-R; if(yB-yA>0.5) fl(cyl(x-d/2,yA,z-d/2,d,yB-yA,d,'y'),'y',dn,'s');
+    const cy=up?plane.y-6:plane.y-4; fl(add({x:x-can/2,y:cy,z:z-can/2,dx:can,dy:6,dz:can,alpha:.9,la:[0.5,up?0:1,0.5],label:canLbl?`${can}×${can} can · ${REG_FACE[face||regNew()].short} register`:null}),'y',dn,'s'); canLbl=false;
+    flV(add({x:x-can/2-1,y:up?plane.y+0.4:plane.y-5.4,z:z-can/2-1,dx:can+2,dy:1.2,dz:can+2,color:'#eef3f7',alpha:.95}),'out',[0,dn,0],'s',regCls); return true };
+  T.arms.forEach(arm=>{ const dir=arm.k==='L'?-1:1; let zPrev=dir>0?base.zA:base.zB;
+    arm.segs.forEach(sg=>{ const D=sg.d||8; const z0=zPrev, z1=sg.pz1!=null?SZ(sg.pz1):zPrev+dir*24; const len=Math.abs(z1-z0);
+      if(len>0.5){ fl(cyl(base.x-D/2,yC-D/2,Math.min(z0,z1),D,D,len,'z',{la:[0.5,1,0.5],label:first?opt.label:null}),'z',dir,'s'); first=false;   // the 2D carries every segment's size and length; here only the system note
+        (sg.add||[]).forEach((a,ai)=>{ const ad=a.d||8; fl(cyl(base.x-ad/2,yC+D/2+2+ai*(ad+2),Math.min(z0,z1),ad,ad,len,'z'),'z',dir,'s') }) }   // v2.48: a 20" plus the run beside it
+      zPrev=z1;
+      sg.taps.forEach(tp=>{ const s=tp.side||1, d=tp.d||8; const zt=tp.px!=null?SZ(tp.px):z1; const xs=base.x+s*D/2; const xe=tp.py!=null?SX(tp.py):xs+s*60; const L=Math.abs(xe-xs); const legs=(tp.legs&&tp.legs.length)?tp.legs:[{d}];
+        if(legs.length<2){ const lg=legs[0]; const can=lg.can||rbrCanFor(T.per,lg.d||d); const R=bendR({a:d,b:d,round:true},Math.max(L,6),vAvail*0.8); if(vAvail<R+1) return;
+          let xEnd=lg.py!=null?SX(lg.py):xe; const zEnd=lg.px!=null?SZ(lg.px):zt; if(Math.abs(xEnd-xs)<R+3) xEnd=xs+s*(R+3); const L2=Math.abs(xEnd-xs);   // one leg: the branch runs across to the register and turns down onto its can (a room sitting on the trunk line gets the shortest stub the bend allows)
+          if(Math.abs(zEnd-zt)>1){ // the register is not on the tap's line: run to its z first with a 90° corner, then across — a jog on the ceiling
+            const Rj=bendR({a:d,b:d,round:true},Math.max(Math.abs(zEnd-zt),4),Math.max(L2,4)); const dz_=zEnd>zt?1:-1;
+            fl(cyl(Math.min(xs,xs+s*(L2-Rj)),yC-d/2,zt-d/2,Math.max(L2-Rj,1),d,d,'x'),'x',s,'s'); // across, short of the corner
+            flB(bend([xs+s*L2,yC,zt],[-s,0,0],[0,0,dz_],d,Rj),1,'s');                                    // the corner
+            const zA=zt+dz_*Rj, zB=zEnd-dz_*R; if(Math.abs(zB-zA)>0.5) fl(cyl(xs+s*L2-d/2,yC-d/2,Math.min(zA,zB),d,d,Math.abs(zB-zA),'z'),'z',dz_,'s');
+            land(xs+s*L2,zEnd,d,can,lg.face,[0,0,-dz_],R); return }
+          fl(cyl(Math.min(xs,xEnd-s*R),yC-d/2,zt-d/2,Math.max(L2-R,2),d,d,'x'),'x',s,'s'); land(xEnd,zt,d,can,lg.face,[-s,0,0],R) }
+        else { const ld=legs[0].d||d; // a ROUND REDUCING WYE (v2.53), sized to reach the two registers where the plan puts them
+          let Rw=Math.max(ld,Math.min(1.5*ld,L*0.45)), Ls=8; const Rw2=Math.max(4,ld*0.9), R2=legR(ld);
+          let dxW=0.7071*Rw+0.7071*Ls+0.2929*Rw2; if(L<dxW+6){ const k=Math.max(0.35,(L-6)/dxW); Rw*=k; Ls*=k; dxW=0.7071*Rw+0.7071*Ls+0.2929*Rw2 }
+          const dzW=0.2929*Rw+0.7071*Ls+0.7071*Rw2; const xIn=xe-s*dxW;
+          if(vAvail<R2+1) return;
+          fl(cyl(Math.min(xs,xIn),yC-d/2,zt-d/2,Math.max(Math.abs(xIn-xs),2),d,d,'x'),'x',s,'s');
+          legs.slice(0,2).forEach((lg,li)=>{ const can=lg.can||rbrCanFor(T.per,ld); const zTarget=lg.px!=null?SZ(lg.px):zt+(li?-1:1)*(dzW+R2+12); let dz_=zTarget>zt?1:(zTarget<zt?-1:(li?-1:1)); if(li===1&&legs[0].px!=null&&Math.sign(SZ(legs[0].px)-zt)===dz_) dz_=-dz_; // the two legs leave opposite ways
+            const w=bendFrom([xIn,yC,zt],[s,0,0],[0,0,dz_],Rw,Math.PI/4,{a:d,h:d,a2:ld,h2:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:true,la:[0.5,1,0.5],label:(tyLbl&&li===0)?`TY ${fmt(d)}×${fmt(ld)}×${fmt(ld)}`:null}); if(!w.b) return; flB(w.b,1,'s'); tyLbl=false;
+            const e1=w.end, d1=w.dir; const p2=[e1[0]+d1[0]*Ls,e1[1],e1[2]+d1[2]*Ls]; flT(pushTube(e1,p2,{a:ld,h:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:true}),1,'s');
+            const w2=bendFrom(p2,d1,[-s*Math.SQRT1_2,0,dz_*Math.SQRT1_2],Rw2,Math.PI/4,{a:ld,h:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:true}); if(!w2.b) return; flB(w2.b,1,'s');
+            const e2=w2.end; const LL=Math.max(0.5,Math.abs(zTarget-e2[2])*(Math.sign(zTarget-e2[2])===dz_?1:0)-R2); const zEnd=e2[2]+dz_*(LL+R2); const za=e2[2], zb=zEnd-dz_*R2; if(Math.abs(zb-za)>0.5) fl(cyl(e2[0]-ld/2,yC-ld/2,Math.min(za,zb),ld,ld,Math.abs(zb-za),'z'),'z',dz_,'s');
+            land(e2[0],zEnd,ld,can,lg.face,[0,0,-dz_],R2) }) } }) }) }) }
 // with New duct system on, the take-offs drawn ARE the room design's runs — one per register, at the leg size the room design gave it
 function rbrTakeoffs(){ if(!(S.rbrNew&&RM&&S.rooms&&S.rooms.length)) return null; const out=[];
   (RM.down||[]).forEach(x=>{ for(let k=0;k<x.n;k++) out.push({d:x.d,rbr:true,down:x.fl+1}); (x.add||[]).forEach(a=>out.push({d:a.d,rbr:true,down:x.fl+1})) });                       // v2.46: the duct down comes off the plenum first
@@ -3223,7 +3469,7 @@ $('#v_iso').onclick=()=>{resetView();draw()};
 { const b=$('#v_flow'); b.classList.toggle('on',S.view.flow!==false); b.onclick=()=>{ S.view.flow=!(S.view.flow!==false); save(); b.classList.toggle('on',S.view.flow!==false); draw() } }
 // v2.53: the Focus chip — Unit → Ducts → Both; no geometry change, the camera re-frames and every other viewer reads S.view.focus on its next draw
 function syncFocusChip(){ const b=$('#v_focus'); if(!b) return; const FN={unit:'Unit',ducts:'Ducts',both:'Both'}; const f=(S.view&&FN[S.view.focus])?S.view.focus:'unit'; b.innerHTML='&#8982; Focus: '+FN[f] }
-{ const b=$('#v_focus'); const FOC=['unit','ducts','both']; syncFocusChip(); b.onclick=()=>{ const f=FOC.includes(S.view.focus)?S.view.focus:'unit'; S.view.focus=FOC[(FOC.indexOf(f)+1)%FOC.length]; save(); syncFocusChip(); draw(); syncMoveUi() } }
+{ const b=$('#v_focus'); const FOC=['unit','ducts','both']; syncFocusChip(); b.onclick=()=>{ const f=FOC.includes(S.view.focus)?S.view.focus:'unit'; S.view.focus=FOC[(FOC.indexOf(f)+1)%FOC.length]; save(); syncFocusChip(); if(!view.touched) resetView(); draw(); syncMoveUi() } }
 function refreshRecShot(){ /* v2.42: the Recommended design card no longer carries a shot — the live 3D is right above it */ }
 window.addEventListener('resize',draw);
 // ============================================================ v2.42 · MORE THAN ONE VIEWER
@@ -5265,7 +5511,8 @@ function summaryText(o){
     if(S.rooms.length&&RM){ rbrModel();
       L.push(`ROOM BY ROOM: ${S.rooms.length} rooms · ${CFM(RM.roomSf)} sq ft measured · rooms want ${CFM(RM.needTot)} CFM · unit delivers ${CFM(RM.A.Qd)} (${Math.round(RM.pct*100)}%)`);
       L.push(`  CROSS-CHECK: ${CFM(RM.needTot)} CFM ÷ ${RM.cpt} CFM/ton (${RM.cptSrc}) = ${(RM.needTot/RM.cpt).toFixed(2)} → ${RM.loadT} ton${(function(){ const oo=curOpt(); return oo&&oo.upsize?' · divides by the Matchup Guide default indoor — the airflow upsize never shrinks the condenser':'' })()}`);
-      S.rooms.forEach(r=>L.push(`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.ld} load · ${CFM(r.cfm)} CFM · ${r.nReg} × ${r.can}×${r.can} can · ${rbrDuctTxt(r).replace(/<[^>]+>/g,'')}`));
+      if(S.plan) L.push(`  FLOOR PLAN: ${S.plan.name} · ${CFM(S.plan.sf)} sq ft served by this system${S.plan.prevSf?' (record '+CFM(S.plan.prevSf)+' sq ft — the rest is on another system)':''} · rooms named off the scan`);
+      S.rooms.forEach(r=>L.push(r.nr?`  ${r.n}: ${r.sf} sf · no register (${r.kind==='hall'?'hall':'closet'}) · ${CFM(r.need)} CFM of load spread over the rooms around it`:`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.ld} load · ${CFM(r.cfm)} CFM · ${r.nReg} × ${r.can}×${r.can} can · ${rbrDuctTxt(r).replace(/<[^>]+>/g,'')}`));
       if(S.rbrNew){ L.push(`NEW DUCT SYSTEM — REDOING THE ROOM-BY-ROOM DUCTS to ensure adequate flow to each room.`);
         L.push(`  Trunk: ${RM.segs.map(x=>x.tag+' '+rdTxt(x)+' '+CFM(x.carry)+' CFM '+Math.round(x.len)+' ft').join(' · ')}`);
         L.push(`  ${RM.taps} take-offs (collar + balancing damper each) · ${RM.tysTot} TY splits · ${RM.vents} square cans at ${RM.cap} CFM max per vent`);
@@ -5330,11 +5577,13 @@ function rbrSold(t){
 function rbrRoundNote(raw){ const s=rbrSold(raw);
   if(Math.abs(raw-s)<0.005) return 'lands on '+s;
   if(raw<s) return 'rounded up to '+s;
+  const top=RBR_TONS[RBR_TONS.length-1]; if(s===top&&raw-s>rbrStretchFor(top)+1e-9) return raw.toFixed(2)+' ton is over the '+top+' ton, the biggest we sell — this is a two-system house, or a '+top+' ton with the attic brought up'; // v2.54
   return 'held at '+s+' — '+(raw-s).toFixed(2)+' over, inside the '+rbrStretchFor(s).toFixed(2)+' stretch' }
 const RBR_GW=50, RBR_GD=48;
 S.home=S.home||{}; if(S.home.sf==null) S.home.sf=''; S.home.build=S.home.build||null;
 S.rooms=Array.isArray(S.rooms)?S.rooms:[];
 S.unitPos=S.unitPos||{x:23,y:18}; if(S.vstep==null) S.vstep=0; S.rbrOpen=!!S.rbrOpen; S.rbrNew=!!S.rbrNew; S.rbrSeq=S.rbrSeq||0;
+S.plan=(S.plan&&S.plan.walls)?S.plan:null; S.rbrHand=!!S.rbrHand; // v2.54 — the floor-plan scan, and whether the hand-laid grid was opened instead
 S.rooms.forEach(r=>{ if(!r.id) r.id='r'+(S.rbrSeq++); if(!(r.w>0)) rbrShape(r); r.d=r.sf/r.w });
 /* ============================================================================
    v2.37 — ADDRESS LOOKUP + TRACED OUTLINE.
@@ -5393,6 +5642,7 @@ function fcSetFloors(n){
   while(F.length>n){ F.pop() }
   // v2.46 — the rooms always live on the top floor: adding a storey moves them up, removing one moves them down. Lower floors get a drop.
   const top=F.length-1; S.rooms.forEach(r=>{ r.fl=top }); S.blocks.forEach(b=>{ b.fl=top });
+  if(S.auto&&S.auto.rbr&&S.rooms.length&&!S.plan) S.rooms=[];   // v2.54 — an assumed set is re-seeded to the new top floor on the next render, so it always fills the floor it is on
   F.forEach((f,i)=>{ if(i<top){ if(!f.down) f.down={d:'',n:1} } else delete f.down });
   S.home.nFloors=F.length;
   if(S.fl>=F.length) S.fl=F.length-1;
@@ -5420,10 +5670,11 @@ function fcOutline(i){ const F=S.home.floors[i]; if(!F) return null;
   const shape=F.shape||(i>0&&S.home.floors[0].shape)||null; if(!shape) return null;
   const sf=parseFloat(F.sf); if(!(sf>0)) return null;
   const k=Math.sqrt(sf); return shape.map(p=>[p[0]*k,p[1]*k]) }
-function fcHasShape(){ return S.home.floors.some(f=>!!f.shape) }
+function fcHasShape(){ return !!S.plan||S.home.floors.some(f=>!!f.shape) }
 // the grid's extent in feet, with the outline moved so its bbox corner is the origin (room coords). v2.46: the rooms' floor is the top one.
 function fcField(i){
   if(i==null) i=fcTop();
+  if(S.plan&&i===fcTop()) return {w:Math.max(12,S.plan.w),d:Math.max(12,S.plan.d),poly:S.plan.outline,ox:0,oy:0,plan:true}; // v2.54 — the scan is the field: its own feet, its own origin
   const o=fcOutline(i);
   if(!o) return {w:RBR_GW,d:RBR_GD,poly:null};
   let a=1e9,b=1e9,c=-1e9,e=-1e9;
@@ -5449,6 +5700,7 @@ function fcHall(){
   const z={sf:0,need:0,allow:0,clamped:0};
   if(!fcHasShape()) return z;
   const B=rbrBuild()||RBR_BUILD.standard;
+  if(S.plan){ S.rooms.filter(r=>r.nr).forEach(r=>{ z.sf+=r.sf; z.need+=(r.need!=null?r.need:r.sf*B.base) }); return z } // v2.54 — the scan measured the halls and closets: they are the residual, no wall allowance on top
   S.home.floors.forEach((f,i)=>{
     if(i!==fcTop()||!fcOutline(i)) return;          // v2.46: only the rooms' floor has a hallway; a lower floor is one duct down
     const cap=parseFloat(f.sf); if(!(cap>0)) return;
@@ -5463,7 +5715,7 @@ function fcHall(){
 }
 // rooms are bounded by the floor's square footage, always — scale once to fit and say so
 function fcClamp(){
-  if(!fcHasShape()) return null;
+  if(!fcHasShape()||S.plan) return null;   // v2.54 — scanned rooms are measured; nothing to clamp
   let note=null;
   S.home.floors.forEach((f,i)=>{
     if(i!==fcTop()||!fcOutline(i)) return;
@@ -5472,6 +5724,9 @@ function fcClamp(){
     const placed=mine.reduce((s,r)=>s+r.sf,0);
     if(placed>room+0.5 && placed>0){
       const k=room/placed;
+      // v2.54 — an ASSUMED set squeezed to half or less is the wrong set for this floor (a loft handed the whole-house mix — Stephen's 20 sq ft
+      // rooms on a 1,777 sq ft house): re-seed it to the floor instead of crushing every room to the 20 sq ft floor
+      if(k<0.5&&S.auto&&S.auto.rbr){ S.rooms=S.rooms.filter(r=>r.fl!==i); rbrSeed(i); if(fcOutline(i)) fcPack(); note=`The assumed rooms were re-seeded to the ${CFM(Math.round(cap))} sq ft on floor ${i+1}.`; return }
       mine.forEach(r=>{ r.sf=Math.max(20,Math.round(r.sf*k)); r.d=r.sf/r.w });
       note=`Rooms on floor ${i+1} came to ${CFM(Math.round(placed))} sq ft against a ${CFM(Math.round(cap))} sq ft floor. They have been scaled to ${CFM(Math.round(room))} — the other ${CFM(Math.round(cap-room))} is wall, closet and chase thickness.`;
     }
@@ -5493,8 +5748,8 @@ function fcRank(r){ const n=(r.n||'').toLowerCase();
 function fcPack(){
   const F=fcField(); const poly=F.poly;
   if(!poly){ rbrArrange(); return }
-  const mine=S.rooms.filter(r=>r.fl===fcTop());
-  if(!mine.length) return;
+  const mine=S.rooms.filter(r=>r.fl===fcTop()&&!r.poly);   // v2.54 — a scanned room is where the scan put it; only a room added by hand gets packed
+  if(!mine.length){ if(S.plan) fcUnitInside(); return }
   const ord=mine.slice().sort((a,b)=>fcRank(a)-fcRank(b)||b.sf-a.sf);
   const put=[];
   ord.forEach(r=>{
@@ -5632,6 +5887,7 @@ function fcTake(r,q){
     +(!fl&&!P.conditionedSqFt?'<br>No floor area on the record — type the square footage in below.':'')
     ,'ok');
   fcCacheAerial();
+  if(S.rbrHand&&!S.plan&&S.auto&&S.auto.rbr){ S.rooms=S.rooms.filter(r=>r.fl!==fcTop()); if(parseFloat(S.home.floors[fcTop()].sf)>0){ rbrSeed(fcTop()); if(fcHasShape()) fcPack() } }   // v2.54 — the record's floors re-seed an assumed set
   save(); rbrRender(); rbrSync();
 }
 // keep the aerial on the job so a lookup done in the driveway survives the walk into the attic
@@ -5662,7 +5918,7 @@ function fcTraceDone(){
   // outline where it was drawn, and laid under the room grid. The SHAPE is still the only thing the design reads.
   S.home.floors[S.trace.fl].tpts=S.trace.pts.map(p=>[p[0],p[1]]);
   S.trace=null;
-  if(!S.rooms.filter(r=>r.fl===fcTop()).length) rbrSeed(fcTop());
+  if(!S.plan){ if(!S.rooms.filter(r=>r.fl===fcTop()).length) rbrSeed(fcTop()); S.rbrHand=true }   // v2.54: a traced shape is the hand-grid path
   fcPack(); fcApplyRuns();
   save(); rbrRender(); rbrSync();
 }
@@ -5858,7 +6114,9 @@ function fcWireBox(){
   }));
   $$('#fcFloors .fcfl').forEach(el=>el.addEventListener('input',()=>{
     const i=+el.dataset.i, F=S.home.floors[i]; if(!F) return;
-    F.sf=el.value; fcClearSrc('sf'); fcSyncSf(); save();
+    F.sf=el.value; fcClearSrc('sf'); fcSyncSf();
+    if(i===fcTop()&&S.rbrHand&&!S.plan&&S.auto&&S.auto.rbr&&parseFloat(F.sf)>0){ S.rooms=S.rooms.filter(r=>r.fl!==i); rbrSeed(i); if(fcHasShape()) fcPack(); rbrRender(); rbrSync(); return }   // v2.54 — the assumed set fills the floor it is on
+    save();
     rbrMJ(); rbrRoomRows(); rbrGrid(); rbrOut(); rbrSync();
   }));
   // v2.46 — the duct going down: size and count per lower floor
@@ -5895,7 +6153,7 @@ function rbrCanFor(cfm,neck){
   const byNeck=CANS.find(c=>c[1]>=neck)||CANS[CANS.length-1];
   return Math.max(byFace[0],byNeck[0]);
 }
-function rbrCx(r){ return r.x+r.w/2 } function rbrCy(r){ return r.y+r.d/2 }
+function rbrCx(r){ return r.cx!=null?r.cx:r.x+r.w/2 } function rbrCy(r){ return r.cy!=null?r.cy:r.y+r.d/2 } // v2.54 — a scanned room's centroid
 // the option the tool is actually quoting, so the room design uses the real blower numbers
 function rbrOpt(){ try{ const rows=rowsFor(); const row=rows&&rows[S.star]; return row?pick(S.star,row):null }catch(e){ return null } }
 // design airflow, friction rate and tonnage the room design is balanced against
@@ -5946,17 +6204,20 @@ function rbrRegLbl(g){ const f=REG_FACE[g.face].short; return g.kind==='keep'?`$
 /* ---------- the design pass ---------- */
 let RM=null;
 function rbrModel(){
-  const B=rbrBuild()||RBR_BUILD.standard, A=rbrAir(), cap=rbrCap(), rooms=S.rooms, top=fcTop();
-  rooms.forEach(r=>{ r.d=r.sf/r.w;
+  const B=rbrBuild()||RBR_BUILD.standard, A=rbrAir(), cap=rbrCap(), top=fcTop();
+  S.rooms.forEach(r=>{ if(!r.poly) r.d=r.sf/r.w;   // v2.54: a scanned room keeps its measured shape
     r.hf=r.h<=10?1:Math.min(1.6,1+0.10*(r.h-10));
     r.lf=r.ld==='high'?1.25:(r.ld==='low'?0.85:1);
     r.need=r.sf*B.base*r.hf*r.lf; });
+  // v2.54 — a hall or closet off the scan carries load and no register: it is the residual, so it leaves the room list here
+  S.rooms.filter(r=>r.nr).forEach(r=>{ r.cfm=0; r.nReg=0; r.nTap=0; r.perReg=0; r.perTap=0; r.leg=mdSizeRound(1,A.fr,'flex','br'); r.branch=r.leg; r.can=8; r.regs=[]; r.face=0; r.faceK=rbrFaceOf(r); r.keepN=r.barN=r.enlN=r.newN=r.bootN=0; r.tys=0; r.tyName=''; r.run=0; r.legFt=0; r.taps=[] });
+  const rooms=S.rooms.filter(r=>!r.nr);
   // §5.3 — inside a traced envelope the residual is conditioned hallway. It carries load, so it
   // counts in what the house asks for; it gets no register, so the air is still divided over the
   // rooms only and its share lands on them. With no shape traced hall is zero and this is v2.36.
   const hall=fcHall();
   const needRooms=rooms.reduce((s,r)=>s+r.need,0);
-  const needUp=needRooms+hall.need, roomSf=rooms.reduce((s,r)=>s+r.sf,0);
+  const needUp=needRooms+hall.need, roomSf=S.rooms.reduce((s,r)=>s+r.sf,0);
   const mat=S.f.dr_supm||'flex';
   // v2.46 — every floor under the top one is ONE duct down: what it wants off its square footage, what is there (or assumed, sized
   // to it), what that carries at the friction rate, and the shortfall that goes upstairs instead.
@@ -6020,6 +6281,7 @@ function rbrModel(){
       segs.push({arm:k,from:prev,to:x,len:Math.max(len,1),carry,d:sz.d,n:1,add:sz.add||[],vel:sz.vel,first:i===0,room:arm[i].n}); // v2.48: a segment past 20" is a 20" + a second run
       prev=x; } });
   rooms.forEach(r=>{ r.run=Math.round(Math.abs(rbrCy(r)-uy)+3); r.legFt=r.tys>0?Math.round((r.w+r.d)/4+3):0 });
+  // v2.54 — the served area reads off the scan when there is one; a room removed from it ("that one is on the other unit") comes off the total
   RM={B,A,cap,tmat:mat,segs,needTot,needRooms,needUp,needDown,hall,roomSf,loadT,cpt,cptSrc,ux,uy,
       down,downCfm,Qup,spill:Math.max(0,Math.round(Qup-needUp*ratio)),ratio,
       recT:rbrRecTons(), homeSf:rbrHomeSf(),
@@ -6031,13 +6293,14 @@ function rbrModel(){
   rbrTag(); RM.mat=rbrMaterials(); return RM;
 }
 function rbrTag(){ let b=0,c=0;
-  S.rooms.forEach(r=>{ r.taps=rbrGeom(r); r.taps.forEach(tp=>{ tp.tag='B'+(++b); tp.regs=tp.regs.map(x=>({x:x.x,tag:String(++c),g:x.g})) }) });
+  S.rooms.forEach(r=>{ r.taps=rbrGeom(r); if(r.nr) return; r.taps.forEach(tp=>{ tp.tag='B'+(++b); tp.regs=tp.regs.map(x=>({x:x.x,y:x.y,tag:String(++c),g:x.g})) }) });   // v2.54: y rides along — the register's real spot on the plan
   RM.segs.forEach((s,i)=>s.tag='T'+(i+1));
   (RM.down||[]).forEach((x,i)=>x.tag='D'+(i+1));
 }
-function rbrGeom(r){ const taps=[];
-  for(let k=0;k<r.nTap;k++) taps.push({x:r.x+r.w*(k+0.5)/r.nTap,regs:[]});
-  for(let j=0;j<r.nReg;j++){ const k=Math.min(r.nTap-1,Math.floor(j*r.nTap/r.nReg)); taps[k].regs.push({x:r.x+r.w*(j+0.5)/r.nReg,g:(r.regs&&r.regs[j])||{kind:'new',w:r.can,h:r.can,face:r.faceK||'stamped'}}) }
+function rbrGeom(r){ const taps=[]; if(r.nr||!r.nReg) return taps;   // v2.54 — a hall or closet takes no register
+  const cy=rbrCy(r);
+  for(let k=0;k<r.nTap;k++){ const q=fcInside(r,r.x+r.w*(k+0.5)/r.nTap,cy); taps.push({x:q[0],y:q[1],regs:[]}) }
+  for(let j=0;j<r.nReg;j++){ const k=Math.min(r.nTap-1,Math.floor(j*r.nTap/r.nReg)); const q=fcInside(r,r.x+r.w*(j+0.5)/r.nReg,cy); taps[k].regs.push({x:q[0],y:q[1],g:(r.regs&&r.regs[j])||{kind:'new',w:r.can,h:r.can,face:r.faceK||'stamped'}}) }
   return taps; }
 function rbrMaterials(){ const flex={},trunk={},ty={},can={},gr={},coll={},swap={},boot={}; const bump=(o,k,v)=>o[k]=(o[k]||0)+v;
   RM.segs.forEach(s=>{ bump(trunk,s.d,s.len); (s.add||[]).forEach(a=>bump(trunk,a.d,s.len)) });
@@ -6058,6 +6321,7 @@ function rbrPlanSvg(S_){
   const SC=S_||18, rooms=S.rooms; if(!rooms.length) return '';
   let bx1=1e9,by1=1e9,bx2=-1e9,by2=-1e9;
   rooms.forEach(r=>{ bx1=Math.min(bx1,r.x); by1=Math.min(by1,r.y); bx2=Math.max(bx2,r.x+r.w); by2=Math.max(by2,r.y+r.d) });
+  if(S.plan){ bx1=Math.min(bx1,0); by1=Math.min(by1,0); bx2=Math.max(bx2,S.plan.w); by2=Math.max(by2,S.plan.d) }   // v2.54 — the sheet is the whole scan
   bx1=Math.min(bx1,S.unitPos.x)-1.5; by1=Math.min(by1,S.unitPos.y)-1.5;
   bx2=Math.max(bx2,S.unitPos.x+6)+1.5; by2=Math.max(by2,S.unitPos.y+6+((RM.down&&RM.down.length)?(RM.down.length*22+10)/SC:0))+1.5;
   const ML=48,MT=74,MR=48,MB=221, PW=(bx2-bx1)*SC, PH=(by2-by1)*SC, W=PW+ML+MR, H=PH+MT+MB;
@@ -6093,21 +6357,28 @@ function rbrPlanSvg(S_){
     s+=pl(W-250,22+i*11,row[0],{s:8,w:800,f:'#8a97a4'}); s+=pl(W-20,22+i*11,row[1],{s:8.5,w:800,f:'#0b2340',a:'end'}); });
 
   const fa=p(bx1+1.5,by1+1.5);
-  s+=`<rect x="${fa[0]}" y="${fa[1]}" width="${(bx2-bx1-3)*SC}" height="${(by2-by1-3)*SC}" rx="3" fill="#f4f7fa" stroke="#c7d3de" stroke-width="1.5" stroke-dasharray="7 5"/>`;
+  if(!S.plan) s+=`<rect x="${fa[0]}" y="${fa[1]}" width="${(bx2-bx1-3)*SC}" height="${(by2-by1-3)*SC}" rx="3" fill="#f4f7fa" stroke="#c7d3de" stroke-width="1.5" stroke-dasharray="7 5"/>`;
   for(let g=Math.ceil(bx1/2)*2; g<=bx2; g+=2){ const a=p(g,by1), b=p(g,by2); s+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="#eef3f8" stroke-width="1"/>` }
   for(let g=Math.ceil(by1/2)*2; g<=by2; g+=2){ const a=p(bx1,g), b=p(bx2,g); s+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="#eef3f8" stroke-width="1"/>` }
 
-  rooms.forEach(r=>{ const a=p(r.x,r.y);
+  // v2.54 — on a scanned plan the rooms are their real polygons under the real walls, doors and windows; a hand-laid room is still its tile
+  if(S.plan) s+=fcPlanPaths(p,{wallSw:Math.max(2.5,SC*0.28),roomStroke:'#7a95a3',roomSw:0.8});
+  rooms.filter(r=>!r.poly).forEach(r=>{ const a=p(r.x,r.y);
     s+=`<rect x="${a[0].toFixed(1)}" y="${a[1].toFixed(1)}" width="${(r.w*SC).toFixed(1)}" height="${(r.d*SC).toFixed(1)}" rx="3" fill="${r.ld==='high'?'#fdf4ea':r.ld==='low'?'#f4f5f6':'#f0f8f8'}" stroke="#5b7f8f" stroke-width="2"/>` });
   rooms.forEach(r=>{ const a=p(r.x,r.y);
-    const t1=String(r.n).toUpperCase(), t2=CFM(r.cfm)+' CFM · '+r.nReg+' VENT'+(r.nReg>1?'S':''),
+    const t1=String(r.n).toUpperCase(), t2=r.nr?r.sf+' SF · NO VENT':CFM(r.cfm)+' CFM · '+r.nReg+' VENT'+(r.nReg>1?'S':''),
           t3=r.sf+' SF · '+rbrFtin(r.w)+' × '+rbrFtin(r.d)+' · '+rbrFtin(r.h)+' CLG';
+    if(r.poly&&(r.sf<70||r.nr)){ const c=p(rbrCx(r),rbrCy(r)); s+=T(c[0],c[1]+3,rbrEsc(t1),{s:r.sf<40?7.5:8.5,f:r.nr?'#6b6260':'#0a5c5c',c:[[0,0],[0,-12],[0,12]]}); return } // a closet or hall: the name alone, centred
     const wd=Math.max(t1.length*6.9,t2.length*5.1,t3.length*4.7)+14;
-    s+=`<rect x="${(a[0]+4).toFixed(1)}" y="${(a[1]+4).toFixed(1)}" width="${wd.toFixed(1)}" height="42" rx="4" fill="#fff" stroke="#5b7f8f" stroke-width="1"/>`;
-    placed.push({x1:a[0]+4,x2:a[0]+4+wd,y1:a[1]+4,y2:a[1]+46});
-    s+=pl(a[0]+9,a[1]+18,rbrEsc(t1),{s:11,w:800,f:'#0a5c5c'});
-    s+=pl(a[0]+9,a[1]+30,t2,{s:8.5,w:800,f:'#0b2340'});
-    s+=pl(a[0]+9,a[1]+41,t3,{s:8,w:700,f:'#5b6b7c'}); });
+    let px_=a[0]+4, py_=a[1]+4;
+    if(r.poly){ // the plate sits inside the polygon: the bbox corner when that is inside it, else centred on the room
+      const inside=fcPtIn(r.poly,r.x+(wd/SC)*0.5+0.3,r.y+(46/SC)*0.5+0.3)&&fcPtIn(r.poly,r.x+0.3,r.y+0.3);
+      if(!inside){ const c=p(rbrCx(r),rbrCy(r)); px_=c[0]-wd/2; py_=c[1]-21 } }
+    s+=`<rect x="${px_.toFixed(1)}" y="${py_.toFixed(1)}" width="${wd.toFixed(1)}" height="42" rx="4" fill="#fff" stroke="#5b7f8f" stroke-width="1"/>`;
+    placed.push({x1:px_,x2:px_+wd,y1:py_,y2:py_+42});
+    s+=pl(px_+5,py_+14,rbrEsc(t1),{s:11,w:800,f:'#0a5c5c'});
+    s+=pl(px_+5,py_+26,t2,{s:8.5,w:800,f:'#0b2340'});
+    s+=pl(px_+5,py_+37,t3,{s:8,w:700,f:'#5b6b7c'}); });
 
   const u=p(S.unitPos.x,S.unitPos.y);
   s+=`<rect x="${u[0].toFixed(1)}" y="${u[1].toFixed(1)}" width="${6*SC}" height="${6*SC}" rx="4" fill="#003963"/>`;
@@ -6130,12 +6401,12 @@ function rbrPlanSvg(S_){
     s+=`<path d="M${(a[0]-5).toFixed(1)} ${(a[1]-pv.d*SC/24-4).toFixed(1)} L${(a[0]+5).toFixed(1)} ${(a[1]-sg.d*SC/24-4).toFixed(1)} M${(a[0]-5).toFixed(1)} ${(a[1]+pv.d*SC/24+4).toFixed(1)} L${(a[0]+5).toFixed(1)} ${(a[1]+sg.d*SC/24+4).toFixed(1)}" stroke="#CD1E1F" stroke-width="2" fill="none"/>` }));
 
   rooms.forEach(r=>{ r.taps.forEach(tp=>{
-    const t=p(tp.x,RM.uy), c=p(tp.x,rbrCy(r));
+    const t=p(tp.x,RM.uy), c=p(tp.x,tp.y!=null?tp.y:rbrCy(r));   // v2.54: the branch lands where the register really is
     s+=`<line x1="${t[0].toFixed(1)}" y1="${t[1].toFixed(1)}" x2="${c[0].toFixed(1)}" y2="${c[1].toFixed(1)}" stroke="#0f8b8b" stroke-width="${Math.max(3,r.branch.d*SC/12).toFixed(1)}" stroke-linecap="round" opacity=".55"/>`;
     s+=`<line x1="${t[0].toFixed(1)}" y1="${t[1].toFixed(1)}" x2="${c[0].toFixed(1)}" y2="${c[1].toFixed(1)}" stroke="#0a5c5c" stroke-width="1.6"/>`;
     s+=`<circle cx="${t[0].toFixed(1)}" cy="${t[1].toFixed(1)}" r="5.5" fill="#fff" stroke="#CD1E1F" stroke-width="2"/>`;
     s+=`<line x1="${(t[0]-3.6).toFixed(1)}" y1="${(t[1]+3.6).toFixed(1)}" x2="${(t[0]+3.6).toFixed(1)}" y2="${(t[1]-3.6).toFixed(1)}" stroke="#CD1E1F" stroke-width="2"/>`;
-    tp.regs.forEach(g=>{ const q=g.g||{kind:'new',w:r.can,h:r.can}; const rp=p(g.x,rbrCy(r)), half=Math.max(5,Math.max(q.w,q.h)*SC/24), ex=q.kind==='keep'||q.kind==='bar';
+    tp.regs.forEach(g=>{ const q=g.g||{kind:'new',w:r.can,h:r.can}; const rp=p(g.x,g.y!=null?g.y:rbrCy(r)), half=Math.max(5,Math.max(q.w,q.h)*SC/24), ex=q.kind==='keep'||q.kind==='bar';
       if(tp.regs.length>1){
         s+=`<line x1="${c[0].toFixed(1)}" y1="${c[1].toFixed(1)}" x2="${rp[0].toFixed(1)}" y2="${rp[1].toFixed(1)}" stroke="#0f8b8b" stroke-width="${Math.max(2.4,r.leg.d*SC/12).toFixed(1)}" stroke-linecap="round" opacity=".55"/>`;
         s+=`<line x1="${c[0].toFixed(1)}" y1="${c[1].toFixed(1)}" x2="${rp[0].toFixed(1)}" y2="${rp[1].toFixed(1)}" stroke="#0a5c5c" stroke-width="1.4"/>`; }
@@ -6210,7 +6481,7 @@ function rbrRoomTbl(){
     `<td class="num">${r.sf}</td><td class="num">${r.h} ft${r.hf>1?' <span class="asm">×'+r.hf.toFixed(2)+'</span>':''}</td>`+
     `<td>${r.ld==='high'?'<span class="status warn">High</span>':r.ld==='low'?'<span class="status na">Low</span>':'Average'}</td>`+
     `<td class="num">${CFM(r.need)}</td><td class="num"><b>${CFM(r.cfm)}</b></td>`+
-    `<td>${rbrDuctTxt(r)}</td><td>${rbrRegCol(r)}<br><span class="note">${CFM(r.perReg)} CFM each · ${r.face} fpm</span></td></tr>` });
+    `<td>${rbrDuctTxt(r)}</td><td>${r.nr?'—':rbrRegCol(r)+'<br><span class="note">'+CFM(r.perReg)+' CFM each · '+r.face+' fpm</span>'}</td></tr>` });
   (RM.down||[]).forEach(x=>{ h+=`<tr><td><b>Floor ${x.fl+1}</b><br><span class="note">one duct down</span></td><td class="num">${CFM(Math.round(x.sf))}</td><td class="num">—</td><td>Average</td><td class="num">${CFM(x.need)}</td><td class="num"><b>${CFM(x.cfm)}</b></td><td>${x.n>1?x.n+' × ':''}Ø${x.d}" ${x.mat} down${x.entered?'':' <span class="asm">assumed</span>'}${x.short>0?`<br><span class="note" style="color:var(--bad)">${CFM(x.short)} CFM short — goes upstairs · needs ${x.spec.n>1?x.spec.n+' × ':''}Ø${x.spec.d}"</span>`:''}</td><td>existing registers downstairs</td></tr>` });
   h+=`<tr class="tot"><td>${S.rooms.length} rooms${RM.down&&RM.down.length?' + '+RM.down.length+' floor'+(RM.down.length>1?'s':'')+' down':''}</td><td class="num">${CFM(RM.roomSf+(RM.down||[]).reduce((s,x)=>s+x.sf,0))}</td><td></td><td></td><td class="num">${CFM(RM.needTot)}</td><td class="num">${CFM(RM.A.Qd)}</td><td>${RM.taps} take-offs · ${RM.tysTot} TYs</td><td>${RM.vents} vents · ${RM.newN+RM.enlN} new cans</td></tr></tbody>`;
   return h;
@@ -6218,7 +6489,7 @@ function rbrRoomTbl(){
 // v2.46 — what the room's registers end up as: kept · bar type · enlarged · new
 function rbrRegCol(r){ const grp={},ord=[]; (r.regs||[]).forEach(g=>{ const k=rbrRegLbl(g); if(!(k in grp)){grp[k]=0;ord.push(k)} grp[k]++ });
   return ord.map(k=>grp[k]+' × '+k).join('<br>') }
-function rbrDuctTxt(r){ if(r.nReg===1) return 'Ø'+r.branch.d+'" → can';
+function rbrDuctTxt(r){ if(r.nr) return '<span class="note">no register — its load lands on the rooms around it</span>'; if(r.nReg===1) return 'Ø'+r.branch.d+'" → can';
   return (r.nTap>1?r.nTap+' × ':'')+'Ø'+r.branch.d+'" → '+(r.tys>1?r.tys+' × ':'')+r.tyName+' → '+r.nReg+' × Ø'+r.leg.d+'"' }
 function rbrTrunkTbl(){
   let t='<thead><tr><th>Tag</th><th>Segment</th><th class="num">Length</th><th class="num">Carries</th><th>Size</th><th class="num">Velocity</th></tr></thead><tbody>';
@@ -6242,7 +6513,7 @@ function rbrCanTbl(){
   S.rooms.forEach(r=>(r.taps||[]).forEach(tp=>tp.regs.forEach(g=>{ const q=g.g||{kind:'new',w:r.can,h:r.can,face:r.faceK,fpm:r.face}; const ex=q.kind==='keep'||q.kind==='bar';
     h+=`<tr><td><b>${g.tag}</b></td><td>${rbrEsc(r.n)}</td><td>${ex?`existing${q.newBoot?' · new boot Ø'+r.leg.d+'"':''}`:q.w+'×'+q.h+(q.kind==='enl'?' <span class="status warn">enlarge</span>':'')}</td><td>${q.w}×${q.h} ${q.kind==='keep'?'existing — kept':q.kind==='bar'?'<b>swap to bar type</b>':q.kind==='enl'?'square · '+REG_FACE[q.face].short+' (was '+q.from.w+'×'+q.from.h+')':'square · '+REG_FACE[q.face].short}</td>`+
        `<td>Ø${r.leg.d}"</td><td class="num">${CFM(r.perReg)}</td><td class="num">${(q.fpm||r.face).toLocaleString()} fpm</td>`+
-       `<td>${ex?'where it is today':rbrFtin(g.x-r.x)+' in · '+rbrFtin(rbrCy(r)-r.y)+' back'}</td></tr>` })));
+       `<td>${ex?'where it is today':rbrFtin(g.x-r.x)+' in · '+rbrFtin((g.y!=null?g.y:rbrCy(r))-r.y)+' back'}</td></tr>` })));
   h+=`<tr class="tot"><td colspan="2">${RM.vents} vents</td><td colspan="3">${RM.keepN+RM.barN?`${RM.keepN+RM.barN} existing kept in place · `:''}${RM.newN+RM.enlN} square Goettl cans</td><td class="num">${CFM(RM.Qup)}</td><td colspan="2">balance each to ±10% at start-up</td></tr></tbody>`;
   return h;
 }
@@ -6268,16 +6539,22 @@ function rbrMatTotalFt(){ const sum=o=>Object.keys(o).reduce((a,k)=>a+o[k],0); r
 /* ---------- The home · render ---------- */
 function rbrRender(){
   const card=$('#homeCard'); if(!card) return;
+  if(S.rbrHand&&!S.plan&&!S.rooms.length&&S.auto&&S.auto.rbr&&(fcTop()===0||parseFloat(S.home.floors[fcTop()].sf)>0)){ rbrSeed(fcTop()); if(fcHasShape()) fcPack() }   // v2.54 — the assumed set follows the floor (an upper floor waits for its square footage)
   const clampNote=fcClamp();            // rooms are bounded by the floor's square footage, always
   rbrModel();
   if(typeof fcRender==='function') fcRender();
   if(fcHasShape()) fcApplyRuns();       // §6 — run lengths come off the drawn geometry
   rbrMJ(); rbrRoomRows(); rbrGrid(); rbrOut();
   if(clampNote) fcStat(clampNote,'warn');
-  $('#rbrCnt').textContent = S.rooms.length ? S.rooms.length+(S.rooms.length>1?' rooms':' room') : 'not used';
+  $('#rbrCnt').textContent = S.rooms.length ? S.rooms.length+(S.rooms.length>1?' rooms':' room')+(S.plan?' · scanned':'') : 'not used';
   $('#rbrBtn').setAttribute('aria-expanded', S.rbrOpen?'true':'false');
   $('#rbrPanel').classList.toggle('hidden',!S.rbrOpen);
   $('#rbrOut').classList.toggle('hidden',!S.rooms.length);
+  // v2.54 — the scan block leads; the rooms, the grid and the design only once there is a plan or the hand grid was opened
+  const sc=$('#rbrScan'); if(sc){ sc.innerHTML=rbrScanHtml(); rbrScanWire() }
+  const body=$('#rbrBody'); if(body) body.classList.toggle('hidden',!(S.plan||S.rbrHand||S.rooms.length));
+  const gt=$('#rbrGridTitle'); if(gt) gt.textContent=S.plan?'Drag the UNIT tile to where the air drops in':'Arrange the rooms the way the house actually sits';
+  ['rbrArr','fcAddUnc'].forEach(id=>{ const el=$('#'+id); if(el) el.classList.toggle('hidden',!!S.plan) });
 }
 function rbrTile(l,v,s,cls){ return `<div class="dim ${cls||''}"><div class="lbl">${l}</div><div class="val">${v}</div><div class="sub">${s}</div></div>` }
 // v2.35 — when the house asks for more than the square footage alone said, there are always TWO answers:
@@ -6404,7 +6681,7 @@ function rbrRoomRows(){
   const L=$('#rbrList'); L.innerHTML='';
   S.rooms.forEach(r=>{ const d=document.createElement('div'); d.className='rrow'; d.dataset.id=r.id;
     d.innerHTML=`<div class="f-nm"><span class="cap">Room</span><input class="nm" data-k="n" value="${rbrEsc(r.n)}" aria-label="Room name"></div>`+
-      `<div class="f-sf"><span class="cap">Sq ft</span><input data-k="sf" type="number" inputmode="numeric" min="10" value="${r.sf}" aria-label="Square feet"></div>`+
+      `<div class="f-sf"><span class="cap">Sq ft${r.plan?' <span class="asm">measured</span>':''}</span><input data-k="sf" type="number" inputmode="numeric" min="10" value="${r.sf}" aria-label="Square feet"${r.plan?' readonly':''}></div>`+
       `<div class="f-ht"><span class="cap">Ceiling ft</span><input data-k="h" type="number" inputmode="decimal" min="7" value="${r.h}" aria-label="Ceiling height"></div>`+
       `<div class="f-ld"><span class="cap">Load</span><div class="chips">`+
         ['low','avg','high'].map(v=>`<button class="chip sm${r.ld===v?' on':''}" data-ld="${v}">${v==='avg'?'Average':v==='low'?'Low':'High'}</button>`).join('')+`</div></div>`+
@@ -6413,7 +6690,9 @@ function rbrRoomRows(){
       `<div class="f-vs"><span class="cap">Vent size</span><input data-k="vs" type="text" inputmode="numeric" value="${rbrEsc(r.vs||'')}" placeholder="10x10" aria-label="Vent size today"></div>`+
       `<div class="f-vf"><span class="cap">Face${r.vf?'':' <span class="asm">house</span>'}</span><div class="chips">`+
         ['stamped','bar'].map(v=>`<button class="chip sm${rbrFaceOf(r)===v?' on':''}" data-vf="${v}">${v==='bar'?'Bar type':'Stamped'}</button>`).join('')+`</div></div>`+
-      `<div class="out"><b>${CFM(r.cfm)}</b> CFM<span>${rbrFt(r.w)} × ${rbrFt(r.d)} ft · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)} · ${r.hf>1?'×'+r.hf.toFixed(2)+' ceiling ':''}${r.lf!==1?'×'+r.lf.toFixed(2)+' load ':''}needs ${CFM(r.need)}</span></div>`+
+      (r.plan?`<div class="f-nr"><span class="cap">Register</span><div class="chips"><button class="chip sm${r.nr?'':' on'}" data-nr="0">Yes</button><button class="chip sm${r.nr?' on':''}" data-nr="1">No</button></div></div>`:'')+
+      (r.nr?`<div class="out"><b>no vent</b><span>${rbrFt(r.w)} × ${rbrFt(r.d)} ft · ${r.kind==='hall'?'hall':'closet'} — its ${CFM(r.need)} CFM of load lands on the rooms around it</span></div>`:
+      `<div class="out"><b>${CFM(r.cfm)}</b> CFM<span>${rbrFt(r.w)} × ${rbrFt(r.d)} ft · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)} · ${r.hf>1?'×'+r.hf.toFixed(2)+' ceiling ':''}${r.lf!==1?'×'+r.lf.toFixed(2)+' load ':''}needs ${CFM(r.need)}</span></div>`)+
       `<button class="del" data-del="1" aria-label="Remove ${rbrEsc(r.n)}">×</button>`;
     L.appendChild(d); });
   // the house-wide face today, and what the rooms' vents add up to
@@ -6431,6 +6710,9 @@ function rbrGrid(){
   const F=fcField();
   const px=Math.max(6,Math.min(13,(G.clientWidth||620)/F.w));
   G.style.setProperty('--cell',(px*2)+'px'); G.style.height=(F.d*px)+'px'; G.innerHTML='';
+  G.classList.toggle('plan',!!S.plan);
+  if(S.plan){ rbrPlanGrid(G,px); S.rooms.filter(r=>r.fl===fcTop()&&!r.poly).forEach(r=>{ const t=mkTile(G,px,r.ld==='high'?'hi':(r.ld==='low'?'lo':''),r.x,r.y,r.w,r.d,r.n,CFM(r.cfm)+' CFM · '+r.nReg+'v'); t.dataset.id=r.id; rbrDrag(t,r,px) });
+    rbrDrag(mkTile(G,px,'unit',S.unitPos.x,S.unitPos.y,6,6,'UNIT','drop'),S.unitPos,px,true); return }   // v2.54 — the real house; only the drop moves
   // the traced envelope, scaled to this floor's square footage — the boundary the rooms sit in
   if(F.poly){
     // v2.46 — the aerial, faint, under the rooms: the traced box maps onto the outline's box (same shape, so one scale fits both axes),
@@ -6444,9 +6726,7 @@ function rbrGrid(){
     sv.innerHTML='<path d="'+F.poly.map((p,i)=>(i?'L':'M')+(p[0]*px).toFixed(1)+' '+(p[1]*px).toFixed(1)).join(' ')+' Z"/>';
     G.appendChild(sv);
   }
-  const mk=(cls,x,y,w,d,a,b)=>{ const t=document.createElement('div'); t.className='tile '+cls;
-    t.style.left=(x*px)+'px'; t.style.top=(y*px)+'px'; t.style.width=(w*px)+'px'; t.style.height=(d*px)+'px';
-    t.innerHTML=`<span class="tn">${rbrEsc(a)}</span>`+(b?`<span class="tc">${b}</span>`:''); G.appendChild(t); return t };
+  const mk=(cls,x,y,w,d,a,b)=>mkTile(G,px,cls,x,y,w,d,a,b);
   // unconditioned blocks sit outside the envelope: drawn so the plan reads like the real house,
   // never in the cap, never in Manual J, never a register
   S.blocks.filter(b=>b.fl===fcTop()).forEach(b=>{
@@ -6458,6 +6738,9 @@ function rbrGrid(){
     t.appendChild(h); rbrResize(h,t,r,px); });
   rbrDrag(mk('unit',S.unitPos.x,S.unitPos.y,6,6,'UNIT','drop'),S.unitPos,px,true);
 }
+function mkTile(G,px,cls,x,y,w,d,a,b){ const t=document.createElement('div'); t.className='tile '+cls;
+    t.style.left=(x*px)+'px'; t.style.top=(y*px)+'px'; t.style.width=(w*px)+'px'; t.style.height=(d*px)+'px';
+    t.innerHTML=`<span class="tn">${rbrEsc(a)}</span>`+(b?`<span class="tc">${b}</span>`:''); G.appendChild(t); return t }
 function rbrDrag(el,obj,px,isUnit){
   el.addEventListener('pointerdown',e=>{
     if(e.target.classList.contains('rs')) return;
@@ -6503,11 +6786,13 @@ function rbrOut(){
   $('#rbrBranchTbl').innerHTML=rbrBranchTbl();
   $('#rbrCanTbl').innerHTML=rbrCanTbl();
   $('#rbrMatTbl').innerHTML=rbrMatTbl();
-  $('#rbrMatMsg').innerHTML=`About <b>${rbrMatTotalFt()} ft</b> of duct in total, measured off the arranged grid. Consumables not listed: mastic, UL-181 tape, hanger strap every 4 ft, R-8 sleeve repair. <span class="asm">grid-derived</span>`;
+  $('#rbrMatMsg').innerHTML=`About <b>${rbrMatTotalFt()} ft</b> of duct in total, measured off the ${S.plan?'floor plan':'arranged grid'}. Consumables not listed: mastic, UL-181 tape, hanger strap every 4 ft, R-8 sleeve repair. <span class="asm">${S.plan?'measured':'grid-derived'}</span>`;
   $('#rbrPlanBox').innerHTML=rbrPlanSvg(20);
   if(RM.hall&&RM.hall.sf>0){
     const t=$('#rbrTot');
-    if(t) t.innerHTML=(t.innerHTML||'')+`<div style="margin-top:6px"><b>${CFM(Math.round(RM.hall.sf))} sq ft</b> of the envelope is left over — that is hallway, plus the wall, closet and chase thickness the ${Math.round(FC_STRUCT*100)}% allowance stands for. It carries <b>${CFM(Math.round(RM.hall.need))} CFM</b> of load and takes no register of its own, so that air is spread across the rooms around it.</div>`;
+    if(t) t.innerHTML=(t.innerHTML||'')+(S.plan
+      ? `<div style="margin-top:6px"><b>${CFM(Math.round(RM.hall.sf))} sq ft</b> of hall and closet off the scan (${S.rooms.filter(r=>r.nr).length}) carries <b>${CFM(Math.round(RM.hall.need))} CFM</b> of load and takes no register — that air is spread across the rooms around it.</div>`
+      : `<div style="margin-top:6px"><b>${CFM(Math.round(RM.hall.sf))} sq ft</b> of the envelope is left over — that is hallway, plus the wall, closet and chase thickness the ${Math.round(FC_STRUCT*100)}% allowance stands for. It carries <b>${CFM(Math.round(RM.hall.need))} CFM</b> of load and takes no register of its own, so that air is spread across the rooms around it.</div>`);
   }
   $('#rbrDesignNote').innerHTML=`Take-off, TY and leg sizes are the smallest standard round that holds the worksheet friction rate of <b>${A.fr.toFixed(3)}"/100 ft</b> and stays inside Manual D Table 3-1 for flex. New cans and grilles are <b>square only</b> — 8×8, 9×9, 10×10, 12×12, 14×14 — sized to ${RBR_FACE} fpm face through the free area of the face (stamped ${Math.round(REG_FACE.stamped.free*100)}% · bar type ${Math.round(REG_FACE.bar.free*100)}%) and to take the leg. A room's own vents are kept when they pass; when one cannot, the ladder is bar type on the same face, then a bigger face, then another vent. A room over <b>${RM.cap} CFM</b> splits; a TY divides two ways.${RM.keepN+RM.barN+RM.enlN?` This house: <b>${RM.keepN} kept</b> · <b>${RM.barN} → bar type</b> · <b>${RM.enlN} enlarged</b> · <b>${RM.newN} new</b>${RM.bootN?` · ${RM.bootN} new boot${RM.bootN>1?'s':''} (the leg outgrew the collar)`:''}.`:''}`;
 }
@@ -6522,9 +6807,94 @@ function rbrPlan2D(){ const box=$('#duct2d'); if(!box) return;
     + `<h4 class="sub">Can &amp; grille schedule</h4><div class="tblwrap"><table class="dt">${rbrCanTbl()}</table></div>`
     + `<p class="note" style="margin:8px 0 0">The full room schedule, trunk schedule and material list are in <b>The home ▸ Room by Room</b> on step 1, and they print on the export.</p>` }
 
+/* ============================================================================
+   v2.54 — THE FLOOR PLAN (Stephen 2026-09-26). Room by room starts with a scan of the area THIS system
+   serves: a DXF out of 3D Snap (RoomPlan) — walls, doors, windows, furniture. The importer (fcdxf.js,
+   inlined below the property lookup) closes the wall graph into rooms and names them off what is in them;
+   the scan's square footage IS the conditioned area the Manual J runs on ("if the home is bigger than the
+   scan it has more than one air conditioner — we are specing out this one"); halls and closets carry load
+   and take no register; the duct is designed on the real plan and the 3D lays the plan under the unit at
+   true scale. The hand-laid grid stays behind "No scan? lay the rooms out by hand" for the office quoting
+   before a scan exists. With no plan and the grid not opened, nothing below changes.
+   ========================================================================== */
+function fcPlanSetSf(v){ const top=fcTop(); if(S.home.floors.length===1){ S.home.sf=v; S.home.floors[0].sf=v } else { S.home.floors[top].sf=v; fcSyncSf() } }
+function fcScanStat(msg,cls){ const el=$('#rbrScanStat'); if(!el) return; el.className='msg'+(cls?' '+cls:''); el.innerHTML=msg||''; el.style.display=msg?'':'none' }
+// a window belongs to the room whose wall it sits on
+function fcSegNear(poly,x,y,tol){ for(let i=0;i<poly.length;i++){ const a=poly[i],b=poly[(i+1)%poly.length]; const dx=b[0]-a[0],dy=b[1]-a[1]; const L2=dx*dx+dy*dy||1e-9; let t=((x-a[0])*dx+(y-a[1])*dy)/L2; t=Math.max(0,Math.min(1,t)); if(Math.hypot(x-(a[0]+t*dx),y-(a[1]+t*dy))<tol) return true } return false }
+function fcWinMid(w){ const r=w.rot*Math.PI/180; return [w.x+w.w/2*Math.cos(r),w.y+w.w/2*Math.sin(r)] }
+function fcPlanLoad(text,name){
+  if(!/\bSECTION\b[\s\S]*\bENTITIES\b/.test(text||'')) { fcScanStat('That is not a DXF floor plan. In 3D Snap use Export ▸ DXF and pick the .dxf file.','warn'); return false }
+  let P; try{ P=window.FCDxf.planFromDxf(text) }catch(e){ P={ok:false,why:'That file could not be read as a DXF — '+rbrEsc(e&&e.message||e)+'.'} }
+  if(!P.ok){ fcScanStat(P.why,'warn'); return false }
+  if(!P.rooms.length){ fcScanStat('No enclosed rooms were found in that plan — the walls do not close up. Check the export from 3D Snap, or lay the rooms out by hand.','warn'); return false }
+  fcPlanApply(P,name); return true }
+function fcPlanApply(P,name){
+  const top=fcTop(), r2=v=>+(+v).toFixed(2);
+  const prev=rbrHomeSf();
+  S.plan={name:name||'floor plan',w:r2(P.w),d:r2(P.d),sf:Math.round(P.totalSf),units:P.units,scale:P.scale,
+    walls:P.walls.map(s=>s.map(r2)),doors:P.doors.map(o=>({x:r2(o.x),y:r2(o.y),w:r2(o.w),rot:Math.round(o.rot)})),
+    windows:P.windows.map(o=>({x:r2(o.x),y:r2(o.y),w:r2(o.w),rot:Math.round(o.rot)})),
+    outline:P.outline.map(p=>[r2(p[0]),r2(p[1])]),furn:P.furniture.map(f=>({k:f.kind,x:r2(f.c[0]),y:r2(f.c[1])})),
+    prevSf:(prev&&Math.abs(prev-P.totalSf)>P.totalSf*0.1)?Math.round(prev):null,at:Date.now()};
+  S.rooms=[]; S.blocks=[]; S.rbrHand=false;
+  P.rooms.forEach(r=>{ const bb=window.FCDxf.bbox(r.poly); const wins=P.windows.filter(w=>{ const m=fcWinMid(w); return fcSegNear(r.poly,m[0],m[1],0.6) });
+    const winFt=wins.reduce((s,w)=>s+w.w,0), perim=2*(bb.w+bb.d); const nr=(r.kind==='hall'||r.kind==='closet');
+    const ld= r.kind==='kitchen'?'high':(r.kind==='bath'||r.kind==='laundry'||nr)?'low':((wins.length>=2&&winFt>0.18*perim)?'high':'avg');
+    S.rooms.push({id:'r'+(S.rbrSeq++),n:r.name,sf:Math.max(1,Math.round(r.sf)),h:10,ld,x:r2(bb.x0),y:r2(bb.y0),w:r2(Math.max(1,bb.w)),d:r2(Math.max(1,bb.d)),fl:top,
+      poly:r.poly.map(p=>[r2(p[0]),r2(p[1])]),cx:r2(r.c[0]),cy:r2(r.c[1]),kind:r.kind,nr,win:wins.length,plan:true}) });
+  // the scan IS the served area — the Manual J runs on it, the traced aerial shape (if any) steps aside
+  fcPlanSetSf(Math.round(P.totalSf)); S.home.floors[top].shape=null; S.home.floors[top].tpts=null;
+  const c=window.FCDxf.polyCent(P.outline); S.unitPos.x=Math.round(c[0]-3); S.unitPos.y=Math.round(c[1]-3); fcUnitInside();
+  S.auto=S.auto||{}; S.auto.rbr=false; S.rbrOpen=true;
+  fcApplyRuns(); save(); }
+function fcPlanClear(){ S.plan=null; S.rooms=[]; S.blocks=[]; S.rbrHand=false; S.rbrNew=false; save() }
+function fcUnitInside(){ const F=fcField(); if(!F.poly) return; const u=S.unitPos; if(fcRectIn(F.poly,u.x,u.y,6,6)) return;
+  const c=fcCent(F.poly); let bx=Math.max(0,Math.min(F.w-6,c[0]-3)), by=Math.max(0,Math.min(F.d-6,c[1]-3));
+  if(!fcRectIn(F.poly,bx,by,6,6)){ outer: for(let y=0;y+6<=F.d;y+=1) for(let x=0;x+6<=F.w;x+=1) if(fcRectIn(F.poly,x,y,6,6)){ bx=x; by=y; break outer } }
+  u.x=bx; u.y=by }
+// a point inside the room for a register: where the grid put it if that is inside the polygon, else the nearest spot that is
+function fcInside(r,x,y){ if(!r.poly) return [x,y]; const P=r.poly; if(fcPtIn(P,x,y)) return [x,y];
+  for(let k=1;k<=6;k++){ for(const [dx,dy] of [[0,k],[0,-k],[k,0],[-k,0],[k,k],[-k,k],[k,-k],[-k,-k]]){ if(fcPtIn(P,x+dx*0.7,y+dy*0.7)) return [+(x+dx*0.7).toFixed(2),+(y+dy*0.7).toFixed(2)] } }
+  let best=null; for(let gy=r.y+0.5;gy<r.y+r.d;gy+=1) for(let gx=r.x+0.5;gx<r.x+r.w;gx+=1){ if(!fcPtIn(P,gx,gy)) continue; const dd=Math.hypot(gx-x,gy-y); if(!best||dd<best.d) best={d:dd,p:[+gx.toFixed(2),+gy.toFixed(2)]} } // an L-shaped room: the nearest square foot that IS inside it
+  if(best) return best.p; return [r.cx!=null?r.cx:x, r.cy!=null?r.cy:y] }
+// ---------- drawing the plan: one path builder for the grid and the shop drawing (map: feet → [X,Y])
+function fcPlanPaths(map,o){ const P=S.plan; if(!P) return ''; o=o||{}; let s='';
+  const pt=(x,y)=>{ const q=map(x,y); return q[0].toFixed(1)+' '+q[1].toFixed(1) };
+  // rooms first (fills), then walls, windows, doors
+  if(o.rooms!==false) S.rooms.filter(r=>r.poly).forEach(r=>{ const fill=o.fill?o.fill(r):(r.nr?'rgba(120,130,140,.10)':r.ld==='high'?'#fdf4ea':r.ld==='low'?'#f4f5f6':'#eef7f7');
+    s+=`<path class="rm${r.nr?' nr':''}" data-id="${r.id}" d="${r.poly.map((p,i)=>(i?'L':'M')+pt(p[0],p[1])).join(' ')} Z" fill="${fill}" stroke="${o.roomStroke||'#5b7f8f'}" stroke-width="${o.roomSw||1}"/>` });
+  P.walls.forEach(w=>{ s+=`<line x1="${map(w[0],w[1])[0].toFixed(1)}" y1="${map(w[0],w[1])[1].toFixed(1)}" x2="${map(w[2],w[3])[0].toFixed(1)}" y2="${map(w[2],w[3])[1].toFixed(1)}" stroke="${o.wall||'#1f2f3f'}" stroke-width="${o.wallSw||3}" stroke-linecap="square"/>` });
+  P.windows.forEach(w=>{ const r=w.rot*Math.PI/180; const a=map(w.x,w.y), b=map(w.x+w.w*Math.cos(r),w.y+w.w*Math.sin(r)); s+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${o.win||'#7fbfe6'}" stroke-width="${(o.wallSw||3)+1}" stroke-linecap="butt"/>` });
+  P.doors.forEach(d=>{ const r=d.rot*Math.PI/180; const a=map(d.x,d.y), b=map(d.x+d.w*Math.cos(r),d.y+d.w*Math.sin(r)); s+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${o.door||'#fff'}" stroke-width="${(o.wallSw||3)+1}" stroke-linecap="butt"/><line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${o.doorLine||'#a35300'}" stroke-width="1.2" stroke-dasharray="3 2"/>` });
+  return s }
+// the scan strip at the top of Room by room, and the upload block
+function rbrScanHtml(){ const P=S.plan;
+  if(P){ const n=S.rooms.length, nr=S.rooms.filter(r=>r.nr).length;
+    return `<div class="scanbar on"><div class="sb1"><b>${rbrEsc(P.name)}</b><span class="asm">measured</span></div><div class="sb2">${n} rooms${nr?' ('+nr+' hall / closet, no register)':''} · <b>${CFM(P.sf)} sq ft</b> served by this system${P.prevSf?` · the record says ${CFM(P.prevSf)} sq ft — the rest is on another system`:''}</div><div class="sb3"><label class="btn sm ghost" for="rbrDxf">Replace</label><button class="btn sm ghost" id="rbrScanX">Remove</button></div></div>` }
+  const hand=!!S.rbrHand;
+  return `<div class="scanbox${hand?' mini':''}"><div class="scanico">&#9636;</div><div class="scantxt"><b>${hand?'Upload a floor plan instead':'Upload the floor plan of the area this system serves'}</b>${hand?'':'<span>3D Snap &#9656; Export &#9656; DXF. Scan only what this unit cools &mdash; the upstairs on a two-storey, or the part of the house on this system.</span>'}</div><label class="btn sm" for="rbrDxf">Choose the DXF</label></div>`+
+    (hand?'':`<div class="row" style="margin-top:8px"><button class="btn sm ghost" id="rbrHand">No scan? Lay the rooms out by hand &#9656;</button></div>`) }
+function rbrScanWire(){
+  const f=$('#rbrDxf'); if(f&&!f.dataset.wired){ f.dataset.wired='1'; f.addEventListener('change',()=>{ const file=f.files&&f.files[0]; if(!file) return; fcScanStat('Reading '+rbrEsc(file.name)+'…');
+    const fr=new FileReader(); fr.onload=()=>{ const ok=fcPlanLoad(String(fr.result||''),file.name); f.value=''; if(ok){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } };
+    fr.onerror=()=>fcScanStat('Could not read that file.','warn'); fr.readAsText(file) }) }
+  const h=$('#rbrHand'); if(h) h.addEventListener('click',()=>{ S.rbrHand=true; if(!S.rooms.length){ rbrSeed(fcTop()); if(fcHasShape()) fcPack() } save(); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) });
+  const x=$('#rbrScanX'); if(x) x.addEventListener('click',()=>{ fcPlanClear(); rbrRender(); rbrSync() });
+  // drag a file onto the panel
+  const pn=$('#rbrPanel'); if(pn&&!pn.dataset.drop){ pn.dataset.drop='1'; pn.addEventListener('dragover',e=>{ e.preventDefault() }); pn.addEventListener('drop',e=>{ const file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!file||!/\.dxf$/i.test(file.name)) return; e.preventDefault(); const fr=new FileReader(); fr.onload=()=>{ if(fcPlanLoad(String(fr.result||''),file.name)){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } }; fr.readAsText(file) }) }
+}
+// the plan on the grid: the real house, rooms named and loaded, the UNIT tile the only thing that moves
+function rbrPlanGrid(G,px){ const P=S.plan, F=fcField();
+  const sv=document.createElementNS('http://www.w3.org/2000/svg','svg'); sv.setAttribute('class','fcplan'); sv.setAttribute('width',(F.w*px).toFixed(0)); sv.setAttribute('height',(F.d*px).toFixed(0));
+  const map=(x,y)=>[x*px,y*px]; let s=fcPlanPaths(map,{wallSw:Math.max(2,px*0.45)});
+  S.rooms.filter(r=>r.poly).forEach(r=>{ const c=map(r.cx,r.cy); const fs=Math.max(8,Math.min(12,px*1.6)); const small=r.sf<70;
+    s+=`<text x="${c[0].toFixed(1)}" y="${(c[1]-(small?0:fs*0.35)).toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${r.nr?'#6b6260':'#0a5c5c'}" stroke="#fff" stroke-width="3" paint-order="stroke">${rbrEsc(r.n)}</text>`;
+    if(!small) s+=`<text x="${c[0].toFixed(1)}" y="${(c[1]+fs*0.9).toFixed(1)}" text-anchor="middle" font-size="${(fs*0.85).toFixed(1)}" font-weight="700" fill="#0b2340" stroke="#fff" stroke-width="3" paint-order="stroke">${r.nr?r.sf+' sf · no vent':CFM(r.cfm)+' CFM · '+r.nReg+'v'}</text>` });
+  sv.innerHTML=s; G.appendChild(sv); }
+
 /* ---------- wiring ---------- */
 function rbrWire(){
-  const sf=$('#homeSf'); if(sf){ sf.value=S.home.sf||''; sf.addEventListener('input',e=>{ S.home.sf=e.target.value; fcClearSrc('sf'); fcSyncSf(); save(); rbrRender(); rbrSync() }) }
+  const sf=$('#homeSf'); if(sf){ sf.value=S.home.sf||''; sf.addEventListener('input',e=>{ S.home.sf=e.target.value; fcClearSrc('sf'); fcSyncSf(); if(S.plan) S.plan.sf=parseFloat(e.target.value)||S.plan.sf; save(); rbrRender(); rbrSync() }) }
   fcWire();
   $$('#buildSeg button').forEach(b=>b.addEventListener('click',()=>{ S.home.build=b.dataset.v; rbrSyncSeg(); save(); rbrRender(); rbrSync() }));
   // v2.35: the attic now lives in The home, because what is up there decides whether the answer is a
@@ -6532,10 +6902,11 @@ function rbrWire(){
   ['in_depth','in_type','in_r'].forEach(id=>{ const el=$('#'+id); if(el) el.addEventListener('input',()=>{ try{ rbrModel(); rbrMJ(); rbrSizeFlag() }catch(e){} }) });
   rbrSyncSeg();
   $('#rbrBtn').addEventListener('click',()=>{ S.rbrOpen=!S.rbrOpen; save();
-    if(S.rbrOpen&&!S.rooms.length){ rbrSeed(fcTop()); if(fcHasShape()) fcPack() }
+    if(S.rbrOpen&&!S.rooms.length&&S.rbrHand){ rbrSeed(fcTop()); if(fcHasShape()) fcPack() }   // v2.54: opening shows the scan block; the hand grid seeds only once it has been chosen
     rbrRender(); if(S.rbrOpen) setTimeout(rbrGrid,20) });
   $('#rbrList').addEventListener('input',e=>{ const row=e.target.closest('.rrow'); if(!row) return;
     const r=S.rooms.find(x=>x.id===row.dataset.id); if(!r) return; const k=e.target.dataset.k; if(!k) return;
+    if(S.auto) S.auto.rbr=false;   // v2.54 — an edited set is the SM's, never re-seeded
     if(k==='n'){ r.n=e.target.value; save(); rbrModel(); rbrGrid(); rbrOut(); rbrSync(); return }
     if(k==='vs'){ r.vs=e.target.value; save(); rbrModel(); rbrGrid(); rbrOut(); rbrSync(); rbrRowOut(row,r); return }   // v2.46 — the vent size as typed
     if(k==='vn'){ r.vn=Math.max(0,Math.min(12,parseInt(e.target.value)||0)); save(); rbrModel(); rbrGrid(); rbrOut(); rbrSync(); rbrRowOut(row,r); return }
@@ -6545,10 +6916,13 @@ function rbrWire(){
     const i=S.rooms.findIndex(x=>x.id===row.dataset.id); if(i<0) return;
     if(e.target.dataset.ld){ S.rooms[i].ld=e.target.dataset.ld; save(); rbrRender(); rbrSync() }
     else if(e.target.dataset.vf){ S.rooms[i].vf=e.target.dataset.vf; save(); rbrRender(); rbrSync() }     // v2.46 — this room's face, on its own
-    else if(e.target.dataset.del){ S.rooms.splice(i,1); save(); rbrRender(); rbrSync() } });
+    else if(e.target.dataset.nr!=null){ S.rooms[i].nr=e.target.dataset.nr==='1'; save(); rbrRender(); rbrSync() }   // v2.54 — a scanned closet that does take a vent, or a room that should not
+    else if(e.target.dataset.del){ const r=S.rooms[i]; S.rooms.splice(i,1); if(S.auto) S.auto.rbr=false;
+      if(r.plan&&S.plan){ const sf=Math.max(100,Math.round((parseFloat(S.home.floors[fcTop()].sf)||S.plan.sf)-r.sf)); S.plan.sf=sf; fcPlanSetSf(sf) }   // v2.54 — "that room is on the other unit": the served area drops with it
+      save(); rbrRender(); rbrSync() } });
   // v2.46 — the faces the house has today, for every room that has not been flipped on its own
   $$('#rbrFaceSeg .chip').forEach(b=>b.addEventListener('click',()=>{ S.rbrFace=b.dataset.v; S.rooms.forEach(r=>{ delete r.vf }); save(); rbrRender(); rbrSync() }));
-  $('#rbrAdd').addEventListener('click',()=>{ const r={id:'r'+(S.rbrSeq++),n:'Room '+(S.rooms.length+1),sf:140,h:10,ld:'avg',x:0,y:0,fl:fcTop()};
+  $('#rbrAdd').addEventListener('click',()=>{ if(S.auto) S.auto.rbr=false; const r={id:'r'+(S.rbrSeq++),n:'Room '+(S.rooms.length+1),sf:140,h:10,ld:'avg',x:0,y:0,fl:fcTop()};
     rbrShape(r); S.rooms.push(r); fcPack(); save(); rbrRender(); rbrSync() });
   $('#rbrArr').addEventListener('click',()=>{ fcPack(); save(); rbrRender(); rbrSync() });
   // unconditioned space is drawn so the plan reads like the real house. It never enters the cap,
@@ -6559,7 +6933,7 @@ function rbrWire(){
     const sf=n===0?420:(n===1?260:380), w=Math.max(8,Math.round(Math.sqrt(sf*1.4)));
     S.blocks.push({id:'b'+(S.rbrSeq++),n:nm,kind:n===0?'garage':(n===1?'patio':'casita'),sf,x:0,y:0,w,d:sf/w,fl:fcTop()});
     save(); rbrRender(); rbrSync() });
-  $('#rbrClr').addEventListener('click',()=>{ S.rooms=[]; S.blocks=[]; S.rbrNew=false; save(); rbrRender(); rbrSync() });
+  $('#rbrClr').addEventListener('click',()=>{ S.rooms=[]; S.blocks=[]; S.rbrNew=false; S.plan=null; S.rbrHand=false; save(); rbrRender(); rbrSync() });
   $('#rbrVentUp').addEventListener('click',()=>{ if(S.vstep<10){ S.vstep++; save(); rbrRender(); rbrSync() } });
   $('#rbrVentDn').addEventListener('click',()=>{ if(S.vstep>-8){ S.vstep--; save(); rbrRender(); rbrSync() } });
   $('#rbrVentRst').addEventListener('click',()=>{ S.vstep=0; save(); rbrRender(); rbrSync() });
@@ -6580,6 +6954,9 @@ function rbrSeed(fl){
   const P=S.prop;
   const beds=P&&P.bedrooms>0?Math.min(6,Math.round(P.bedrooms)):0;
   const baths=P&&P.bathrooms>0?Math.min(5,Math.round(P.bathrooms)):0;
+  // v2.54 — a small upper floor (a loft or bonus room on the record) is not a whole house: it gets a bonus room and a bath, not the 8-room mix
+  // crushed to 20 sq ft each (Stephen 2026-09-26: "a home's 1,777 sq ft and it auto-specced rooms to 20 sq ft")
+  if(fl>0&&sf<500){ [['Bonus room',0.72,10,'avg'],['Bath',0.28,10,'low']].forEach(m=>{ const r={id:'r'+(S.rbrSeq++),n:m[0],sf:Math.max(30,Math.round(sf*m[1]*FC_SEED)),h:m[2],ld:m[3],x:0,y:0,fl}; rbrShape(r); S.rooms.push(r) }); S.auto=S.auto||{}; S.auto.rbr=true; save(); return }
   if(beds){
     // v2.37 — seeded from what the Assessor actually recorded. A 1,800 sq ft 3/2 gives a far more
     // plausible starting set than square footage alone. Still assumed, still all editable.
