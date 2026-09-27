@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-26 v2.55 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-26 v2.56 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -182,7 +182,7 @@ body.printing #printReport .pshots img{border-radius:12px;box-shadow:var(--shado
 .chklist .tick{width:20px;height:20px;border-radius:6px;background:var(--ok);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800}
 .chklist .x{border:none;background:none;color:var(--muted);cursor:pointer;font-size:14px;padding:0 4px}
 .fixctl input,.fixctl select{border:1px solid var(--line);border-radius:8px;padding:4px 6px;font-size:12px;background:#fff;color:var(--ink)}
-.vleg{position:absolute;left:10px;bottom:10px;display:flex;gap:10px;font-size:11px;color:#fff;background:rgba(0,4,38,.55);padding:6px 10px;border-radius:8px}
+.vleg{position:absolute;left:10px;bottom:10px;display:flex;flex-wrap:wrap;max-width:calc(100% - 150px);gap:4px 10px;font-size:11px;color:#fff;background:rgba(0,4,38,.55);padding:6px 10px;border-radius:8px}
 .vleg i{display:inline-block;width:10px;height:10px;border-radius:2px;margin-right:4px;vertical-align:-1px}
 .pkgsvg{width:100%;height:auto;background:#f6f9fc;border-radius:12px;border:1px solid var(--line)}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;font-size:13px}
@@ -224,7 +224,7 @@ dialog .in{padding:18px}
 .gridwrap .tile.hi{border-color:var(--warn);background:var(--warnbg)}.gridwrap .tile.hi .tn{color:#7a4a12}
 .gridwrap .tile.lo{border-color:var(--gray);background:rgba(192,184,182,.22)}
 .gridwrap .tile.unit{border:2px solid var(--db);background:#003963}.gridwrap .tile.unit .tn{color:#fff}.gridwrap .tile.unit .tc{color:#9fc3dd}
-.gridwrap .tile.ret{border:2px solid #8a2b2b;background:#b23a3a;z-index:2}.gridwrap .tile.ret .tn{color:#fff;font-size:10px}.gridwrap .tile.ret .tc{color:#ffd9d9;font-size:8.5px} /* v2.55: the return filter grille, placed like the unit */
+.gridwrap .tile.ret{border:2px solid #4a3496;background:#6c4fd0;z-index:2}.gridwrap .tile.ret .tn{color:#fff;font-size:10px}.gridwrap .tile.ret .tc{color:#e4dcff;font-size:8.5px} /* v2.55: the return filter grille, placed like the unit · v2.56: violet, the return's colour */
 .gridwrap .tile .rs{position:absolute;right:-1px;top:50%;transform:translateY(-50%);width:16px;height:38px;border-radius:5px;background:var(--db);opacity:.75;cursor:ew-resize;display:grid;place-items:center;color:#fff;font-size:10px;line-height:1;touch-action:none}
 /* v2.37 — address lookup, aerial, traced shape */
 .fcrow{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
@@ -361,7 +361,7 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
   .viewer canvas{flex:1;min-height:0;height:auto}
   .vctl{position:static;flex-direction:row;flex-wrap:nowrap;overflow-x:auto;gap:6px;padding:8px 8px 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none}.vctl::-webkit-scrollbar{display:none}
   .vctl button{flex:none;white-space:nowrap;padding:8px 11px;font-size:13px}.vctl button.mv{margin-top:0}
-  .vleg{position:static;flex-wrap:nowrap;overflow-x:auto;background:none;padding:2px 10px 8px;gap:12px;scrollbar-width:none}.vleg::-webkit-scrollbar{display:none}.vleg span{white-space:nowrap}
+  .vleg{position:static;flex-wrap:nowrap;max-width:none;overflow-x:auto;background:none;padding:2px 10px 8px;gap:12px;scrollbar-width:none}.vleg::-webkit-scrollbar{display:none}.vleg span{white-space:nowrap}
   .lbl3{font-size:10px;padding:1px 5px;max-width:70vw;overflow:hidden;text-overflow:ellipsis}
   /* airflow table: the status pill and Fix ▸ stay on screen — area and velocity drop out (they are in the summary) */
   .airtbl:not(.compact) th:nth-child(3),.airtbl:not(.compact) td:nth-child(3),.airtbl:not(.compact) th:nth-child(4),.airtbl:not(.compact) td:nth-child(4),.airtbl:not(.compact) th:nth-child(5),.airtbl:not(.compact) td:nth-child(5){display:none}
@@ -1220,7 +1220,7 @@ body.pack .tp .noapp{display:none}
         <button id="v_mvu" class="hidden mv" title="Drag slides the new unit on the stand">✥ Move unit</button>
         <button id="v_mvs" class="hidden mv" title="Drag relocates the stand under the metal (along the ridge · leg height)">✥ Move stand</button>
       </div>
-      <div class="vleg"><span><i style="background:#9aa6b2"></i>Existing</span><span><i style="background:#3678A0"></i>Furnace / AHU / Unit</span><span><i style="background:#77B2D0"></i>Coil</span><span><i style="background:#ffd166"></i>Access / openings</span><span><i style="background:#d9e2ec"></i>Existing metal</span></div>
+      <div class="vleg"><span><i style="background:#9aa6b2"></i>Existing</span><span><i style="background:#3678A0"></i>Furnace / AHU / Unit</span><span><i style="background:#77B2D0"></i>Coil</span><span><i style="background:#ffd166"></i>Access / openings</span><span><i style="background:#d9e2ec"></i>Existing metal</span><span><i style="background:#a9d9bd"></i>New metal</span><span><i style="background:#9d82f2"></i>Return</span></div>
     </div>
     <p class="help" style="margin:8px 4px 0" id="viewerHelp">Drag to rotate · pinch to zoom · Focus frames the unit, the ducts or both. Ghost = today, solid = proposed.</p>
     <div class="readout" id="planReadout"></div>
@@ -3107,13 +3107,13 @@ function draw(){
   faces.forEach(f=>{ const b=f.b; const [nx,ny,nz]=f.nrm; const cy_=Math.cos(view.yaw),sy=Math.sin(view.yaw); const lx=nx*cy_-nz*sy, lz=nx*sy+nz*cy_; const shade=0.55+0.45*Math.max(0,(lx*light[0]+ny*light[1]+lz*light[2]));
     ctx.beginPath(); f.pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.closePath();
     if(b.wire){ ctx.strokeStyle=b.color; ctx.setLineDash(b.dash||[6,4]); ctx.lineWidth=b.lw||1.5; ctx.stroke(); ctx.setLineDash([]); if(b.fill){ctx.fillStyle=b.fill;ctx.fill()} }
-    else { const col=b.color; ctx.fillStyle=hexA(col,b.alpha,shade); ctx.fill(); if(!fast){ ctx.strokeStyle=`rgba(255,255,255,${b.alpha<1?.35:.55})`; ctx.lineWidth=1; ctx.stroke() } }
+    else { const col=b.color; ctx.fillStyle=hexA(col,b.alpha,shade); ctx.fill(); if(!fast){ ctx.strokeStyle=b.edge||`rgba(255,255,255,${b.alpha<1?.35:.55})`; ctx.lineWidth=b.edge?1.5:1; ctx.stroke() } }   // v2.56: b.edge — a return piece is edged violet
   });
   // labels — v2.11: filtered by the Info / Chokepoints toggles. A red or orange note is a "chokepoint" note; everything else is Info.
   // v2.42: a viewer can carry its own note mode — 'all' · 'flag' (problems only) · 'changes' (problems + what is new) · 'none' — else the Info / Chokepoints toggles decide
   const showLbl=(c,b)=>{ const m=view.lbl; const prob=(c==='warn'||c==='bad'); if(m){ if(m==='none') return false; if(m==='all') return true; if(m==='flag') return prob; if(m==='changes') return prob||!!(b&&(b.nw||b.stat)); } return prob?S.view.flag!==false:S.view.info!==false };
   const planWide=focus!=='unit'&&scene.some(b=>b.quad&&b.duct); // v2.54: framed on the whole house, the notes stand back — only the room names stay on the picture
-  scene.forEach(b=>{ if(!b.label||b.quad) return; if(planWide&&b.cls!=='plan') return; if(!showLbl(b.cls,b)) return; const fx=b.la?b.la[0]:0.5, fz=b.la?b.la[1]:((b.wire||b.marker)?0:0.5), fy=(b.la&&b.la[2]!=null)?b.la[2]:1; const p=P([b.x+fx*b.dx,b.y+fy*b.dy+3,b.z+fz*b.dz]); if(b.duct&&(p[0]<-30||p[0]>r.width+30||p[1]<-30||p[1]>r.height+30)) return; /* v2.54: a note for a duct piece that is off the picture is noise, not a note */ const d=document.createElement('div'); d.className='lbl3 '+(b.cls||''); d.style.left=p[0]+'px'; d.style.top=(p[1]-8)+'px'; d.innerHTML=b.label; lbls.appendChild(d) });
+  scene.forEach(b=>{ if(!b.label||b.quad) return; if(planWide&&b.cls!=='plan'&&!b.insNote) return; /* v2.56: the attic note stays on the whole-house picture — it says why the ceiling is red */ if(!showLbl(b.cls,b)) return; const fx=b.la?b.la[0]:0.5, fz=b.la?b.la[1]:((b.wire||b.marker)?0:0.5), fy=(b.la&&b.la[2]!=null)?b.la[2]:1; const p=P([b.x+fx*b.dx,b.y+fy*b.dy+3,b.z+fz*b.dz]); if(b.duct&&(p[0]<-30||p[0]>r.width+30||p[1]<-30||p[1]>r.height+30)) return; /* v2.54: a note for a duct piece that is off the picture is noise, not a note */ const d=document.createElement('div'); d.className='lbl3 '+(b.cls||'')+(b.insNote?' ins':''); d.style.left=p[0]+'px'; d.style.top=(p[1]-8)+'px'; d.innerHTML=b.label; lbls.appendChild(d) });
   // dimension callouts for the primary "new" envelope
   const env=planWide?null:scene.find(b=>b.dimLabels); if(env){ const {x,y,z,dx,dy,dz}=env; const put=(pt,txt,cls)=>{if(!showLbl(cls)) return; const p=P(pt);const d=document.createElement('div');d.className='lbl3 '+(cls||'');d.style.left=p[0]+'px';d.style.top=p[1]+'px';d.textContent=txt;lbls.appendChild(d)};
     put([x+dx/2,y-4,z+dz+5],env.dimLabels[0].txt,env.dimLabels[0].cls); put([x-5,y+dy/2,z+dz+5],env.dimLabels[1].txt,env.dimLabels[1].cls); put([x+dx+7,y-4,z+dz/2],env.dimLabels[2].txt,env.dimLabels[2].cls); }
@@ -3195,13 +3195,14 @@ function pushTube(p0,p1,cs,color,alpha,extra){ const t={p0,p1,a:cs.a,h:cs.h,roun
 // house has are dealt over the two arms and the trunk is sized for what each segment still carries, with the same mdSizeRound the 2D uses.
 // Draws only when New duct system is on (rooms designed) or a new supply duct system is in the crew scope; the Today picture never carries it.
 function ductTree(AM){ // → {arms:[{k,segs:[{d,add,carry,room,taps:[{d,side,run,legs:[{d,can,face}]}]}]}],runs,per} from the room design, else null
-  if(!(S.rbrNew&&RM&&S.rooms&&S.rooms.length)) return null; const ux=RM.ux, uy=RM.uy; const byArm={L:[],R:[]};
-  S.rooms.filter(r=>!r.nr).forEach(r=>{ (rbrCx(r)<ux?byArm.L:byArm.R).push(r) }); byArm.L.sort((a,b)=>rbrCx(b)-rbrCx(a)); byArm.R.sort((a,b)=>rbrCx(a)-rbrCx(b)); // the 2D's arm order: nearest the plenum first · v2.54: a hall / closet has no run
-  const arms=[]; ['L','R'].forEach(k=>{ const rooms=byArm[k]; if(!rooms.length) return; let prevD=null; const segs=[];
-    rooms.forEach(r=>{ const sg=(RM.segs||[]).find(s=>s.arm===k&&s.room===r.n); const d=sg?sg.d:(prevD||8); prevD=d; const side=rbrCy(r)<uy?1:-1; // rooms past the trunk line branch forward, rooms behind it branch back
-      const taps=((r.taps&&r.taps.length)?r.taps:rbrGeom(r)).map(tp=>({d:(r.branch&&r.branch.d)||8,side,run:r.run||12,px:tp.x,py:tp.y!=null?tp.y:rbrCy(r),legs:(tp.regs||[]).map(x=>({d:(r.leg&&r.leg.d)||8,can:r.can||9,face:(x.g&&x.g.face)||r.faceK,px:x.x,py:x.y!=null?x.y:rbrCy(r)}))}));
+  if(!(S.rbrNew&&RM&&S.rooms&&S.rooms.length)) return null; const ux=RM.ux, uy=RM.uy;
+  // v2.56 — the trunks are the room design's (rbrTrunks): each with its side, its port on the plenum and its line; rooms nearest the plenum first · a hall / closet has no run
+  const TR=(RM.trunks&&RM.trunks.length)?RM.trunks:['L','R'].map(k=>({k,dir:k,port:k,y:uy,rooms:S.rooms.filter(r=>!r.nr&&((rbrCx(r)<ux)===(k==='L'))).sort((a,b)=>Math.abs(rbrCx(a)-ux)-Math.abs(rbrCx(b)-ux)).map(r=>r.id||r.n)}));
+  const arms=[]; TR.forEach(t=>{ const k=t.k, ty=t.y!=null?t.y:uy; const rooms=t.rooms.map(n=>S.rooms.find(r=>!r.nr&&(r.id||r.n)===n)).filter(Boolean); if(!rooms.length) return; let prevD=null; const segs=[];
+    rooms.forEach(r=>{ const sg=(RM.segs||[]).find(s=>s.arm===k&&(s.rid!=null?s.rid===r.id:s.room===r.n)); const d=sg?sg.d:(prevD||8); prevD=d; const side=rbrCy(r)<ty?1:-1; // rooms past the trunk's line branch forward, rooms behind it branch back
+      const taps=((r.taps&&r.taps.length)?r.taps:rbrGeom(r)).map(tp=>({d:(r.branch&&r.branch.d)||8,side,run:r.run||12,px:tp.x,cx:tp.cx!=null?tp.cx:tp.x,py:tp.y!=null?tp.y:rbrCy(r),legs:(tp.regs||[]).map(x=>({d:(r.leg&&r.leg.d)||8,can:r.can||9,face:(x.g&&x.g.face)||r.faceK,px:x.x,py:x.y!=null?x.y:rbrCy(r)}))}));
       segs.push({d,add:sg?(sg.add||[]):[],carry:sg?sg.carry:null,room:r.n,taps,pz0:sg?sg.from:null,pz1:sg?sg.to:rbrCx(r)}) });  // v2.54: pz0/pz1 · px/py = the real plan positions, in feet
-    arms.push({k,segs}) });
+    arms.push({k,dir:t.dir||k,port:t.port||k,y:ty,fs:t.fs||0,segs}) });
   return arms.length?{arms,runs:RM.vents,per:Math.round(RM.Qup/Math.max(1,RM.vents)),rbr:true,plan:!!S.plan,ux,uy}:null }
 function ductTreeFromRuns(items,AM){ // no room design: the runs, dealt over two arms; the trunk sized for what each segment still carries
   const runs=(items||[]).filter(it=>!it.down); if(!runs.length) return null; const n=runs.length; const per=Math.round(AM.design/Math.max(1,n));
@@ -3209,8 +3210,31 @@ function ductTreeFromRuns(items,AM){ // no room design: the runs, dealt over two
   const arms=[]; ['L','R'].forEach(k=>{ const rs=byArm[k]; if(!rs.length) return;
     const dir=k==='L'?-1:1; const segs=rs.map((it,i)=>{ const d=it.d||Math.max(it.w||8,it.h||8); const carry=per*(rs.length-i); const sz=mdSizeRound(Math.max(carry,1),fr,mat,'sup');
       const px=dir*(4+4*i), py=(i%2?1:-1)*(5+i); // v2.55: dealt runs get positions of their own — 4 ft apart along the trunk, 5–8 ft out, alternating sides — so they draw through the one layout
-      return {d:sz.d,add:sz.add||[],carry,room:null,pz0:dir*(1+4*i),pz1:dir*(5+4*i),taps:[{d,side:i%2?-1:1,run:12+i*3,px,py,legs:[{d,can:null,face:null,px,py}]}]} }); arms.push({k,segs}) });
+      return {d:sz.d,add:sz.add||[],carry,room:null,pz0:dir*(1+4*i),pz1:dir*(5+4*i),taps:[{d,side:i%2?-1:1,run:12+i*3,px,cx:px,py,legs:[{d,can:null,face:null,px,py}]}]} }); arms.push({k,dir:k,port:k,y:0,segs}) });   // v2.56: dealt alternately, so two runs are already two take-offs off the plenum
   return {arms,runs:n,per,rbr:false,ux:0,uy:0} }
+// v2.56 — THE CEILING CARRIES THE ATTIC (Stephen 2026-09-26: "if we did the room by room and have a whole house map, then if the insulation is low,
+// effect the color of the whole ceiling, not just that rectangle — as we add insulation, drop the red hue; if the insulation is good, leave the normal
+// blue ceiling"). With the house laid under the unit, every room's ceiling slab takes a red hue that deepens as the attic thins: none at R-38 and up
+// (the blue it always was), full at R-11 and under, straight-line between — read off the insulation the picture is showing (today's, or the design's
+// top-up). The rectangle of insulation around the unit is not drawn then: the house is the ceiling. One note on the house says what the attic is.
+function insTint(ins){ if(!ins||!ins.known) return 0; const R=ins.Rf!=null?ins.Rf:ins.R; if(!(R>=0)) return 0; return Math.max(0,Math.min(1,(R_MIN-R)/(R_MIN-11))) }
+function insHouseLbl(ins){ if(!ins||!ins.known) return 'Attic insulation — depth not entered'; const R=ins.R, Rf=ins.Rf!=null?ins.Rf:R;
+  return `Attic insulation R-${fmt(R)}${Rf>R?' → R-'+fmt(Rf)+' proposed':''}${Rf<R_MIN?' · under R-38 — the whole ceiling gains heat':' · the whole ceiling at or over R-38'}` }
+function houseSlabs(SX,SZ,yP,o){ const ins=o.ins||null, k=insTint(ins); const RED=[228,62,50,0.42];
+  const mix=b=>{ const c=b.map((v,i)=>v+(RED[i]-v)*k); return `rgba(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])},${c[3].toFixed(3)})` };
+  const stroke=k>0.02?`rgba(255,${Math.round(255-125*k)},${Math.round(255-150*k)},${(0.45+0.15*k).toFixed(2)})`:'rgba(255,255,255,.45)';
+  let nx=1e9,xx=-1e9,nz=1e9,xz=-1e9;
+  S.rooms.forEach(r=>{ const poly=r.poly||[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.d],[r.x,r.y+r.d]]; const pts=poly.map(p=>[SX(p[1]),yP,SZ(p[0])]); const xs=pts.map(p=>p[0]), zs=pts.map(p=>p[2]);
+    nx=Math.min(nx,...xs); xx=Math.max(xx,...xs); nz=Math.min(nz,...zs); xz=Math.max(xz,...zs);
+    scene.push({quad:pts,color:mix(r.nr?[150,160,170,0.22]:(r.ld==='high'?[255,190,120,0.26]:[120,175,225,0.26])),stroke,ceil:true,tint:+k.toFixed(3),x:Math.min(...xs),y:yP,z:Math.min(...zs),dx:Math.max(...xs)-Math.min(...xs),dy:0.1,dz:Math.max(...zs)-Math.min(...zs),nofit:true,duct:true});
+    scene.push({marker:true,label:rbrEsc(r.n)+((r.nr||!o.cfm)?'':' · '+CFM(r.cfm)+' CFM'),cls:'plan',x:SX(rbrCy(r)),y:yP,z:SZ(rbrCx(r)),dx:0,dy:0,dz:0,nofit:true,duct:true}) });
+  if(S.plan&&S.plan.walls){ const lines=(sceneLines||[]).slice(); S.plan.walls.forEach(w=>lines.push([[SX(w[1]),yP,SZ(w[0])],[SX(w[3]),yP,SZ(w[2])],2.2])); sceneLines=lines }
+  if(o.ux!=null&&isFinite(nx)){ const Rf=ins&&ins.known?(ins.Rf!=null?ins.Rf:ins.R):null; const cls=Rf==null?'':(Rf<19?'bad':(Rf<R_MIN?'warn':'ok')); /* the same grades as the attic tile */ const ax=Math.max(nx,Math.min(xx,SX(o.uy+4))), az=Math.max(nz,Math.min(xz,SZ(o.ux-4)));   // the note sits on the house, a few feet off the unit
+    scene.push({marker:true,label:insHouseLbl(ins),cls,insNote:true,x:ax,y:yP,z:az,dx:0,dy:0,dz:0,nofit:true}) }
+  return k }
+// v2.56 — the take-offs off the plenum, as the label says them: how many trunks, and the air each one carries (the balance is the point)
+function treeArmsTxt(T){ const n=T.arms.length; const q=T.arms.map(a=>{ const s0=(a.segs||[])[0]; if(s0&&s0.carry!=null) return s0.carry; return (a.segs||[]).reduce((s,sg)=>s+(sg.taps||[]).length,0)*(T.per||0) });
+  return `${n} trunk${n>1?'s':''} off the plenum`+(n>1?` (${q.map(v=>CFM(Math.round(v))).join(' / ')} CFM)`:'') }
 function trunkOutRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms.length) return; planDuctRuns(base,plane,opt) } // v2.55: every new duct system — the scan's, the grid's, the dealt runs' — is laid out by planDuctRuns at real positions
 // v2.54 — THE DUCT SYSTEM ON THE REAL PLAN (Stephen 2026-09-26: "the duct design overlaid over the actual home floor plan … the 3D duct design on the
 // plan tab"). The plan is laid flat at the ceiling under the unit at true scale (12" to the foot — a 40 ft run IS 40 ft), every room a translucent
@@ -3225,7 +3249,7 @@ function trunkOutRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms
 // branch that would run through the unit (a room behind the furnace on a horizontal split) lifts over the cabinet through four radiused bends
 // and comes back down past it. Nothing here is fit-checked (`nofit`); everything is `duct` for the Focus chip and tagged for the airflow.
 function planDuctRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms.length) return; const P=S.plan; const NEWM='#a9d9bd'; const up=!!plane.up; const dn=up?1:-1; const K=12;
-  const X={nw:true,cls:'ok',duct:true,nofit:true};
+  const X={nw:true,cls:'ok',duct:true,nofit:true}; const tyAt=[];   // v2.56: every TY inlet laid so far, on the picture
   const add=o=>sceneAdd(Object.assign({color:NEWM,alpha:.85,noshadow:true},X,o));
   const cyl=(x,y,z,dx,dy,dz,ax,o)=>add(Object.assign({x,y,z,dx,dy,dz,cyl:ax},o||{}));
   const bend=(C,u,v,d,R,o)=>pushBend(C,u,v,{a:d,h:d,round:true},R,NEWM,.85,Object.assign({},X,o||{}));
@@ -3236,10 +3260,7 @@ function planDuctRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms
   const yC=base.y, vAvail=Math.abs(yC-plane.y);
   // ---- the house at the ceiling (a room design): the scan's polygons or the grid's rectangles as slabs, the names as notes, the scan's walls as lines
   const yP=up?plane.y+7:plane.y-7;
-  if(T.rbr){ S.rooms.forEach(r=>{ const poly=r.poly||[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.d],[r.x,r.y+r.d]]; const pts=poly.map(p=>[SX(p[1]),yP,SZ(p[0])]); const xs=pts.map(p=>p[0]), zs=pts.map(p=>p[2]);
-      scene.push({quad:pts,color:r.nr?'rgba(150,160,170,.22)':(r.ld==='high'?'rgba(255,190,120,.26)':'rgba(120,175,225,.26)'),stroke:'rgba(255,255,255,.45)',x:Math.min(...xs),y:yP,z:Math.min(...zs),dx:Math.max(...xs)-Math.min(...xs),dy:0.1,dz:Math.max(...zs)-Math.min(...zs),nofit:true,duct:true});
-      scene.push({marker:true,label:rbrEsc(r.n)+(r.nr?'':' · '+CFM(r.cfm)+' CFM'),cls:'plan',x:SX(rbrCy(r)),y:yP,z:SZ(rbrCx(r)),dx:0,dy:0,dz:0,nofit:true,duct:true}) });
-    if(P&&P.walls){ const lines=(sceneLines||[]).slice(); P.walls.forEach(w=>lines.push([[SX(w[1]),yP,SZ(w[0])],[SX(w[3]),yP,SZ(w[2])],2.2])); sceneLines=lines } }
+  if(T.rbr){ (opt.ceil||[]).forEach(o=>{ const i=scene.indexOf(o); if(i>=0) scene.splice(i,1) }); houseSlabs(SX,SZ,yP,{cfm:true,ins:opt.ins,ux,uy}) }   // v2.56: the house IS the ceiling — the rectangle and its insulation slab come out
   // ---- what a branch must clear: every solid piece already drawn that is not the new duct system (cabinets, plenums, the return run) — never a ghost, a plane, a note or the ceiling
   const solids=scene.filter(b=>!b.duct&&!b.nofit&&!b.quad&&!b.marker&&!b.wire&&!b.poly&&isFinite(b.x)&&isFinite(b.dx)&&b.dx>0.5&&b.dy>0.5&&b.dz>0.5);
   const hits=(x0,x1,y0,y1,z0,z1)=>solids.filter(b=>x1>b.x+0.5&&x0<b.x+b.dx-0.5&&y1>b.y+0.5&&y0<b.y+b.dy-0.5&&z1>b.z+0.5&&z0<b.z+b.dz-0.5);
@@ -3251,12 +3272,24 @@ function planDuctRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms
     const cy=up?plane.y-6:plane.y-4; fl(add({x:x-can/2,y:cy,z:z-can/2,dx:can,dy:6,dz:can,alpha:.9,la:[0.5,up?0:1,0.5],label:canLbl?`${can}×${can} can · ${REG_FACE[face||regNew()].short} register`:null}),'y',dn,'s'); canLbl=false;
     flV(add({x:x-can/2-1,y:up?plane.y+0.4:plane.y-5.4,z:z-can/2-1,dx:can+2,dy:1.2,dz:can+2,color:'#eef3f7',alpha:.95}),'out',[0,dn,0],'s',regCls); return true };
   const trunkLbl=(sg,D)=>sg.room?`Ø${fmt(D)}" trunk → ${sg.room}${sg.carry?' · '+CFM(sg.carry)+' CFM':''}`:null;
-  // every collar, on the arm its OWN side of the plenum puts it (a room's tap can sit across the unit from the room's centroid — the 2D takes it off the trunk where it is, so does this)
-  const armOf={}; T.arms.forEach(arm=>{ armOf[arm.k]=arm }); const tapsBy={L:[],R:[]};
-  T.arms.forEach(arm=>(arm.segs||[]).forEach((sg,si)=>(sg.taps||[]).forEach(tp=>{ const lg0=(tp.legs&&tp.legs.length)?tp.legs:null; const d=(lg0&&lg0.length<2)?(lg0[0].d||tp.d||8):(tp.d||8); const k=tp.px!=null?(tp.px<ux?'L':'R'):arm.k; /* a one-leg tap's collar IS the leg's size */ const dir=k==='L'?-1:1; const zFace=dir>0?base.zA:base.zB;
-    let zt=tp.px!=null?SZ(tp.px):(zFace+dir*(14+si*40+d/2)); if((zt-zFace)*dir<d/2+3) zt=zFace+dir*(d/2+3); tapsBy[k].push({tp,sg,si:k===arm.k?si:-1,d,zt}) })));
-  ['L','R'].forEach(k=>{ const taps=tapsBy[k]; if(!taps.length) return; const dir=k==='L'?-1:1; const zFace=dir>0?base.zA:base.zB;
-    const segs=(armOf[k]&&armOf[k].segs&&armOf[k].segs.length)?armOf[k].segs:[{d:Math.max(...taps.map(t=>t.d)),add:[],carry:null,room:null,taps:[]}];   // a tap that crossed to an arm with no trunk of its own gets a stub trunk at its size
+  // every collar on its lane. v2.56 — a lane is a trunk: L / R leave the plenum's two faces on its centre line; F (the balanced second trunk, rbrTrunks)
+  // leaves the plenum's free end, runs straight out to its own line and turns onto it through a radiused bend. A room's tap can sit across the unit from
+  // the room's centroid — on L / R it is taken off the trunk where it is, as the 2D does (a lane with no trunk of its own gets a stub at the collar's
+  // size); on F it stays on F, past the corner.
+  const laneOf={}; const mkLane=(k,a)=>{ const dirK=(a&&(a.dir||a.k))||k, dir=dirK==='L'?-1:1, F=!!(a&&a.port==='F'), ay=(a&&a.y!=null)?a.y:uy;
+    const LN={k,a,dir,F,ay,ax:F?SX(ay):base.x,z0:dir>0?base.zA:base.zB,taps:[]};
+    if(F){ const D0=(a.segs&&a.segs[0]&&a.segs[0].d)||8; const fxd=Math.sign(LN.ax-base.x)||1; const fx=(base.fx!=null&&Math.sign(base.fx-base.x)===fxd)?base.fx:base.x+fxd*(base.fhalf||0);
+      const avail=Math.abs(LN.ax-fx); const RL=Math.max(2,Math.min(D0*1.2,avail-1)); Object.assign(LN,{D0,fxd,fx,RL,z0:zc+dir*RL}) }
+    return laneOf[k]=LN };
+  T.arms.forEach(a=>mkLane(a.k,a));
+  T.arms.forEach(arm=>(arm.segs||[]).forEach((sg,si)=>(sg.taps||[]).forEach(tp=>{ const lg0=(tp.legs&&tp.legs.length)?tp.legs:null; const d=(lg0&&lg0.length<2)?(lg0[0].d||tp.d||8):(tp.d||8); /* a one-leg tap's collar IS the leg's size */
+    const onF=arm.port==='F'; const k=onF?arm.k:(tp.px!=null?(tp.px<ux?'L':'R'):arm.k); const LN=laneOf[k]||mkLane(k,null); const dir=LN.dir, z0=LN.z0; const cxp=(onF&&tp.cx!=null)?tp.cx:tp.px;
+    let zt=cxp!=null?SZ(cxp):(z0+dir*(14+si*40+d/2)); if((zt-z0)*dir<d/2+3) zt=z0+dir*(d/2+3); LN.taps.push({tp,sg,si:k===arm.k?si:-1,d,zt}) })));
+  Object.values(laneOf).forEach(LN=>{ const taps=LN.taps; if(!taps.length) return; const dir=LN.dir, zFace=LN.z0, AX=LN.ax; let lblDone=false;
+    const segs=(LN.a&&LN.a.segs&&LN.a.segs.length)?LN.a.segs:[{d:Math.max(...taps.map(t=>t.d)),add:[],carry:null,room:null,taps:[]}];   // a tap that crossed to a lane with no trunk of its own gets a stub trunk at its size
+    // v2.56 — the balanced second trunk: straight out of the plenum's free end, then a radiused bend onto its own line
+    if(LN.F){ const xC=LN.ax-LN.fxd*LN.RL, D0=LN.D0; if((xC-LN.fx)*LN.fxd>0.5){ fl(cyl(Math.min(LN.fx,xC),yC-D0/2,zc-D0/2,Math.abs(xC-LN.fx),D0,D0,'x',{la:[0.5,1,0.5],label:first?opt.label:trunkLbl(segs[0],D0),lead:true,lane:LN.k}),'x',LN.fxd,'s'); first=false; lblDone=true }
+      const w=bf([xC,yC,zc],[LN.fxd,0,0],[0,0,dir],LN.RL,Math.PI/2,{a:D0,h:D0,round:true},{lead:true,lane:LN.k}); if(w.b) flB(w.b,1,'s') }
     const zEndArm=zFace+dir*taps.reduce((m,t)=>Math.max(m,(t.zt-zFace)*dir+t.d/2+4),12);   // the arm ends right past its last collar
     // the trunk: one cylinder per segment, stepping down through a reducer where the 2D reduces it (a collar sits on whichever segment is there, as on the 2D); the last segment runs to the arm's end
     let zPrev=zFace; const pieces=[]; segs.forEach((sg,si)=>{ const D=sg.d||8; const last=si===segs.length-1; let reach=last?zEndArm:(sg.pz1!=null?SZ(sg.pz1):zPrev+dir*48);
@@ -3264,9 +3297,9 @@ function planDuctRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms
       if(!last&&(z1-zPrev)*dir<rlNeed+2){ pieces.push({z0:zPrev,z1,D}); return }   // a segment the plan squeezes to less than its reducer needs (a room centred on the plenum) is skipped — the next one carries on from here
       const rl=Math.min(rlNeed,Math.max(0,Math.abs(z1-zPrev)-2)); const zs=z1-dir*rl; const len=Math.abs(zs-zPrev);   // the reducer takes the tail of the bigger piece
       pieces.push({z0:zPrev,z1,D});
-      if(len>0.5){ fl(cyl(base.x-D/2,yC-D/2,Math.min(zPrev,zs),D,D,len,'z',{la:[0.5,1,0.5],label:first?opt.label:trunkLbl(sg,D)}),'z',dir,'s'); first=false }
-      if(rl>0.5) flT(pushTube([base.x,yC,zs],[base.x,yC,z1],{a:D,h:D,a2:D2,h2:D2,round:true},NEWM,.85,Object.assign({},X,{la:[0.5,1,0.5],label:first?opt.label:null})),1,'s'); if(rl>0.5) first=false;   // v2.55: a concentric reducer, never a big pipe's open end against a smaller one
-      (sg.add||[]).forEach((a,ai)=>{ const ad=a.d||8; fl(cyl(base.x-ad/2,yC+D/2+2+ai*(ad+2),Math.min(zPrev,z1),ad,ad,Math.abs(z1-zPrev),'z'),'z',dir,'s') });   // v2.48: a 20" plus the run beside it
+      if(len>0.5){ fl(cyl(AX-D/2,yC-D/2,Math.min(zPrev,zs),D,D,len,'z',{la:[0.5,1,0.5],label:first?opt.label:((si===0&&lblDone)?null:trunkLbl(sg,D)),lane:LN.k}),'z',dir,'s'); first=false }   // v2.56: lane = which trunk the piece is
+      if(rl>0.5) flT(pushTube([AX,yC,zs],[AX,yC,z1],{a:D,h:D,a2:D2,h2:D2,round:true},NEWM,.85,Object.assign({},X,{la:[0.5,1,0.5],label:first?opt.label:null,lane:LN.k})),1,'s'); if(rl>0.5) first=false;   // v2.55: a concentric reducer, never a big pipe's open end against a smaller one
+      (sg.add||[]).forEach((a,ai)=>{ const ad=a.d||8; fl(cyl(AX-ad/2,yC+D/2+2+ai*(ad+2),Math.min(zPrev,z1),ad,ad,Math.abs(z1-zPrev),'z'),'z',dir,'s') });   // v2.48: a 20" plus the run beside it
       zPrev=z1 });
     const Dat=z=>{ const p=pieces.find(q=>(z-q.z0)*dir>=-0.01&&(z-q.z1)*dir<=0.01); return p?p.D:(pieces.length?pieces[pieces.length-1].D:8) };   // the trunk's size under a collar — the collar starts on THAT piece's surface
     // a LEVEL RUN at the trunk's height from (x,z) to `to` along one axis. Anything solid in its way (the cabinets, the plenums, the return run) is
@@ -3288,13 +3321,13 @@ function planDuctRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms
       const w4=bf(at(c3,yC0+R),[0,-1,0],A,R,Math.PI/2,cs); if(!w4.b) return; flB(w4.b,1,'s');                      // level again
       seg(c3+s*R,to) };
     // the branches: off the collar, across to the tap point, one leg down or a wye to two
-    taps.forEach(({tp,sg,d,zt})=>{ const s=tp.py!=null?(tp.py<uy?1:-1):(tp.side||1); const D=Dat(zt); let xs=base.x+s*D/2; const legs=(tp.legs&&tp.legs.length)?tp.legs:[{d}];
+    taps.forEach(({tp,sg,d,zt})=>{ const s=tp.py!=null?(tp.py<LN.ay?1:-1):(tp.side||1); const D=Dat(zt); let xs=AX+s*D/2; const legs=(tp.legs&&tp.legs.length)?tp.legs:[{d}];
       const ld=legs[0].d||d; const Rmin=legR(ld); let xe=tp.py!=null?SX(tp.py):xs+s*72; if((xe-xs)*s<Rmin+8) xe=xs+s*(Rmin+8);   // the tap point sits past the collar
       // the branch's working height: the trunk's, unless the tap point or the wye it feeds sits inside the unit's footprint — then the branch climbs off
       // its collar and runs OVER the unit (a room behind the furnace), and its legs drop from up there
       const zAll=[zt].concat(legs.map(lg=>lg.px!=null?SZ(lg.px):zt)); const foot=hits(Math.min(xs,xe)-d,Math.max(xs,xe)+d,yC-d/2,yC+d/2,Math.min(...zAll)-d,Math.max(...zAll)+d);
       let yB=yC; if(foot.length){ const yTop=Math.max(...foot.map(b=>b.y+b.dy))+6+d/2; const R=Math.max(3,Math.min(d,(yTop-yC-D/2)/2)); const cs={a:d,h:d,round:true};   // the collar goes on TOP of the trunk: straight up, then over toward the room
-        if((xe-(base.x+s*R))*s>R+6&&yTop-R>yC+D/2+0.5){ fl(cyl(base.x-d/2,yC+D/2,zt-d/2,d,yTop-R-(yC+D/2),d,'y'),'y',1,'s'); const w2=bf([base.x,yTop-R,zt],[0,1,0],[s,0,0],R,Math.PI/2,cs); if(w2.b){ flB(w2.b,1,'s'); xs=base.x+s*R; yB=yTop } } }
+        if((xe-(AX+s*R))*s>R+6&&yTop-R>yC+D/2+0.5){ fl(cyl(AX-d/2,yC+D/2,zt-d/2,d,yTop-R-(yC+D/2),d,'y'),'y',1,'s'); const w2=bf([AX,yTop-R,zt],[0,1,0],[s,0,0],R,Math.PI/2,cs); if(w2.b){ flB(w2.b,1,'s'); xs=AX+s*R; yB=yTop } } }
       if(legs.length<2){ const lg=legs[0]; const can=lg.can||rbrCanFor(T.per,ld); const R=bendR({a:ld,b:ld,round:true},Math.max(Math.abs(xe-xs),6),Math.abs(yB-plane.y)*0.8); if(vAvail<R+1) return;
         let xEnd=lg.py!=null?SX(lg.py):xe; const zEnd=lg.px!=null?SZ(lg.px):zt; if((xEnd-xs)*s<R+3) xEnd=xs+s*(R+3);
         if(Math.abs(zEnd-zt)>R+3){ const dz_=zEnd>zt?1:-1; const Rj=bendR({a:ld,b:ld,round:true},Math.max(Math.abs(zEnd-zt)-R,2),Math.max(Math.abs(xEnd-xs),4));   // the register is off the tap's line: across, a corner, along its line, and down
@@ -3310,10 +3343,12 @@ function planDuctRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms
       const dxW=()=>0.7071*Rw+0.7071*Ls+0.2929*Rw2, dzW=()=>0.2929*Rw+0.7071*Ls+0.7071*Rw2;
       const near=Math.min(...zT.map(z=>Math.abs(z-zt)));
       let k=1; if(L<dxW()+8) k=Math.min(k,(L-8)/dxW()); if(near<dzW()+R2+LLmin) k=Math.min(k,(near-R2-LLmin)/dzW()); k=Math.max(0.35,Math.min(1,k)); Rw*=k; Ls*=k; Rw2=Math.max(3,Rw2*k);
-      const xIn=xe-s*dxW();   // the inlet sits so the legs come out on the register's line
+      let xIn=xe-s*dxW();   // the inlet sits so the legs come out on the register's line
+      { const clr=x=>!tyAt.some(P=>Math.hypot(P[0]-x,P[2]-zt)<48); if(!clr(xIn)){ for(let g=1;g<=15;g++){ const o=xIn+s*2*g, i=xIn-s*2*g; if(clr(o)){ xIn=o; break } if((i-xs)*s>=6&&clr(i)){ xIn=i; break } } } }   // v2.56: the plan keeps TYs 4 ft apart; a wye's own length (or a collar kept off the plenum's face) can still pull two in — the later one slides along its branch, out or back, the least that clears (never more than 30")
+      tyAt.push([xIn,yB,zt]);
       levelRun(xs,zt,'x',s,d,xIn,yB);
       two.forEach((lg,li)=>{ const dz_=dzs[li]; const zTarget=zT[li]; const can=can0(lg);
-        const w=bf([xIn,yB,zt],[s,0,0],[0,0,dz_],Rw,Math.PI/4,{a:d,h:d,a2:ld,h2:ld,round:true},{la:[0.5,1,0.5],label:(tyLbl&&li===0)?`TY ${fmt(d)}×${fmt(ld)}×${fmt(ld)}`:null}); if(!w.b) return; flB(w.b,1,'s'); tyLbl=false;   // the wye's own leg — the metal fitting, reducing as it goes
+        const w=bf([xIn,yB,zt],[s,0,0],[0,0,dz_],Rw,Math.PI/4,{a:d,h:d,a2:ld,h2:ld,round:true},{la:[0.5,1,0.5],label:(tyLbl&&li===0)?`TY ${fmt(d)}×${fmt(ld)}×${fmt(ld)}`:null}); if(!w.b) return; flB(w.b,1,'s'); tyLbl=false; if(li===0) w.b.tyAt=[xIn,yB,zt];   // v2.56: where this TY sits — no two within 4 ft   // the wye's own leg — the metal fitting, reducing as it goes
         const e1=w.end, d1=w.dir; const p2=[e1[0]+d1[0]*Ls,e1[1],e1[2]+d1[2]*Ls]; flT(tube(e1,p2,ld),1,'s');                                                          // the Y: the leg runs on at 45°
         const w2=bf(p2,d1,[-s*Math.SQRT1_2,0,dz_*Math.SQRT1_2],Rw2,Math.PI/4,{a:ld,h:ld,round:true}); if(!w2.b) return; flB(w2.b,1,'s');                              // the 45° elbow that lays it along the trunk's line
         const e2=w2.end; const LL=Math.max(0,(zTarget-e2[2])*dz_-R2); const zEnd=e2[2]+dz_*(LL+R2);                                                              // straight on to the register, then down — a register nearer than the fitting reaches lands where the leg can get to
@@ -3362,10 +3397,17 @@ const FLOW_VW=new Map(); let flowRaf=0, flowLast=0; const FLOW_T0=(typeof perfor
 const flowOn=()=>!S.view||S.view.flow!==false;
 const flowNow=()=>(((typeof performance!=='undefined'&&performance.now)?performance.now():Date.now())-FLOW_T0)/1000;
 const flowStill=()=>{ try{ return !!(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches) }catch(e){ return false } };
-function fl(it,axis,dir,k){ if(it) it.flow={axis,dir:dir<0?-1:1,k:k||null}; return it }          // a straight duct — the air runs along `axis` in direction `dir`
-function flB(it,dir,k){ if(it) it.flow={bend:true,dir:dir<0?-1:1,k:k||null}; return it }          // a radiused bend — +1 from its u leg to its v leg
-function flT(it,dir,k){ if(it) it.flow={tube:true,dir:dir<0?-1:1,k:k||null}; return it }          // v2.53 a tube — +1 from p0 to p1
-function flV(it,vent,n,k,cls){ if(it) it.flow={vent,n,k:k||null,cls:cls||''}; return it }          // a face: 'out' blows into the room along n, 'in' draws from the room along −n
+// v2.56 — THE RETURN READS AS RETURN (Stephen 2026-09-26: "make the return duct a different color than the supply, so it's clear that it's a return"). Every
+// return-side piece — the duct, its bends, the return plenum, the penetration, a new filter grille, an added return — draws violet: a paler violet for
+// metal that stays, a brighter one for new. A choke keeps its red / orange. The air in it drifts a pale violet too. The supply keeps grey (existing) / green (new).
+const RET_OLD='#b9a6ee', RET_NEW='#9d82f2', RET_FLOW='214,198,255', RET_EDGE='rgba(186,150,255,.95)';
+// the flow tags know the side: anything tagged return that was drawn in the plain metal colours turns violet here, so no return piece is missed (a return duct
+// with no size entered has no component to colour it). A return piece that chokes keeps its red / orange fill but is edged in violet, so it still reads as return.
+const RET_SWAP={'#d9e2ec':RET_OLD,'#a9d9bd':RET_NEW}; function retTone(it,k){ if(k!=='r'||!it) return; if(RET_SWAP[it.color]) it.color=RET_SWAP[it.color]; it.edge=RET_EDGE }
+function fl(it,axis,dir,k){ if(it){ it.flow={axis,dir:dir<0?-1:1,k:k||null}; retTone(it,k) } return it }          // a straight duct — the air runs along `axis` in direction `dir`
+function flB(it,dir,k){ if(it){ it.flow={bend:true,dir:dir<0?-1:1,k:k||null}; retTone(it,k) } return it }          // a radiused bend — +1 from its u leg to its v leg
+function flT(it,dir,k){ if(it){ it.flow={tube:true,dir:dir<0?-1:1,k:k||null}; retTone(it,k) } return it }          // v2.53 a tube — +1 from p0 to p1
+function flV(it,vent,n,k,cls){ if(it){ it.flow={vent,n,k:k||null,cls:cls||''}; retTone(it,k) } return it }          // a face: 'out' blows into the room along n, 'in' draws from the room along −n
 const FLOW_COL={bad:'#ff4d4d',warn:'#ffa142','':'#d2f6ff'}; const FLOW_RGB={bad:'255,77,77',warn:'255,161,66','':'210,246,255'};
 // v2.51 — THE INDICATORS REDRAWN (Stephen 2026-09-26: the wavy arrows were too large and awkward, and overpowered the picture — the 3D has
 // to impress the client and tell the story). Every indicator is now a STREAK of air — a comet: a fine luminous line that fades in from its
@@ -3421,7 +3463,7 @@ function flowStreak(g,p,s1,AL,t,choke,off,sc){ const s0=s1-AL; const a=Math.max(
   const vent=p.kind==='vent'; const wl=AL*2.4, amp=vent?0:(choke?Math.min(1.1,p.rad*0.1):Math.min(2.1,p.rad*0.16)); const om=choke?2:5;
   const pts=[]; let vis=1; for(let k=0;k<=N;k++){ const s=a+(b-a)*k/N; const q=flowAt(p,s); const w=amp*Math.sin(2*Math.PI*(s/wl)-t*om)+off; pts.push([q[0]-q[3]*w,q[1]+q[2]*w,q[2],q[3]]); if(q[4]<vis) vis=q[4] }
   let A=vis; if(vent){ const d=p.vent==='out'?b:(p.T-b); A*=1-0.72*Math.max(0,Math.min(1,d/p.T)) } if(!(A>0.03)) return;
-  const tl=pts[0], hd=pts[N]; const rgb=FLOW_RGB[p.cls]||FLOW_RGB[''];
+  const tl=pts[0], hd=pts[N]; const rgb=(p.k==='r'&&!p.cls)?RET_FLOW:(FLOW_RGB[p.cls]||FLOW_RGB['']);
   const grad=(r,a0,a1)=>{ try{ const G=g.createLinearGradient(tl[0],tl[1],hd[0],hd[1]); G.addColorStop(0,`rgba(${r},${a0})`); G.addColorStop(0.45,`rgba(${r},${(a0+a1)*0.5})`); G.addColorStop(1,`rgba(${r},${a1})`); return G }catch(e){ return `rgba(${r},${a1})` } };
   g.beginPath(); pts.forEach((q,k)=>k?g.lineTo(q[0],q[1]):g.moveTo(q[0],q[1]));
   if(choke){ g.strokeStyle=grad('255,255,255',0,0.82*A); g.lineWidth=3.9*sc; g.stroke(); g.strokeStyle=grad('255,52,52',0,0.98*A); g.lineWidth=2*sc; g.stroke() }
@@ -3620,14 +3662,16 @@ function buildScene(){
       scene.filter(b=>b.quad).forEach(q=>{ q.color=glass(q.color) }); // glass roof so the attic reads as a cutaway
       const ceilY=pitched?Math.min(sf(z1),sf(z2))-20:-30; const insD=ins.known?Math.min(Math.max(ins.depth!=null?ins.depth:(ins.R/2.8),0),18):6; const insFixD=(ins.Rf!=null&&ins.R!=null&&ins.Rf>ins.R)?Math.min(insD*(ins.Rf/Math.max(ins.R,1)),22):insD;
       const insCls=ins.known?(ins.Rf<19?'bad':(ins.Rf<R_MIN?'warn':'ok')):''; const insCol=insCls==='bad'?'#c9532e':(insCls==='warn'?'#e0a05a':'#e8c98a');
-      scene.push({x:x0,y:ceilY-4,z:z2+2,dx:x1-x0,dy:4,dz:z1-z2-4,color:'#b9bfc7',alpha:.55,noshadow:true,la:[0.5,0,0.9],label:'ceiling'});
-      if(ins.known||true) scene.push({x:x0+1,y:ceilY,z:z2+3,dx:x1-x0-2,dy:Math.max(insD,0.5),dz:z1-z2-6,color:insCol,alpha:ins.known?.6:.3,noshadow:true,cls:insCls,la:[0.5,1,0.35],label:ins.known?`Insulation R-${fmt(ins.R)}${ins.Rf>ins.R?' → R-'+fmt(ins.Rf)+' proposed':''}${ins.src&&ins.src!=='entered'?' · '+ins.src:''}${ins.Rf<R_MIN?' · under R-38':''}`:'Insulation — depth not entered'});
-      if(insFixD>insD+0.1) scene.push({x:x0+1,y:ceilY+insD,z:z2+3,dx:x1-x0-2,dy:insFixD-insD,dz:z1-z2-6,color:'#f2e2b8',alpha:.5,wire:true,dash:[4,3],lw:1,noshadow:true,cls:'ok',nw:true,la:[0.5,1,0.6],label:`+ top up to R-${fmt(ins.Rf)}`});
+      const ceilO=[]; const cpush=o=>{ scene.push(o); ceilO.push(o) };   // v2.56: the ceiling rectangle and its insulation give way to the house when a room design lays it under the unit (planDuctRuns takes them out)
+      cpush({x:x0,y:ceilY-4,z:z2+2,dx:x1-x0,dy:4,dz:z1-z2-4,color:'#b9bfc7',alpha:.55,noshadow:true,la:[0.5,0,0.9],label:'ceiling'});
+      if(ins.known||true) cpush({x:x0+1,y:ceilY,z:z2+3,dx:x1-x0-2,dy:Math.max(insD,0.5),dz:z1-z2-6,color:insCol,alpha:ins.known?.6:.3,noshadow:true,cls:insCls,la:[0.5,1,0.35],label:ins.known?`Insulation R-${fmt(ins.R)}${ins.Rf>ins.R?' → R-'+fmt(ins.Rf)+' proposed':''}${ins.src&&ins.src!=='entered'?' · '+ins.src:''}${ins.Rf<R_MIN?' · under R-38':''}`:'Insulation — depth not entered'});
+      if(insFixD>insD+0.1) cpush({x:x0+1,y:ceilY+insD,z:z2+3,dx:x1-x0-2,dy:insFixD-insD,dz:z1-z2-6,color:'#f2e2b8',alpha:.5,wire:true,dash:[4,3],lw:1,noshadow:true,cls:'ok',nw:true,la:[0.5,1,0.6],label:`+ top up to R-${fmt(ins.Rf)}`});
       const yT=ceilY+Math.max(insD,insFixD)+6; // trunks ride just above the insulation
       const cs=(sp,alongX)=>{ const q=specCS(sp); if(!q) return {a:14,b:14}; return q.round?{a:q.w,b:q.w,round:true}:(alongX?{a:q.w,b:q.h}:{a:q.h,b:q.w}) };
       const NEWM='#a9d9bd'; const isNew=c=>!!(c&&(c.fixed||c.newMetal)); // proposed / new metal draws slightly green so the customer can see what is new
-      const duct=(x,y,z,dx,dy,dz,c,label,la,cyl,forceNew)=>sceneAdd({x,y,z,dx,dy,dz,cyl:cyl||undefined,color:flowCol(c)||((forceNew||isNew(c))?NEWM:METAL),alpha:flowCol(c)?.85:((forceNew||isNew(c))?.8:.62),noshadow:true,cls:c?c.cls:'',la:la||[0.5,1,0.5],label,nw:!!(forceNew||isNew(c))});
-      const bendDuct=(C,u,v,csz,R,c,forceNew)=>pushBend(C,u,v,{a:csz.a,h:csz.b,round:!!csz.round},R,flowCol(c)||((forceNew||isNew(c))?NEWM:METAL),flowCol(c)?.85:((forceNew||isNew(c))?.8:.62),{cls:c?c.cls:'',nw:!!(forceNew||isNew(c))}); // v2.44 a radiused elbow in the duct's own colour
+      const isRet=c=>!!(c&&c.side==='r'); const tone=(c,nw)=>flowCol(c)||(isRet(c)?(nw?RET_NEW:RET_OLD):(nw?NEWM:METAL)); // v2.56: the return side violet, new or existing
+      const duct=(x,y,z,dx,dy,dz,c,label,la,cyl,forceNew)=>sceneAdd({x,y,z,dx,dy,dz,cyl:cyl||undefined,color:tone(c,!!(forceNew||isNew(c))),alpha:flowCol(c)?.85:((forceNew||isNew(c))?.8:.62),noshadow:true,cls:c?c.cls:'',la:la||[0.5,1,0.5],label,nw:!!(forceNew||isNew(c))});
+      const bendDuct=(C,u,v,csz,R,c,forceNew)=>pushBend(C,u,v,{a:csz.a,h:csz.b,round:!!csz.round},R,tone(c,!!(forceNew||isNew(c))),flowCol(c)?.85:((forceNew||isNew(c))?.8:.62),{cls:c?c.cls:'',nw:!!(forceNew||isNew(c))}); // v2.44 a radiused elbow in the duct's own colour
       const cR=comp('ret'), cS=comp('sup'), cG=comp('grille');
       const rSpec=cR?cR.spec:null, sSpec=cS?cS.spec:null; const rcs=cs(rSpec,true), scs=cs(sSpec,true);
       const pR=comp('penR'), pS=comp('penS');
@@ -3645,12 +3689,14 @@ function buildScene(){
           ops.forEach(op=>{ const pc=op.k==='s'?pS:pR; const sp=(pc&&pc.spec)||(op.k==='s'?sSpec:rSpec); const c=cs(sp,true); const dsp=op.k==='s'?sSpec:rSpec; drops.push({k:op.k,x:op.x+op.w/2-c.a/2,w:c.a,z:zj+jd/2-c.b/2,d:c.b,c:pc,sq:!c.round,nm:CD?'drop (existing, through the new curb)':'penetration',spec:sp,top:CD?curbTop:null,est:H.est,dspec:dsp,dcomp:op.k==='s'?cS:cR}) }) } } }
       // v2.53: the new duct system is decided before the drops draw — on a kept jack the supply drop stops at the wye that splits it into the two arms
       const pkCT=comp('takeoff'); let pkTk=(pkCT&&pkCT.spec&&pkCT.spec.items)?pkCT.spec.items.filter(it=>!it.hide).slice(0,12):[]; const pkRbrTk=rbrTakeoffs(); if(pkRbrTk) pkTk=pkRbrTk; // v2.44: with New duct system on the take-offs are the room design's runs
+      const dS=drops.find(d=>d.k==='s'), dR=drops.find(d=>d.k==='r'); const dir=(dR&&dS)?(dR.x>=dS.x?1:-1):1; // which way each side runs off its drop (v2.44: known before the drops draw, so the bend can be shaped)
+      // v2.56 — the supply drop's free side (away from the return) is where a balanced second trunk leaves: the room design reads it off S.pkFree (in plan y, the same sign as dir)
+      if(dS&&dR&&S.pkFree!==dir){ S.pkFree=dir; if(S.rbrNew&&S.rooms&&S.rooms.length){ try{ rbrModel() }catch(e){} } }
       const pkTree=S.rbrNew?(ductTree(AM)||ductTreeFromRuns(pkTk,AM)):null; if(pkTree) pkTk=pkTk.filter(it=>it.down); // v2.52: only a duct down still lands on the plenum / drop itself
       const pkArmMax=pkTree?pkTree.arms.reduce((m,a)=>Math.max(m,(a.segs[0]&&a.segs[0].d)||8),8):0;
-      const dS=drops.find(d=>d.k==='s'), dR=drops.find(d=>d.k==='r'); const dir=(dR&&dS)?(dR.x>=dS.x?1:-1):1; // which way each side runs off its drop (v2.44: known before the drops draw, so the bend can be shaped)
       drops.forEach(dp=>{ const yr=dp.top!=null?dp.top:sf(dp.z+dp.d/2); const yb=dp.bottom!=null?dp.bottom:yT; const c=dp.c; if(yr-yb<=1) return; const sz= /penetration|drop/.test(dp.nm)?`${dp.spec?' '+dp.spec.size:''}`:` ${fmt(dp.w)}×${fmt(dp.d)}`;
         const fdn=dp.k==='s'?-1:1; // v2.50: supply air comes down the drop, return air goes up it
-        if(dp.plenum) fl(sceneAdd({x:dp.x,y:yb,z:dp.z,dx:dp.w,dy:yr-yb,dz:dp.d,color:flowCol(c)||NEWM,alpha:.9,noshadow:true,cls:c?c.cls:'ok',nw:true,la:[0.5,0.08,0.5],label:`${dp.k==='s'?'Supply':'Return'} plenum (new) ${fmt(dp.w)}×${fmt(dp.d)} · ${fmt(yr-yb)}" tall${flowTag(c)}`}),'y',fdn,dp.k);
+        if(dp.plenum) fl(sceneAdd({x:dp.x,y:yb,z:dp.z,dx:dp.w,dy:yr-yb,dz:dp.d,color:flowCol(c)||(dp.k==='r'?RET_NEW:NEWM),alpha:.9,noshadow:true,cls:c?c.cls:'ok',nw:true,la:[0.5,0.08,0.5],label:`${dp.k==='s'?'Supply':'Return'} plenum (new) ${fmt(dp.w)}×${fmt(dp.d)} · ${fmt(yr-yb)}" tall${flowTag(c)}`}),'y',fdn,dp.k);
         else { const side=dp.k==='s'?'Supply':'Return';
           const roofY=sf(dp.z+dp.d/2); const collarH=Math.min(6,Math.max(1.5,(yr-yb)*0.35)); // the hole is the roof deck and the few inches under it — nothing more
           const cTop=Math.min(yr,roofY), cBot=cTop-collarH;
@@ -3683,23 +3729,25 @@ function buildScene(){
           if(ya-R2b-gyB>1) fl(duct(gx-ac.a/2,gyB,zt-ac.a/2,ac.a,ya-R2b-gyB,ac.a,cR,null,null,ac.round?'y':null,true),'y',1,'r'); return true });
         flB(bendDuct([gx,yC,zc],[-dir,0,0],[0,-1,0],rcs,R2,cR),-1,'r'); // v2.44: the run turns down to the grille through a radiused bend
         const bx=gx-rcs.a/2; const bTop=yC-R2; if(bTop-(ceilY+4)>1) fl(duct(bx,ceilY+4,zc-rcs.a/2,rcs.a,bTop-(ceilY+4),rcs.a,cR,null,null,rcs.round?'y':null),'y',1,'r'); // boot down to the grille
-        gb.forEach((q,g)=>{ flV(sceneAdd({x:bx+rcs.a/2-q.w/2,y:ceilY-5,z:zc-q.h/2+gbz[g],dx:q.w,dy:1.2,dz:q.h,color:flowCol(cG)||((isNew(cG)||q.add)?NEWM:'#ffd166'),alpha:.95,noshadow:true,cls:cG?cG.cls:'',nw:isNew(cG)||!!q.add,la:[0.5,0,0.5],label:g===0?(cG?`Return grille ${cG.size}${isNew(cG)?' (new)':''}${flowTag(cG)}`:'Return grille — size not entered'):(q.add?`+ added grille ${fmt(q.w)}×${fmt(q.h)} + filter (new)`:null)}),'in',[0,-1,0],'r',cG?cG.cls:'') }); }
+        gb.forEach((q,g)=>{ flV(sceneAdd({x:bx+rcs.a/2-q.w/2,y:ceilY-5,z:zc-q.h/2+gbz[g],dx:q.w,dy:1.2,dz:q.h,color:flowCol(cG)||((isNew(cG)||q.add)?RET_NEW:'#ffd166'),alpha:.95,noshadow:true,cls:cG?cG.cls:'',nw:isNew(cG)||!!q.add,la:[0.5,0,0.5],label:g===0?(cG?`Return grille ${cG.size}${isNew(cG)?' (new)':''}${flowTag(cG)}`:'Return grille — size not entered'):(q.add?`+ added grille ${fmt(q.w)}×${fmt(q.h)} + filter (new)`:null)}),'in',[0,-1,0],'r',cG?cG.cls:'') }); }
       // supply: the trunk the other way, with a branch per take-off at the size entered (v2.23 — the ones we ADD draw off the same trunk, in the new-metal green)
       // v2.53 — WITH A NEW DUCT SYSTEM THERE IS NO SUPPLY MAIN IN BETWEEN (Stephen 2026-09-26: "the square plenum coming down is the plenum, then whatever duct
       // sizes are needed come off the plenum — there's no other round in between them"). The trunk arms tee straight off the plenum's two faces; on a kept
       // jack or curb the drop itself splits at its foot through a pair of round reducing bends (a pants wye) into the two arms. No main, no added run beside it.
       if(dS&&cS){ const tree=pkTree; const tk=pkTk;
         if(tree){ const nAll=tree.runs, per=tree.per; const cans=fanCans(nAll,per,8); const arms=tree.arms.length; const armMax=tree.arms.reduce((m,a)=>Math.max(m,(a.segs[0]&&a.segs[0].d)||8),8);
-          const lbl=`New duct system — ${nAll} runs to the rooms, off ${arms} trunk arm${arms>1?'s':''} · ${CFM(per)} CFM each · ${cans[0]}×${cans[0]} cans · ${rbrFanFaces()}`;
+          const lbl=`New duct system — ${nAll} runs to the rooms, ${treeArmsTxt(tree)} · ${CFM(per)} CFM each · ${cans[0]}×${cans[0]} cans · ${rbrFanFaces()}`;
           const xc=dS.x+dS.w/2, zc=dS.z+dS.d/2; let base;
-          if(dS.plenum){ base={x:xc,y:yT+armMax/2,zA:dS.z+dS.d,zB:dS.z} } // a new plenum: the arms come off its two faces, the biggest riding on the insulation line
-          else { const yC=dS.wyeY, R=dS.R||0; const cs0=dS.cs||scs; // a kept drop: it comes down to the wye and splits both ways along the trunk's line
-            [1,-1].forEach((dz_,i)=>{ const armD=(tree.arms[i]&&tree.arms[i].segs[0]&&tree.arms[i].segs[0].d)||armMax; const w=bendFrom([xc,yC+R,zc],[0,-1,0],[0,0,dz_],Math.max(R,2),Math.PI/2,{a:cs0.a,h:cs0.b,a2:armD,h2:armD,round:!!cs0.round},flowCol(cS)||NEWM,flowCol(cS)?.85:.85,{nw:true,cls:cS?cS.cls:'ok',duct:true,la:[0.5,1,0.5],label:i===0?`Wye off the drop — ${fmt(cs0.a)}×${fmt(armMax)}×${fmt(tree.arms[1]&&tree.arms[1].segs[0]?tree.arms[1].segs[0].d:armMax)}`:null}); if(w.b) flB(w.b,1,'s') });
-            base={x:xc,y:yC,zA:zc+Math.max(R,2),zB:zc-Math.max(R,2)} }
+          if(dS.plenum){ base={x:xc,y:yT+armMax/2,zA:dS.z+dS.d,zB:dS.z,fhalf:dS.w/2} } // a new plenum: the arms come off its two faces, the biggest riding on the insulation line · v2.56: the balanced second trunk leaves its free face
+          else { const yC=dS.wyeY, R=dS.R||0; const cs0=dS.cs||scs; const Rw=Math.max(R,2); // a kept drop: it comes down to the wye and splits toward each trunk
+            // v2.56 — one leg per trunk: both sides along the trunk's line, or — a one-sided house, balanced into two trunks — the second leg out of the drop's free side, away from the return
+            const legs=tree.arms.slice(0,2).map(a=>{ const dz_=(a.dir||a.k)==='L'?-1:1; const v=a.port==='F'?[-(Math.sign((a.y!=null?a.y:(tree.uy||0))-(tree.uy||0))||1),0,0]:[0,0,dz_]; return {v,d:(a.segs[0]&&a.segs[0].d)||armMax} });
+            legs.forEach((lg,i)=>{ const w=bendFrom([xc,yC+R,zc],[0,-1,0],lg.v,Rw,Math.PI/2,{a:cs0.a,h:cs0.b,a2:lg.d,h2:lg.d,round:!!cs0.round},flowCol(cS)||NEWM,flowCol(cS)?.85:.85,{nw:true,cls:cS?cS.cls:'ok',duct:true,la:[0.5,1,0.5],label:i===0?(legs.length>1?`Wye off the drop — ${fmt(cs0.a)}×${fmt(legs[0].d)}×${fmt(legs[1].d)}`:`Elbow off the drop — ${fmt(cs0.a)}×${fmt(lg.d)}`):null}); if(w.b) flB(w.b,1,'s') });
+            base={x:xc,y:yC,zA:zc+Rw,zB:zc-Rw,fhalf:Rw} }
           // a duct down to a lower floor still lands on the plenum / the drop, off its free side (away from the return)
           tk.forEach((it,i)=>{ const d=it.d||Math.max(it.w,it.h); const xf=dS.plenum?(dir>0?dS.x:dS.x+dS.w):xc; const yD=base.y+armMax/2+d/2+3;
             fl(sceneAdd({x:Math.min(xf,xf-dir*18),y:yD-d/2,z:zc-d/2-i*(d+3),dx:18,dy:d,dz:d,cyl:'x',color:NEWM,alpha:.85,noshadow:true,cls:'ok',nw:true,duct:true,la:[dir>0?0:1,1,0.5],label:it.down?`Ø${fmt(d)}" down to floor ${it.down} (${RM&&RM.down?CFM((RM.down.find(x=>x.fl+1===it.down)||{}).cfm||0):''} CFM)`:null}),'x',-dir,'s') });
-          trunkOutRuns(base,{y:ceilY,up:false},{tree,regCls:(comp('regs')||{}).cls,label:lbl}) }
+          trunkOutRuns(base,{y:ceilY,up:false},{tree,regCls:(comp('regs')||{}).cls,ins:AM.ins,ceil:ceilO,label:lbl}) }
         else { const len=Math.max(40,Math.min(70,(dir>0?dS.x-x0:x1-(dS.x+dS.w))-6)); const {xa,zc}=runs(dS,sSpec,scs,cS,len,-dir,`Supply trunk ${cS.size}${flowTag(cS)}`,'s');
         const cT=pkCT; const isAdd=takeoffAdded(); const rbrTk=pkRbrTk;
         if(tk.length){ const slots=Math.max(1,Math.ceil(tk.length/2)); const maxD=tk.reduce((m,it)=>Math.max(m,it.d||Math.max(it.w||0,it.h||0)),8);
@@ -3744,10 +3792,11 @@ function buildScene(){
       const comp=s=>AM.comps.find(c=>c.slot===s); const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null;
       const NEWM='#a9d9bd', METAL='#d9e2ec'; const isNew=c=>!!(c&&(c.fixed||c.newMetal));
       const tag=c=>!c?'':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?` · ${c.spec.n} runs · ${CFM(Math.round(AM.design/Math.max(1,c.spec.n)))} CFM each`:` · max ${CFM(c.effMax!=null?c.effMax:c.max)} CFM`);
-      const put=(x,y,z,dx,dy,dz,c,label,cyl,la)=>sceneAdd({x,y,z,dx,dy,dz,cyl:cyl||undefined,color:flowCol(c)||(isNew(c)?NEWM:METAL),alpha:flowCol(c)?.85:(isNew(c)?.82:.6),noshadow:true,cls:c?c.cls:'',nw:isNew(c),la:la||[0.5,1,0.5],label:label||null});
-      const bendDuct=(C,u,v,cs,R,c)=>pushBend(C,u,v,{a:cs.a,h:cs.b,round:!!cs.round},R,flowCol(c)||(isNew(c)?NEWM:METAL),flowCol(c)?.85:(isNew(c)?.82:.6),{cls:c?c.cls:'',nw:isNew(c)}); // v2.44 a radiused elbow in the duct's own colour
+      const isRet=c=>!!(c&&c.side==='r'); const tone=(c,nw)=>flowCol(c)||(isRet(c)?(nw?RET_NEW:RET_OLD):(nw?NEWM:METAL)); // v2.56: the return side violet, new or existing
+      const put=(x,y,z,dx,dy,dz,c,label,cyl,la)=>sceneAdd({x,y,z,dx,dy,dz,cyl:cyl||undefined,color:tone(c,isNew(c)),alpha:flowCol(c)?.85:(isNew(c)?.82:.6),noshadow:true,cls:c?c.cls:'',nw:isNew(c),la:la||[0.5,1,0.5],label:label||null});
+      const bendDuct=(C,u,v,cs,R,c)=>pushBend(C,u,v,{a:cs.a,h:cs.b,round:!!cs.round},R,tone(c,isNew(c)),flowCol(c)?.85:(isNew(c)?.82:.6),{cls:c?c.cls:'',nw:isNew(c)}); // v2.44 a radiused elbow in the duct's own colour
       const dsz=(c,fb)=>{ const sp=c&&c.spec; if(!sp||sp.kind==='multi') return fb==null?{a:null,b:null}:{a:fb,b:fb}; return sp.kind==='round'?{a:sp.d,b:sp.d,round:true}:{a:sp.w,b:sp.h} };
-      let rpG=null; const rpBox=(x,y,z,dx,dy,dz,label,fw)=>{ rpG={x,y,z,dx,dy,dz}; const nw=!!(S.scope&&S.scope.rdrop); const it=sceneAdd({x,y,z,dx,dy,dz,color:nw?'#a9d9bd':'#d9e2ec',alpha:nw?.78:.5,noshadow:true,nw,la:[0.5,1,0.5],label}); if(fw) fl(it,fw[0],fw[1],'r'); return it }; // the return plenum is geometry, not a scored spot (v2.50: fw = the air through it, [axis,dir])
+      let rpG=null; const rpBox=(x,y,z,dx,dy,dz,label,fw)=>{ rpG={x,y,z,dx,dy,dz}; const nw=!!(S.scope&&S.scope.rdrop); const it=sceneAdd({x,y,z,dx,dy,dz,color:nw?RET_NEW:RET_OLD,alpha:nw?.78:.5,noshadow:true,nw,la:[0.5,1,0.5],label}); if(fw) fl(it,fw[0],fw[1],'r'); return it }; // the return plenum is geometry, not a scored spot (v2.50: fw = the air through it, [axis,dir])
       const cS=comp('sup'), cR=comp('ret'), cG=comp('grille'), cT=comp('takeoff');
       const ins=AM.ins; const insD=ins.known?Math.min(Math.max(ins.depth!=null?ins.depth:(ins.R/2.8),0),18):6;
       const insFixD=(ins.Rf!=null&&ins.R!=null&&ins.Rf>ins.R)?Math.min(insD*(ins.Rf/Math.max(ins.R,1)),22):insD;
@@ -3759,9 +3808,10 @@ function buildScene(){
       const flrY = down? -16 : null;
       // ---- ceiling slab + insulation (the attic layer the branches and the grille live against)
       const px0=-62, px1=Math.max(Lx,54)+34, pz0=zc-Math.max(Wz,48)/2-26, pz1=zc+Math.max(Wz,48)/2+26;
-      scene.push({x:px0,y:ceilY-4,z:pz0,dx:px1-px0,dy:4,dz:pz1-pz0,color:'#b9bfc7',alpha:.5,noshadow:true,nofit:true,la:[0.06,0,0.92],label:attic?'ceiling':'ceiling'});
-      if(attic) { scene.push({x:px0+1,y:ceilY,z:pz0+2,dx:px1-px0-2,dy:Math.max(insD,0.5),dz:pz1-pz0-4,color:insCol,alpha:ins.known?.42:.22,noshadow:true,nofit:true,cls:insCls,la:[0.08,1,0.35],label:ins.known?`Insulation R-${fmt(ins.R)}${ins.Rf>ins.R?' → R-'+fmt(ins.Rf)+' proposed':''}${ins.Rf<R_MIN?' · under R-38':''}`:'Insulation — depth not entered'});
-        if(insFixD>insD+0.1) scene.push({x:px0+1,y:ceilY+insD,z:pz0+2,dx:px1-px0-2,dy:insFixD-insD,dz:pz1-pz0-4,color:'#f2e2b8',alpha:.45,wire:true,dash:[4,3],lw:1,noshadow:true,nofit:true,cls:'ok',nw:true,la:[0.08,1,0.6],label:`+ top up to R-${fmt(ins.Rf)}`}) }
+      const ceilO=[]; const cpush=o=>{ scene.push(o); ceilO.push(o) };   // v2.56: the ceiling rectangle and its insulation give way to the house when a room design lays it under the unit (planDuctRuns takes them out)
+      cpush({x:px0,y:ceilY-4,z:pz0,dx:px1-px0,dy:4,dz:pz1-pz0,color:'#b9bfc7',alpha:.5,noshadow:true,nofit:true,la:[0.06,0,0.92],label:attic?'ceiling':'ceiling'});
+      if(attic) { cpush({x:px0+1,y:ceilY,z:pz0+2,dx:px1-px0-2,dy:Math.max(insD,0.5),dz:pz1-pz0-4,color:insCol,alpha:ins.known?.42:.22,noshadow:true,nofit:true,cls:insCls,la:[0.08,1,0.35],label:ins.known?`Insulation R-${fmt(ins.R)}${ins.Rf>ins.R?' → R-'+fmt(ins.Rf)+' proposed':''}${ins.Rf<R_MIN?' · under R-38':''}`:'Insulation — depth not entered'});
+        if(insFixD>insD+0.1) cpush({x:px0+1,y:ceilY+insD,z:pz0+2,dx:px1-px0-2,dy:insFixD-insD,dz:pz1-pz0-4,color:'#f2e2b8',alpha:.45,wire:true,dash:[4,3],lw:1,noshadow:true,nofit:true,cls:'ok',nw:true,la:[0.08,1,0.6],label:`+ top up to R-${fmt(ins.Rf)}`}) }
       if(flrY!=null) scene.push({x:px0,y:flrY-4,z:pz0,dx:px1-px0,dy:4,dz:pz1-pz0,color:'#b9bfc7',alpha:.5,noshadow:true,nofit:true,la:[0.06,0,0.92],label:'floor'});
       // ---- v2.13 supply: three layouts. The take-offs always come off the plenum; what changes is the plenum's form.
       //      cased       = cased coil, then a plenum on the discharge
@@ -3796,7 +3846,7 @@ function buildScene(){
         box(mx,py,pz,pl,bH,bW,cS, cfg==='plenum_coil'?`Plenum coil ${fmt(bW)}×${fmt(bH)} — coil inside${tag(cS)}`
             : cfg==='trunk'?`Supply trunk ${fmt(trunkFtNew())} ft · ${cS?cS.size:fmt(bW)+'×'+fmt(bH)}${tag(cS)}`
             : `Supply ${tr?'main':'plenum'} ${(cS&&!s.forced)?cS.size:fmt(bW)+'×'+fmt(bH)}${s.forced?' (new)':''} · ${fmt(pl)}" long${tag(cS)}`, s.round&&cfg!=='plenum_coil'?'x':null,[0.5,1,0.5],['x',1]);
-        tkBase={along:'x',x0:mx+(cfg==='plenum_coil'?6:TKHEAD),y:py+bH/2,z:pz+bW,half:bW/2,len:cfg==='plenum_coil'?Math.max(pl-12,8):band(pl),spread:cfg!=='cased',mid:mx+pl/2}; // v2.53: mid = where the trunk arms tee off when nothing else lands on the plenum // a plenum coil spreads them evenly end to end — the clear-the-last-foot rule is a plenum thing; v2.52: the first collar sits TKHEAD past the start, never on the coil
+        tkBase={along:'x',x0:mx+(cfg==='plenum_coil'?6:TKHEAD),y:py+bH/2,z:pz+bW,half:bW/2,len:cfg==='plenum_coil'?Math.max(pl-12,8):band(pl),spread:cfg!=='cased',mid:mx+pl/2,end:mx+pl}; // v2.53: mid = where the trunk arms tee off when nothing else lands on the plenum // a plenum coil spreads them evenly end to end — the clear-the-last-foot rule is a plenum thing; v2.52: the first collar sits TKHEAD past the start, never on the coil
         if(cfgOld!==cfg||splenOld()!==splenNew()){ const plO=plenLenFor(cfgOld,coilL,trunkLO,splenOld()); const sxO= cfgOld==='plenum_coil'? F.h : F.h+coilL;
           ghost(sxO,0,zc-faceW/2,plO,cfgOld==='plenum_coil'?F.w:faceH,cfgOld==='plenum_coil'?F.d:faceW,`today: ${SUPCFG[cfgOld].toLowerCase()}${cfgOld==='trunk'?' '+fmt(trunkFtOld())+' ft':''}`) }
         // return plenum before the furnace, then the duct off its outboard face
@@ -3823,9 +3873,9 @@ function buildScene(){
         if(cfg==='trunk'){ // the flat run in the attic (or under the floor on a downflow), take-offs off it
           const ty= down? y0-bD : y0+rH; const tl=trunkL;
           box(px,ty-(down?0:0),pz,tl,bD,bW,cS,`Supply trunk ${fmt(trunkFtNew())} ft · ${cS?cS.size:fmt(bW)+'×'+fmt(bD)}${tag(cS)}`,null,[0.5,1,0.5],['x',1]);
-          tkBase={along:'x',x0:px+TKHEAD,y:ty+bD/2,z:pz+bW,half:bW/2,len:band(tl),spread:true};
+          tkBase={along:'x',x0:px+TKHEAD,y:ty+bD/2,z:pz+bW,half:bW/2,len:band(tl),spread:true,end:px+tl};
         } else { const lo= upThrough? ceilY+6 : (down? y0+4 : y0+TKHEAD), hi=y0+rH-4-(upThrough?0:TKTAIL); // above the ceiling on a garage / closet upflow, and the tail of the plenum stays clear
-          tkBase={along:'y',startY:lo,x0:px+bD/2,z:pz+bW,half:bW/2,len:Math.max(hi-lo,6),spread:false,mid:upThrough?null:y0+rH/2} }
+          tkBase={along:'y',startY:lo,x0:px+bD/2,z:pz+bW,half:bW/2,len:Math.max(hi-lo,6),spread:false,mid:upThrough?null:y0+rH/2,xhalf:bD/2} }
         if(cfgOld!==cfg||splenOld()!==splenNew()) ghost(px,down?-plenLenFor(cfgOld,coilL,24,splenOld()):(cfgOld==='plenum_coil'?F.h:F.h+coilL),zc-faceW/2,faceD,plenLenFor(cfgOld,coilL,24,splenOld()),faceW,`today: ${SUPCFG[cfgOld].toLowerCase()} ${fmt(splenOld())}"`);
         // return plenum under (upflow) or over (downflow) the furnace, duct off its side
         const rpy= down? topY : -rpl;
@@ -3867,7 +3917,8 @@ function buildScene(){
           const plane= down?{y:flrY-4,up:true}:{y:ceilY,up:false};
           const mid=(!tkItems.length&&tkBase.mid!=null)?tkBase.mid:null; // v2.53: the arms tee off the middle of the plenum unless a duct down already sits on it
           const base= tkBase.along==='x'?{x:mid!=null?mid:tkBase.x0+maxD/2+off+8,y:tkBase.y,zA:tkBase.z,zB:tkBase.z-2*tkBase.half}:{x:tkBase.x0,y:mid!=null?mid:tkBase.startY+maxD/2+off+8,zA:tkBase.z,zB:tkBase.z-2*tkBase.half};
-          trunkOutRuns(base,plane,{tree,regCls:(comp('regs')||{}).cls,label:`New duct system — ${nAll} runs to the rooms, off ${arms} trunk arm${arms>1?'s':''} · ${CFM(per)} CFM each · ${cans[0]}×${cans[0]} cans · ${rbrFanFaces()}`}) } }
+          if(tkBase.end!=null) base.fx=Math.max(tkBase.end,base.x); if(tkBase.xhalf!=null) base.fhalf=tkBase.xhalf;   // v2.56: the plenum's free end, where the balanced second trunk leaves
+          trunkOutRuns(base,plane,{tree,regCls:(comp('regs')||{}).cls,ins:AM.ins,ceil:ceilO,label:`New duct system — ${nAll} runs to the rooms, ${treeArmsTxt(tree)} · ${CFM(per)} CFM each · ${cans[0]}×${cans[0]} cans · ${rbrFanFaces()}`}) } }
       // ---- the can down to the ceiling, and the return grille + filter facing down into the room
       { const gb=specBoxes(cG&&cG.spec?cG.spec:null,20,20).filter(q=>!q.add); // v2.37: one box per grille, each at its own size — a multi spec used to draw NaN and blank the canvas · v2.47: an added return's grille draws at the end of its own duct (below)
         if(retOut.route){ // v2.55 — THE RETURN RUN TO THE FILTER GRILLE THE SM PLACED (Stephen 2026-09-26): from the return plenum's face (or the attic run's start)
@@ -3891,7 +3942,7 @@ function buildScene(){
         if(R>0) flB(bendDuct([cx,cy,cz],retOut.u||[1,0,0],[0,downTo?-1:1,0],r,R,cR),-1,'r');
         const canTop=downTo?cy-R:gy, canBot=downTo?gy:cy+R;
         if(canTop-canBot>1) fl(put(bx,canBot,bz,r.b,canTop-canBot,r.a,cR,retOut.lbl||null,r.round?'y':null),'y',downTo?1:-1,'r');
-        let gz=0; gb.forEach((q,g)=>{ flV(sceneAdd({x:bx+r.b/2-q.w/2,y:gy-1.4,z:bz+r.a/2-q.h/2+gz+(q.h-gb[0].h)/2,dx:q.w,dy:1.2,dz:q.h,color:flowCol(cG)||((isNew(cG)||q.add)?NEWM:'#ffd166'),alpha:.95,noshadow:true,cls:cG?cG.cls:'',nw:isNew(cG)||!!q.add,la:[0.5,0,0.5],label:g===0?(cG?`Return grille + filter ${cG.size}${isNew(cG)?' (new)':''}${tag(cG)}`:'Return grille — size not entered'):(q.add?`+ added grille ${fmt(q.w)}×${fmt(q.h)} + filter (new)`:null)}),'in',[0,-1,0],'r',cG?cG.cls:''); gz+=q.h+6 }); }
+        let gz=0; gb.forEach((q,g)=>{ flV(sceneAdd({x:bx+r.b/2-q.w/2,y:gy-1.4,z:bz+r.a/2-q.h/2+gz+(q.h-gb[0].h)/2,dx:q.w,dy:1.2,dz:q.h,color:flowCol(cG)||((isNew(cG)||q.add)?RET_NEW:'#ffd166'),alpha:.95,noshadow:true,cls:cG?cG.cls:'',nw:isNew(cG)||!!q.add,la:[0.5,0,0.5],label:g===0?(cG?`Return grille + filter ${cG.size}${isNew(cG)?' (new)':''}${tag(cG)}`:'Return grille — size not entered'):(q.add?`+ added grille ${fmt(q.w)}×${fmt(q.h)} + filter (new)`:null)}),'in',[0,-1,0],'r',cG?cG.cls:''); gz+=q.h+6 }); }
       // v2.47 — an ADDED return (Add return, under the 3D): its own duct off the side of the return plenum, turned to the ceiling, and its own
       // filter grille, in the new-metal green beside the return that stays. The model counts it with the return duct and the filter face.
       // v2.50 — the run stops short of the corner and a radiused bend turns it down onto the grille (Stephen 2026-09-25: "connect them with a clean
@@ -3900,11 +3951,11 @@ function buildScene(){
         adds.slice(0,n).forEach((a,i)=>{ const D=a.d, g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(D); const csA={a:D,b:D,round:true};
           const xc=rpG.x+rpG.dx/2+(i-(n-1)/2)*(D+6), yc=rpG.y+rpG.dy/2, z0=rpG.z+rpG.dz, L=30+i*6, zc2=z0+L; // zc2 = the corner where the run's centreline meets the drop's
           const gy2=ceilY-4, dn=gy2<yc; let R=bendR(csA,L,Math.abs(yc-gy2)); if(Math.abs(yc-gy2)<R+2||L<R+4) R=0;
-          fl(sceneAdd({x:xc-D/2,y:yc-D/2,z:z0,dx:D,dy:D,dz:Math.max(L-R,2),cyl:'z',color:NEWM,alpha:.82,noshadow:true,cls:'ok',nw:true,la:[0.5,1,0.7],label:`+ added return Ø${fmt(D)}" (new — off the return plenum)`}),'z',-1,'r');
-          if(R) flB(pushBend([xc,yc,zc2],[0,0,-1],[0,dn?-1:1,0],{a:D,h:D,round:true},R,NEWM,.82,{nw:true,cls:'ok'}),-1,'r');
+          fl(sceneAdd({x:xc-D/2,y:yc-D/2,z:z0,dx:D,dy:D,dz:Math.max(L-R,2),cyl:'z',color:RET_NEW,alpha:.82,noshadow:true,cls:'ok',nw:true,la:[0.5,1,0.7],label:`+ added return Ø${fmt(D)}" (new — off the return plenum)`}),'z',-1,'r');
+          if(R) flB(pushBend([xc,yc,zc2],[0,0,-1],[0,dn?-1:1,0],{a:D,h:D,round:true},R,RET_NEW,.82,{nw:true,cls:'ok'}),-1,'r');
           const zd=R?zc2:zc2-D/2; const yTop=dn?(R?yc-R:yc):gy2, yBot=dn?gy2:(R?yc+R:yc);
-          if(yTop-yBot>1) fl(sceneAdd({x:xc-D/2,y:yBot,z:zd-D/2,dx:D,dy:yTop-yBot,dz:D,cyl:'y',color:NEWM,alpha:.82,noshadow:true,cls:'ok',nw:true}),'y',dn?1:-1,'r');
-          flV(sceneAdd({x:xc-g[0]/2,y:gy2-1.4,z:zd-g[1]/2,dx:g[0],dy:1.2,dz:g[1],color:NEWM,alpha:.95,noshadow:true,cls:'ok',nw:true,la:[0.5,0,0.5],label:`+ added grille ${g[0]}×${g[1]} + filter (new)`}),'in',[0,-1,0],'r','') }) } }
+          if(yTop-yBot>1) fl(sceneAdd({x:xc-D/2,y:yBot,z:zd-D/2,dx:D,dy:yTop-yBot,dz:D,cyl:'y',color:RET_NEW,alpha:.82,noshadow:true,cls:'ok',nw:true}),'y',dn?1:-1,'r');
+          flV(sceneAdd({x:xc-g[0]/2,y:gy2-1.4,z:zd-g[1]/2,dx:g[0],dy:1.2,dz:g[1],color:RET_NEW,alpha:.95,noshadow:true,cls:'ok',nw:true,la:[0.5,0,0.5],label:`+ added grille ${g[0]}×${g[1]} + filter (new)`}),'in',[0,-1,0],'r','') }) } }
       scene.push({marker:true,nofit:true,x:Lx+8,y:Hy*0.8,z:zc+Wz/2+6,dx:0,dy:0,dz:0,stat:true,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:AM.blowerBound?`blower max ${CFM(AM.Qb)} CFM · gets all of it${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
     } }
   draw();
@@ -5574,7 +5625,7 @@ function summaryText(o){
       if(S.plan) L.push(`  FLOOR PLAN: ${S.plan.name} · ${CFM(S.plan.sf)} sq ft served by this system${S.plan.prevSf?' (record '+CFM(S.plan.prevSf)+' sq ft — the rest is on another system)':''} · rooms named off the scan`);
       S.rooms.forEach(r=>L.push(r.nr?`  ${r.n}: ${r.sf} sf · no register (${r.kind==='hall'?'hall':'closet'}) · ${CFM(r.need)} CFM of load spread over the rooms around it`:`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.ld} load · ${CFM(r.cfm)} CFM · ${r.nReg} × ${r.can}×${r.can} can · ${rbrDuctTxt(r).replace(/<[^>]+>/g,'')}`));
       if(S.rbrNew){ L.push(`NEW DUCT SYSTEM — REDOING THE ROOM-BY-ROOM DUCTS to ensure adequate flow to each room.`);
-        L.push(`  Trunk: ${RM.segs.map(x=>x.tag+' '+rdTxt(x)+' '+CFM(x.carry)+' CFM '+Math.round(x.len)+' ft').join(' · ')}`);
+        L.push(`  Trunks: ${rbrTrunksTxt()}`); L.push(`  Trunk: ${RM.segs.map(x=>x.tag+' '+rdTxt(x)+' '+CFM(x.carry)+' CFM '+Math.round(x.len)+' ft'+(x.first&&x.port==='F'?' (off the plenum '+(isPkg()?'free side':'end')+')':'')).join(' · ')}`);
         L.push(`  ${RM.taps} take-offs (collar + balancing damper each) · ${RM.tysTot} TY splits · ${RM.vents} square cans at ${RM.cap} CFM max per vent`);
         const m=RM.mat; const li=(t,o,u)=>{ const k=Object.keys(o); if(k.length) L.push(`  ${t}: ${k.map(x=>(u==='ft'?'Ø'+x+'" '+Math.round(o[x])+' ft':x+' ×'+o[x])).join(' · ')}`) };
         li('Trunk',m.trunk,'ft'); li('Branch/leg flex',m.flex,'ft'); li('Collars+dampers',m.coll,'ea'); li('TYs',m.ty,'ea'); li('Cans',m.can,'ea'); li('Grilles',m.gr,'ea'); }
@@ -6340,19 +6391,23 @@ function rbrModel(){
     r.bootN=r.regs.filter(g=>g.newBoot).length;
     r.tys=r.nReg-r.nTap; r.tyName=r.branch.d+'x'+r.leg.d+'x'+r.leg.d;
   });
-  // reducing trunk: two arms off the plenum face
+  // reducing trunks off the plenum — v2.56: BALANCED (Stephen 2026-09-26: "it should try to balance the supply ducts, instead of forcing them all into
+  // 1 main trunk line off the coil — try to do at least 2 take offs from the plenum"). The rooms still go to the arm on their side of the plenum; a side
+  // that is the only side, or carries more than RBR_BAL of the air, is split between its own trunk and a second one off the plenum's free end, laid on
+  // its own line so no branch crosses the other trunk (rbrTrunks). Each trunk reduces room by room exactly as the one trunk did.
   const ux=S.unitPos.x+3, uy=S.unitPos.y+3;
-  const arms={L:[],R:[]}; rooms.forEach(r=>{ (rbrCx(r)<ux?arms.L:arms.R).push(r) });
-  arms.L.sort((a,b)=>rbrCx(b)-rbrCx(a)); arms.R.sort((a,b)=>rbrCx(a)-rbrCx(b));
+  const trunks=rbrTrunks(rooms,ux,uy);
   const segs=[];
-  ['L','R'].forEach(k=>{ const arm=arms[k]; let prev=(k==='L'?S.unitPos.x:S.unitPos.x+6);
+  trunks.forEach(t=>{ const k=t.k, arm=t.rooms; let prev=t.port==='F'?ux:(t.dir==='L'?S.unitPos.x:S.unitPos.x+6);
     for(let i=0;i<arm.length;i++){
       const carry=arm.slice(i).reduce((s,r)=>s+r.cfm,0), x=rbrCx(arm[i]), len=Math.abs(x-prev);
       if(len<0.5&&i>0) continue;
-      const sz=mdSizeRound(Math.max(carry,1),A.fr,mat,'sup');
-      segs.push({arm:k,from:prev,to:x,len:Math.max(len,1),carry,d:sz.d,n:1,add:sz.add||[],vel:sz.vel,first:i===0,room:arm[i].n}); // v2.48: a segment past 20" is a 20" + a second run
-      prev=x; } });
-  rooms.forEach(r=>{ r.run=Math.round(Math.abs(rbrCy(r)-uy)+3); r.legFt=r.tys>0?Math.round((r.w+r.d)/4+3):0 });
+      const sz=mdSizeRound(Math.max(carry,1),A.fr,mat,'sup'); const lead=(i===0&&t.port==='F')?(t.lead||0):0; // the free-end trunk's first run carries the length out of the plenum to its corner
+      segs.push({arm:k,dir:t.dir,port:t.port,y:t.y,fs:t.fs||0,lead,from:prev,to:x,len:Math.max(len,1)+lead,carry,d:sz.d,n:1,add:sz.add||[],vel:sz.vel,first:i===0,room:arm[i].n,rid:arm[i].id}); // v2.48: a segment past 20" is a 20" + a second run
+      prev=x; }
+    arm.forEach(r=>{ r.trunk=k; r.ty=t.y }) });
+  S.rooms.filter(r=>r.nr).forEach(r=>{ r.trunk=null; r.ty=uy });
+  rooms.forEach(r=>{ r.run=Math.round(Math.abs(rbrCy(r)-(r.ty!=null?r.ty:uy))+3); r.legFt=r.tys>0?Math.round((r.w+r.d)/4+3):0 });
   // v2.54 — the served area reads off the scan when there is one; a room removed from it ("that one is on the other unit") comes off the total
   RM={B,A,cap,tmat:mat,segs,needTot,needRooms,needUp,needDown,hall,roomSf,loadT,cpt,cptSrc,ux,uy,
       down,downCfm,Qup,spill:Math.max(0,Math.round(Qup-needUp*ratio)),ratio,
@@ -6361,9 +6416,52 @@ function rbrModel(){
       vents:rooms.reduce((a,r)=>a+r.nReg,0), taps:rooms.reduce((a,r)=>a+r.nTap,0),
       tysTot:rooms.reduce((a,r)=>a+r.tys,0),
       keepN:rooms.reduce((a,r)=>a+r.keepN,0), barN:rooms.reduce((a,r)=>a+r.barN,0), enlN:rooms.reduce((a,r)=>a+r.enlN,0),
-      newN:rooms.reduce((a,r)=>a+r.newN,0), bootN:rooms.reduce((a,r)=>a+r.bootN,0)};
-  rbrTag(); RM.mat=rbrMaterials(); return RM;
+      newN:rooms.reduce((a,r)=>a+r.newN,0), bootN:rooms.reduce((a,r)=>a+r.bootN,0),
+      trunks:trunks.map(t=>({k:t.k,dir:t.dir,port:t.port,y:t.y,fs:t.fs||0,lead:t.lead||0,cross:t.cross||0,rooms:t.rooms.map(r=>r.id||r.n),cfm:t.rooms.reduce((s,r)=>s+r.cfm,0)}))};
+  rbrTag();
+  // v2.56 — a branch off the free-end trunk leaves it past the corner it turns out of the plenum on: the collar never sits on the bend
+  S.rooms.forEach(r=>{ const t=trunks.find(q=>q.k===r.trunk); (r.taps||[]).forEach(tp=>{ tp.cx=tp.x; if(t&&t.port==='F'){ const dX=t.dir==='L'?-1:1, c0=ux+dX*1.5; tp.cx=dX>0?Math.max(tp.x,c0):Math.min(tp.x,c0) } }) });
+  RM.tyMoved=rbrTySpace();   // v2.56: no two TYs within 4 ft
+  RM.mat=rbrMaterials(); return RM;
 }
+// v2.56 — THE BALANCED TRUNKS. Every room goes to the trunk on its side of the plenum (L / R) as before. When one side is the only side, or carries
+// more than RBR_BAL of the air, its rooms are split between that side's own trunk (on the plenum's centre line) and a SECOND trunk that leaves the
+// plenum's free end — the end cap of a horizontal plenum, the free face of a vertical one, the face away from a package's return drop — runs out to
+// its own line and turns toward the same rooms. The split tried is every prefix of the rooms ordered three ways (toward the free end · nearest first ·
+// farthest first), and the one kept puts the least air on the busiest trunk without a branch crossing the other trunk (a crossing costs as much as
+// ten points of balance, so it is only ever the last resort on a one-sided house). The second trunk's line sits past every register of the first
+// trunk's rooms that lies alongside it, and never less than RBR_FOFF off the plenum. A kept package drop splits through one wye, so two trunks at most.
+const RBR_BAL=0.65, RBR_FOFF=5;
+function rbrFreeDir(){ if(isPkg()) return S.pkFree===-1?-1:1; return S.orient==='horiz'?-1:0 }   // the plenum's free end in plan y (−1 = toward the top of the sheet) · 0 = either face (a vertical plenum)
+function rbrFreeMin(){ let e=RBR_FOFF; if(!isPkg()&&S.orient==='horiz'){ const cfg=supNew(); const pl=cfg==='trunk'?trunkFtNew()*12:(cfg==='plenum_coil'?Math.max(42,splenNew()):splenNew()); e=Math.max(e,Math.ceil((pl/2+30)/12)) } return e } // out past the end cap with room for the bend
+function rbrTrunks(rooms,ux,uy){
+  const q=a=>a.reduce((s,r)=>s+r.cfm,0), dxOf=r=>Math.abs(rbrCx(r)-ux), byNear=a=>a.slice().sort((p,r)=>dxOf(p)-dxOf(r));
+  const L=byNear(rooms.filter(r=>rbrCx(r)<ux)), R=byNear(rooms.filter(r=>rbrCx(r)>=ux));
+  const T=[]; if(L.length) T.push({k:'L',dir:'L',port:'L',y:uy,rooms:L}); if(R.length) T.push({k:'R',dir:'R',port:'R',y:uy,rooms:R});
+  const tot=q(rooms); if(!(tot>0)||rooms.length<2) return T;
+  const H=q(L)>=q(R)?'L':'R', Hr=H==='L'?L:R, other=H==='L'?R:L, qo=q(other);
+  if(Hr.length<2) return T;
+  if(other.length&&q(Hr)/tot<=RBR_BAL) return T;                                   // balanced enough — the two sides are the two take-offs
+  if(other.length&&isPkg()&&S.fix.install!=='curb') return T;                      // a kept drop splits through one wye: two trunks at most
+  const e0=rbrFreeMin(), fd=rbrFreeDir(), sides=fd?[fd]:[-1,1];
+  const geo=new Map(); Hr.forEach(r=>{ const g=rbrGeom(r); geo.set(r,g.length?g:[{x:rbrCx(r),y:rbrCy(r),regs:[{x:rbrCx(r),y:rbrCy(r)}]}]) });
+  let best=null;
+  sides.forEach(fs=>{ const sy=v=>(v-uy)*fs;                                          // + = toward the free end
+    const info=r=>geo.get(r).map(tp=>({dx:Math.abs(tp.x-ux),sy:((tp.regs&&tp.regs.length)?tp.regs:[tp]).map(g=>sy(g.y!=null?g.y:rbrCy(r)))}));
+    const maxAll=Math.max(...Hr.map(r=>info(r).reduce((m,t)=>Math.max(m,...t.sy),-1e9)));
+    const orders=[Hr.slice().sort((a,b)=>sy(rbrCy(b))-sy(rbrCy(a))), byNear(Hr), byNear(Hr).reverse()]; const seen=new Set();
+    orders.forEach(ord=>{ for(let k=1;k<ord.length;k++){ const F=ord.slice(0,k), Rw=ord.slice(k); const key=F.map(r=>r.id||r.n).sort().join('|'); if(seen.has(key)) continue; seen.add(key);
+      const tF=F.flatMap(info), tR=Rw.flatMap(info); const XF=Math.max(...tF.map(t=>t.dx))+0.6, XR=Math.max(...tR.map(t=>t.dx))+0.6;
+      let cross=0; tF.forEach(t=>{ if(t.dx<XR) t.sy.forEach(v=>{ if(v<-0.3) cross++ }) });                 // a branch off the second trunk that would cross back over the first
+      const need=tR.filter(t=>t.dx<XF).reduce((m,t)=>Math.max(m,...t.sy),-1e9);                             // the first trunk's registers alongside the second, toward it
+      let sF=Math.max(e0,need+1.5); const cap=Math.max(e0,maxAll+2); if(sF>cap){ sF=cap; tR.forEach(t=>{ if(t.dx<XF) t.sy.forEach(v=>{ if(v>sF-0.3) cross++ }) }) }
+      const mx=Math.max(q(F),q(Rw),qo)/tot; const sc=cross*10+mx+(sF-e0)*0.004;
+      if(!best||sc<best.sc-1e-9) best={sc,fs,sF,F,Rw,mx,cross} } }) });
+  if(!best) return T;
+  if(other.length&&(best.cross>0||best.mx>=Math.max(q(Hr),qo)/tot-0.08)) return T;  // a third trunk only when it really evens things out, cleanly
+  const row=T.find(t=>t.k===H); row.rooms=byNear(best.Rw);
+  T.push({k:'F',dir:H,port:'F',y:uy+best.fs*best.sF,fs:best.fs,lead:Math.max(1,Math.round(best.sF-1)),rooms:byNear(best.F),cross:best.cross});
+  return T }
 function rbrTag(){ let b=0,c=0;
   S.rooms.forEach(r=>{ r.taps=rbrGeom(r); if(r.nr) return; r.taps.forEach(tp=>{ tp.tag='B'+(++b); tp.regs=tp.regs.map(x=>({x:x.x,y:x.y,tag:String(++c),g:x.g})) }) });   // v2.54: y rides along — the register's real spot on the plan
   RM.segs.forEach((s,i)=>s.tag='T'+(i+1));
@@ -6374,8 +6472,34 @@ function rbrGeom(r){ const taps=[]; if(r.nr||!r.nReg) return taps;   // v2.54 �
   for(let k=0;k<r.nTap;k++){ const q=fcInside(r,r.x+r.w*(k+0.5)/r.nTap,cy); taps.push({x:q[0],y:q[1],regs:[]}) }
   for(let j=0;j<r.nReg;j++){ const k=Math.min(r.nTap-1,Math.floor(j*r.nTap/r.nReg)); const q=fcInside(r,r.x+r.w*(j+0.5)/r.nReg,cy); taps[k].regs.push({x:q[0],y:q[1],g:(r.regs&&r.regs[j])||{kind:'new',w:r.can,h:r.can,face:r.faceK||'stamped'}}) }
   return taps; }
-function rbrMaterials(){ const flex={},trunk={},ty={},can={},gr={},coll={},swap={},boot={}; const bump=(o,k,v)=>o[k]=(o[k]||0)+v;
-  RM.segs.forEach(s=>{ bump(trunk,s.d,s.len); (s.add||[]).forEach(a=>bump(trunk,a.d,s.len)) });
+// v2.56 — TYs STAND 4 FT APART (Stephen 2026-09-26: "don't put the TYs within 4 feet of each other"). A TY is where a branch splits for its room's two
+// registers — the pink square on the 2D, the wye on the 3D. With the rooms laid out, any two TYs closer than RBR_TYMIN on the plan are pulled apart:
+// the later one slides along its own branch — out toward the far wall or back toward the trunk, the two registers it feeds sliding with it on the same
+// line — to the nearest spot inside its room, on its own side of the trunk, that clears every other TY by 4 ft; a room with no such spot leaves the
+// earlier TY to move instead. First, a TY is never laid on top of its own trunk: one closer than RBR_TYNEAR to the trunk's line (a room the trunk
+// runs through) steps out to it, so the branch has its collar and a run before the split — the 3D builds it where the 2D draws it. The branch run is
+// re-measured for a room whose TY moved. RM.tyMoved counts the moves.
+const RBR_TYMIN=4, RBR_TYGAP=RBR_TYMIN+0.25, RBR_TYNEAR=2.5;   // 3" of margin on the plan so the fittings themselves — a wye has length — still clear 4 ft on the 3D
+function rbrTySpace(){ const tys=[]; S.rooms.forEach(r=>{ if(r.nr) return; (r.taps||[]).forEach(tp=>{ if((tp.regs||[]).length>1) tys.push({r,tp,y0:tp.y}) }) });
+  if(!tys.length) return 0; let moved=0;
+  const tyOf=a=>a.r.ty!=null?a.r.ty:(RM?RM.uy:0);
+  const inside=(a,y)=>{ const r=a.r; if(y<r.y+0.75||y>r.y+r.d-0.75) return false; if(!r.poly) return true; return fcPtIn(r.poly,a.tp.x,y)&&a.tp.regs.every(g=>fcPtIn(r.poly,g.x,y)) };
+  const put=(a,y)=>{ a.tp.y=+y.toFixed(2); a.tp.regs.forEach(g=>g.y=a.tp.y); a.r._tyMv=true };
+  tys.forEach(a=>{ const ty=tyOf(a), off=a.tp.y-ty; if(Math.abs(off)>=RBR_TYNEAR) return; const s0=off?Math.sign(off):(rbrCy(a.r)>=ty?1:-1);
+    for(const sg of [s0,-s0]){ let done=false; for(let k=0;k<=Math.ceil(a.r.d*4);k++){ const y=ty+sg*(RBR_TYNEAR+k*0.25); if(inside(a,y)){ put(a,y); a.y0=y; moved++; done=true; break } } if(done) break } });
+  const X=t=>[t.tp.x,t.tp.cx!=null?t.tp.cx:t.tp.x];   // the 2D draws the TY on the register's x; the 3D on the collar's — both must clear
+  const dist=(a,b,ya)=>{ const y=ya!=null?ya:a.tp.y, xa=X(a), xb=X(b); return Math.min(Math.hypot(xa[0]-xb[0],y-b.tp.y),Math.hypot(xa[1]-xb[1],y-b.tp.y)) };
+  const clear=(a,y)=>tys.every(b=>b===a||dist(a,b,y)>=RBR_TYGAP-1e-6);
+  const fits=(a,y)=>{ const ty=tyOf(a); if(!inside(a,y)) return false;
+    return Math.sign(y-ty)===Math.sign(a.y0-ty)&&Math.abs(y-ty)>=Math.min(RBR_TYNEAR,Math.abs(a.y0-ty)) };   // never across its trunk, never closer to it
+  const slide=a=>{ const y0=a.tp.y; for(let k=1;k<=Math.ceil(a.r.d*4);k++){ for(const sg of [1,-1]){ const y=y0+sg*k*0.25; if(fits(a,y)&&clear(a,y)){ put(a,y); return true } } } return false };
+  for(let pass=0;pass<4&&tys.length>1;pass++){ let any=false;
+    for(let i=0;i<tys.length;i++) for(let j=i+1;j<tys.length;j++){ const a=tys[i], b=tys[j]; if(dist(a,b)>=RBR_TYGAP-1e-6) continue; if(slide(b)||slide(a)){ any=true; moved++ } }
+    if(!any) break }
+  rbrRunFix(); return moved }
+function rbrRunFix(){ S.rooms.forEach(r=>{ if(!r._tyMv) return; delete r._tyMv; const ty=r.ty!=null?r.ty:RM.uy; const ts=r.taps||[]; if(ts.length) r.run=Math.round(ts.reduce((s,tp)=>s+Math.abs(tp.y-ty),0)/ts.length+3) }) }   // a moved TY: the branch run re-measured
+function rbrMaterials(){ const flex={},trunk={},ty={},can={},gr={},coll={},swap={},boot={},tcoll={}; const bump=(o,k,v)=>o[k]=(o[k]||0)+v;
+  RM.segs.forEach(s=>{ bump(trunk,s.d,s.len); (s.add||[]).forEach(a=>bump(trunk,a.d,s.len)); if(s.first){ bump(tcoll,s.d,1); (s.add||[]).forEach(a=>bump(tcoll,a.d,1)) } });   // v2.56: each trunk's take-off off the plenum
   // v2.46 — the duct down to each lower floor: a collar off the plenum and the drop itself
   (RM.down||[]).forEach(x=>{ bump(coll,x.d,x.n); bump(flex,x.d,(x.rise+6)*x.n); (x.add||[]).forEach(a=>{ bump(coll,a.d,1); bump(flex,a.d,x.rise+6) }) });
   S.rooms.forEach(r=>{ bump(coll,r.branch.d,r.nTap); bump(flex,r.branch.d,r.run*r.nTap);
@@ -6385,7 +6509,7 @@ function rbrMaterials(){ const flex={},trunk={},ty={},can={},gr={},coll={},swap=
       if(g.kind==='new'||g.kind==='enl'){ bump(can,g.w+'×'+g.h+' · Ø'+r.leg.d+'" neck',1); bump(gr,g.w+'×'+g.h+' · '+REG_FACE[g.face].short,1) }
       else if(g.kind==='bar') bump(swap,g.w+'×'+g.h,1);
       if(g.newBoot) bump(boot,g.w+'×'+g.h+' boot · Ø'+r.leg.d+'" collar',1) }); });
-  return {flex,trunk,ty,can,gr,coll,swap,boot};
+  return {flex,trunk,ty,can,gr,coll,swap,boot,tcoll};
 }
 
 /* ---------- 2D shop drawing ---------- */
@@ -6459,10 +6583,10 @@ function rbrPlanSvg(S_){
   s+=`<text x="${(u[0]+3*SC).toFixed(1)}" y="${(u[1]+4.9*SC).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="800" fill="#ffd166">${CFM(RM.A.Qd)} CFM</text>`;
   placed.push({x1:u[0],x2:u[0]+6*SC,y1:u[1],y2:u[1]+6*SC});
   { const rp=S.retPos; if(rp){ const q=p(rp.x,rp.y); const cG=(typeof comp==='function')?comp('grille'):null; // v2.55 — the return filter grille, where the RETURN tile sits
-    s+=`<rect x="${q[0].toFixed(1)}" y="${q[1].toFixed(1)}" width="${4*SC}" height="${4*SC}" rx="3" fill="#b23a3a" stroke="#8a2b2b" stroke-width="1"/>`;
+    s+=`<rect x="${q[0].toFixed(1)}" y="${q[1].toFixed(1)}" width="${4*SC}" height="${4*SC}" rx="3" fill="#6c4fd0" stroke="#4a3496" stroke-width="1"/>`;   // v2.56: the return in violet, as on the 3D
     s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+1.3*SC).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="800" fill="#fff">RETURN</text>`;
-    s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+2.3*SC).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#ffd9d9">${cG&&cG.size?rbrEsc(cG.size):'filter grille'}</text>`;
-    s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+3.3*SC).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#ffd9d9">${rp.set?'placed':'assumed'}</text>`;
+    s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+2.3*SC).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#e4dcff">${cG&&cG.size?rbrEsc(cG.size):'filter grille'}</text>`;
+    s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+3.3*SC).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#e4dcff">${rp.set?'placed':'assumed'}</text>`;
     placed.push({x1:q[0],x2:q[0]+4*SC,y1:q[1],y2:q[1]+4*SC}) } }
   // v2.46 — the duct down to each lower floor: a tagged riser symbol under the plenum
   (RM.down||[]).forEach((x,i)=>{ const dx=u[0]+3*SC, dy=u[1]+6*SC+8+i*22;
@@ -6470,16 +6594,21 @@ function rbrPlanSvg(S_){
     s+=`<text x="${dx.toFixed(1)}" y="${(dy+12.5).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#003963">${x.tag} ▼ ${rdTxt(x).replace(/ × /,'×')} DOWN · FLOOR ${x.fl+1} · ${CFM(x.cfm)} CFM${x.short>0?' (SHORT '+CFM(x.short)+')':''}</text>`;
     placed.push({x1:dx-3*SC,x2:dx+3*SC,y1:dy,y2:dy+18}); });
 
-  RM.segs.forEach(sg=>{ const a=p(sg.from,RM.uy), b=p(sg.to,RM.uy);
-    s+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="#003963" stroke-width="${(sg.d*SC/12+3).toFixed(1)}"/>`;
-    s+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="#ffd166" stroke-width="${(sg.d*SC/12).toFixed(1)}"/>`;
+  // v2.56 — every trunk on its own line: the two sides on the plenum's centre line, the balanced second trunk out of the plenum's free end, round the
+  // corner and along its own line. Two passes (the outlines, then the yellow) so a corner reads as one duct.
+  const Yof=sg=>sg.y!=null?sg.y:RM.uy, ln=(a,b,col,w,cap)=>`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="${col}" stroke-width="${w.toFixed(1)}"${cap?' stroke-linecap="round"':''}/>`;
+  const leads=(RM.trunks||[]).filter(tk=>tk.port==='F').map(tk=>{ const s0=RM.segs.find(g=>g.arm===tk.k); return s0?{s0,a:p(RM.ux,RM.uy+(tk.fs||-1)*3),b:p(RM.ux,tk.y)}:null }).filter(Boolean);
+  leads.forEach(L=>{ s+=ln(L.a,L.b,'#003963',L.s0.d*SC/12+3,true); placed.push({x1:L.a[0]-L.s0.d*SC/24-3,x2:L.a[0]+L.s0.d*SC/24+3,y1:Math.min(L.a[1],L.b[1]),y2:Math.max(L.a[1],L.b[1])}) });
+  RM.segs.forEach(sg=>{ const a=p(sg.from,Yof(sg)), b=p(sg.to,Yof(sg)); s+=ln(a,b,'#003963',sg.d*SC/12+3) });
+  leads.forEach(L=>{ s+=ln(L.a,L.b,'#ffd166',L.s0.d*SC/12,true) });
+  RM.segs.forEach(sg=>{ const a=p(sg.from,Yof(sg)), b=p(sg.to,Yof(sg)); s+=ln(a,b,'#ffd166',sg.d*SC/12);
     placed.push({x1:Math.min(a[0],b[0]),x2:Math.max(a[0],b[0]),y1:a[1]-sg.d*SC/24-3,y2:a[1]+sg.d*SC/24+3}); });
-  const byArm={L:[],R:[]}; RM.segs.forEach(sg=>byArm[sg.arm].push(sg));
-  ['L','R'].forEach(k=>byArm[k].forEach((sg,i)=>{ if(!i) return; const pv=byArm[k][i-1]; if(pv.d===sg.d) return; const a=p(sg.from,RM.uy);
+  const byArm={}; RM.segs.forEach(sg=>{ (byArm[sg.arm]=byArm[sg.arm]||[]).push(sg) });
+  Object.keys(byArm).forEach(k=>byArm[k].forEach((sg,i)=>{ if(!i) return; const pv=byArm[k][i-1]; if(pv.d===sg.d) return; const a=p(sg.from,Yof(sg));
     s+=`<path d="M${(a[0]-5).toFixed(1)} ${(a[1]-pv.d*SC/24-4).toFixed(1)} L${(a[0]+5).toFixed(1)} ${(a[1]-sg.d*SC/24-4).toFixed(1)} M${(a[0]-5).toFixed(1)} ${(a[1]+pv.d*SC/24+4).toFixed(1)} L${(a[0]+5).toFixed(1)} ${(a[1]+sg.d*SC/24+4).toFixed(1)}" stroke="#CD1E1F" stroke-width="2" fill="none"/>` }));
 
   rooms.forEach(r=>{ r.taps.forEach(tp=>{
-    const t=p(tp.x,RM.uy), c=p(tp.x,tp.y!=null?tp.y:rbrCy(r));   // v2.54: the branch lands where the register really is
+    const t=p(tp.cx!=null?tp.cx:tp.x,r.ty!=null?r.ty:RM.uy), c=p(tp.x,tp.y!=null?tp.y:rbrCy(r));   // v2.54: the branch lands where the register really is · v2.56: off its own trunk's line
     s+=`<line x1="${t[0].toFixed(1)}" y1="${t[1].toFixed(1)}" x2="${c[0].toFixed(1)}" y2="${c[1].toFixed(1)}" stroke="#0f8b8b" stroke-width="${Math.max(3,r.branch.d*SC/12).toFixed(1)}" stroke-linecap="round" opacity=".55"/>`;
     s+=`<line x1="${t[0].toFixed(1)}" y1="${t[1].toFixed(1)}" x2="${c[0].toFixed(1)}" y2="${c[1].toFixed(1)}" stroke="#0a5c5c" stroke-width="1.6"/>`;
     s+=`<circle cx="${t[0].toFixed(1)}" cy="${t[1].toFixed(1)}" r="5.5" fill="#fff" stroke="#CD1E1F" stroke-width="2"/>`;
@@ -6496,7 +6625,7 @@ function rbrPlanSvg(S_){
     if(tp.regs.length>1) s+=`<rect x="${(c[0]-6).toFixed(1)}" y="${(c[1]-6).toFixed(1)}" width="12" height="12" rx="2" fill="#ff8fa3" stroke="#a8214a" stroke-width="1.6"/>`;
     tp.px=t; tp.cc=c; }) });
 
-  RM.segs.forEach(sg=>{ const a=p(sg.from,RM.uy), b=p(sg.to,RM.uy);
+  RM.segs.forEach(sg=>{ const a=p(sg.from,Yof(sg)), b=p(sg.to,Yof(sg));
     if(Math.abs(b[0]-a[0])<34) return;
     s+=T((a[0]+b[0])/2, a[1]-sg.d*SC/24-8, sg.tag+'  '+rdTxt(sg)+'  '+CFM(sg.carry)+' CFM', {s:10,f:'#8a6a00',side:'y'}); });
   rooms.forEach(r=>{ r.taps.forEach(tp=>{
@@ -6508,7 +6637,7 @@ function rbrPlanSvg(S_){
       placed.push({x1:g.px[0]-14,x2:g.px[0]+14,y1:g.px[1]-g.half-20,y2:g.px[1]-g.half-2});
       s+=T(g.px[0],g.px[1]+g.half+12,lbl,{s:9,f:'#003963',c:[[0,0],[0,-2*g.half-26],[0,22],[hw+g.half,0],[-hw-g.half,0],[0,40]]}); }); }) });
 
-  const dy0=MT+PH+26; let xs=[S.unitPos.x+3]; RM.segs.forEach(sg=>xs.push(sg.to));
+  const dy0=MT+PH+26; let xs=[S.unitPos.x+3]; RM.segs.filter(sg=>sg.port!=='F').forEach(sg=>xs.push(sg.to));   // the chain dimensions the trunks on the plenum's centre line
   xs=xs.filter((v,i,a)=>a.indexOf(v)===i).sort((a,b)=>a-b);
   s+=`<line x1="${p(xs[0],0)[0].toFixed(1)}" y1="${dy0}" x2="${p(xs[xs.length-1],0)[0].toFixed(1)}" y2="${dy0}" stroke="#5b6b7c" stroke-width="1"/>`;
   xs.forEach(v=>{ const x=p(v,0)[0];
@@ -6571,12 +6700,16 @@ function rbrDuctTxt(r){ if(r.nr) return '<span class="note">no register — its 
   return (r.nTap>1?r.nTap+' × ':'')+'Ø'+r.branch.d+'" → '+(r.tys>1?r.tys+' × ':'')+r.tyName+' → '+r.nReg+' × Ø'+r.leg.d+'"' }
 function rbrTrunkTbl(){
   let t='<thead><tr><th>Tag</th><th>Segment</th><th class="num">Length</th><th class="num">Carries</th><th>Size</th><th class="num">Velocity</th></tr></thead><tbody>';
-  RM.segs.forEach(s=>{ t+=`<tr><td><b>${s.tag}</b></td><td>${s.first?'Plenum → ':'to '}${rbrEsc(s.room)} <span class="note">(${s.arm==='L'?'left':'right'} arm)</span></td>`+
+  RM.segs.forEach(s=>{ t+=`<tr><td><b>${s.tag}</b></td><td>${s.first?(s.port==='F'?`Plenum ${isPkg()?'free side':'end'} → out ${Math.round(s.lead||0)} ft → `:'Plenum → '):'to '}${rbrEsc(s.room)} <span class="note">(${rbrTrunkName(s)})</span></td>`+
     `<td class="num">${Math.round(s.len)} ft</td><td class="num">${CFM(s.carry)} CFM</td><td>${rdTxt(s)} ${RM.tmat}</td><td class="num">${s.vel.toLocaleString()} fpm</td></tr>` });
   (RM.down||[]).forEach(x=>{ t+=`<tr><td><b>${x.tag}</b></td><td>Plenum → down to floor ${x.fl+1} <span class="note">(riser)</span></td><td class="num">${x.rise+6} ft</td><td class="num">${CFM(x.cfm)} CFM</td><td>${rdTxt(x)} ${x.mat}${x.entered?'':' <span class="asm">assumed</span>'}</td><td class="num">${x.vel.toLocaleString()} fpm${x.short>0?` <span class="status bad">${CFM(x.short)} short</span>`:''}</td></tr>` });
-  t+=`<tr class="tot"><td colspan="2">${RM.segs.length} segments${RM.down&&RM.down.length?' + '+RM.down.length+' drop'+(RM.down.length>1?'s':''):''}</td><td class="num">${Math.round(RM.segs.reduce((a,s)=>a+s.len,0))} ft</td><td colspan="3">a reducing trunk — it steps down every time a room takes its air</td></tr></tbody>`;
+  t+=`<tr class="tot"><td colspan="2">${RM.segs.length} segments${RM.down&&RM.down.length?' + '+RM.down.length+' drop'+(RM.down.length>1?'s':''):''}</td><td class="num">${Math.round(RM.segs.reduce((a,s)=>a+s.len,0))} ft</td><td colspan="3">${rbrTrunksTxt()} — each steps down every time a room takes its air</td></tr></tbody>`;
   return t;
 }
+// v2.56 — the trunks by name: the two sides of the plenum, and the balanced second trunk out of its free end
+function rbrTrunkName(s){ const side=(s.dir||s.arm)==='L'?'left':'right'; return s.port==='F'?`second ${side} trunk — off the plenum ${isPkg()?'free side':'end'}`:`${side} trunk` }
+function rbrTrunksTxt(){ const T=(RM&&RM.trunks)||[]; const n=T.length; if(!n) return 'a reducing trunk';
+  return `${n} trunk take-off${n>1?'s':''} off the plenum`+(n>1?` — ${T.map(tk=>CFM(tk.cfm)).join(' / ')} CFM${T.some(tk=>tk.port==='F')?', balanced':''}`:'') }
 function rbrBranchTbl(){
   let h='<thead><tr><th>Tag</th><th>Room</th><th>Take-off</th><th class="num">CFM</th><th class="num">Run</th><th>Damper</th><th>TY</th><th>Legs</th><th>Cans</th></tr></thead><tbody>';
   S.rooms.forEach(r=>(r.taps||[]).forEach(tp=>{
@@ -6603,6 +6736,7 @@ function rbrMatTbl(){
     ks.forEach(k=>{ rows+=`<tr><td>${fmtk?fmtk(k):'Ø'+k+'"'}</td><td class="num">${unit==='ft'?Math.round(obj[k])+' ft':obj[k]}</td>`+
       `<td class="note">${unit==='ft'?Math.ceil(obj[k]/25)+' × 25 ft roll'+(Math.ceil(obj[k]/25)>1?'s':''):(unit==='pr'?'collar + balancing damper':'each')}</td></tr>` }) };
   grp('Trunk — '+(RM.tmat),m.trunk,'ft');
+  grp('Trunk take-offs off the plenum — start collar, one per trunk',m.tcoll||{},'ea');
   grp('Branch &amp; leg flex — R-8, installed pulled tight',m.flex,'ft');
   grp('Take-off collar + balancing damper — one pair per take-off',m.coll,'pr');
   grp('TY / wye splits — inlet × outlet × outlet',m.ty,'ea',k=>k);
@@ -7090,7 +7224,7 @@ function rbrLine(){
   if(!(S.rbrNew&&S.rooms.length&&RM)) return null;
   const dn=RM.down||[];
   return `New room-by-room duct system — the supply is redesigned to ACCA Manual D room by room to ensure adequate flow to each room: `+
-    `${RM.segs.length}-segment reducing trunk, ${RM.taps} take-offs with balancing dampers, ${RM.tysTot} TY split${RM.tysTot===1?'':'s'}, `+
+    `${rbrTrunksTxt()} (${RM.segs.length} reducing segments), ${RM.taps} take-offs with balancing dampers, ${RM.tysTot} TY split${RM.tysTot===1?'':'s'}, `+
     `${RM.vents} vents balanced to the ${CFM(RM.Qup)} CFM that reaches the rooms (${RM.cap} CFM max per vent)`+
     (RM.keepN+RM.barN+RM.enlN?` — ${RM.keepN} existing register${RM.keepN===1?'':'s'} kept in place${RM.barN?`, ${RM.barN} swapped to bar type`:''}${RM.enlN?`, ${RM.enlN} enlarged`:''}, ${RM.newN} new square can${RM.newN===1?'':'s'}`:'')+
     (dn.length?`; ${dn.map(x=>`floor ${x.fl+1} fed by ${rdTxt(x)} down (${CFM(x.cfm)} CFM${x.short>0?`, ${CFM(x.short)} short — needs ${rdTxt(x.spec)}`:''})`).join(', ')}`:'');
