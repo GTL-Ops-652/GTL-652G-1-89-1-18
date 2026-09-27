@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-26 v2.54 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-26 v2.55 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -224,6 +224,7 @@ dialog .in{padding:18px}
 .gridwrap .tile.hi{border-color:var(--warn);background:var(--warnbg)}.gridwrap .tile.hi .tn{color:#7a4a12}
 .gridwrap .tile.lo{border-color:var(--gray);background:rgba(192,184,182,.22)}
 .gridwrap .tile.unit{border:2px solid var(--db);background:#003963}.gridwrap .tile.unit .tn{color:#fff}.gridwrap .tile.unit .tc{color:#9fc3dd}
+.gridwrap .tile.ret{border:2px solid #8a2b2b;background:#b23a3a;z-index:2}.gridwrap .tile.ret .tn{color:#fff;font-size:10px}.gridwrap .tile.ret .tc{color:#ffd9d9;font-size:8.5px} /* v2.55: the return filter grille, placed like the unit */
 .gridwrap .tile .rs{position:absolute;right:-1px;top:50%;transform:translateY(-50%);width:16px;height:38px;border-radius:5px;background:var(--db);opacity:.75;cursor:ew-resize;display:grid;place-items:center;color:#fff;font-size:10px;line-height:1;touch-action:none}
 /* v2.37 — address lookup, aerial, traced shape */
 .fcrow{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
@@ -3037,7 +3038,7 @@ function renderPkgTier(card,star,row,o){
 // v2.42: the renderer can draw into more than one viewer — the pack's customer page has a Today and a Design 3D side by side —
 // so the canvas, its context, its label layer and its camera are swappable (renderInto), not fixed to #c3d.
 let cv=$('#c3d'), ctx=cv.getContext('2d'), lblsEl=$('#lbls'); let view={yaw:-0.75,pitch:0.42,zoom:1,pan:[0,0],touched:false,lbl:null};
-const defaultView=()=>{ const d=isPkg()?{yaw:2.35,pitch:0.46}:{yaw:-0.75,pitch:0.42}; if(S.plan&&S.rbrNew&&S.view&&S.view.focus&&S.view.focus!=='unit'){ d.pitch=0.95; d.yaw=-1.35 } return d }; // yaw −π/2 puts the plan's x to the right and its y down the screen — the same way up as the 2D drawing // v2.54: framed on the house, the picture tips toward a plan view
+const defaultView=()=>{ const d=isPkg()?{yaw:2.35,pitch:0.46}:{yaw:-0.75,pitch:0.42}; if(S.rbrNew&&S.rooms&&S.rooms.length&&S.view&&S.view.focus&&S.view.focus!=='unit'){ d.pitch=0.95; d.yaw=-1.35 } return d }; // yaw −π/2 puts the plan's x to the right and its y down the screen — the same way up as the 2D drawing // v2.54: framed on the house, the picture tips toward a plan view
 function resetView(){ const d=defaultView(); view.yaw=d.yaw; view.pitch=d.pitch; view.zoom=1; view.pan=[0,0]; view.touched=false; }
 let scene=[]; // boxes: {x,y,z,dx,dy,dz,color,alpha,label,cls,wire} · quads: {quad:[4 pts],color,stroke,nofit} · markers: {marker:true,label}
 const sceneAdd=o=>{ scene.push(o); return o }; // v2.50: push and hand the item back, so a duct can be tagged with the air it carries (fl / flB / flV below)
@@ -3049,7 +3050,11 @@ function project(p,cx,cy,sc){ const cy_=Math.cos(view.yaw),sy=Math.sin(view.yaw)
   const x1=p[0]*cy_-p[2]*sy, z1=p[0]*sy+p[2]*cy_; const y2=p[1]*cp-z1*sp, z2=p[1]*sp+z1*cp; const f=CAM/Math.max(CAM-z2,CAM*0.35); return [cx+x1*f*sc+view.pan[0], cy-y2*f*sc+view.pan[1], z2] }
 function draw(){
   const r=cv.getBoundingClientRect(); if(!(r.width>1&&r.height>1)) return; // v2.21: the 3D lives on the Plan tab — skip the draw while that panel is hidden instead of clearing the canvas
-  const dpr=Math.min(2,window.devicePixelRatio||1); if(cv.width!==r.width*dpr||cv.height!==r.height*dpr){cv.width=r.width*dpr;cv.height=r.height*dpr}
+  // v2.55 — FAST WHILE A FINGER IS DOWN (Stephen 2026-09-26: "the 3D got choppy"): a rotate redrew the whole picture at 2× with an outline on
+  // every one of ~3,000 faces AND re-projected the airflow over it on every pointer move — about four times the cost of the picture alone. While
+  // the viewer is being dragged, pinched or wheeled (view.fast) it draws at 1× with no face outlines and no airflow, one draw per animation frame;
+  // the release draws it crisp again with the streaks. Nothing about the picture at rest changes.
+  const fast=!!view.fast; const dpr=fast?1:Math.min(2,window.devicePixelRatio||1); if(cv.width!==r.width*dpr||cv.height!==r.height*dpr){cv.width=r.width*dpr;cv.height=r.height*dpr}
   ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,r.width,r.height);
   // v2.37 — SAFETY NET: one box with a bad number used to take the WHOLE picture down. The scene bounding box
   // went NaN, the auto-fit scale went NaN with it, and every face projected to nothing — a blank canvas with the
@@ -3102,7 +3107,7 @@ function draw(){
   faces.forEach(f=>{ const b=f.b; const [nx,ny,nz]=f.nrm; const cy_=Math.cos(view.yaw),sy=Math.sin(view.yaw); const lx=nx*cy_-nz*sy, lz=nx*sy+nz*cy_; const shade=0.55+0.45*Math.max(0,(lx*light[0]+ny*light[1]+lz*light[2]));
     ctx.beginPath(); f.pts.forEach((p,i)=>i?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1])); ctx.closePath();
     if(b.wire){ ctx.strokeStyle=b.color; ctx.setLineDash(b.dash||[6,4]); ctx.lineWidth=b.lw||1.5; ctx.stroke(); ctx.setLineDash([]); if(b.fill){ctx.fillStyle=b.fill;ctx.fill()} }
-    else { const col=b.color; ctx.fillStyle=hexA(col,b.alpha,shade); ctx.fill(); ctx.strokeStyle=`rgba(255,255,255,${b.alpha<1?.35:.55})`; ctx.lineWidth=1; ctx.stroke(); }
+    else { const col=b.color; ctx.fillStyle=hexA(col,b.alpha,shade); ctx.fill(); if(!fast){ ctx.strokeStyle=`rgba(255,255,255,${b.alpha<1?.35:.55})`; ctx.lineWidth=1; ctx.stroke() } }
   });
   // labels — v2.11: filtered by the Info / Chokepoints toggles. A red or orange note is a "chokepoint" note; everything else is Info.
   // v2.42: a viewer can carry its own note mode — 'all' · 'flag' (problems only) · 'changes' (problems + what is new) · 'none' — else the Info / Chokepoints toggles decide
@@ -3116,6 +3121,7 @@ function draw(){
   // up or down until it overlaps nothing, is kept inside the canvas, and gets a thin leader back to the spot it describes
   // when it had to move. Red / orange notes are placed first so a problem is never the one pushed aside.
   declutterLabels(lbls,r);
+  if(fast){ flowPause(cv); return } // v2.55: no airflow while the finger is down — the loop is parked so it cannot blit a stale picture over the turning one
   flowAfterDraw(r,dpr,P,faces); // v2.50: the airflow goes on last, over the finished picture (and keeps drifting from here on) · v2.51: the faces go with it, so air behind something nearer is drawn as a ghost
 }
 // v2.44 — A RADIUSED ELBOW (Stephen 2026-09-20: "make clean bends on the return or supply ducts"). b.bend = {c: the corner where the two duct
@@ -3170,14 +3176,14 @@ function bendFrom(P0,dIn,side,R,th,cs,color,alpha,extra){ const u=[-dIn[0],-dIn[
 // item: b.tube = {p0,p1,a,h,round}; drawn as a 12-sided (or 4-sided) prism about the p0→p1 axis, sorted with the faces like everything else.
 function tubeBasis(p0,p1){ const ax=[p1[0]-p0[0],p1[1]-p0[1],p1[2]-p0[2]]; const L=Math.hypot(ax[0],ax[1],ax[2])||1; const a=[ax[0]/L,ax[1]/L,ax[2]/L]; const ref=Math.abs(a[1])<0.9?[0,1,0]:[1,0,0];
   let e1=[ref[1]*a[2]-ref[2]*a[1],ref[2]*a[0]-ref[0]*a[2],ref[0]*a[1]-ref[1]*a[0]]; const l1=Math.hypot(e1[0],e1[1],e1[2])||1; e1=[e1[0]/l1,e1[1]/l1,e1[2]/l1]; const e2=[a[1]*e1[2]-a[2]*e1[1],a[2]*e1[0]-a[0]*e1[2],a[0]*e1[1]-a[1]*e1[0]]; return {a,e1,e2,L} }
-function tubeRings(t){ const {p0,p1,a,h,round}=t; const B=tubeBasis(p0,p1); const NP=round?12:4; const r0=[],r1=[],nr=[];
-  for(let j=0;j<NP;j++){ let dm,dn; if(round){ const ph=j/NP*2*Math.PI; dm=Math.cos(ph)*h/2; dn=Math.sin(ph)*a/2 } else { const sq=[[1,1],[-1,1],[-1,-1],[1,-1]][j]; dm=sq[0]*h/2; dn=sq[1]*a/2 }
-    const off=[B.e1[0]*dm+B.e2[0]*dn,B.e1[1]*dm+B.e2[1]*dn,B.e1[2]*dm+B.e2[2]*dn]; r0.push([p0[0]+off[0],p0[1]+off[1],p0[2]+off[2]]); r1.push([p1[0]+off[0],p1[1]+off[1],p1[2]+off[2]]); const ln=Math.hypot(off[0],off[1],off[2])||1; nr.push([off[0]/ln,off[1]/ln,off[2]/ln]) }
+function tubeRings(t){ const {p0,p1,a,h,round}=t; const a2=t.a2!=null?t.a2:a, h2=t.h2!=null?t.h2:h; const B=tubeBasis(p0,p1); const NP=round?12:4; const r0=[],r1=[],nr=[]; // v2.55: a2 / h2 = the size at p1 (a reducer)
+  for(let j=0;j<NP;j++){ let dm,dn,dm2,dn2; if(round){ const ph=j/NP*2*Math.PI; dm=Math.cos(ph)*h/2; dn=Math.sin(ph)*a/2; dm2=Math.cos(ph)*h2/2; dn2=Math.sin(ph)*a2/2 } else { const sq=[[1,1],[-1,1],[-1,-1],[1,-1]][j]; dm=sq[0]*h/2; dn=sq[1]*a/2; dm2=sq[0]*h2/2; dn2=sq[1]*a2/2 }
+    const off=[B.e1[0]*dm+B.e2[0]*dn,B.e1[1]*dm+B.e2[1]*dn,B.e1[2]*dm+B.e2[2]*dn], off2=[B.e1[0]*dm2+B.e2[0]*dn2,B.e1[1]*dm2+B.e2[1]*dn2,B.e1[2]*dm2+B.e2[2]*dn2]; r0.push([p0[0]+off[0],p0[1]+off[1],p0[2]+off[2]]); r1.push([p1[0]+off2[0],p1[1]+off2[1],p1[2]+off2[2]]); const ln=Math.hypot(off[0],off[1],off[2])||1; nr.push([off[0]/ln,off[1]/ln,off[2]/ln]) }
   return {r0,r1,nr,B,NP} }
 function tubeFaces(b,P,faces){ const {r0,r1,nr,B,NP}=tubeRings(b.tube);
   for(let i=0;i<NP;i++){ const j=(i+1)%NP; const pts=[r0[i],r0[j],r1[j],r1[i]].map(P); faces.push({pts,depth:pts.reduce((s_,p)=>s_+p[2],0)/4,b,nrm:[(nr[i][0]+nr[j][0])/2,(nr[i][1]+nr[j][1])/2,(nr[i][2]+nr[j][2])/2]}) }
   [[r0,B.a.map(v=>-v)],[r1,B.a]].forEach(([ring,nn])=>{ const pts=ring.map(P); faces.push({pts,depth:pts.reduce((s_,p)=>s_+p[2],0)/pts.length,b,nrm:nn}) }) }
-function pushTube(p0,p1,cs,color,alpha,extra){ const t={p0,p1,a:cs.a,h:cs.h,round:!!cs.round}; const {r0,r1}=tubeRings(t); const all=r0.concat(r1); if(!all.every(p=>p.every(isFinite))) return null;
+function pushTube(p0,p1,cs,color,alpha,extra){ const t={p0,p1,a:cs.a,h:cs.h,round:!!cs.round}; if(cs.a2!=null){ t.a2=cs.a2; t.h2=cs.h2!=null?cs.h2:cs.a2 } const {r0,r1}=tubeRings(t); const all=r0.concat(r1); if(!all.every(p=>p.every(isFinite))) return null;
   const mn=[0,1,2].map(k=>Math.min(...all.map(p=>p[k]))), mx=[0,1,2].map(k=>Math.max(...all.map(p=>p[k])));
   return sceneAdd(Object.assign({tube:t,x:mn[0],y:mn[1],z:mn[2],dx:Math.max(mx[0]-mn[0],0.1),dy:Math.max(mx[1]-mn[1],0.1),dz:Math.max(mx[2]-mn[2],0.1),color,alpha,noshadow:true},extra||{})) }
 // v2.44 — THE FULL NEW DUCT SYSTEM ON THE 3D (Stephen 2026-09-20: "if we did a full duct system, illustrate that in some way").
@@ -3196,98 +3202,124 @@ function ductTree(AM){ // → {arms:[{k,segs:[{d,add,carry,room,taps:[{d,side,ru
       const taps=((r.taps&&r.taps.length)?r.taps:rbrGeom(r)).map(tp=>({d:(r.branch&&r.branch.d)||8,side,run:r.run||12,px:tp.x,py:tp.y!=null?tp.y:rbrCy(r),legs:(tp.regs||[]).map(x=>({d:(r.leg&&r.leg.d)||8,can:r.can||9,face:(x.g&&x.g.face)||r.faceK,px:x.x,py:x.y!=null?x.y:rbrCy(r)}))}));
       segs.push({d,add:sg?(sg.add||[]):[],carry:sg?sg.carry:null,room:r.n,taps,pz0:sg?sg.from:null,pz1:sg?sg.to:rbrCx(r)}) });  // v2.54: pz0/pz1 · px/py = the real plan positions, in feet
     arms.push({k,segs}) });
-  return arms.length?{arms,runs:RM.vents,per:Math.round(RM.Qup/Math.max(1,RM.vents)),rbr:true,plan:!!S.plan}:null }
+  return arms.length?{arms,runs:RM.vents,per:Math.round(RM.Qup/Math.max(1,RM.vents)),rbr:true,plan:!!S.plan,ux,uy}:null }
 function ductTreeFromRuns(items,AM){ // no room design: the runs, dealt over two arms; the trunk sized for what each segment still carries
   const runs=(items||[]).filter(it=>!it.down); if(!runs.length) return null; const n=runs.length; const per=Math.round(AM.design/Math.max(1,n));
   const fr=(AM.md&&AM.md.frUse)||0.08, mat=S.f.dr_supm||'flex'; const byArm={L:[],R:[]}; runs.forEach((it,i)=>(i%2?byArm.R:byArm.L).push(it));
   const arms=[]; ['L','R'].forEach(k=>{ const rs=byArm[k]; if(!rs.length) return;
-    const segs=rs.map((it,i)=>{ const d=it.d||Math.max(it.w||8,it.h||8); const carry=per*(rs.length-i); const sz=mdSizeRound(Math.max(carry,1),fr,mat,'sup');
-      return {d:sz.d,add:sz.add||[],carry,room:null,taps:[{d,side:i%2?-1:1,run:12+i*3,legs:[{d,can:null,face:null}]}]} }); arms.push({k,segs}) });
-  return {arms,runs:n,per,rbr:false} }
-function trunkOutRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms.length) return; if(T.plan&&S.plan){ planDuctRuns(base,plane,opt); return } const NEWM='#a9d9bd'; const up=!!plane.up; const dn=up?1:-1; const FAR=72; // base = {x: where the arms tee off the plenum, y: its centreline, zA / zB: its two side faces}
-  const add=o=>sceneAdd(Object.assign({color:NEWM,alpha:.85,noshadow:true,nw:true,cls:'ok',duct:true},o)); // v2.53: every piece of the new duct system is tagged `duct` so the Focus chip can frame the unit without it, or it alone
-  const cyl=(x,y,z,dx,dy,dz,ax,o)=>add(Object.assign({x,y,z,dx,dy,dz,cyl:ax},o||{}));
-  const bend=(C,u,v,d,R,o)=>pushBend(C,u,v,{a:d,h:d,round:true},R,NEWM,.85,Object.assign({nw:true,cls:'ok',duct:true},o||{}));
-  const yC=base.y, vAvail=Math.abs(yC-plane.y); let first=true, canLbl=true, tyLbl=true;
-  const regCls=(opt.regCls==='bad'||opt.regCls==='warn')?opt.regCls:'';
-  // the last leg: from the corner on its line, sweep down onto the ceiling (or up to a floor) and land on a square can with its register
-  const legR=d=>bendR({a:d,b:d,round:true},12,vAvail*0.8); // the radius of the bend that turns a leg down — sized once, used by the straight leg and the bend alike
-  const land=(x,z,d,can,face,u,far,R)=>{ R=R||legR(d); if(vAvail<R+1) return false;
-    flB(bend([x,yC,z],u,[0,dn,0],d,R,{nofit:far}),1,'s'); const yA=up?yC+R:plane.y, yB=up?plane.y:yC-R; if(yB-yA>0.5) fl(cyl(x-d/2,yA,z-d/2,d,yB-yA,d,'y',{nofit:far}),'y',dn,'s');
-    const cy=up?plane.y-6:plane.y-4; fl(add({x:x-can/2,y:cy,z:z-can/2,dx:can,dy:6,dz:can,alpha:.9,nofit:far,la:[0.5,up?0:1,0.5],label:canLbl?`${can}×${can} can · ${REG_FACE[face||regNew()].short} register`:null}),'y',dn,'s'); canLbl=false;
-    flV(add({x:x-can/2-1,y:up?plane.y+0.4:plane.y-5.4,z:z-can/2-1,dx:can+2,dy:1.2,dz:can+2,color:'#eef3f7',alpha:.95,nofit:far}),'out',[0,dn,0],'s',regCls); return true };
-  T.arms.forEach(arm=>{ const dir=arm.k==='L'?-1:1; const z0=dir>0?base.zA:base.zB; let z=z0;
-    arm.segs.forEach((sg,si)=>{ const D=sg.d||8; const head=si===0?16:10; const room=sg.taps.map(tp=>(tp.legs&&tp.legs.length>1)?24:0); const len=head+sg.taps.reduce((s,tp,i)=>s+room[i]*2+14,0)+2; const far=Math.abs(z-z0)>FAR; // v2.53: a TY's two legs reach along the trunk both ways, so its tap gets room either side
-      fl(cyl(base.x-D/2,yC-D/2,Math.min(z,z+dir*len),D,D,len,'z',{nofit:far,la:[0.5,1,0.5],label:first?opt.label:(sg.room?`Ø${fmt(D)}" trunk → ${sg.room}${sg.carry?' · '+CFM(sg.carry)+' CFM':''}`:null)}),'z',dir,'s'); first=false; // the trunk steps down here
-      (sg.add||[]).forEach((a,ai)=>{ const ad=a.d||8; fl(cyl(base.x-ad/2,yC+D/2+2+ai*(ad+2),Math.min(z,z+dir*len),ad,ad,len,'z',{nofit:far}),'z',dir,'s') }); // v2.48: a 20" plus the run that carries the rest, beside it
-      let at=head; sg.taps.forEach((tp,ti)=>{ const zt=z+dir*(at+room[ti]); at+=room[ti]*2+14; const s=tp.side||1, d=tp.d||8; const xs=base.x+s*D/2; const L=Math.max(18,Math.min(44,14+(tp.run||12)*1.8)); const xe=xs+s*L; const legs=(tp.legs&&tp.legs.length)?tp.legs:[{d}];
-        if(legs.length<2){ const lg=legs[0]; const can=lg.can||rbrCanFor(T.per,lg.d||d); const R=bendR({a:d,b:d,round:true},L,vAvail*0.8); if(vAvail<R+1) return; // one leg: the branch runs out and turns down onto its can
-          fl(cyl(Math.min(xs,xe-s*R),yC-d/2,zt-d/2,Math.max(L-R,2),d,d,'x',{nofit:far}),'x',s,'s'); land(xe,zt,d,can,lg.face,[-s,0,0],far,R) }
-        else { const ld=legs[0].d||d; // v2.53 — a ROUND REDUCING WYE (Stephen 2026-09-26: "a 12" coming in then splits left and right, round clean long radius bend to the smaller duct"):
-          // the branch runs to the wye's inlet; each leg leaves it through a 45° long-radius bend that tapers from the branch size to the leg size, runs on
-          // at 45° (the Y), turns the last 45° through a second bend so it lies along the trunk's line, and then sweeps down onto its can and register.
-          const Rw=Math.max(ld,Math.min(1.5*ld,L*0.45)), Ls=8, Rw2=Math.max(4,ld*0.9), LL=4; const xIn=xs+s*Math.max(L-10,6);
-          fl(cyl(Math.min(xs,xIn),yC-d/2,zt-d/2,Math.max(Math.abs(xIn-xs),2),d,d,'x',{nofit:far}),'x',s,'s');
-          legs.slice(0,3).forEach((lg,li)=>{ const can=lg.can||rbrCanFor(T.per,ld); const R2=legR(ld); if(vAvail<R2+1) return;
-            if(li<2){ const dz_=li?-1:1; const w=bendFrom([xIn,yC,zt],[s,0,0],[0,0,dz_],Rw,Math.PI/4,{a:d,h:d,a2:ld,h2:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:far,la:[0.5,1,0.5],label:(tyLbl&&li===0)?`TY ${fmt(d)}×${fmt(ld)}×${fmt(ld)}`:null}); if(!w.b) return; flB(w.b,1,'s'); tyLbl=false; // the wye's own leg — the metal fitting, reducing as it goes
-              const e1=w.end, d1=w.dir; const p2=[e1[0]+d1[0]*Ls,e1[1],e1[2]+d1[2]*Ls]; flT(pushTube(e1,p2,{a:ld,h:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:far}),1,'s'); // the Y: the leg runs on at 45°
-              const w2=bendFrom(p2,d1,[-s*Math.SQRT1_2,0,dz_*Math.SQRT1_2],Rw2,Math.PI/4,{a:ld,h:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:far}); if(!w2.b) return; flB(w2.b,1,'s'); // the 45° elbow that lays it along the trunk's line
-              const e2=w2.end; const zEnd=e2[2]+dz_*(LL+R2); const za=e2[2], zb=zEnd-dz_*R2; if(Math.abs(zb-za)>0.5) fl(cyl(e2[0]-ld/2,yC-ld/2,Math.min(za,zb),ld,ld,Math.abs(zb-za),'z',{nofit:far}),'z',dz_,'s');
-              land(e2[0],zEnd,ld,can,lg.face,[0,0,-dz_],far,R2) }
-            else { const x0=xIn, xE=xIn+s*(14+R2), x1=xE-s*R2; fl(cyl(Math.min(x0,x1),yC-ld/2,zt-ld/2,Math.max(Math.abs(x1-x0),1),ld,ld,'x',{nofit:far}),'x',s,'s'); land(xE,zt,ld,can,lg.face,[-s,0,0],far,R2) } }) } });
-      z+=dir*len }) }) }
+    const dir=k==='L'?-1:1; const segs=rs.map((it,i)=>{ const d=it.d||Math.max(it.w||8,it.h||8); const carry=per*(rs.length-i); const sz=mdSizeRound(Math.max(carry,1),fr,mat,'sup');
+      const px=dir*(4+4*i), py=(i%2?1:-1)*(5+i); // v2.55: dealt runs get positions of their own — 4 ft apart along the trunk, 5–8 ft out, alternating sides — so they draw through the one layout
+      return {d:sz.d,add:sz.add||[],carry,room:null,pz0:dir*(1+4*i),pz1:dir*(5+4*i),taps:[{d,side:i%2?-1:1,run:12+i*3,px,py,legs:[{d,can:null,face:null,px,py}]}]} }); arms.push({k,segs}) });
+  return {arms,runs:n,per,rbr:false,ux:0,uy:0} }
+function trunkOutRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms.length) return; planDuctRuns(base,plane,opt) } // v2.55: every new duct system — the scan's, the grid's, the dealt runs' — is laid out by planDuctRuns at real positions
 // v2.54 — THE DUCT SYSTEM ON THE REAL PLAN (Stephen 2026-09-26: "the duct design overlaid over the actual home floor plan … the 3D duct design on the
-// plan tab"). With a scanned floor plan the 3D no longer draws the compressed topology: the plan is laid flat at the ceiling under the unit at true
-// scale (12" to the foot — a 40 ft run IS 40 ft), every room a translucent slab with its name, every wall a line, and the trunk arms, take-offs,
-// wyes and legs run to each register's real position. The drop the SM placed on the plan is where the plenum is. The Focus chip frames it:
-// Unit stays tight on the equipment, Ducts / Both take in the whole house. Every piece is `duct` and `nofit` — the fit check never sees the house.
-function planDuctRuns(base,plane,opt){ const T=opt.tree, P=S.plan; if(!P||!RM||!T||!T.arms||!T.arms.length) return; const NEWM='#a9d9bd'; const up=!!plane.up; const dn=up?1:-1; const K=12;
-  const add=o=>sceneAdd(Object.assign({color:NEWM,alpha:.85,noshadow:true,nw:true,cls:'ok',duct:true,nofit:true},o));
+// plan tab"). The plan is laid flat at the ceiling under the unit at true scale (12" to the foot — a 40 ft run IS 40 ft), every room a translucent
+// slab with its name, every wall a line, and the trunk arms, take-offs, wyes and legs run to each register's real position. The drop the SM placed
+// on the plan is where the plenum is. The Focus chip frames it: Unit stays tight on the equipment, Ducts / Both take in the whole house. Every
+// piece is `duct` and `nofit` — the fit check never sees the house.
+// v2.55 — ONE LAYOUT, AND IT CLOSES UP (Stephen 2026-09-26: "the duct bends aren't there, some duct doesn't fully connect to its end, a split with
+// 3 runs brought them all back to one duct but the TY structure was odd"). The hand-laid grid and the dealt runs (the crew-scope duct tick with no
+// rooms) go through this same code at their own positions — the v2.52 compressed topology (branches 18–44" long, the two TY legs curling back
+// beside the trunk in a "B", cans a few inches apart) is gone. A trunk arm ends right past its last take-off collar, never 20–40" beyond it, and
+// every segment reaches every collar it carries. A TY is scaled to the register spacing it has to reach, so a leg never overshoots or hooks. A
+// branch that would run through the unit (a room behind the furnace on a horizontal split) lifts over the cabinet through four radiused bends
+// and comes back down past it. Nothing here is fit-checked (`nofit`); everything is `duct` for the Focus chip and tagged for the airflow.
+function planDuctRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms.length) return; const P=S.plan; const NEWM='#a9d9bd'; const up=!!plane.up; const dn=up?1:-1; const K=12;
+  const X={nw:true,cls:'ok',duct:true,nofit:true};
+  const add=o=>sceneAdd(Object.assign({color:NEWM,alpha:.85,noshadow:true},X,o));
   const cyl=(x,y,z,dx,dy,dz,ax,o)=>add(Object.assign({x,y,z,dx,dy,dz,cyl:ax},o||{}));
-  const bend=(C,u,v,d,R,o)=>pushBend(C,u,v,{a:d,h:d,round:true},R,NEWM,.85,Object.assign({nw:true,cls:'ok',duct:true,nofit:true},o||{}));
-  const ux=RM.ux, uy=RM.uy, zc=(base.zA+base.zB)/2;
+  const bend=(C,u,v,d,R,o)=>pushBend(C,u,v,{a:d,h:d,round:true},R,NEWM,.85,Object.assign({},X,o||{}));
+  const bf=(P0,dIn,side,R,th,cs,o)=>bendFrom(P0,dIn,side,R,th,cs,NEWM,.85,Object.assign({},X,o||{}));
+  const tube=(p0,p1,d)=>pushTube(p0,p1,{a:d,h:d,round:true},NEWM,.85,Object.assign({},X));
+  const ux=T.ux||0, uy=T.uy||0, zc=(base.zA+base.zB)/2;
   const SZ=px=>zc+(px-ux)*K, SX=py=>base.x-(py-uy)*K;           // plan x runs along the trunk (scene z); plan y runs across it (scene x)
   const yC=base.y, vAvail=Math.abs(yC-plane.y);
-  // ---- the house, at the ceiling: rooms as slabs, walls as lines, names as notes
+  // ---- the house at the ceiling (a room design): the scan's polygons or the grid's rectangles as slabs, the names as notes, the scan's walls as lines
   const yP=up?plane.y+7:plane.y-7;
-  S.rooms.filter(r=>r.poly).forEach(r=>{ const pts=r.poly.map(p=>[SX(p[1]),yP,SZ(p[0])]); const xs=pts.map(p=>p[0]), zs=pts.map(p=>p[2]);
-    scene.push({quad:pts,color:r.nr?'rgba(150,160,170,.22)':(r.ld==='high'?'rgba(255,190,120,.26)':'rgba(120,175,225,.26)'),stroke:'rgba(255,255,255,.45)',x:Math.min(...xs),y:yP,z:Math.min(...zs),dx:Math.max(...xs)-Math.min(...xs),dy:0.1,dz:Math.max(...zs)-Math.min(...zs),nofit:true,duct:true});
-    scene.push({marker:true,label:rbrEsc(r.n)+(r.nr?'':' · '+CFM(r.cfm)+' CFM'),cls:'plan',x:SX(r.cy),y:yP,z:SZ(r.cx),dx:0,dy:0,dz:0,nofit:true,duct:true}) });
-  const lines=(sceneLines||[]).slice(); P.walls.forEach(w=>lines.push([[SX(w[1]),yP,SZ(w[0])],[SX(w[3]),yP,SZ(w[2])],2.2])); sceneLines=lines;
-  // ---- the runs
+  if(T.rbr){ S.rooms.forEach(r=>{ const poly=r.poly||[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.d],[r.x,r.y+r.d]]; const pts=poly.map(p=>[SX(p[1]),yP,SZ(p[0])]); const xs=pts.map(p=>p[0]), zs=pts.map(p=>p[2]);
+      scene.push({quad:pts,color:r.nr?'rgba(150,160,170,.22)':(r.ld==='high'?'rgba(255,190,120,.26)':'rgba(120,175,225,.26)'),stroke:'rgba(255,255,255,.45)',x:Math.min(...xs),y:yP,z:Math.min(...zs),dx:Math.max(...xs)-Math.min(...xs),dy:0.1,dz:Math.max(...zs)-Math.min(...zs),nofit:true,duct:true});
+      scene.push({marker:true,label:rbrEsc(r.n)+(r.nr?'':' · '+CFM(r.cfm)+' CFM'),cls:'plan',x:SX(rbrCy(r)),y:yP,z:SZ(rbrCx(r)),dx:0,dy:0,dz:0,nofit:true,duct:true}) });
+    if(P&&P.walls){ const lines=(sceneLines||[]).slice(); P.walls.forEach(w=>lines.push([[SX(w[1]),yP,SZ(w[0])],[SX(w[3]),yP,SZ(w[2])],2.2])); sceneLines=lines } }
+  // ---- what a branch must clear: every solid piece already drawn that is not the new duct system (cabinets, plenums, the return run) — never a ghost, a plane, a note or the ceiling
+  const solids=scene.filter(b=>!b.duct&&!b.nofit&&!b.quad&&!b.marker&&!b.wire&&!b.poly&&isFinite(b.x)&&isFinite(b.dx)&&b.dx>0.5&&b.dy>0.5&&b.dz>0.5);
+  const hits=(x0,x1,y0,y1,z0,z1)=>solids.filter(b=>x1>b.x+0.5&&x0<b.x+b.dx-0.5&&y1>b.y+0.5&&y0<b.y+b.dy-0.5&&z1>b.z+0.5&&z0<b.z+b.dz-0.5);
   let first=true, canLbl=true, tyLbl=true; const regCls=(opt.regCls==='bad'||opt.regCls==='warn')?opt.regCls:'';
   const legR=d=>bendR({a:d,b:d,round:true},12,vAvail*0.8);
-  const land=(x,z,d,can,face,u,R)=>{ R=R||legR(d); if(vAvail<R+1) return false;
-    flB(bend([x,yC,z],u,[0,dn,0],d,R),1,'s'); const yA=up?yC+R:plane.y, yB=up?plane.y:yC-R; if(yB-yA>0.5) fl(cyl(x-d/2,yA,z-d/2,d,yB-yA,d,'y'),'y',dn,'s');
+  // the last leg: from the corner on its line, sweep down onto the ceiling (or up to a floor) and land on a square can with its register
+  const land=(x,z,d,can,face,u,R,yFrom)=>{ R=R||legR(d); if(vAvail<R+1) return false; const yL=yFrom==null?yC:yFrom;   // v2.55: a leg may come down from a branch that runs over the unit
+    flB(bend([x,yL,z],u,[0,dn,0],d,R),1,'s'); const yA=up?yL+R:plane.y, yB=up?plane.y:yL-R; if(yB-yA>0.5) fl(cyl(x-d/2,yA,z-d/2,d,yB-yA,d,'y'),'y',dn,'s');
     const cy=up?plane.y-6:plane.y-4; fl(add({x:x-can/2,y:cy,z:z-can/2,dx:can,dy:6,dz:can,alpha:.9,la:[0.5,up?0:1,0.5],label:canLbl?`${can}×${can} can · ${REG_FACE[face||regNew()].short} register`:null}),'y',dn,'s'); canLbl=false;
     flV(add({x:x-can/2-1,y:up?plane.y+0.4:plane.y-5.4,z:z-can/2-1,dx:can+2,dy:1.2,dz:can+2,color:'#eef3f7',alpha:.95}),'out',[0,dn,0],'s',regCls); return true };
-  T.arms.forEach(arm=>{ const dir=arm.k==='L'?-1:1; let zPrev=dir>0?base.zA:base.zB;
-    arm.segs.forEach(sg=>{ const D=sg.d||8; const z0=zPrev, z1=sg.pz1!=null?SZ(sg.pz1):zPrev+dir*24; const len=Math.abs(z1-z0);
-      if(len>0.5){ fl(cyl(base.x-D/2,yC-D/2,Math.min(z0,z1),D,D,len,'z',{la:[0.5,1,0.5],label:first?opt.label:null}),'z',dir,'s'); first=false;   // the 2D carries every segment's size and length; here only the system note
-        (sg.add||[]).forEach((a,ai)=>{ const ad=a.d||8; fl(cyl(base.x-ad/2,yC+D/2+2+ai*(ad+2),Math.min(z0,z1),ad,ad,len,'z'),'z',dir,'s') }) }   // v2.48: a 20" plus the run beside it
-      zPrev=z1;
-      sg.taps.forEach(tp=>{ const s=tp.side||1, d=tp.d||8; const zt=tp.px!=null?SZ(tp.px):z1; const xs=base.x+s*D/2; const xe=tp.py!=null?SX(tp.py):xs+s*60; const L=Math.abs(xe-xs); const legs=(tp.legs&&tp.legs.length)?tp.legs:[{d}];
-        if(legs.length<2){ const lg=legs[0]; const can=lg.can||rbrCanFor(T.per,lg.d||d); const R=bendR({a:d,b:d,round:true},Math.max(L,6),vAvail*0.8); if(vAvail<R+1) return;
-          let xEnd=lg.py!=null?SX(lg.py):xe; const zEnd=lg.px!=null?SZ(lg.px):zt; if(Math.abs(xEnd-xs)<R+3) xEnd=xs+s*(R+3); const L2=Math.abs(xEnd-xs);   // one leg: the branch runs across to the register and turns down onto its can (a room sitting on the trunk line gets the shortest stub the bend allows)
-          if(Math.abs(zEnd-zt)>1){ // the register is not on the tap's line: run to its z first with a 90° corner, then across — a jog on the ceiling
-            const Rj=bendR({a:d,b:d,round:true},Math.max(Math.abs(zEnd-zt),4),Math.max(L2,4)); const dz_=zEnd>zt?1:-1;
-            fl(cyl(Math.min(xs,xs+s*(L2-Rj)),yC-d/2,zt-d/2,Math.max(L2-Rj,1),d,d,'x'),'x',s,'s'); // across, short of the corner
-            flB(bend([xs+s*L2,yC,zt],[-s,0,0],[0,0,dz_],d,Rj),1,'s');                                    // the corner
-            const zA=zt+dz_*Rj, zB=zEnd-dz_*R; if(Math.abs(zB-zA)>0.5) fl(cyl(xs+s*L2-d/2,yC-d/2,Math.min(zA,zB),d,d,Math.abs(zB-zA),'z'),'z',dz_,'s');
-            land(xs+s*L2,zEnd,d,can,lg.face,[0,0,-dz_],R); return }
-          fl(cyl(Math.min(xs,xEnd-s*R),yC-d/2,zt-d/2,Math.max(L2-R,2),d,d,'x'),'x',s,'s'); land(xEnd,zt,d,can,lg.face,[-s,0,0],R) }
-        else { const ld=legs[0].d||d; // a ROUND REDUCING WYE (v2.53), sized to reach the two registers where the plan puts them
-          let Rw=Math.max(ld,Math.min(1.5*ld,L*0.45)), Ls=8; const Rw2=Math.max(4,ld*0.9), R2=legR(ld);
-          let dxW=0.7071*Rw+0.7071*Ls+0.2929*Rw2; if(L<dxW+6){ const k=Math.max(0.35,(L-6)/dxW); Rw*=k; Ls*=k; dxW=0.7071*Rw+0.7071*Ls+0.2929*Rw2 }
-          const dzW=0.2929*Rw+0.7071*Ls+0.7071*Rw2; const xIn=xe-s*dxW;
-          if(vAvail<R2+1) return;
-          fl(cyl(Math.min(xs,xIn),yC-d/2,zt-d/2,Math.max(Math.abs(xIn-xs),2),d,d,'x'),'x',s,'s');
-          legs.slice(0,2).forEach((lg,li)=>{ const can=lg.can||rbrCanFor(T.per,ld); const zTarget=lg.px!=null?SZ(lg.px):zt+(li?-1:1)*(dzW+R2+12); let dz_=zTarget>zt?1:(zTarget<zt?-1:(li?-1:1)); if(li===1&&legs[0].px!=null&&Math.sign(SZ(legs[0].px)-zt)===dz_) dz_=-dz_; // the two legs leave opposite ways
-            const w=bendFrom([xIn,yC,zt],[s,0,0],[0,0,dz_],Rw,Math.PI/4,{a:d,h:d,a2:ld,h2:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:true,la:[0.5,1,0.5],label:(tyLbl&&li===0)?`TY ${fmt(d)}×${fmt(ld)}×${fmt(ld)}`:null}); if(!w.b) return; flB(w.b,1,'s'); tyLbl=false;
-            const e1=w.end, d1=w.dir; const p2=[e1[0]+d1[0]*Ls,e1[1],e1[2]+d1[2]*Ls]; flT(pushTube(e1,p2,{a:ld,h:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:true}),1,'s');
-            const w2=bendFrom(p2,d1,[-s*Math.SQRT1_2,0,dz_*Math.SQRT1_2],Rw2,Math.PI/4,{a:ld,h:ld,round:true},NEWM,.85,{nw:true,cls:'ok',duct:true,nofit:true}); if(!w2.b) return; flB(w2.b,1,'s');
-            const e2=w2.end; const LL=Math.max(0.5,Math.abs(zTarget-e2[2])*(Math.sign(zTarget-e2[2])===dz_?1:0)-R2); const zEnd=e2[2]+dz_*(LL+R2); const za=e2[2], zb=zEnd-dz_*R2; if(Math.abs(zb-za)>0.5) fl(cyl(e2[0]-ld/2,yC-ld/2,Math.min(za,zb),ld,ld,Math.abs(zb-za),'z'),'z',dz_,'s');
-            land(e2[0],zEnd,ld,can,lg.face,[0,0,-dz_],R2) }) } }) }) }) }
+  const trunkLbl=(sg,D)=>sg.room?`Ø${fmt(D)}" trunk → ${sg.room}${sg.carry?' · '+CFM(sg.carry)+' CFM':''}`:null;
+  // every collar, on the arm its OWN side of the plenum puts it (a room's tap can sit across the unit from the room's centroid — the 2D takes it off the trunk where it is, so does this)
+  const armOf={}; T.arms.forEach(arm=>{ armOf[arm.k]=arm }); const tapsBy={L:[],R:[]};
+  T.arms.forEach(arm=>(arm.segs||[]).forEach((sg,si)=>(sg.taps||[]).forEach(tp=>{ const lg0=(tp.legs&&tp.legs.length)?tp.legs:null; const d=(lg0&&lg0.length<2)?(lg0[0].d||tp.d||8):(tp.d||8); const k=tp.px!=null?(tp.px<ux?'L':'R'):arm.k; /* a one-leg tap's collar IS the leg's size */ const dir=k==='L'?-1:1; const zFace=dir>0?base.zA:base.zB;
+    let zt=tp.px!=null?SZ(tp.px):(zFace+dir*(14+si*40+d/2)); if((zt-zFace)*dir<d/2+3) zt=zFace+dir*(d/2+3); tapsBy[k].push({tp,sg,si:k===arm.k?si:-1,d,zt}) })));
+  ['L','R'].forEach(k=>{ const taps=tapsBy[k]; if(!taps.length) return; const dir=k==='L'?-1:1; const zFace=dir>0?base.zA:base.zB;
+    const segs=(armOf[k]&&armOf[k].segs&&armOf[k].segs.length)?armOf[k].segs:[{d:Math.max(...taps.map(t=>t.d)),add:[],carry:null,room:null,taps:[]}];   // a tap that crossed to an arm with no trunk of its own gets a stub trunk at its size
+    const zEndArm=zFace+dir*taps.reduce((m,t)=>Math.max(m,(t.zt-zFace)*dir+t.d/2+4),12);   // the arm ends right past its last collar
+    // the trunk: one cylinder per segment, stepping down through a reducer where the 2D reduces it (a collar sits on whichever segment is there, as on the 2D); the last segment runs to the arm's end
+    let zPrev=zFace; const pieces=[]; segs.forEach((sg,si)=>{ const D=sg.d||8; const last=si===segs.length-1; let reach=last?zEndArm:(sg.pz1!=null?SZ(sg.pz1):zPrev+dir*48);
+      let z1=(reach-zEndArm)*dir>0?zEndArm:reach; if((z1-zPrev)*dir<0) z1=zPrev; const D2=last?D:(segs[si+1].d||8); const rlNeed=(D2<D)?Math.max(4,(D-D2)*1.5):0;
+      if(!last&&(z1-zPrev)*dir<rlNeed+2){ pieces.push({z0:zPrev,z1,D}); return }   // a segment the plan squeezes to less than its reducer needs (a room centred on the plenum) is skipped — the next one carries on from here
+      const rl=Math.min(rlNeed,Math.max(0,Math.abs(z1-zPrev)-2)); const zs=z1-dir*rl; const len=Math.abs(zs-zPrev);   // the reducer takes the tail of the bigger piece
+      pieces.push({z0:zPrev,z1,D});
+      if(len>0.5){ fl(cyl(base.x-D/2,yC-D/2,Math.min(zPrev,zs),D,D,len,'z',{la:[0.5,1,0.5],label:first?opt.label:trunkLbl(sg,D)}),'z',dir,'s'); first=false }
+      if(rl>0.5) flT(pushTube([base.x,yC,zs],[base.x,yC,z1],{a:D,h:D,a2:D2,h2:D2,round:true},NEWM,.85,Object.assign({},X,{la:[0.5,1,0.5],label:first?opt.label:null})),1,'s'); if(rl>0.5) first=false;   // v2.55: a concentric reducer, never a big pipe's open end against a smaller one
+      (sg.add||[]).forEach((a,ai)=>{ const ad=a.d||8; fl(cyl(base.x-ad/2,yC+D/2+2+ai*(ad+2),Math.min(zPrev,z1),ad,ad,Math.abs(z1-zPrev),'z'),'z',dir,'s') });   // v2.48: a 20" plus the run beside it
+      zPrev=z1 });
+    const Dat=z=>{ const p=pieces.find(q=>(z-q.z0)*dir>=-0.01&&(z-q.z1)*dir<=0.01); return p?p.D:(pieces.length?pieces[pieces.length-1].D:8) };   // the trunk's size under a collar — the collar starts on THAT piece's surface
+    // a LEVEL RUN at the trunk's height from (x,z) to `to` along one axis. Anything solid in its way (the cabinets, the plenums, the return run) is
+    // cleared over the top: the run climbs through a radiused bend, crosses above it, and drops back to the level through four bends in all.
+    const levelRun=(x,z,ax,s,d,to,yL)=>{ const from=ax==='x'?x:z; if((to-from)*s<=0.5) return; const yC0=yL==null?yC:yL;
+      const box=ax==='x'?[Math.min(x,to),Math.max(x,to),z-d/2,z+d/2]:[x-d/2,x+d/2,Math.min(z,to),Math.max(z,to)]; const h=hits(box[0],box[1],yC0-d/2,yC0+d/2,box[2],box[3]);
+      const seg=(a,b,y)=>{ const len=Math.abs(b-a); if(len<0.5) return; const yy=y==null?yC0:y; if(ax==='x') fl(cyl(Math.min(a,b),yy-d/2,z-d/2,len,d,d,'x'),'x',s,'s'); else fl(cyl(x-d/2,yy-d/2,Math.min(a,b),d,d,len,'z'),'z',s,'s') };
+      if(!h.length){ seg(from,to); return }
+      const R=Math.max(3,Math.min(d,vAvail*0.4)); const yTop=Math.max(...h.map(b=>b.y+b.dy))+6+d/2; const cs={a:d,h:d,round:true};
+      const lo=Math.min(...h.map(b=>ax==='x'?b.x:b.z)), hi=Math.max(...h.map(b=>ax==='x'?b.x+b.dx:b.z+b.dz)); const near=(s>0?lo:hi)-s*(d/2+6), far=(s>0?hi:lo)+s*(d/2+6);
+      const A=ax==='x'?[s,0,0]:[0,0,s]; const at=(c,y)=>ax==='x'?[c,y,z]:[x,y,c]; const riser=(c,y0,y1,dy)=>{ if(y1-y0>0.5){ const p=at(c,0); fl(cyl(p[0]-d/2,y0,p[2]-d/2,d,y1-y0,d,'y'),'y',dy,'s') } };
+      let cUp=near-s*2*R; if((cUp-from)*s<0) cUp=from; seg(from,cUp);                                              // level up to the climb
+      const w1=bf(at(cUp,yC0),A,[0,1,0],R,Math.PI/2,cs); if(!w1.b){ seg(cUp,to); return } flB(w1.b,1,'s');         // up
+      const c1=cUp+s*R; riser(c1,yC0+R,yTop-R,1);
+      const w2=bf(at(c1,yTop-R),[0,1,0],A,R,Math.PI/2,cs); if(!w2.b) return; flB(w2.b,1,'s');                       // over
+      const c2=c1+s*R; let cB=far-s*R; if((cB-c2)*s<0) cB=c2; seg(c2,cB,yTop);                                       // across the top
+      const w3=bf(at(cB,yTop),A,[0,-1,0],R,Math.PI/2,cs); if(!w3.b) return; flB(w3.b,1,'s');                        // down
+      const c3=cB+s*R; riser(c3,yC0+R,yTop-R,-1);
+      const w4=bf(at(c3,yC0+R),[0,-1,0],A,R,Math.PI/2,cs); if(!w4.b) return; flB(w4.b,1,'s');                      // level again
+      seg(c3+s*R,to) };
+    // the branches: off the collar, across to the tap point, one leg down or a wye to two
+    taps.forEach(({tp,sg,d,zt})=>{ const s=tp.py!=null?(tp.py<uy?1:-1):(tp.side||1); const D=Dat(zt); let xs=base.x+s*D/2; const legs=(tp.legs&&tp.legs.length)?tp.legs:[{d}];
+      const ld=legs[0].d||d; const Rmin=legR(ld); let xe=tp.py!=null?SX(tp.py):xs+s*72; if((xe-xs)*s<Rmin+8) xe=xs+s*(Rmin+8);   // the tap point sits past the collar
+      // the branch's working height: the trunk's, unless the tap point or the wye it feeds sits inside the unit's footprint — then the branch climbs off
+      // its collar and runs OVER the unit (a room behind the furnace), and its legs drop from up there
+      const zAll=[zt].concat(legs.map(lg=>lg.px!=null?SZ(lg.px):zt)); const foot=hits(Math.min(xs,xe)-d,Math.max(xs,xe)+d,yC-d/2,yC+d/2,Math.min(...zAll)-d,Math.max(...zAll)+d);
+      let yB=yC; if(foot.length){ const yTop=Math.max(...foot.map(b=>b.y+b.dy))+6+d/2; const R=Math.max(3,Math.min(d,(yTop-yC-D/2)/2)); const cs={a:d,h:d,round:true};   // the collar goes on TOP of the trunk: straight up, then over toward the room
+        if((xe-(base.x+s*R))*s>R+6&&yTop-R>yC+D/2+0.5){ fl(cyl(base.x-d/2,yC+D/2,zt-d/2,d,yTop-R-(yC+D/2),d,'y'),'y',1,'s'); const w2=bf([base.x,yTop-R,zt],[0,1,0],[s,0,0],R,Math.PI/2,cs); if(w2.b){ flB(w2.b,1,'s'); xs=base.x+s*R; yB=yTop } } }
+      if(legs.length<2){ const lg=legs[0]; const can=lg.can||rbrCanFor(T.per,ld); const R=bendR({a:ld,b:ld,round:true},Math.max(Math.abs(xe-xs),6),Math.abs(yB-plane.y)*0.8); if(vAvail<R+1) return;
+        let xEnd=lg.py!=null?SX(lg.py):xe; const zEnd=lg.px!=null?SZ(lg.px):zt; if((xEnd-xs)*s<R+3) xEnd=xs+s*(R+3);
+        if(Math.abs(zEnd-zt)>R+3){ const dz_=zEnd>zt?1:-1; const Rj=bendR({a:ld,b:ld,round:true},Math.max(Math.abs(zEnd-zt)-R,2),Math.max(Math.abs(xEnd-xs),4));   // the register is off the tap's line: across, a corner, along its line, and down
+          levelRun(xs,zt,'x',s,ld,xEnd-s*Rj,yB); flB(bend([xEnd,yB,zt],[-s,0,0],[0,0,dz_],ld,Rj),1,'s'); levelRun(xEnd,zt+dz_*Rj,'z',dz_,ld,zEnd-dz_*R,yB); land(xEnd,zEnd,ld,can,lg.face,[0,0,-dz_],R,yB); return }
+        levelRun(xs,zt,'x',s,ld,xEnd-s*R,yB); land(xEnd,zt,ld,can,lg.face,[-s,0,0],R,yB); return }
+      // a ROUND REDUCING WYE (v2.53 — Stephen: "a 12" coming in then splits left and right, round clean long radius bend to the smaller duct"): the branch
+      // runs to the inlet; each leg leaves through a 45° long-radius bend tapering to the leg size, runs on at 45°, turns the last 45° through a second
+      // bend so it lies along the trunk's line at the register's x, runs to the register and sweeps down onto its can. v2.55: the fitting is scaled to the
+      // room it has — across (the branch) and along (the nearer register) — so a leg never overshoots its register or hooks back on itself.
+      const R2=legR(ld); if(vAvail<R2+1) return; const can0=lg=>lg.can||rbrCanFor(T.per,ld);
+      const two=legs.slice(0,2); const zT=two.map((lg,li)=>lg.px!=null?SZ(lg.px):zt+(li?-1:1)*48); let dz0=zT[0]>=zt?1:-1; if(Math.sign(zT[1]-zt)===dz0&&Math.abs(zT[1]-zt)>Math.abs(zT[0]-zt)) dz0=-dz0; const dzs=[dz0,-dz0];   // the two legs leave opposite ways, each toward its register where it can
+      let Rw=1.5*ld, Ls=8, Rw2=Math.max(4,ld*0.9); const L=Math.abs(xe-xs), LLmin=6;
+      const dxW=()=>0.7071*Rw+0.7071*Ls+0.2929*Rw2, dzW=()=>0.2929*Rw+0.7071*Ls+0.7071*Rw2;
+      const near=Math.min(...zT.map(z=>Math.abs(z-zt)));
+      let k=1; if(L<dxW()+8) k=Math.min(k,(L-8)/dxW()); if(near<dzW()+R2+LLmin) k=Math.min(k,(near-R2-LLmin)/dzW()); k=Math.max(0.35,Math.min(1,k)); Rw*=k; Ls*=k; Rw2=Math.max(3,Rw2*k);
+      const xIn=xe-s*dxW();   // the inlet sits so the legs come out on the register's line
+      levelRun(xs,zt,'x',s,d,xIn,yB);
+      two.forEach((lg,li)=>{ const dz_=dzs[li]; const zTarget=zT[li]; const can=can0(lg);
+        const w=bf([xIn,yB,zt],[s,0,0],[0,0,dz_],Rw,Math.PI/4,{a:d,h:d,a2:ld,h2:ld,round:true},{la:[0.5,1,0.5],label:(tyLbl&&li===0)?`TY ${fmt(d)}×${fmt(ld)}×${fmt(ld)}`:null}); if(!w.b) return; flB(w.b,1,'s'); tyLbl=false;   // the wye's own leg — the metal fitting, reducing as it goes
+        const e1=w.end, d1=w.dir; const p2=[e1[0]+d1[0]*Ls,e1[1],e1[2]+d1[2]*Ls]; flT(tube(e1,p2,ld),1,'s');                                                          // the Y: the leg runs on at 45°
+        const w2=bf(p2,d1,[-s*Math.SQRT1_2,0,dz_*Math.SQRT1_2],Rw2,Math.PI/4,{a:ld,h:ld,round:true}); if(!w2.b) return; flB(w2.b,1,'s');                              // the 45° elbow that lays it along the trunk's line
+        const e2=w2.end; const LL=Math.max(0,(zTarget-e2[2])*dz_-R2); const zEnd=e2[2]+dz_*(LL+R2);                                                              // straight on to the register, then down — a register nearer than the fitting reaches lands where the leg can get to
+        levelRun(e2[0],e2[2],'z',dz_,ld,zEnd-dz_*R2,yB); land(e2[0],zEnd,ld,can,lg.face,[0,0,-dz_],R2,yB) });
+      legs.slice(2,3).forEach(lg=>{ const can=can0(lg); const xE=xe+s*(14+R2); levelRun(xe,zt,'x',s,ld,xE-s*R2,yB); land(xE,zt,ld,can,lg.face,[-s,0,0],R2,yB) });   // a third register on the same tap: straight on past the wye
+    }) }) }
 // with New duct system on, the take-offs drawn ARE the room design's runs — one per register, at the leg size the room design gave it
 function rbrTakeoffs(){ if(!(S.rbrNew&&RM&&S.rooms&&S.rooms.length)) return null; const out=[];
   (RM.down||[]).forEach(x=>{ for(let k=0;k<x.n;k++) out.push({d:x.d,rbr:true,down:x.fl+1}); (x.add||[]).forEach(a=>out.push({d:a.d,rbr:true,down:x.fl+1})) });                       // v2.46: the duct down comes off the plenum first
@@ -3414,6 +3446,7 @@ function flowAfterDraw(r,dpr,P,faces){ const c=cv; const prev=FLOW_VW.get(c); co
   if(e.base.width!==c.width||e.base.height!==c.height){ e.base.width=c.width; e.base.height=c.height } const bg=e.base.getContext('2d'); bg.setTransform(1,0,0,1,0,0); bg.clearRect(0,0,c.width,c.height); bg.drawImage(c,0,0);
   FLOW_VW.set(c,e); flowDrawPaths(ctx,paths,t); flowStart() }
 function flowStart(){ if(!flowRaf&&FLOW_VW.size) flowRaf=requestAnimationFrame(flowTick) }
+function flowPause(c){ const e=FLOW_VW.get(c); if(!e) return; FLOW_VW.delete(c); try{ e.base.width=e.base.height=0 }catch(_){} } // v2.55: park one viewer's streaks (a drag in progress)
 function flowTick(ts){ flowRaf=0; if(!FLOW_VW.size) return;
   if(!flowOn()){ FLOW_VW.forEach(e=>{ try{ flowFrame(e,null) }catch(_){} try{ e.base.width=e.base.height=0 }catch(_){} }); FLOW_VW.clear(); return }
   if(ts-flowLast>=33){ flowLast=ts; const t=flowNow(); const H=window.innerHeight||800;
@@ -3444,22 +3477,25 @@ function moveAxes(){ // screen-pixel vectors for +1" along the duct face and +1"
 }
 function screenToWorld(a,dx,dy){ return [(dx*a.ay[1]-dy*a.ay[0])/a.det, (a.ax[0]*dy-a.ax[1]*dx)/a.det] }
 let rafPending=false; const redraw=()=>{ if(rafPending) return; rafPending=true; requestAnimationFrame(()=>{rafPending=false; buildScene()}) };
+let rotRaf=0, fastT=0; const fastDraw=()=>{ if(rotRaf) return; rotRaf=requestAnimationFrame(()=>{ rotRaf=0; draw() }) }; // v2.55: coalesce a drag's pointer moves to one draw per frame
+const fastOn=()=>{ view.fast=true; if(fastT){ clearTimeout(fastT); fastT=0 } }; const fastOff=()=>{ if(!view.fast) return; view.fast=false; if(rotRaf){ cancelAnimationFrame(rotRaf); rotRaf=0 } draw() };
+const fastSettle=()=>{ fastOn(); fastDraw(); if(fastT) clearTimeout(fastT); fastT=setTimeout(()=>{ fastT=0; fastOff() },160) }; // a wheel or a pinch: fast while it keeps coming, crisp once it stops
 cv.addEventListener('pointerdown',e=>{ const m=moveMode(); if(m!=='rot'){ const o=curOpt(); const p=posFor(o); const so=standShift(); mv3={mode:m,x:e.clientX,y:e.clientY,axes:moveAxes(),o,p0:{x:p.x||0,y:p.y||0,flip:!!p.flip},s0:{x:so.x,y:so.y}}; if(p.auto){ setManualPos(o,p.x||0,p.y||0,p.flip) } }
-  else drag={x:e.clientX,y:e.clientY}; cv.setPointerCapture(e.pointerId)});
+  else { drag={x:e.clientX,y:e.clientY}; fastOn() } cv.setPointerCapture(e.pointerId)});
 cv.addEventListener('pointermove',e=>{ if(pinch) return;
   if(mv3){ if(!mv3.axes) return; const [dx,dy]=screenToWorld(mv3.axes,e.clientX-mv3.x,e.clientY-mv3.y); const curb=isCurbSetup();
     if(mv3.mode==='unit'){ let y=mv3.p0.y+dy; if(!curb) y=Math.max(0,y); S.pos={x:mv3.p0.x+dx,y,flip:mv3.p0.flip,auto:false,unit:mv3.o.unit} }
     else { const deck=standDims().h||0; S.so={x:mv3.s0.x+dx,y:Math.max(-deck,mv3.s0.y+dy)} }
     redraw(); return }
-  if(!drag) return; view.touched=true; view.yaw+=(e.clientX-drag.x)*0.01; view.pitch=Math.max(0.05,Math.min(1.4,view.pitch+(e.clientY-drag.y)*0.01)); drag={x:e.clientX,y:e.clientY}; draw() });
-const endMove=()=>{ drag=null; if(mv3){ const m=mv3; mv3=null; if(m.mode==='unit'){ const p=S.pos; setManualPos(m.o,p.x||0,p.y||0,p.flip) } else setStandShift(S.so.x||0,S.so.y||0); renderCompare(); } };
+  if(!drag) return; view.touched=true; view.yaw+=(e.clientX-drag.x)*0.01; view.pitch=Math.max(0.05,Math.min(1.4,view.pitch+(e.clientY-drag.y)*0.01)); drag={x:e.clientX,y:e.clientY}; fastDraw() });
+const endMove=()=>{ drag=null; fastOff(); if(mv3){ const m=mv3; mv3=null; if(m.mode==='unit'){ const p=S.pos; setManualPos(m.o,p.x||0,p.y||0,p.flip) } else setStandShift(S.so.x||0,S.so.y||0); renderCompare(); } };
 cv.addEventListener('pointerup',endMove); cv.addEventListener('pointercancel',endMove);
-cv.addEventListener('wheel',e=>{e.preventDefault();view.zoom=Math.max(.4,Math.min(3,view.zoom*(e.deltaY>0?.9:1.1)));draw()},{passive:false});
+cv.addEventListener('wheel',e=>{e.preventDefault();view.zoom=Math.max(.4,Math.min(3,view.zoom*(e.deltaY>0?.9:1.1)));fastSettle()},{passive:false});
 // v2.18 touch: a second finger starts a pinch and cancels the one-finger rotate / move; when a finger lifts, nothing carries on from a stale start point
 cv.addEventListener('touchstart',e=>{ if(e.touches.length===2){pinch=dist(e.touches); drag=null; if(mv3) endMove() } },{passive:true});
-cv.addEventListener('touchmove',e=>{ if(e.touches.length===2&&pinch){const d=dist(e.touches);view.zoom=Math.max(.4,Math.min(3,view.zoom*d/pinch));pinch=d;draw()} },{passive:true});
-cv.addEventListener('touchend',e=>{ pinch=null; if(e.touches.length===0) drag=null; else if(e.touches.length===1) drag={x:e.touches[0].clientX,y:e.touches[0].clientY} });
-cv.addEventListener('touchcancel',()=>{ pinch=null; drag=null });
+cv.addEventListener('touchmove',e=>{ if(e.touches.length===2&&pinch){const d=dist(e.touches);view.zoom=Math.max(.4,Math.min(3,view.zoom*d/pinch));pinch=d;fastSettle()} },{passive:true});
+cv.addEventListener('touchend',e=>{ pinch=null; if(e.touches.length===0){ drag=null; fastOff() } else if(e.touches.length===1) drag={x:e.touches[0].clientX,y:e.touches[0].clientY} });
+cv.addEventListener('touchcancel',()=>{ pinch=null; drag=null; fastOff() });
 const dist=t=>Math.hypot(t[0].clientX-t[1].clientX,t[0].clientY-t[1].clientY);
 $('#v_iso').onclick=()=>{resetView();draw()};
 ['old','new','space','attic'].forEach(k=>{const b=$('#v_'+k);b.classList.toggle('on',S.view[k]);b.onclick=()=>{S.view[k]=!S.view[k];save();b.classList.toggle('on',S.view[k]);buildScene()}});
@@ -3489,15 +3525,18 @@ function buildInto(V,mode){ renderInto(V,()=>{ if(mode==='today'){ const sf=JSON
     else buildScene() }) }
 function drawInto(V){ renderInto(V,draw) }
 // rotate / zoom on a secondary viewer — the same feel as the Plan tab, without the move modes
-function wireViewer(V){ const c=V.cv; let dr=null, pn=null; if(c.dataset.wired) return; c.dataset.wired='1';
-  c.addEventListener('pointerdown',e=>{ dr={x:e.clientX,y:e.clientY}; try{ c.setPointerCapture(e.pointerId) }catch(_){} });
-  c.addEventListener('pointermove',e=>{ if(!dr||pn) return; V.view.touched=true; V.view.yaw+=(e.clientX-dr.x)*0.01; V.view.pitch=Math.max(0.05,Math.min(1.4,V.view.pitch+(e.clientY-dr.y)*0.01)); dr={x:e.clientX,y:e.clientY}; drawInto(V) });
-  const end=()=>{ dr=null }; c.addEventListener('pointerup',end); c.addEventListener('pointercancel',end);
-  c.addEventListener('wheel',e=>{ e.preventDefault(); V.view.zoom=Math.max(.4,Math.min(3,V.view.zoom*(e.deltaY>0?.9:1.1))); drawInto(V) },{passive:false});
+function wireViewer(V){ const c=V.cv; let dr=null, pn=null, raf=0, st=0; if(c.dataset.wired) return; c.dataset.wired='1';
+  const fastDraw=()=>{ if(raf) return; raf=requestAnimationFrame(()=>{ raf=0; drawInto(V) }) }; // v2.55: fast while a finger is down, one draw per frame, crisp on release (as the Plan viewer)
+  const on=()=>{ V.view.fast=true; if(st){ clearTimeout(st); st=0 } }; const off=()=>{ if(!V.view.fast) return; V.view.fast=false; if(raf){ cancelAnimationFrame(raf); raf=0 } drawInto(V) };
+  const settle=()=>{ on(); fastDraw(); if(st) clearTimeout(st); st=setTimeout(()=>{ st=0; off() },160) };
+  c.addEventListener('pointerdown',e=>{ dr={x:e.clientX,y:e.clientY}; on(); try{ c.setPointerCapture(e.pointerId) }catch(_){} });
+  c.addEventListener('pointermove',e=>{ if(!dr||pn) return; V.view.touched=true; V.view.yaw+=(e.clientX-dr.x)*0.01; V.view.pitch=Math.max(0.05,Math.min(1.4,V.view.pitch+(e.clientY-dr.y)*0.01)); dr={x:e.clientX,y:e.clientY}; fastDraw() });
+  const end=()=>{ dr=null; off() }; c.addEventListener('pointerup',end); c.addEventListener('pointercancel',end);
+  c.addEventListener('wheel',e=>{ e.preventDefault(); V.view.zoom=Math.max(.4,Math.min(3,V.view.zoom*(e.deltaY>0?.9:1.1))); settle() },{passive:false});
   c.addEventListener('touchstart',e=>{ if(e.touches.length===2){ pn=dist(e.touches); dr=null } },{passive:true});
-  c.addEventListener('touchmove',e=>{ if(e.touches.length===2&&pn){ const d=dist(e.touches); V.view.zoom=Math.max(.4,Math.min(3,V.view.zoom*d/pn)); pn=d; drawInto(V) } },{passive:true});
-  c.addEventListener('touchend',e=>{ pn=null; if(e.touches.length===0) dr=null; else if(e.touches.length===1) dr={x:e.touches[0].clientX,y:e.touches[0].clientY} });
-  c.addEventListener('touchcancel',()=>{ pn=null; dr=null }) }
+  c.addEventListener('touchmove',e=>{ if(e.touches.length===2&&pn){ const d=dist(e.touches); V.view.zoom=Math.max(.4,Math.min(3,V.view.zoom*d/pn)); pn=d; settle() } },{passive:true});
+  c.addEventListener('touchend',e=>{ pn=null; if(e.touches.length===0){ dr=null; off() } else if(e.touches.length===1) dr={x:e.touches[0].clientX,y:e.touches[0].clientY} });
+  c.addEventListener('touchcancel',()=>{ pn=null; dr=null; off() }) }
 
 function buildScene(){
   scene=[]; sceneFloor=z=>0; sceneLines=null; if(!vwSecondary) syncMoveUi(); const GHOST='#9aa6b2', FURN='#3678A0', HATCH='#ffd166', SPACE='#77B2D0', METAL='#d9e2ec';
@@ -3738,7 +3777,7 @@ function buildScene(){
       const plenLenFor=(k,cl,tl,pl)=> k==='trunk'? tl : (k==='plenum_coil'? Math.max(cl+6,pl) : pl);
       const band=len=>Math.max(len-TKHEAD-TKTAIL,6); // take-off band: start TKHEAD off the discharge (v2.52 — never on the coil's face), leave the last foot of the plenum clear
       const r=dsz(cR,14); const rpl=retPlenLen();
-      let tkBase=null, retOut=null;
+      let tkBase=null, retOut=null, armBase=null; const RT=fcRetC(); // v2.55: RT = the return filter grille on the plan (centre, feet), or null when there is no plan / grid to place it on
       // v2.53 — the new duct system is decided BEFORE the supply draws (Stephen 2026-09-26: "same as a split system — all the trunk lines come right to
       // the plenum, nothing in between"): with it on, a round main is drawn as the square plenum the arms come off, and the coil-face box goes away
       const cT0=comp('takeoff'); let tk0=(cT0&&cT0.spec&&cT0.spec.items)?cT0.spec.items.filter(it=>!it.hide).slice(0,12):[]; if(cT0&&!tk0.length&&cT0.area){ const k=Math.max(2,Math.min(8,Math.round(cT0.area/roundArea(10)))); for(let i=0;i<k;i++) tk0.push({d:10,syn:true}) }
@@ -3763,8 +3802,9 @@ function buildScene(){
         // return plenum before the furnace, then the duct off its outboard face
         rpBox(-rpl,0,zc-F.d/2,rpl,F.w,F.d,`Return plenum ${fmt(rpl)}" · ${fmt(F.d)}×${fmt(F.w)}`,['x',1]);
         const ry=Math.max(0,F.w/2-r.b/2), rz=zc-r.a/2, runL=46; const Rr=bendR(r,runL-r.b/2,Math.abs((ry+r.b/2)-(ceilY-4))); // v2.44: a radiused bend turns the run down to the can
-        fl(put(-rpl-runL+r.b/2+Rr,ry,rz,Math.max(runL-r.b/2-Rr,2),r.b,r.a,cR,`Return duct ${cR?cR.size:'not entered'}${tag(cR)}`,r.round?'x':null,[0.15,1,0.5]),'x',1,'r');
-        retOut={bx:-rpl-runL,by:ry,bz:rz,R:Rr};
+        if(RT) retOut={route:{P0:[-rpl,ry+r.b/2,zc],s:-1,y0:ry,under:{y:0,x0:-rpl,x1:0,z0:zc-F.d/2,z1:zc+F.d/2}}}; // v2.55: routed to the RETURN tile below, once the trunk line is known
+        else { fl(put(-rpl-runL+r.b/2+Rr,ry,rz,Math.max(runL-r.b/2-Rr,2),r.b,r.a,cR,`Return duct ${cR?cR.size:'not entered'}${tag(cR)}`,r.round?'x':null,[0.15,1,0.5]),'x',1,'r');
+        retOut={bx:-rpl-runL,by:ry,bz:rz,R:Rr} }
       } else { // ===================== upflow / downflow =====================
         const coilL=C?C.h:0, faceW=C?C.w:F.w, faceD=C?C.d:F.d;
         const s=supSpec(cS); const pD=s.a?s.b:faceD, pW=s.a?s.a:faceW; // v2.53: the coil face when a new duct system replaces a round main
@@ -3799,9 +3839,11 @@ function buildScene(){
           flB(bendDuct([cx,yMid+r.b/2,cz],[1,0,0],[0,1,0],r,R1,cR),-1,'r');                                          // stub → riser
           fl(put(rx,yMid+r.b/2+R1,rz,r.b,Math.max((atticY+r.b/2-R2)-(yMid+r.b/2+R1),1),r.a,cR,null,r.round?'y':null),'y',-1,'r'); // riser up past the ceiling
           flB(bendDuct([cx,atticY+r.b/2,cz],[0,-1,0],[-1,0,0],r,R2,cR),-1,'r');                                       // riser → attic run
-          fl(put(rx-runL+r.b/2+R3,atticY,rz,Math.max((cx-R2)-(rx-runL+r.b/2+R3),1),r.b,r.a,cR,`Return duct ${cR?cR.size:'not entered'}${tag(cR)} — up into the attic and back down`,r.round?'x':null,[0.12,1,0.5]),'x',1,'r');
-          retOut={bx:rx-runL,by:atticY,bz:rz,R:R3};                                                      // the can drops from the attic run to the ceiling through the third bend
-        } else { const runL=44; const R3=bendR(r,runL-r.b/2,Math.abs((yMid+r.b/2)-(ceilY-4))); // v2.44: the run stops short of the can, a radiused bend turns it
+          if(RT) retOut={route:{P0:[cx-R2,atticY+r.b/2,cz],s:-1,y0:atticY,under:null,lbl:' — up into the attic and back down'}}; // v2.55: the attic run goes to the RETURN tile
+          else { fl(put(rx-runL+r.b/2+R3,atticY,rz,Math.max((cx-R2)-(rx-runL+r.b/2+R3),1),r.b,r.a,cR,`Return duct ${cR?cR.size:'not entered'}${tag(cR)} — up into the attic and back down`,r.round?'x':null,[0.12,1,0.5]),'x',1,'r');
+          retOut={bx:rx-runL,by:atticY,bz:rz,R:R3} }                                                      // the can drops from the attic run to the ceiling through the third bend
+        } else if(RT){ scene.pop(); retOut={route:{P0:[0,yMid+r.b/2,zc],s:-1,y0:yMid,under:down?null:{y:rpy,x0:0,x1:F.d,z0:zc-F.d/2,z1:zc-F.d/2+F.w}}} } // v2.55: routed to the RETURN tile (the stub is re-laid by the route)
+        else { const runL=44; const R3=bendR(r,runL-r.b/2,Math.abs((yMid+r.b/2)-(ceilY-4))); // v2.44: the run stops short of the can, a radiused bend turns it
           fl(put(rx-runL+r.b/2+R3,yMid,rz,Math.max(runL-r.b/2-R3,2),r.b,r.a,cR,`Return duct ${cR?cR.size:'not entered'}${tag(cR)}`,r.round?'x':null,[0.15,1,0.5]),'x',1,'r');
           retOut={bx:rx-runL,by:yMid,bz:rz,R:R3} }
       }
@@ -3811,7 +3853,8 @@ function buildScene(){
       const rbrTk=rbrTakeoffs(); if(rbrTk) tkItems=rbrTk; // v2.44: with New duct system on the take-offs are the room design's runs
       // v2.52 — a new duct system is a reducing trunk off the plenum (drawn below, the way the 2D designs it), not one take-off per register: only a duct down to a lower floor still lands on the plenum itself
       const tree=treeS; if(tree) tkItems=tkItems.filter(it=>it.down); // v2.53: decided above, before the supply drew
-      { const slots=Math.max(1,Math.ceil(tkItems.length/2)); const maxD=tkItems.reduce((m,it)=>Math.max(m,it.d||Math.max(it.w||0,it.h||0)),8); const span=Math.max(tkBase.len-maxD,8); // the collars' centres run from TKHEAD + half a collar past the start to half a collar short of the tail
+      { const slots=Math.max(1,Math.ceil(tkItems.length/2)); const maxD=tkItems.reduce((m,it)=>Math.max(m,it.d||Math.max(it.w||0,it.h||0)),8); const span=Math.max(tkBase.len-maxD,8);
+        { const mid0=(!tkItems.length&&tkBase.mid!=null)?tkBase.mid:null; const off0=tkItems.length?maxD+16:0; armBase= tkBase.along==='x'?{x:mid0!=null?mid0:tkBase.x0+maxD/2+off0+8}:{x:tkBase.x0} } // v2.55: where the plan's unit centre sits on the scene's x — the arms' base, and the return route's // the collars' centres run from TKHEAD + half a collar past the start to half a collar short of the tail
         // a plenum gets them at a natural pitch starting at the discharge end (compressed only if they will not fit); a long trunk spreads them out
         const step= slots<2?0 : (tkBase.spread? Math.max(7,span/(slots-1)) : Math.min(Math.max(9,maxD+4), span/(slots-1)));
         const isAdd=takeoffAdded();
@@ -3827,10 +3870,27 @@ function buildScene(){
           trunkOutRuns(base,plane,{tree,regCls:(comp('regs')||{}).cls,label:`New duct system — ${nAll} runs to the rooms, off ${arms} trunk arm${arms>1?'s':''} · ${CFM(per)} CFM each · ${cans[0]}×${cans[0]} cans · ${rbrFanFaces()}`}) } }
       // ---- the can down to the ceiling, and the return grille + filter facing down into the room
       { const gb=specBoxes(cG&&cG.spec?cG.spec:null,20,20).filter(q=>!q.add); // v2.37: one box per grille, each at its own size — a multi spec used to draw NaN and blank the canvas · v2.47: an added return's grille draws at the end of its own duct (below)
+        if(retOut.route){ // v2.55 — THE RETURN RUN TO THE FILTER GRILLE THE SM PLACED (Stephen 2026-09-26): from the return plenum's face (or the attic run's start)
+          // along its heading, a radiused corner onto the grille's line when the grille is off that line, and a bend down onto the grille box; a grille under the
+          // return plenum drops straight out of its bottom; a grille beside or ahead of the unit gets a stub, a corner along the trunk's line clear of the unit,
+          // and a corner back toward it. Return air is tagged flowing toward the plenum on every piece. The grille block below lands the boot and the face.
+          const RO=retOut.route; const [x0,yc,z0]=RO.P0; const s=RO.s; const y0=RO.y0; const ux=S.unitPos.x+3, uy=S.unitPos.y+3; const bxA=armBase?armBase.x:x0;
+          const gx=bxA-(RT[1]-uy)*12; let gz=zc+(RT[0]-ux)*12; const gy0=ceilY-4; const R=bendR(r,60,Math.abs(yc-gy0)); const lbl=`Return duct ${cR?cR.size:'not entered'}${tag(cR)}${RO.lbl||''}${RT[2]?'':' · grille assumed'}`;
+          const runX=(xa,xb,zL,lb)=>{ const L=Math.abs(xb-xa); if(L>0.5) fl(put(Math.min(xa,xb),y0,zL-r.a/2,L,r.b,r.a,cR,lb||null,r.round?'x':null,[0.15,1,0.5]),'x',xb>xa?-1:1,'r') }; // drawn away from the plenum; the air comes back
+          const runZ=(za,zb,xL)=>{ const L=Math.abs(zb-za); if(L>0.5) fl(put(xL-r.a/2,y0,Math.min(za,zb),r.a,r.b,L,cR,null,r.round?'z':null),'z',zb>za?-1:1,'r') };
+          const corner=(C,u,v)=>flB(bendDuct(C,u,v,r,R,cR),-1,'r');
+          const U=RO.under; const ahead=(gx-x0)*s;
+          if(U&&gx>=U.x0-2&&gx<=U.x1+2&&gz>=U.z0-2&&gz<=U.z1+2){ retOut={bx:gx-r.b/2,by:U.y-r.b/2,bz:gz-r.a/2,R:0,u:[1,0,0],lbl:lbl+' — straight down out of the return plenum'} } // straight down out of the return plenum's bottom
+          else if(ahead>=2*R+2){ if(Math.abs(gz-z0)<=R+2){ runX(x0,gx-s*R,z0,lbl); retOut={bx:gx-r.b/2,by:y0,bz:z0-r.a/2,R,u:[-s,0,0]} }
+            else { const dz=gz>z0?1:-1; runX(x0,gx-s*R,z0,lbl); corner([gx,yc,z0],[-s,0,0],[0,0,dz]); runZ(z0+dz*R,gz-dz*R,gx); retOut={bx:gx-r.b/2,by:y0,bz:gz-r.a/2,R,u:[0,0,-dz]} } }
+          else { const band=(U?Math.max(U.z1-U.z0,0)/2:F.w/2)+r.a/2+4; if(Math.abs(gz-zc)<band) gz=zc+(gz>=zc?1:-1)*band; // beside or ahead of the unit: the corner leg runs along the trunk's line clear of the cabinet
+            const dz=gz>z0?1:-1; const xS=x0+s*(R+2); runX(x0,xS-s*R,z0,lbl); corner([xS,yc,z0],[-s,0,0],[0,0,dz]);
+            if((gx-xS)*s>=2*R+2||(xS-gx)*s>=2*R+2){ const s2=gx>xS?1:-1; runZ(z0+dz*R,gz-dz*R,xS); corner([xS,yc,gz],[0,0,-dz],[s2,0,0]); runX(xS+s2*R,gx-s2*R,gz); retOut={bx:gx-r.b/2,by:y0,bz:gz-r.a/2,R,u:[-s2,0,0]} }
+            else { runZ(z0+dz*R,gz-dz*R,xS); retOut={bx:xS-r.b/2,by:y0,bz:gz-r.a/2,R,u:[0,0,-dz]} } } }
         const gy=ceilY-4, {bx,by,bz}=retOut; const R=retOut.R||0; const cx=bx+r.b/2, cy=by+r.b/2, cz=bz+r.a/2; const downTo=gy<cy; // v2.44: the can meets the run through a radiused bend
-        if(R>0) flB(bendDuct([cx,cy,cz],[1,0,0],[0,downTo?-1:1,0],r,R,cR),-1,'r');
+        if(R>0) flB(bendDuct([cx,cy,cz],retOut.u||[1,0,0],[0,downTo?-1:1,0],r,R,cR),-1,'r');
         const canTop=downTo?cy-R:gy, canBot=downTo?gy:cy+R;
-        if(canTop-canBot>1) fl(put(bx,canBot,bz,r.b,canTop-canBot,r.a,cR,null,r.round?'y':null),'y',downTo?1:-1,'r');
+        if(canTop-canBot>1) fl(put(bx,canBot,bz,r.b,canTop-canBot,r.a,cR,retOut.lbl||null,r.round?'y':null),'y',downTo?1:-1,'r');
         let gz=0; gb.forEach((q,g)=>{ flV(sceneAdd({x:bx+r.b/2-q.w/2,y:gy-1.4,z:bz+r.a/2-q.h/2+gz+(q.h-gb[0].h)/2,dx:q.w,dy:1.2,dz:q.h,color:flowCol(cG)||((isNew(cG)||q.add)?NEWM:'#ffd166'),alpha:.95,noshadow:true,cls:cG?cG.cls:'',nw:isNew(cG)||!!q.add,la:[0.5,0,0.5],label:g===0?(cG?`Return grille + filter ${cG.size}${isNew(cG)?' (new)':''}${tag(cG)}`:'Return grille — size not entered'):(q.add?`+ added grille ${fmt(q.w)}×${fmt(q.h)} + filter (new)`:null)}),'in',[0,-1,0],'r',cG?cG.cls:''); gz+=q.h+6 }); }
       // v2.47 — an ADDED return (Add return, under the 3D): its own duct off the side of the return plenum, turned to the ceiling, and its own
       // filter grille, in the new-metal green beside the return that stays. The model counts it with the return duct and the filter face.
@@ -4608,10 +4668,10 @@ function optTableHtml(rows,E,M0){ const cols=rows.map(p=>({p,X:E[p.id],T:planTie
 function wireLinked(V){ const c=V.cv; if(!c||c.dataset.wired) return; c.dataset.wired='1'; let dr=null, pn=null;
   const redraw=()=>{ if(OV.raf) return; OV.raf=requestAnimationFrame(()=>{ OV.raf=0; OV.list.forEach(W=>{ try{ drawInto(W) }catch(e){} }) }) };
   const all=f=>{ OV.list.forEach(W=>f(W.view)); OV.cam={yaw:V.view.yaw,pitch:V.view.pitch,zoom:V.view.zoom,pan:[0,0]}; redraw() };
-  c.addEventListener('pointerdown',e=>{ dr={x:e.clientX,y:e.clientY}; try{ c.setPointerCapture(e.pointerId) }catch(_){} });
+  c.addEventListener('pointerdown',e=>{ dr={x:e.clientX,y:e.clientY}; OV.list.forEach(W=>{ W.view.fast=true }); try{ c.setPointerCapture(e.pointerId) }catch(_){} }); // v2.55: fast while down
   c.addEventListener('pointermove',e=>{ if(!dr||pn) return; const dx=(e.clientX-dr.x)*0.01, dy=(e.clientY-dr.y)*0.01; dr={x:e.clientX,y:e.clientY};
     all(v=>{ v.touched=true; v.yaw+=dx; v.pitch=Math.max(0.05,Math.min(1.4,v.pitch+dy)) }) });
-  const end=()=>{ dr=null }; c.addEventListener('pointerup',end); c.addEventListener('pointercancel',end);
+  const end=()=>{ dr=null; if(OV.list.some(W=>W.view.fast)){ OV.list.forEach(W=>{ W.view.fast=false }); all(()=>{}) } }; c.addEventListener('pointerup',end); c.addEventListener('pointercancel',end);
   c.addEventListener('wheel',e=>{ e.preventDefault(); const k=e.deltaY>0?.9:1.1; all(v=>{ v.zoom=Math.max(.4,Math.min(3,v.zoom*k)) }) },{passive:false});
   c.addEventListener('touchstart',e=>{ if(e.touches.length===2){ pn=dist(e.touches); dr=null } },{passive:true});
   c.addEventListener('touchmove',e=>{ if(e.touches.length===2&&pn){ const d=dist(e.touches); const k=d/pn; pn=d; all(v=>{ v.zoom=Math.max(.4,Math.min(3,v.zoom*k)) }) } },{passive:true});
@@ -5606,8 +5666,8 @@ S.blocks = Array.isArray(S.blocks) ? S.blocks : [];
 S.fl     = S.fl|0;
 // migration: a v2.36 job is one floor — its square footage, its drop, no traced shape.
 if(!Array.isArray(S.home.floors) || !S.home.floors.length)
-  S.home.floors=[{sf:S.home.sf, shape:null, unitPos:{x:S.unitPos.x,y:S.unitPos.y}}];
-S.home.floors.forEach(f=>{ if(!f.unitPos) f.unitPos={x:23,y:18}; if(f.shape===undefined) f.shape=null });
+  S.home.floors=[{sf:S.home.sf, shape:null, unitPos:{x:S.unitPos.x,y:S.unitPos.y}, retPos:null}];
+S.home.floors.forEach(f=>{ if(!f.unitPos) f.unitPos={x:23,y:18}; if(f.shape===undefined) f.shape=null; if(!f.retPos||typeof f.retPos.x!=='number') f.retPos=null }); // v2.55: retPos = the return filter grille on the plan (null = not placed yet: it sits 6 ft behind the unit until it is)
 S.home.nFloors=S.home.floors.length;
 if(S.fl>=S.home.nFloors) S.fl=0;
 S.rooms.forEach(r=>{ if(r.fl==null) r.fl=0 });
@@ -5624,7 +5684,17 @@ S.rbrFace=REG_FACE[S.rbrFace]?S.rbrFace:null;   // v2.46 — the register faces 
 function fcFl(){ return S.home.floors[Math.min(S.fl,S.home.floors.length-1)]||S.home.floors[0] }
 // S.unitPos IS the room floor's drop — by reference, so every existing drag handler and
 // rbrGeom() call keeps working without knowing floors exist. v2.46: that is always the TOP floor.
-function fcBind(){ S.unitPos=S.home.floors[fcTop()].unitPos }
+function fcBind(){ const F=S.home.floors[fcTop()]; S.unitPos=F.unitPos; if(!F.retPos) F.retPos=fcRetDefault(F.unitPos); S.retPos=F.retPos }
+// v2.55 — THE RETURN FILTER GRILLE ON THE PLAN (Stephen 2026-09-26: "since I am placing the unit, also let me place the return filter"). A 4×4 ft RETURN
+// tile beside the UNIT tile, dragged the same way; until it is dragged it sits 12 ft behind the unit (set:false — an assumption, like every other). The
+// 3D routes the return duct to it and drops the filter grille there; the return run length reads off it instead of "the middle of the house".
+function fcRetDefault(u){ return {x:(u?u.x:23)+1,y:(u?u.y:18)+13,set:false} } // 12 ft behind the unit tile's centre — on a horizontal attic furnace that is a few feet past the return plenum, where the run turned down before v2.55
+function fcRetReset(){ const F=S.home.floors[fcTop()]; F.retPos=fcRetDefault(F.unitPos); S.retPos=F.retPos; fcRetInside() }
+function fcRetInside(){ const F=fcField(); const r=S.retPos; if(!r) return; r.x=Math.max(0,Math.min(F.w-4,r.x)); r.y=Math.max(0,Math.min(F.d-4,r.y)); if(!F.poly||fcRectIn(F.poly,r.x,r.y,4,4)) return;
+  const u=S.unitPos; const c=fcCent(F.poly); const tries=[[u.x+1,u.y+13],[u.x+1,u.y+8],[u.x+8,u.y+1],[u.x-6,u.y+1],[u.x+1,u.y-6],[c[0]-2,c[1]-2]];
+  for(const [x,y] of tries){ const bx=Math.max(0,Math.min(F.w-4,x)), by=Math.max(0,Math.min(F.d-4,y)); if(fcRectIn(F.poly,bx,by,4,4)){ r.x=bx; r.y=by; return } }
+  outer: for(let y=0;y+4<=F.d;y+=1) for(let x=0;x+4<=F.w;x+=1) if(fcRectIn(F.poly,x,y,4,4)){ r.x=x; r.y=y; break outer } }
+function fcRetC(){ const r=S.retPos; if(!r||!(S.plan||S.rbrHand||(S.rooms&&S.rooms.length))) return null; return [r.x+2,r.y+2,!!r.set] } // the grille's centre in plan feet (null = no plan or grid to place it on)
 fcBind();
 
 /* ---------- square footage: the cap is the sum of the per-floor figures ---------- */
@@ -5638,7 +5708,7 @@ function fcSyncSf(){
 function fcSetFloors(n){
   n=Math.max(1,Math.min(FC_MAXFL,n|0));
   const F=S.home.floors;
-  while(F.length<n) F.push({sf:'',shape:null,unitPos:{x:23,y:18}});
+  while(F.length<n) F.push({sf:'',shape:null,unitPos:{x:23,y:18},retPos:null});
   while(F.length>n){ F.pop() }
   // v2.46 — the rooms always live on the top floor: adding a storey moves them up, removing one moves them down. Lower floors get a drop.
   const top=F.length-1; S.rooms.forEach(r=>{ r.fl=top }); S.blocks.forEach(b=>{ b.fl=top });
@@ -5671,6 +5741,8 @@ function fcOutline(i){ const F=S.home.floors[i]; if(!F) return null;
   const sf=parseFloat(F.sf); if(!(sf>0)) return null;
   const k=Math.sqrt(sf); return shape.map(p=>[p[0]*k,p[1]*k]) }
 function fcHasShape(){ return !!S.plan||S.home.floors.some(f=>!!f.shape) }
+// v2.55: on a hand grid with no traced shape the run lengths stay the tonnage assumptions — except the return, once its tile has been PLACED: that is a measurement
+function fcApplyRet(){ if(fcHasShape()){ fcApplyRuns(); return } const rp=fcRetC(); if(!rp||!rp[2]) return; const ux=S.unitPos.x+3, uy=S.unitPos.y+3; const rise=S.home.floors.length>1?(S.home.floors.length-1)*10:0; if(typeof setAuto==='function') setAuto('dr_ret',Math.max(10,Math.round(Math.max(12,Math.abs(rp[0]-ux)+Math.abs(rp[1]-uy))+rise+3))) }
 // the grid's extent in feet, with the outline moved so its bbox corner is the origin (room coords). v2.46: the rooms' floor is the top one.
 function fcField(i){
   if(i==null) i=fcTop();
@@ -5789,7 +5861,7 @@ function fcPack(){
    Nothing downstream of run length changes. */
 function fcRuns(){
   if(!fcHasShape()) return null;
-  const F=fcField(); if(!F.poly) return null;
+  const F=fcField(); const rp=fcRetC(); if(!F.poly) return null;
   const mine=S.rooms.filter(r=>r.fl===fcTop());
   if(!mine.length) return null;
   const ux=S.unitPos.x+3, uy=S.unitPos.y+3;
@@ -5797,9 +5869,9 @@ function fcRuns(){
   const trunk=Math.max(...mine.map(r=>Math.abs(rbrCx(r)-ux)))||0;
   // the worst branch: off the trunk, across to the far side of the room it serves
   const br=Math.max(...mine.map(r=>Math.abs(rbrCy(r)-uy)+Math.max(r.w,r.d)/2))||0;
-  // the return lives at the hall, so it is the drop out to the middle of the envelope
+  // the return lives at the hall, so it is the drop out to the middle of the envelope — v2.55: or to the RETURN tile, placed or assumed, run as a duct runs (along, then across)
   const c=fcCent(F.poly);
-  const ret0=Math.hypot(c[0]-ux,c[1]-uy);
+  const ret0=rp?(Math.abs(rp[0]-ux)+Math.abs(rp[1]-uy)):Math.hypot(c[0]-ux,c[1]-uy);
   // a riser carries the floors it has to cross, 10 ft a storey
   const rise=S.home.floors.length>1?(S.home.floors.length-1)*10:0;
   return {sup:Math.max(10,Math.round(trunk+rise+3)),
@@ -6386,6 +6458,12 @@ function rbrPlanSvg(S_){
   s+=`<text x="${(u[0]+3*SC).toFixed(1)}" y="${(u[1]+2.1*SC).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#9fc3dd">DROP FROM UNIT</text>`;
   s+=`<text x="${(u[0]+3*SC).toFixed(1)}" y="${(u[1]+4.9*SC).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="800" fill="#ffd166">${CFM(RM.A.Qd)} CFM</text>`;
   placed.push({x1:u[0],x2:u[0]+6*SC,y1:u[1],y2:u[1]+6*SC});
+  { const rp=S.retPos; if(rp){ const q=p(rp.x,rp.y); const cG=(typeof comp==='function')?comp('grille'):null; // v2.55 — the return filter grille, where the RETURN tile sits
+    s+=`<rect x="${q[0].toFixed(1)}" y="${q[1].toFixed(1)}" width="${4*SC}" height="${4*SC}" rx="3" fill="#b23a3a" stroke="#8a2b2b" stroke-width="1"/>`;
+    s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+1.3*SC).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="800" fill="#fff">RETURN</text>`;
+    s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+2.3*SC).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#ffd9d9">${cG&&cG.size?rbrEsc(cG.size):'filter grille'}</text>`;
+    s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+3.3*SC).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#ffd9d9">${rp.set?'placed':'assumed'}</text>`;
+    placed.push({x1:q[0],x2:q[0]+4*SC,y1:q[1],y2:q[1]+4*SC}) } }
   // v2.46 — the duct down to each lower floor: a tagged riser symbol under the plenum
   (RM.down||[]).forEach((x,i)=>{ const dx=u[0]+3*SC, dy=u[1]+6*SC+8+i*22;
     s+=`<rect x="${(dx-3*SC).toFixed(1)}" y="${dy.toFixed(1)}" width="${6*SC}" height="18" rx="3" fill="#fff" stroke="#003963" stroke-width="2" stroke-dasharray="5 3"/>`;
@@ -6712,7 +6790,7 @@ function rbrGrid(){
   G.style.setProperty('--cell',(px*2)+'px'); G.style.height=(F.d*px)+'px'; G.innerHTML='';
   G.classList.toggle('plan',!!S.plan);
   if(S.plan){ rbrPlanGrid(G,px); S.rooms.filter(r=>r.fl===fcTop()&&!r.poly).forEach(r=>{ const t=mkTile(G,px,r.ld==='high'?'hi':(r.ld==='low'?'lo':''),r.x,r.y,r.w,r.d,r.n,CFM(r.cfm)+' CFM · '+r.nReg+'v'); t.dataset.id=r.id; rbrDrag(t,r,px) });
-    rbrDrag(mkTile(G,px,'unit',S.unitPos.x,S.unitPos.y,6,6,'UNIT','drop'),S.unitPos,px,true); return }   // v2.54 — the real house; only the drop moves
+    rbrDrag(mkTile(G,px,'unit',S.unitPos.x,S.unitPos.y,6,6,'UNIT','drop'),S.unitPos,px,true); rbrRetTile(G,px); return }   // v2.54 — the real house; only the drop moves · v2.55: and the return grille
   // the traced envelope, scaled to this floor's square footage — the boundary the rooms sit in
   if(F.poly){
     // v2.46 — the aerial, faint, under the rooms: the traced box maps onto the outline's box (same shape, so one scale fits both axes),
@@ -6736,17 +6814,18 @@ function rbrGrid(){
     t.dataset.id=r.id; rbrDrag(t,r,px);
     const h=document.createElement('div'); h.className='rs'; h.textContent='⇔'; h.title='Stretch — same sq ft, new shape';
     t.appendChild(h); rbrResize(h,t,r,px); });
-  rbrDrag(mk('unit',S.unitPos.x,S.unitPos.y,6,6,'UNIT','drop'),S.unitPos,px,true);
+  rbrDrag(mk('unit',S.unitPos.x,S.unitPos.y,6,6,'UNIT','drop'),S.unitPos,px,true); rbrRetTile(G,px);
 }
+function rbrRetTile(G,px){ if(!S.retPos) return; fcRetInside(); const t=mkTile(G,px,'ret',S.retPos.x,S.retPos.y,4,4,'RETURN',S.retPos.set?'filter grille':'assumed'); t.title='Drag to where the return filter grille is'; rbrDrag(t,S.retPos,px,4,()=>{ S.retPos.set=true; t.querySelector('.tc').textContent='filter grille' }) } // v2.55
 function mkTile(G,px,cls,x,y,w,d,a,b){ const t=document.createElement('div'); t.className='tile '+cls;
     t.style.left=(x*px)+'px'; t.style.top=(y*px)+'px'; t.style.width=(w*px)+'px'; t.style.height=(d*px)+'px';
     t.innerHTML=`<span class="tn">${rbrEsc(a)}</span>`+(b?`<span class="tc">${b}</span>`:''); G.appendChild(t); return t }
-function rbrDrag(el,obj,px,isUnit){
+function rbrDrag(el,obj,px,isUnit,onUp){ const fw=isUnit===true?6:(isUnit||0); // v2.55: a fixed-size tile passes its size (the unit 6, the return 4)
   el.addEventListener('pointerdown',e=>{
     if(e.target.classList.contains('rs')) return;
     e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.add('drag');
     const r0=el.getBoundingClientRect(), gx=$('#rbrGrid').getBoundingClientRect();
-    const ox=e.clientX-r0.left, oy=e.clientY-r0.top, w=isUnit?6:obj.w, d=isUnit?6:obj.d;
+    const ox=e.clientX-r0.left, oy=e.clientY-r0.top, w=fw||obj.w, d=fw||obj.d;
     const FD=fcField();
     const mv=ev=>{ const x=Math.round((ev.clientX-gx.left-ox)/px), y=Math.round((ev.clientY-gx.top-oy)/px);
       obj.x=Math.max(0,Math.min(FD.w-w,x)); obj.y=Math.max(0,Math.min(FD.d-d,y));
@@ -6754,7 +6833,8 @@ function rbrDrag(el,obj,px,isUnit){
     const up=()=>{ el.classList.remove('drag');
       el.removeEventListener('pointermove',mv); el.removeEventListener('pointerup',up); el.removeEventListener('pointercancel',up);
       // §6 — the drop and the rooms ARE the run lengths, so moving one re-measures them
-      if(fcHasShape()) fcApplyRuns();
+      if(onUp) onUp();
+      fcApplyRet(); // v2.55: a plan / shape re-measures everything; a placed return on a bare grid re-measures the return
       save(); rbrModel(); rbrOut(); rbrSync() };
     el.addEventListener('pointermove',mv); el.addEventListener('pointerup',up); el.addEventListener('pointercancel',up); });
 }
@@ -6844,7 +6924,7 @@ function fcPlanApply(P,name){
       poly:r.poly.map(p=>[r2(p[0]),r2(p[1])]),cx:r2(r.c[0]),cy:r2(r.c[1]),kind:r.kind,nr,win:wins.length,plan:true}) });
   // the scan IS the served area — the Manual J runs on it, the traced aerial shape (if any) steps aside
   fcPlanSetSf(Math.round(P.totalSf)); S.home.floors[top].shape=null; S.home.floors[top].tpts=null;
-  const c=window.FCDxf.polyCent(P.outline); S.unitPos.x=Math.round(c[0]-3); S.unitPos.y=Math.round(c[1]-3); fcUnitInside();
+  const c=window.FCDxf.polyCent(P.outline); S.unitPos.x=Math.round(c[0]-3); S.unitPos.y=Math.round(c[1]-3); fcUnitInside(); fcRetReset();
   S.auto=S.auto||{}; S.auto.rbr=false; S.rbrOpen=true;
   fcApplyRuns(); save(); }
 function fcPlanClear(){ S.plan=null; S.rooms=[]; S.blocks=[]; S.rbrHand=false; S.rbrNew=false; save() }
@@ -6944,7 +7024,7 @@ function rbrSyncSeg(){ $$('#buildSeg button').forEach(b=>b.classList.toggle('on'
 function rbrArrange(){ let x=0,y=0,rowH=0;
   S.rooms.forEach(r=>{ if(x+r.w>RBR_GW){ x=0; y+=rowH+2; rowH=0 }
     r.x=x; r.y=Math.min(y,Math.max(0,RBR_GD-r.d)); x+=r.w+2; rowH=Math.max(rowH,r.d) });
-  S.unitPos.x=Math.min(RBR_GW-6,Math.round(RBR_GW/2)-3); S.unitPos.y=Math.min(RBR_GD-6,Math.round(RBR_GD/2)-3);
+  S.unitPos.x=Math.min(RBR_GW-6,Math.round(RBR_GW/2)-3); S.unitPos.y=Math.min(RBR_GD-6,Math.round(RBR_GD/2)-3); fcRetReset();
 }
 // a starting set the SM edits rather than types from nothing — the tool's own assumed-then-editable pattern
 function rbrSeed(fl){
@@ -6974,7 +7054,7 @@ function rbrSeed(fl){
      ['Hall Bath',55,10,'low',16,37],['Dining',150,10,'avg',31,36]].forEach(a=>{
       const r={id:'r'+(S.rbrSeq++),n:a[0],sf:Math.max(30,Math.round(a[1]*k)),h:a[2],ld:a[3],x:a[4],y:a[5],fl};
       rbrShape(r); S.rooms.push(r); });
-    S.unitPos.x=23; S.unitPos.y=18;
+    S.unitPos.x=23; S.unitPos.y=18; fcRetReset();
   }
   S.auto=S.auto||{}; S.auto.rbr=true; save();
 }
