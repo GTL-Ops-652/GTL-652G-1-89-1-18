@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-28 v2.60 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-28 v2.61 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -230,6 +230,8 @@ dialog .in{padding:18px}
 .gridwrap .tile.ret.sc{border:1.5px dashed #6c4fd0}.gridwrap .tile.unit.eq{border:1.5px dashed var(--db);z-index:2}
 .gridwrap .tile.sc .gbx,.gridwrap .tile.eq .eqp{position:absolute;border-radius:2px;pointer-events:none}
 .gridwrap .tile.sc .gbx{background:#6c4fd0;border:1px solid #4a3496}
+.unitbar{gap:8px;margin:2px 0 8px;align-items:center}.unitbar .cap{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)}
+.gridwrap .tile.eq .eqp.roof{background:rgba(54,120,160,.14);border:1.5px dashed #3678A0}.gridwrap .tile.eq .eqp.asm{opacity:.6}
 .gridwrap .tile.eq .eqp.sup{background:#003963}.gridwrap .tile.eq .eqp.cab{background:#2f6d99}.gridwrap .tile.eq .eqp.rpl{background:#6c4fd0}
 .gridwrap .tile.sc .tn,.gridwrap .tile.sc .tc,.gridwrap .tile.eq .tn,.gridwrap .tile.eq .tc{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;max-width:none;background:rgba(255,255,255,.92);padding:0 3px;border-radius:4px;pointer-events:none;line-height:1.25}
 .gridwrap .tile.sc .tn,.gridwrap .tile.eq .tn{bottom:100%;margin-bottom:1px;font-size:9.5px}.gridwrap .tile.sc .tc,.gridwrap .tile.eq .tc{top:100%;margin-top:1px;font-size:8px}
@@ -851,6 +853,7 @@ body.pack .tp .noapp{display:none}
       <div class="msg" id="rbrTot"></div>
 
       <h3 id="rbrGridTitle">Arrange the rooms the way the house actually sits</h3>
+      <div class="row unitbar" id="rbrUnitBar"><span class="cap">Unit</span><button class="btn sm ghost" id="rbrUTurn" title="Turn the unit a quarter turn">&#8635; Turn 90&deg;</button><button class="btn sm ghost" id="rbrUFlip" title="Turn the unit end for end">&#8645; Flip 180&deg;</button></div>
       <div class="gridwrap" id="rbrGrid"></div>
 
       <div id="rbrOut" class="hidden">
@@ -3156,7 +3159,7 @@ function renderPkgTier(card,star,row,o){
 // v2.42: the renderer can draw into more than one viewer — the pack's customer page has a Today and a Design 3D side by side —
 // so the canvas, its context, its label layer and its camera are swappable (renderInto), not fixed to #c3d.
 let cv=$('#c3d'), ctx=cv.getContext('2d'), lblsEl=$('#lbls'); let view={yaw:-0.75,pitch:0.42,zoom:1,pan:[0,0],touched:false,lbl:null};
-const defaultView=()=>{ const d=isPkg()?{yaw:2.35,pitch:0.46}:{yaw:-0.75,pitch:0.42}; if(S.rbrNew&&S.rooms&&S.rooms.length&&S.view&&S.view.focus&&S.view.focus!=='unit'){ d.pitch=0.95; d.yaw=-1.35 } return d }; // yaw −π/2 puts the plan's x to the right and its y down the screen — the same way up as the 2D drawing // v2.54: framed on the house, the picture tips toward a plan view
+const defaultView=()=>{ const d=isPkg()?{yaw:2.35,pitch:0.46}:{yaw:-0.75,pitch:0.42}; if(S.rbrNew&&S.rooms&&S.rooms.length&&S.view&&S.view.focus&&S.view.focus!=='unit'){ d.pitch=0.95; d.yaw=-1.35 } if(S.rbrNew&&S.rooms&&S.rooms.length){ const r=unitRot(); if(r) d.yaw+=r*Math.PI/180 } return d };   /* v2.61: the house turns under a turned unit — the camera turns with it, so the house reads as on the grid */ // yaw −π/2 puts the plan's x to the right and its y down the screen — the same way up as the 2D drawing // v2.54: framed on the house, the picture tips toward a plan view
 function resetView(){ const d=defaultView(); view.yaw=d.yaw; view.pitch=d.pitch; view.zoom=1; view.pan=[0,0]; view.touched=false; }
 let scene=[]; // boxes: {x,y,z,dx,dy,dz,color,alpha,label,cls,wire} · quads: {quad:[4 pts],color,stroke,nofit} · markers: {marker:true,label}
 const sceneAdd=o=>{ scene.push(o); return o }; // v2.50: push and hand the item back, so a duct can be tagged with the air it carries (fl / flB / flV below)
@@ -3327,11 +3330,12 @@ function houseSlabs(SX,SZ,yP,o){ const ins=o.ins||null, k=insTint(ins); const RE
   const mix=b=>{ const c=b.map((v,i)=>v+(RED[i]-v)*k); return `rgba(${Math.round(c[0])},${Math.round(c[1])},${Math.round(c[2])},${c[3].toFixed(3)})` };
   const stroke=k>0.02?`rgba(255,${Math.round(255-125*k)},${Math.round(255-150*k)},${(0.45+0.15*k).toFixed(2)})`:'rgba(255,255,255,.45)';
   let nx=1e9,xx=-1e9,nz=1e9,xz=-1e9;
-  S.rooms.forEach(r=>{ const poly=r.poly||[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.d],[r.x,r.y+r.d]]; const pts=poly.map(p=>[SX(p[1]),yP,SZ(p[0])]); const xs=pts.map(p=>p[0]), zs=pts.map(p=>p[2]);
+  const MP=o.mp||((x,y)=>[SX(y),SZ(x)]), M3=(x,y)=>{ const q=MP(x,y); return [q[0],yP,q[1]] };   /* v2.61: a turned unit maps the house through its own frame */
+  S.rooms.forEach(r=>{ const poly=r.poly||[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.d],[r.x,r.y+r.d]]; const pts=poly.map(p=>M3(p[0],p[1])); const xs=pts.map(p=>p[0]), zs=pts.map(p=>p[2]);
     nx=Math.min(nx,...xs); xx=Math.max(xx,...xs); nz=Math.min(nz,...zs); xz=Math.max(xz,...zs);
     scene.push({quad:pts,color:mix(r.nr?[150,160,170,0.22]:(r.ld==='high'?[255,190,120,0.26]:[120,175,225,0.26])),stroke,ceil:true,tint:+k.toFixed(3),x:Math.min(...xs),y:yP,z:Math.min(...zs),dx:Math.max(...xs)-Math.min(...xs),dy:0.1,dz:Math.max(...zs)-Math.min(...zs),nofit:true,duct:true});
-    scene.push({marker:true,label:rbrEsc(r.n)+((r.nr||!o.cfm)?'':' · '+CFM(r.cfm)+' CFM'),cls:'plan',x:SX(rbrCy(r)),y:yP,z:SZ(rbrCx(r)),dx:0,dy:0,dz:0,nofit:true,duct:true}) });
-  if(S.plan&&S.plan.walls){ const lines=(sceneLines||[]).slice(); S.plan.walls.forEach(w=>lines.push([[SX(w[1]),yP,SZ(w[0])],[SX(w[3]),yP,SZ(w[2])],2.2])); sceneLines=lines }
+    { const c=M3(rbrCx(r),rbrCy(r)); scene.push({marker:true,label:rbrEsc(r.n)+((r.nr||!o.cfm)?'':' · '+CFM(r.cfm)+' CFM'),cls:'plan',x:c[0],y:yP,z:c[2],dx:0,dy:0,dz:0,nofit:true,duct:true}) } });
+  if(S.plan&&S.plan.walls){ const lines=(sceneLines||[]).slice(); S.plan.walls.forEach(w=>lines.push([M3(w[0],w[1]),M3(w[2],w[3]),2.2])); sceneLines=lines }
   if(o.ux!=null&&isFinite(nx)){ const Rf=ins&&ins.known?(ins.Rf!=null?ins.Rf:ins.R):null; const cls=Rf==null?'':(Rf<19?'bad':(Rf<R_MIN?'warn':'ok')); /* the same grades as the attic tile */ const ax=Math.max(nx,Math.min(xx,SX(o.uy+4))), az=Math.max(nz,Math.min(xz,SZ(o.ux-4)));   // the note sits on the house, a few feet off the unit
     scene.push({marker:true,label:insHouseLbl(ins),cls,insNote:true,x:ax,y:yP,z:az,dx:0,dy:0,dz:0,nofit:true}) }
   return k }
@@ -3353,18 +3357,19 @@ function trunkOutRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms
 // and comes back down past it. Nothing here is fit-checked (`nofit`); everything is `duct` for the Focus chip and tagged for the airflow.
 // v2.58 — a package's return drop to the RETURN tile: the route (scene inches), chosen to cross the fewest supply runs and miss the supply drop
 function pkReturnRoute(o){ PK_RET=null; const {dR,dS,cR,cG,rcs,yT,ceilY,RT,net,duct,fl,flB,flV,flowTag,bendDuct}=o; const ux=S.unitPos.x+3, uy=S.unitPos.y+3;
+  const UR=(net&&net.r)||0, LU=q=>UR?uUnrotP([ux,uy],q,UR):q;   /* v2.61: RT comes in the unit's own frame (fcRetL); the network's points are turned into it */
   const xS=dS.x+dS.w/2, zS=dS.z+dS.d/2, xR=dR.x+dR.w/2, zR=dR.z+dR.d/2; const gx=xS-(RT[1]-uy)*12, gz=zS+(RT[0]-ux)*12; const yC=yT+rcs.b/2; const D=Math.max(rcs.a,rcs.b);
   if(Math.hypot(gx-xR,gz-zR)<D*1.2) return false;   // the grille right under the drop: the drop's own boot (the old path handles it)
-  const sup=[]; if(net&&net.edges) net.edges.forEach(e=>{ if(!e.segs||!e.segs.length) return; const P=dnRoutePts(e.segs,10).map(q=>[xS-(q[1]-uy)*12,zS+(q[0]-ux)*12]); for(let i=1;i<P.length;i++) sup.push([P[i-1],P[i]]) });
+  const sup=[]; if(net&&net.edges) net.edges.forEach(e=>{ if(!e.segs||!e.segs.length) return; const P=dnRoutePts(e.segs,10).map(q0=>{ const q=LU(q0); return [xS-(q[1]-uy)*12,zS+(q[0]-ux)*12] }); for(let i=1;i<P.length;i++) sup.push([P[i-1],P[i]]) });
   const X=(a,b,c,d)=>{ const r=(p,q,s)=>(q[0]-p[0])*(s[1]-p[1])-(q[1]-p[1])*(s[0]-p[0]); const d1=r(c,d,a),d2=r(c,d,b),d3=r(a,b,c),d4=r(a,b,d); return ((d1>0)!==(d2>0))&&((d3>0)!==(d4>0)) };
   const box={x0:dS.x-D/2-3,x1:dS.x+dS.w+D/2+3,z0:dS.z-D/2-3,z1:dS.z+dS.d+D/2+3}; const box0={x0:dS.x-D/2-0.5,x1:dS.x+dS.w+D/2+0.5,z0:dS.z-D/2-0.5,z1:dS.z+dS.d+D/2+0.5};
   const inB=(B,a,b,skip)=>{ for(let k=0;k<=40;k++){ const x=a[0]+(b[0]-a[0])*k/40, z=a[1]+(b[1]-a[1])*k/40; if(skip&&Math.hypot(x-a[0],z-a[1])<D) continue; if(x>B.x0&&x<B.x1&&z>B.z0&&z<B.z1) return true } return false };
   const hitBox=(a,b,first)=>inB(box0,a,b,first)?10:(!first&&inB(box,a,b,false)?1:0);   /* 10 = through the supply drop · 1 = inside its 3" of air */   /* v2.58: the return drop stands beside the supply drop by nature — its first leg is held to a true clash, the rest keep 3" of air */   /* the first foot off the return drop sits beside the supply drop by nature */
-  const cans=[]; if(net&&net.nodes) Object.values(net.nodes).forEach(n=>{ if(n.t==='can') cans.push([xS-(n.y-uy)*12,zS+(n.x-ux)*12]) });   // the registers the run must not lie over
+  const cans=[]; if(net&&net.nodes) Object.values(net.nodes).forEach(n=>{ if(n.t==='can'){ const q=LU([n.x,n.y]); cans.push([xS-(q[1]-uy)*12,zS+(q[0]-ux)*12]) } });   // the registers the run must not lie over
   const overCan=(a,b)=>{ let n=0; cans.forEach(c=>{ const dx=b[0]-a[0], dz=b[1]-a[1], L2=dx*dx+dz*dz||1; const k=Math.max(0,Math.min(1,((c[0]-a[0])*dx+(c[1]-a[1])*dz)/L2)); if(Math.hypot(a[0]+dx*k-c[0],a[1]+dz*k-c[1])<D/2+8) n++ }); return n };
   // v2.58 — and what it would lie beside: a TY is metal that cannot hump (keep the return a foot clear of it), and a supply run alongside for a stretch
   // cannot either — a crossing is fine (one goes over the other), a run in the same space for feet is not
-  const tyP=[]; if(net&&net.nodes) Object.values(net.nodes).forEach(n=>{ if(n.t==='ty'||n.t==='box') tyP.push([xS-(n.y-uy)*12,zS+(n.x-ux)*12]) });
+  const tyP=[]; if(net&&net.nodes) Object.values(net.nodes).forEach(n=>{ if(n.t==='ty'||n.t==='box'){ const q=LU([n.x,n.y]); tyP.push([xS-(q[1]-uy)*12,zS+(q[0]-ux)*12]) } });
   const supP=[]; sup.forEach(([p,q])=>{ const l=Math.hypot(q[0]-p[0],q[1]-p[1]); const m=Math.max(1,Math.ceil(l/6)); for(let k=0;k<m;k++) supP.push([p[0]+(q[0]-p[0])*k/m,p[1]+(q[1]-p[1])*k/m]) });
   const segD=(a,b,c)=>{ const dx=b[0]-a[0], dz=b[1]-a[1], L2=dx*dx+dz*dz||1; const k=Math.max(0,Math.min(1,((c[0]-a[0])*dx+(c[1]-a[1])*dz)/L2)); return Math.hypot(a[0]+dx*k-c[0],a[1]+dz*k-c[1]) };
   const score=pts=>{ let c=0, h=0, L=0, o=0, t=0, n=0; for(let i=1;i<pts.length;i++){ const a=pts[i-1], b=pts[i]; L+=Math.hypot(b[0]-a[0],b[1]-a[1]); sup.forEach(s=>{ if(X(a,b,s[0],s[1])) c++ }); h+=hitBox(a,b,i===1); o+=overCan(a,b);
@@ -3839,6 +3844,8 @@ function buildScene(){
       const dS=drops.find(d=>d.k==='s'), dR=drops.find(d=>d.k==='r'); const dir=(dR&&dS)?(dR.x>=dS.x?1:-1):1; // which way each side runs off its drop (v2.44: known before the drops draw, so the bend can be shaped)
       // v2.56 — the supply drop's free side (away from the return) is where a balanced second trunk leaves: the room design reads it off S.pkFree (in plan y, the same sign as dir)
       { const rt=(dS&&dR)?[+(((dR.z+dR.d/2)-(dS.z+dS.d/2))/12).toFixed(2),+(-((dR.x+dR.w/2)-(dS.x+dS.w/2))/12).toFixed(2),+(Math.max(dR.w,dR.d)/24).toFixed(2)]:null;   /* v2.57: where the return drop stands off the supply drop, in plan feet — the runs off the supply drop's wye go round it */
+        if(dS){ const xs=dS.x+dS.w/2, zs=dS.z+dS.d/2, f2=v=>+(+v).toFixed(2); const g=[(pz-zs)/12,(xs-(px+n.l))/12,(pz+n.w-zs)/12,(xs-px)/12,dS.d/12,dS.w/12].concat(dR?[((dR.z+dR.d/2)-zs)/12,-((dR.x+dR.w/2)-xs)/12,dR.d/12,dR.w/12]:[]).map(f2).join(',');
+          S.pkGeo=S.pkGeo||{}; S.pkGeo[((S.fix&&S.fix.install)||'reuse')+'|'+(o.unit||'')]=g }   /* v2.61: the unit on the roof and both drops, off the supply drop's middle in plan feet — the grid and the sheet draw them from here */
         const rtK=rt?rt.join(','):''; if(dS&&dR&&(S.pkFree!==dir||(S.pkRet||'')!==rtK)){ S.pkFree=dir; S.pkRet=rtK; if(S.rbrNew&&S.rooms&&S.rooms.length){ try{ rbrModel() }catch(e){} } } }
       const pkTree=S.rbrNew?(ductTree(AM)||ductTreeFromRuns(pkTk,AM)):null; if(pkTree) pkTk=pkTk.filter(it=>it.down); // v2.52: only a duct down still lands on the plenum / drop itself
       const pkArmMax=pkTree?pkTree.arms.reduce((m,a)=>Math.max(m,(a.segs[0]&&a.segs[0].d)||8),8):0;
@@ -3869,7 +3876,7 @@ function buildScene(){
       // like where we selected it"). With a plan or a grid the return drop's run heads for the filter grille the SM placed (or assumed): along one axis,
       // a radiused corner, along the other, a bend down onto the grille — whichever of those routes crosses the fewest supply runs and stays clear of the
       // supply drop (a detour round it when the grille sits behind it). The supply runs are laid after it and hump over it. No plan: the old 48" run.
-      const RTp=fcRetC(); const pkAdds=((rSpec&&rSpec.add)||[]).length||specBoxes(cG&&cG.spec?cG.spec:null,20,20).some(q=>q.add);
+      const RTp=fcRetL(); const pkAdds=((rSpec&&rSpec.add)||[]).length||specBoxes(cG&&cG.spec?cG.spec:null,20,20).some(q=>q.add);
       let pkRetDone=false;
       PK_RET=null; if(dR&&cR&&dS&&RTp&&!pkAdds){ try{ pkRetDone=pkReturnRoute({dR,dS,cR,cG,rcs,yT,ceilY,RT:RTp,net:pkTree&&pkTree.net,duct,fl,flB,flV,dir,flowCol,RET_NEW,flowTag,isNew,bendDuct}) }catch(e){ try{ console.error('Fit Check: package return route',e) }catch(_){} pkRetDone=false } }
       if(dR&&cR&&!pkRetDone){ const len=48; const yC=yT+rcs.b/2; const R2=bendR(rcs,len,yC-(ceilY+4)); const xcR=dR.x+dR.w/2; const gx=(dR.R?xcR+dir*dR.R:(dir>0?dR.x+dR.w:dR.x))+dir*len+dir*R2; // where the run turns down to the grille — known before it draws, so an added return can turn there too
@@ -3985,7 +3992,7 @@ function buildScene(){
       const plenLenFor=(k,cl,tl,pl)=> k==='trunk'? tl : (k==='plenum_coil'? Math.max(cl+6,pl) : pl);
       const band=len=>Math.max(len-TKHEAD-TKTAIL,6); // take-off band: start TKHEAD off the discharge (v2.52 — never on the coil's face), leave the last foot of the plenum clear
       const r=dsz(cR,14); const rpl=retPlenLen();
-      let tkBase=null, retOut=null, armBase=null, deferRuns=null; const RT=fcRetC(); // v2.55: RT = the return filter grille on the plan (centre, feet), or null when there is no plan / grid to place it on
+      let tkBase=null, retOut=null, armBase=null, deferRuns=null; const RT=fcRetL(); // v2.61: in the unit's own frame · v2.55: RT = the return filter grille on the plan (centre, feet), or null when there is no plan / grid to place it on
       // v2.53 — the new duct system is decided BEFORE the supply draws (Stephen 2026-09-26: "same as a split system — all the trunk lines come right to
       // the plenum, nothing in between"): with it on, a round main is drawn as the square plenum the arms come off, and the coil-face box goes away
       const cT0=comp('takeoff'); let tk0=(cT0&&cT0.spec&&cT0.spec.items)?cT0.spec.items.filter(it=>!it.hide).slice(0,12):[]; if(cT0&&!tk0.length&&cT0.area){ const k=Math.max(2,Math.min(8,Math.round(cT0.area/roundArea(10)))); for(let i=0;i<k;i++) tk0.push({d:10,syn:true}) }
@@ -5930,10 +5937,10 @@ function fcBind(){ const F=S.home.floors[fcTop()]; S.unitPos=F.unitPos; if(!F.re
 // v2.55 — THE RETURN FILTER GRILLE ON THE PLAN (Stephen 2026-09-26: "since I am placing the unit, also let me place the return filter"). A 4×4 ft RETURN
 // tile beside the UNIT tile, dragged the same way; until it is dragged it sits 12 ft behind the unit (set:false — an assumption, like every other). The
 // 3D routes the return duct to it and drops the filter grille there; the return run length reads off it instead of "the middle of the house".
-function fcRetDefault(u){ return {x:(u?u.x:23)+1,y:(u?u.y:18)+13,set:false} } // 12 ft behind the unit tile's centre — on a horizontal attic furnace that is a few feet past the return plenum, where the run turned down before v2.55
+function fcRetDefault(u){ const x=u?u.x:23, y=u?u.y:18, r=u&&+u.r?((Math.round(+u.r/90)*90)%360+360)%360:0; const d=uRotV([0,12],r); return {x:x+3+d[0]-2,y:y+3+d[1]-2,set:false} }   /* v2.61: behind the unit as it is turned */ // 12 ft behind the unit tile's centre — on a horizontal attic furnace that is a few feet past the return plenum, where the run turned down before v2.55
 function fcRetReset(){ const F=S.home.floors[fcTop()]; F.retPos=fcRetDefault(F.unitPos); S.retPos=F.retPos; fcRetInside() }
 function fcRetInside(){ const F=fcField(); const r=S.retPos; if(!r) return; r.x=Math.max(-1,Math.min(F.w-3,r.x)); r.y=Math.max(-1,Math.min(F.d-3,r.y)); if(r.set||!F.poly||fcRectIn(F.poly,r.x,r.y,4,4)) return;   // v2.60: the grille's middle stays on the grid; one the SM PLACED stays where he put it, in the scan or not (the scan may be only the part of the house on this system) — only an assumed one is moved in
-  const u=S.unitPos; const c=fcCent(F.poly); const tries=[[u.x+1,u.y+13],[u.x+1,u.y+8],[u.x+8,u.y+1],[u.x-6,u.y+1],[u.x+1,u.y-6],[c[0]-2,c[1]-2]];
+  const u=S.unitPos; const c=fcCent(F.poly); const rt=unitRot(); const tries=[[0,12],[0,7],[7,0],[-7,0],[0,-7]].map(v=>{ const d=uRotV(v,rt); return [u.x+3+d[0]-2,u.y+3+d[1]-2] }).concat([[c[0]-2,c[1]-2]]);   /* v2.61: behind the unit first, as it is turned */
   for(const [x,y] of tries){ const bx=Math.max(0,Math.min(F.w-4,x)), by=Math.max(0,Math.min(F.d-4,y)); if(fcRectIn(F.poly,bx,by,4,4)){ r.x=bx; r.y=by; return } }
   outer: for(let y=0;y+4<=F.d;y+=1) for(let x=0;x+4<=F.w;x+=1) if(fcRectIn(F.poly,x,y,4,4)){ r.x=x; r.y=y; break outer } }
 function fcRetC(){ const r=S.retPos; if(!r||!(S.plan||S.rbrHand||(S.rooms&&S.rooms.length))) return null; return [r.x+2,r.y+2,!!r.set] } // the grille's centre in plan feet (null = no plan or grid to place it on)
@@ -7014,7 +7021,7 @@ function dnNetCost(N){ if(!N) return 1e9; let c=0; N.edges.forEach(e=>{ c+=(e.le
 function dnBuild(lay,ctx){ const A=dnBuild1(lay,Object.assign({},ctx)); if(lay==='step') return A; let B=null; try{ B=dnBuild1(lay,Object.assign({},ctx,{opt:true})) }catch(e){ if(e!==DN_SAME) try{ console.warn('Fit Check: grouping search',e) }catch(_){} B=null }
   if(B&&dnNetCost(B)<dnNetCost(A)-1){ B.opt=true; return B } return A }   // v2.59: the searched grouping, when it builds the shorter network
 function dnBuild1(lay,ctx){ const N=dnNet(lay); const U=ctx.U; const cap=dnCap(ctx.tons); const pl=ctx.pl; const kept=pl.kind==='drop';
-  let regs=ctx.regs.map(g=>Object.assign({},g)); dnKeepOut(regs,ctx); if(ctx.box) ctx=Object.assign({},ctx,{box:Object.assign({},ctx.box,{set:ctx.box.set.map(b=>regs.find(g=>g.id===b.id)).filter(Boolean)})}); const tot=regs.reduce((s,g)=>s+g.q,0)||1; N.tot=tot; N.cap=cap; N.pl=pl; N.U=U;
+  let regs=ctx.regs.map(g=>Object.assign({},g)); dnKeepOut(regs,ctx); if(ctx.box) ctx=Object.assign({},ctx,{box:Object.assign({},ctx.box,{set:ctx.box.set.map(b=>regs.find(g=>g.id===b.id)).filter(Boolean)})}); const tot=regs.reduce((s,g)=>s+g.q,0)||1; N.tot=tot; N.cap=cap; N.pl=pl; N.U=U; N.r=+ctx.r||0;
   const budget=kept?2:Math.max(1,cap.n-(ctx.downs||0));
   // directs: the one or two registers nearest the plenum, within ~15 ft, when the trunks still get their collars
   let direct=[]; if(!kept&&budget>=3){ const byRoom=new Map(); regs.forEach(g=>{ if(!byRoom.has(g.rid)) byRoom.set(g.rid,[]); byRoom.get(g.rid).push(g) });
@@ -7055,6 +7062,7 @@ function dnFinish(N,ctx){ const U=ctx.U, fr=ctx.fr; let pl=ctx.pl; const kept=pl
   const rootFaceCost=(f,o,q,obs)=>{ const W=(q.W||20)/12; const tn={_obs:obs}; let P, h=f.nrm||null;
     if(q.kind==='h'){ const L=(q.L||24)/12; if(f.k==='N'){ P=[U[0],U[1]-L/2] } else { const y=U[1]+L/2-(f.head||0)/12-Math.max(0,f.len)/24; P=[f.k==='L'?U[0]-W/2:(f.k==='R'?U[0]+W/2:U[0]),y] } }
     else { const H=(q.H||20)/12; P=f.k==='L'?[U[0]-W/2,U[1]]:f.k==='R'?[U[0]+W/2,U[1]]:f.k==='N'?[U[0],U[1]-H/2]:f.k==='S'?[U[0],U[1]+H/2]:U.slice() }
+    if(ctx.r) P=uRotP(U,P,ctx.r);   /* v2.61 */
     const T=dnCw(o.r.set); const Rr=dnR(o.d); const own=obs.find(x=>x.k==='plen')||null; let segs=h?dnRoute(P,h,0.5,T,null,0,Rr):dnRoute(P,dv.unit(dv.sub(T,P)),Rr+0.2,T,null,0,Rr); let pen=0;
     if(dnObsHit(tn,segs,o.d,own,!h,h)){ const alt=dnDetour(tn,P,h,h?0.5:Rr+0.2,T,null,0,o.d,own,!h); if(alt) segs=alt; else pen=8 }
     const inf=dnRouteInfo(segs); return (inf.turn+(h?0:90))/90+inf.len/25+pen };
@@ -7147,6 +7155,7 @@ function dnCollarPts(N,ctx){ const pl=ctx.pl, U=ctx.U; const W=(pl.W||20)/12, L=
     const tgt=e=>{ const b=N.nodes[e.b]; return [b.x,b.y] };
     let axisDir, org; if(pl.kind==='h'){ if(fk==='L'||fk==='R'||fk==='T'||fk==='B'){ axisDir=[0,-1]; org=[U[0]+(fk==='L'?-W/2:(fk==='R'?W/2:0)),U[1]+L/2] } else { axisDir=[1,0]; org=[U[0]-W/2,U[1]-L/2] } }
     else { const H=(pl.H||20)/12; if(fk==='L'||fk==='R'){ axisDir=[0,-1]; org=[U[0]+(fk==='L'?-W/2:W/2),U[1]+H/2] } else if(fk==='T'){ axisDir=[1,0]; org=[U[0]-W/2,U[1]] } else { axisDir=[1,0]; org=[U[0]-W/2,U[1]+(fk==='N'?-H/2:H/2)] } }
+    if(ctx.r){ axisDir=uRotV(axisDir,ctx.r); org=uRotP(U,org,ctx.r) }   /* v2.61: the face as the unit is turned; s along it is the same */
     es.sort((a,b)=>dv.dot(tgt(a),axisDir)-dv.dot(tgt(b),axisDir));
     const ds=es.map(e=>e.d0||e.fd||10);   /* the sized collar once there is one — spacing is 2" edge to edge at the real sizes */ const need=dnFaceNeed(ds); const room=f.len; const span=pl.kind==='h'&&(fk!=='N')?(L*12-(f.head||0)-(f.tail||0)):(fk==='N'&&pl.kind==='h'?W*12:room);
     const gap=f.even?Math.max(DN_EDGE_IN,(span-ds.reduce((a,d)=>a+d,0))/(ds.length+1)):DN_EDGE_IN;   // a plenum coil spaces its collars evenly end to end, no end rule
@@ -7155,28 +7164,42 @@ function dnCollarPts(N,ctx){ const pl=ctx.pl, U=ctx.U; const W=(pl.W||20)/12, L=
   return out }
 // NO REGISTER UNDER THE EQUIPMENT: a can cannot land under the furnace, the coil, the plenum or a riser — one that the even spacing put there slides out
 // past the nearest edge (inside its room, the 3½ ft a register may move)
-function dnKeepOut(regs,ctx){ const pl=ctx.pl, U=ctx.U; DN_KO=[]; if(!pl) return; const rs=[]; const m=1.0;
-  if(pl.kind==='h'){ const W=(pl.W||20)/12, L=(pl.L||24)/12; const R=dnUnitRect(ctx); rs.push({x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-L/2,y1:R?R.y1:U[1]+L/2}); if(R) rs.push(R) }
+function dnKeepOut(regs,ctx){ const pl=ctx.pl, U=ctx.U; DN_KO=[]; if(!pl) return; const rs=[]; const m=1.0; const rr=+ctx.r||0;   /* v2.61: in the unit's own frame, turned onto the plan below */
+  if(pl.kind==='h'){ const W=(pl.W||20)/12, L=(pl.L||24)/12; const R=dnUnitRect(ctx,true); rs.push({x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-L/2,y1:R?R.y1:U[1]+L/2}); if(R) rs.push(R) }
   else if(pl.kind!=='drop'){ const W=(pl.W||20)/12, H=(pl.H||20)/12; rs.push({x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-H/2,y1:U[1]+H/2}) }
-  if(!ctx.noAutoLen){ try{ const rp=typeof fcRetC==='function'?fcRetC():null; if(rp){ rs.push({x0:rp[0]-1.2,x1:rp[0]+1.2,y0:rp[1]-1.2,y1:rp[1]+1.2});
-      const R=pl.kind==='h'?dnUnitRect(ctx):null; if(R&&rp[1]>R.y1){ const w=0.3; rs.push({x0:U[0]-w,x1:U[0]+w,y0:R.y1,y1:rp[1]+w},{x0:Math.min(U[0],rp[0])-w,x1:Math.max(U[0],rp[0])+w,y0:rp[1]-w,y1:rp[1]+w}) } } }catch(e){} }   /* nor under the return run out to the grille (a horizontal unit's: back along its line, then across) */   /* nor under the return filter grille (the RETURN tile) */
+  if(!ctx.noAutoLen){ try{ let rp=typeof fcRetC==='function'?fcRetC():null; if(rp&&rr){ const q=uUnrotP(U,rp,rr); rp=[q[0],q[1],rp[2]] } if(rp){ rs.push({x0:rp[0]-1.2,x1:rp[0]+1.2,y0:rp[1]-1.2,y1:rp[1]+1.2});
+      const R=pl.kind==='h'?dnUnitRect(ctx,true):null; if(R&&rp[1]>R.y1){ const w=0.3; rs.push({x0:U[0]-w,x1:U[0]+w,y0:R.y1,y1:rp[1]+w},{x0:Math.min(U[0],rp[0])-w,x1:Math.max(U[0],rp[0])+w,y0:rp[1]-w,y1:rp[1]+w}) } } }catch(e){} }   /* nor under the return run out to the grille (a horizontal unit's: back along its line, then across) */   /* nor under the return filter grille (the RETURN tile) */
+  if(rr) for(let i=0;i<rs.length;i++) rs[i]=uRotRect(U,rs[i],rr);
   regs.forEach(g=>{ rs.forEach(R=>{ if(!(g.x>R.x0-m&&g.x<R.x1+m&&g.y>R.y0-m&&g.y<R.y1+m)) return; const out=[[R.x0-m-g.x,0],[R.x1+m-g.x,0],[0,R.y0-m-g.y],[0,R.y1+m-g.y]].sort((a,b)=>Math.hypot(...a)-Math.hypot(...b));
     for(const v of out){ const L=Math.hypot(v[0],v[1]); const x=g.x, y=g.y; dnNudge(g,dv.unit(v),L+0.05,!g.placed);   /* an ASSUMED spot under the equipment is an impossible guess — it moves; a placed one stays */ if(!(g.x>R.x0-m&&g.x<R.x1+m&&g.y>R.y0-m&&g.y<R.y1+m)) break; g.x=x; g.y=y } }) }); DN_KO=rs }
-function dnUnitRect(ctx){ const pl=ctx.pl; if(!pl||pl.kind!=='h') return null; const o=rbrOpt(); const F=o&&E[o.furn||o.ahu], C=o&&o.coil?E[o.coil]:null; const U=ctx.U;
-  const ch_=C?(C.type==='coil_h'?C:{h:C.w,w:C.d,l:C.h}):null; const eq=((ch_?ch_.l:0)+(F?F.h:34)+retPlenLen())/12; const w=((F?F.d:28)+4)/12; return {x0:U[0]-w/2,x1:U[0]+w/2,y0:U[1]+(pl.L||24)/24,y1:U[1]+(pl.L||24)/24+eq} }
+function dnUnitRect(ctx,local){ const pl=ctx.pl; if(!pl||pl.kind!=='h') return null; const o=rbrOpt(); const F=o&&E[o.furn||o.ahu], C=o&&o.coil?E[o.coil]:null; const U=ctx.U;
+  const ch_=C?(C.type==='coil_h'?C:{h:C.w,w:C.d,l:C.h}):null; const eq=((ch_?ch_.l:0)+(F?F.h:34)+retPlenLen())/12; const w=((F?F.d:28)+4)/12; const R={x0:U[0]-w/2,x1:U[0]+w/2,y0:U[1]+(pl.L||24)/24,y1:U[1]+(pl.L||24)/24+eq}; return local?R:uRotRect(U,R,+ctx.r||0) }
 function dnCrossesUnit(N,ctx,segs){ const R=N._ur!==undefined?N._ur:(N._ur=dnUnitRect(ctx)); if(!R) return false; const pts=dnRoutePts(segs,10); return pts.some(p=>p[0]>R.x0&&p[0]<R.x1&&p[1]>R.y0&&p[1]<R.y1) }
 // v2.59 — ROUTE AROUND THE EQUIPMENT (Stephen 2026-09-27: "it is bringing small supply ducts, right thru where the unit or plenum are, they cant occupy
 // the same space, the duct has to route around any obstructions"). The equipment's footprint on the plan — the supply plenum, the cabinet behind it (coil,
 // furnace, return plenum), a riser, a new curb's supply and return drops, a kept roof drop's return — is a keep-out, 2" of air round it past the duct's own
 // radius. A run whose route would cross it goes round the nearest corners instead (a shortest path over the corners, every corner a real flex bend);
 // a TY that lands on it slides off. The run a collar leaves from starts on its own plenum and is free to leave it; it may never come back over it.
+// v2.61 — THE UNIT TURNS (Stephen 2026-09-28: "add the ability to flip the unit 180, or 90 degrees, so we can position it like the one in real life").
+// S.unitPos.r = 0 · 90 · 180 · 270, a quarter turn clockwise on the grid at a time (it lives on the floor's unitPos, so it saves with the house). The
+// equipment is laid out in its own frame exactly as before — a horizontal's supply plenum at the unit point, the cabinet and the return plenum behind it
+// down the page at 0° — and turned onto the plan here: the plenum's faces, its collars, the keep-outs, the return run. The 3D keeps drawing the
+// equipment the way it always has and turns the house under it the other way, with the camera turned to match, so the house reads as it does on the grid.
+function unitRot(){ const u=S.unitPos; const r=u?+u.r:0; return (isFinite(r)&&r)?(((Math.round(r/90)*90)%360)+360)%360:0 }
+function uRotV(v,r){ return r===90?[-v[1],v[0]]:r===180?[-v[0],-v[1]]:r===270?[v[1],-v[0]]:[v[0],v[1]] }
+function uRotP(U,p,r){ if(!r) return [p[0],p[1]]; const d=uRotV([p[0]-U[0],p[1]-U[1]],r); return [U[0]+d[0],U[1]+d[1]] }
+function uUnrotP(U,p,r){ return uRotP(U,p,(360-(r||0))%360) }
+function uRotRect(U,R,r){ if(!r) return R; const a=uRotP(U,[R.x0,R.y0],r), b=uRotP(U,[R.x1,R.y1],r); return Object.assign({},R,{x0:Math.min(a[0],b[0]),x1:Math.max(a[0],b[0]),y0:Math.min(a[1],b[1]),y1:Math.max(a[1],b[1])}) }
+function dnRotPl(pl,r){ if(!r||!pl) return pl; const q=Object.assign({},pl); q.faces=(pl.faces||[]).map(f=>f.nrm?Object.assign({},f,{nrm:uRotV(f.nrm,r)}):Object.assign({},f));
+  if(pl.ret){ const d=uRotV([pl.ret.dx,pl.ret.dy],r); q.ret=Object.assign({},pl.ret,{dx:+d[0].toFixed(3),dy:+d[1].toFixed(3)}) } q.rot=r; return q }
+function fcRetL(){ const r=fcRetC(); if(!r) return null; const rr=unitRot(); if(!rr) return r; const p=uUnrotP([S.unitPos.x+3,S.unitPos.y+3],r,rr); return [p[0],p[1],r[2]] }   // the RETURN tile in the unit's own frame (the 3D's)
 const DN_OBS_CLR=2/12;                                     // ft of air between a duct and the equipment
-function dnObs(N,ctx){ const pl=ctx.pl, U=ctx.U; const out=[]; if(!pl) return out;
-  if(pl.kind==='h'){ const W=(pl.W||20)/12, L=(pl.L||24)/12; out.push({k:'plen',x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-L/2,y1:U[1]+L/2}); const R=dnUnitRect(ctx); if(R) out.push(Object.assign({k:'unit'},R)) }
-  else if(pl.kind==='v'){ const W=(pl.W||20)/12, H=(pl.H||20)/12; out.push({k:'plen',x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-H/2,y1:U[1]+H/2}) }
-  else if(pl.kind==='pk'){ const W=(pl.W||12)/12, H=(pl.H||22)/12; out.push({k:'plen',x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-H/2,y1:U[1]+H/2});
+function dnObs(N,ctx){ const pl=ctx.pl, U=ctx.U; const out=[]; if(!pl) return out; const rr=+ctx.r||0, T=R=>uRotRect(U,R,rr);   /* v2.61: laid out in the unit's own frame, turned onto the plan */
+  if(pl.kind==='h'){ const W=(pl.W||20)/12, L=(pl.L||24)/12; out.push(T({k:'plen',x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-L/2,y1:U[1]+L/2})); const R=dnUnitRect(ctx); if(R) out.push(Object.assign({k:'unit'},R)) }
+  else if(pl.kind==='v'){ const W=(pl.W||20)/12, H=(pl.H||20)/12; out.push(T({k:'plen',x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-H/2,y1:U[1]+H/2})) }
+  else if(pl.kind==='pk'){ const W=(pl.W||12)/12, H=(pl.H||22)/12; out.push(T({k:'plen',x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-H/2,y1:U[1]+H/2}));
     const free=(pl.faces||[]).find(f=>f.k==='N'||f.k==='S'); const sg=free&&free.k==="N"?1:-1; const g=2/12;   /* the return drop sits end to end with the supply, on the side away from the free face */
-    out.push({k:'ret',x0:U[0]-W/2,x1:U[0]+W/2,y0:sg>0?U[1]+H/2+g:U[1]-H/2-g-H,y1:sg>0?U[1]+H/2+g+H:U[1]-H/2-g}) }
+    out.push(T({k:'ret',x0:U[0]-W/2,x1:U[0]+W/2,y0:sg>0?U[1]+H/2+g:U[1]-H/2-g-H,y1:sg>0?U[1]+H/2+g+H:U[1]-H/2-g})) }
   else if(pl.kind==='drop'&&pl.ret){ const C=dv.add(U,[pl.ret.dx,pl.ret.dy]), r=pl.ret.r; out.push({k:'ret',x0:C[0]-r,x1:C[0]+r,y0:C[1]-r,y1:C[1]+r}) }
   const rp=dnRetPath(ctx); if(rp){ const w=rp.hw; for(let i=1;i<rp.pts.length;i++){ const a=rp.pts[i-1], b=rp.pts[i]; out.push({k:'retrun',soft:true,x0:Math.min(a[0],b[0])-w,x1:Math.max(a[0],b[0])+w,y0:Math.min(a[1],b[1])-w,y1:Math.max(a[1],b[1])+w}) }
     out.push({k:'retrun',soft:true,x0:rp.G[0]-1.2,x1:rp.G[0]+1.2,y0:rp.G[1]-1.2,y1:rp.G[1]+1.2}) }   /* soft: the TYs keep off the return run and its grille; the runs cross it over or under */
@@ -7185,15 +7208,16 @@ function dnObs(N,ctx){ const pl=ctx.pl, U=ctx.U; const out=[]; if(!pl) return ou
 // unit (an upflow), runs back along the unit's line and turns across to the RETURN tile — the path the 3D draws (retOut), in plan feet. No TY may sit on it:
 // its legs would start inside the return duct. (The runs themselves cross it the way the 3D lays them — over or under.)
 function dnRetPath(ctx){ const pl=ctx.pl, U=ctx.U; if(!pl||(pl.kind!=='h'&&pl.kind!=='v')) return null; let RT=null; try{ RT=typeof fcRetC==='function'?fcRetC():null }catch(e){} if(!RT) return null;
+  const rr=+ctx.r||0, Wp=p=>uRotP(U,p,rr); if(rr){ const q=uUnrotP(U,RT,rr); RT=[q[0],q[1],RT[2]] }   /* v2.61: the run is worked out in the unit's own frame, then turned onto the plan */
   const o=rbrOpt(); const F=o&&E[o.furn||o.ahu]; if(!F) return null; const C=o&&o.coil?E[o.coil]:null; const D=20, Rin=D, rbr=!!(S.rbrNew&&S.rooms&&S.rooms.length); const rpl=retPlenLen(); let O, under=null, band;
-  if(pl.kind==='h'){ const Rr=dnUnitRect(ctx); if(!Rr) return null; O=[U[0],Rr.y1]; under={x0:U[0]-F.d/24,x1:U[0]+F.d/24,y0:Rr.y1-rpl/12,y1:Rr.y1}; band=F.d/2+D/2+4+(rbr?20:0) }
+  if(pl.kind==='h'){ const Rr=dnUnitRect(ctx,true); if(!Rr) return null; O=[U[0],Rr.y1]; under={x0:U[0]-F.d/24,x1:U[0]+F.d/24,y0:Rr.y1-rpl/12,y1:Rr.y1}; band=F.d/2+D/2+4+(rbr?20:0) }
   else if(S.orient==='up'){ O=[U[0],U[1]+(F.d/2+16-D/2+Rin)/12]; band=F.w/2+D/2+4+(rbr?20:0) }
   else { O=[U[0],U[1]+(F.d/2)/12]; if(S.orient!=='down') under={x0:U[0]-F.w/24,x1:U[0]+F.w/24,y0:U[1]-F.d/24,y1:U[1]+F.d/24}; band=F.w/2+D/2+4+(rbr?20:0) }
-  const G=[RT[0],RT[1]]; if(under&&G[0]>=under.x0-2/12&&G[0]<=under.x1+2/12&&G[1]>=under.y0-2/12&&G[1]<=under.y1+2/12) return {pts:[G],hw:D/24,G};   /* straight down out of the return plenum */
+  const G=[RT[0],RT[1]]; if(under&&G[0]>=under.x0-2/12&&G[0]<=under.x1+2/12&&G[1]>=under.y0-2/12&&G[1]<=under.y1+2/12) return {pts:[Wp(G)],hw:D/24,G:Wp(G)};   /* straight down out of the return plenum */
   const ahead=(G[1]-O[1])*12, lat=Math.abs(G[0]-O[0])*12; let pts;
   if(ahead>=(lat<=Rin+2?Rin+2:2*Rin+2)) pts=lat<=Rin+2?[O,[O[0],G[1]]]:[O,[O[0],G[1]],G];
   else { let gx=G[0]; if(Math.abs(gx-O[0])*12<band) gx=O[0]+(gx>=O[0]?1:-1)*band/12; const yS=O[1]+(Rin+2)/12; pts=[O,[O[0],yS],[gx,yS]]; if(Math.abs(G[1]-yS)*12>=2*Rin+2) pts.push([gx,G[1]]) }
-  return {pts,hw:D/24,G} }
+  return {pts:pts.map(Wp),hw:D/24,G:Wp(G)} }
 function dnObsIn(R,p,c){ return p[0]>R.x0-c&&p[0]<R.x1+c&&p[1]>R.y0-c&&p[1]<R.y1+c }
 // the route's points, a sample at least every ~3" (the arcs every 6°)
 function dnObsPts(segs){ const out=[]; dnRoutePts(segs,6).forEach((p,i,a)=>{ if(i){ const q=a[i-1]; const n=Math.max(1,Math.ceil(dv.dist(p,q)/0.25)); for(let k=1;k<n;k++) out.push(dv.add(q,dv.mul(dv.sub(p,q),k/n))) } out.push(p) }); return out }
@@ -7268,9 +7292,9 @@ function dnLayEdge(N,ctx,e,P0,h0,L0){ const cp=N.collars; const b=N.nodes[e.b]; 
     else if(b.inline) want=b.ax;
     else if(b.t==='ty'&&ks.length===2){ const u1=dv.unit(dv.sub([N.nodes[ks[0].b].x,N.nodes[ks[0].b].y],[b.x,b.y])), u2=dv.unit(dv.sub([N.nodes[ks[1].b].x,N.nodes[ks[1].b].y],[b.x,b.y])); const bis=dv.add(u1,u2); if(dv.len(bis)>0.2) want=dv.unit(bis) }
     const room=dv.dist(P0,[b.x,b.y]); const Lend=Math.min(Lin+body,Math.max(0.6,room*0.6)); let full=dnRouteSmart(P0,h0,L0,[b.x,b.y],want,Lend,dnR(d));
-    if(dnObsHit(N,full,d,own,ownAll,h0)){ const alt=dnDetour(N,P0,ownAll?null:h0,L0,[b.x,b.y],want,Lend,d,own,ownAll); if(alt) full=alt; else e.obsHit=true }   /* v2.59: round the equipment, never through it */
+    if(dnObsHit(N,full,d,own,ownAll,h0)){ const alt=dnDetour(N,P0,ownAll?null:h0,L0,[b.x,b.y],want,Lend,d,own,ownAll)||dnDropFree(N,e,P0,L0,[b.x,b.y],want,Lend,d); if(alt) full=alt; else e.obsHit=true }   /* v2.59: round the equipment, never through it */
     b.ax=dnEndHeading(full)||want||h0; segs=dnTrimEnd(full,body) }
-  else { segs=dnRoute(P0,h0,L0,[b.x,b.y],null,0,dnR(d)); if(dnObsHit(N,segs,d,own,ownAll,h0)){ const alt=dnDetour(N,P0,ownAll?null:h0,L0,[b.x,b.y],null,0,d,own,ownAll); if(alt) segs=alt; else e.obsHit=true } }
+  else { segs=dnRoute(P0,h0,L0,[b.x,b.y],null,0,dnR(d)); if(dnObsHit(N,segs,d,own,ownAll,h0)){ const alt=dnDetour(N,P0,ownAll?null:h0,L0,[b.x,b.y],null,0,d,own,ownAll)||dnDropFree(N,e,P0,L0,[b.x,b.y],null,0,d); if(alt) segs=alt; else e.obsHit=true } }
   e.segs=segs; const inf=dnRouteInfo(segs); e.len=inf.len; e.turn=inf.turn; e.bends=inf.bends; e.inStraight=dnStraightEnd(segs); e.outStraight=dnStraightStart(segs);
   if(e.root&&cp[e.id]&&(cp[e.id].face==='T'||cp[e.id].face==='B')){ e.turn+=90; e.bends++; e.len+=0.5 }   // off the top: up, and a 90° over into the attic (v2.58: off the bottom — down, and a 90° over)
   e.lift=false; if(dnCrossesUnit(N,ctx,segs)){ e.lift=true; e.turn+=90; e.bends++ }             // a run over the cabinet lifts through two gentle 45° offsets
@@ -7286,6 +7310,13 @@ function dnLayEdge(N,ctx,e,P0,h0,L0){ const cp=N.collars; const b=N.nodes[e.b]; 
     k.org=org; k.dir0=dir; k.L0=L });
   return ks }
 // a run off a kept supply drop's wye leaves on the heading nearest the one it wants that takes it clear of the return drop beside it
+// v2.61 — A KEPT ROOF DROP'S ARM, ROUND THE RETURN DROP: turned, the rooms can lie past the return drop that stands beside the supply drop. When the arm's
+// own heading cannot clear it, it may leave the wye whichever way does — but never alongside the other arm (a pants wye's two legs split; two legs the
+// same way are one trunk), so a way out within 18° of where another arm heads is not taken and the run keeps what it had.
+function dnDropFree(N,e,P0,L0,B,want,Lend,d){ if(!e.root||!N.pl||N.pl.kind!=='drop') return null; const alt=dnDetour(N,P0,null,L0,B,want,Lend,d,null,false); if(!alt) return null;
+  const P=dnRoutePts(alt,4); let h=null; for(let i=1;i<P.length&&!h;i++){ if(dv.dist(P[i],P0)>0.2) h=dv.unit(dv.sub(P[i],P0)) } if(!h) return null;
+  const sib=N.edges.filter(x=>x.root&&x!==e).map(x=>{ const nd=N.nodes[x.b]; const v=dv.sub([nd.x,nd.y],P0); return dv.len(v)>0.1?dv.unit(v):null }).filter(Boolean);
+  return sib.some(s=>dv.dot(s,h)>0.95)?null:alt }
 function dnAvoidRet(N,P0,h0,L0,B,d){ const t=N.pl.ret; const C=dv.add(N.U,[t.dx,t.dy]); const need=t.r+d/24+0.25; const R=dnR(d);
   const clear=h=>{ const pts=dnRoutePts(dnRoute(P0,h,L0,B,null,0,R),8); return pts.every(p=>dv.dist(p,C)>=need) };
   if(clear(h0)) return h0; for(let k=1;k<=8;k++) for(const sg of [1,-1]){ const h=dv.rot(h0,sg*k*Math.PI/16); if(clear(h)) return h } return h0 }
@@ -7409,10 +7440,10 @@ function dnMaterials(N){ const flex={}, ty={}, box={}, coll={}, damp={}, bump=(o
 // ---------------------------------------------------------------- the room design's hook: build the chosen layout, the other two for their chips
 function dnLayoutKey(){ return DN_LAY[S.layout]?S.layout:'auto' }
 // what the network was laid out against — the plenum it comes off and the equipment; a 3D drawn after one of these changed rebuilds the room design first
-function dnSig(){ try{ const pl=dnPlenum(); return [pl.kind,pl.L,pl.W,pl.H,(pl.faces||[]).map(f=>f.k+f.len+'/'+f.h).join(','),S.tons,(S.fix&&S.fix.install)||'',S.orient||'',S.setup||'',S.sys||'',S.layout||'',S.pkFree||'',S.pkRet||'',S.rbrNew?1:0].join('|') }catch(e){ return '' } }
-function dnCtx(regs,A){ const pl=dnPlenum(); const U=[S.unitPos.x+3,S.unitPos.y+3];
+function dnSig(){ try{ const pl=dnPlenum(); return [pl.kind,pl.L,pl.W,pl.H,(pl.faces||[]).map(f=>f.k+f.len+'/'+f.h).join(','),S.tons,(S.fix&&S.fix.install)||'',S.orient||'',S.setup||'',S.sys||'',S.layout||'',S.pkFree||'',S.pkRet||'',S.rbrNew?1:0,unitRot()].join('|') }catch(e){ return '' } }
+function dnCtx(regs,A){ const r=unitRot(); const pl=dnRotPl(dnPlenum(),r); const U=[S.unitPos.x+3,S.unitPos.y+3];
   const downs=(RM&&RM.down)?RM.down.reduce((s,x)=>s+x.n+(x.add||[]).length,0):0;
-  return {regs,U,pl,tons:A.tons,fr:A.fr,asp:A.asp,telRet:A.telRet,downs,pkg:isPkg()&&S.setup!=='separate',telRef:(DN_TEL&&S.rbrNew)?DN_TEL.total:null} }
+  return {regs,U,pl,r,tons:A.tons,fr:A.fr,asp:A.asp,telRet:A.telRet,downs,pkg:isPkg()&&S.setup!=='separate',telRef:(DN_TEL&&S.rbrNew)?DN_TEL.total:null} }
 function dnAll(regs,A,downs){ const ctx=dnCtx(regs,A); if(downs!=null) ctx.downs=downs; const cl=dnCluster(regs,ctx.U);
   const box=cl?Object.assign({},cl,{share:cl.q/(regs.reduce((s,g)=>s+g.q,0)||1)}):null; const out={auto:null,nets:{},ctx,box};
   const build=(k,fr)=>{ try{ const N=dnBuild(k,Object.assign({},ctx,{box,fr})); N.fr=fr; return N }catch(e){ try{ console.warn('Fit Check: layout',k,e) }catch(_){} return null } };
@@ -7464,11 +7495,12 @@ function dnDraw3D(base,plane,opt){ const T=opt.tree, N=T&&T.net; if(!N) return; 
   const B=opt.plen||base.plen||{kind:'h',x0:base.x-12,x1:base.x+12,y0:base.y-10,y1:base.y+10,z0:base.zB,z1:base.zA};
   const xc=B.kind==='drop'?B.c[0]:(B.x0+B.x1)/2, zc=B.kind==='drop'?B.c[2]:(B.z0+B.z1)/2; const ux=N.U[0], uy=N.U[1];
   N.frame=[xc,zc];   /* where the plan's unit centre lands on the scene — the return run to the RETURN tile maps on the same point */
-  const SZ=px=>zc+(px-ux)*K, SX=py=>xc-(py-uy)*K; const S3=(q,y)=>[SX(q[1]),y,SZ(q[0])]; const H3=h=>[-h[1],0,h[0]];   // plan heading → scene
+  const SZ=px=>zc+(px-ux)*K, SX=py=>xc-(py-uy)*K; const UR=+N.r||0, LU=q=>UR?uUnrotP(N.U,q,UR):q, LH=h=>UR?uRotV(h,(360-UR)%360):h;   /* v2.61: the plan in the unit's own frame — the equipment draws as it always has */
+  const S3=(q,y)=>{ const p=LU(q); return [SX(p[1]),y,SZ(p[0])] }; const H3=h=>{ const v=LH(h); return [-v[1],0,v[0]] };   // plan heading → scene
   const yC=base.y, vAvail=Math.abs(yC-plane.y);
   // ---- the house at the ceiling (a room design): the scan's polygons or the grid's rectangles as slabs, the names as notes
   const yP=up?plane.y+7:plane.y-7;
-  if(T.rbr){ (opt.ceil||[]).forEach(o=>{ const i=scene.indexOf(o); if(i>=0) scene.splice(i,1) }); houseSlabs(SX,SZ,yP,{cfm:true,ins:opt.ins,ux,uy}) }
+  if(T.rbr){ (opt.ceil||[]).forEach(o=>{ const i=scene.indexOf(o); if(i>=0) scene.splice(i,1) }); houseSlabs(SX,SZ,yP,{cfm:true,ins:opt.ins,ux,uy,mp:UR?(x,y)=>{ const p=LU([x,y]); return [SX(p[1]),SZ(p[0])] }:null}) }
   // ---- what a run must clear: every solid piece already drawn that is not the new duct system
   const solids=scene.filter(b=>!b.duct&&!b.nofit&&!b.quad&&!b.marker&&!b.wire&&!b.poly&&isFinite(b.x)&&isFinite(b.dx)&&b.dx>0.5&&b.dy>0.5&&b.dz>0.5);
   // v2.58 — NO TWO DUCTS IN THE SAME SPACE (Stephen 2026-09-27: "avoid them crossing each other, just run it over or under others, they can't occupy
@@ -7801,7 +7833,14 @@ function rbrPlanSvg(S_){
   const u=p(S.unitPos.x,S.unitPos.y);
   // v2.59 — the equipment at its real size (the plenum, the cabinet behind it, a curb's return drop): the runs go round what is drawn, so the sheet draws
   // exactly what they go round — not a 6 ft block they seem to run through. A kept roof drop (no plenum in the attic) keeps the tile.
-  let EQB=null; { const N0=RM.net; const EQ=(N0&&N0.pl&&N0.pl.kind!=='drop')?dnObs(N0,{pl:N0.pl,U:N0.U}).filter(R=>!R.soft):null;
+  let EQB=null; { const N0=RM.net; const PKQ=(N0&&N0.pl&&(N0.pl.kind==='drop'||N0.pl.kind==='pk'))?rbrEqParts():null;
+    if(PKQ){ const U0=N0.U; let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;   /* v2.61 — a package: the unit on the roof (dashed) and its supply and return drops at their size, where they really are */
+      PKQ.parts.forEach(R=>{ const a=p(U0[0]+R.x0,U0[1]+R.y0), b=p(U0[0]+R.x1,U0[1]+R.y1); const x=Math.min(a[0],b[0]), y=Math.min(a[1],b[1]), w=Math.abs(b[0]-a[0]), h=Math.abs(b[1]-a[1]); x0=Math.min(x0,x); y0=Math.min(y0,y); x1=Math.max(x1,x+w); y1=Math.max(y1,y+h);
+        if(R.k==='roof') s+=`<rect class="pkroof" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="rgba(54,120,160,.08)" stroke="#3678A0" stroke-width="1.3" stroke-dasharray="5 3"/>`;
+        else { s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${R.k==='rpl'?'#6c4fd0':'#003963'}" stroke="${R.k==='rpl'?'#4a3496':'#9fc3dd'}" stroke-width="1.2"/>`; placed.push({x1:x,x2:x+w,y1:y,y2:y+h}) } });
+      EQB={x0,y0,x1,y1}; const lx=x1+6, ly=(y0+y1)/2; const tl=(y,tx,sz,f)=>`<text x="${lx.toFixed(1)}" y="${y.toFixed(1)}" font-size="${sz}" font-weight="800" fill="${f}" stroke="#fff" stroke-width="3" paint-order="stroke">${tx}</text>`;
+      s+=tl(ly-9,N0.pl.kind==='pk'?'SUPPLY PLENUM · CURB':'SUPPLY · RETURN DROPS',9,'#003963')+tl(ly+2,'UNIT ON THE ROOF — DASHED',7.5,'#3678A0')+tl(ly+13,CFM(RM.A.Qd)+' CFM',9,'#8a6a00'); placed.push({x1:lx,x2:lx+130,y1:ly-19,y2:ly+16}) }
+    const EQ=(!PKQ&&N0&&N0.pl&&N0.pl.kind!=='drop')?dnObs(N0,{pl:N0.pl,U:N0.U,r:N0.r||0}).filter(R=>!R.soft):null;
     if(EQ&&EQ.length){ let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
       EQ.forEach(R=>{ const a=p(R.x0,R.y0), b=p(R.x1,R.y1); const x=Math.min(a[0],b[0]), y=Math.min(a[1],b[1]), w=Math.abs(b[0]-a[0]), h=Math.abs(b[1]-a[1]); x0=Math.min(x0,x); y0=Math.min(y0,y); x1=Math.max(x1,x+w); y1=Math.max(y1,y+h);
         if(R.k==='unit') s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="#003963" stroke="#9fc3dd" stroke-width="1.2"/>`;
@@ -8219,18 +8258,46 @@ function rbrRetTile(G,px){ if(!S.retPos) return; fcRetInside(); const B=rbrGrill
 // The UNIT tile is the equipment's real footprint — exactly what the layout routes round (dnObs): a horizontal's supply plenum, the cabinet behind it
 // (coil + furnace) and the return plenum on its end; an upright's riser; a new curb's supply and return drops. A kept roof drop keeps the 6 ft tile, as
 // on the sheet. The unit's middle is where it always was (S.unitPos + 3 ft), so every run length and every layout reads the same point.
-function rbrEqParts(){ let pl=null; try{ pl=dnPlenum() }catch(e){ return null } if(!pl||pl.kind==='drop') return null;
-  let R=[]; try{ R=dnObs(null,{pl,U:[0,0]}).filter(x=>!x.soft) }catch(e){ return null } if(!R.length) return null; const parts=[];
+// v2.61 — A PACKAGE ON THE GRID (Stephen 2026-09-28: "if a package, lets show the square, and the return and supply drops under it, so 2 squares
+// representing the return and supply, so i can move it"). The tile is the unit on the roof (dashed — it is above the attic) and its two drops at their
+// size, where they really are: under the unit on a new curb, out at the jack on a kept elbow. The scene records where it drew them (S.pkGeo, by install and unit);
+// until the 3D has been built once they are assumed (the elbow's 18" run, the jack's depth) and a quiet off-screen build fills them in.
+function pkGeoGet(){ let o=null; try{ o=rbrOpt() }catch(e){} const inst=((S.fix&&S.fix.install)||'reuse')+'|'+((o&&o.unit)||''); const s=S.pkGeo&&S.pkGeo[inst]; if(!s) return null; const g=String(s).split(',').map(Number); return (g.length>=6&&g.every(isFinite))?g:null }
+let PK_GEO_TRY='';
+function pkGeoEnsure(){ if(!isPkg()||S.setup==='separate'||pkGeoGet()) return false; let o=null; try{ o=rbrOpt() }catch(e){} const k=[o&&o.unit,(S.fix&&S.fix.install)||'reuse',S.star].join('|'); if(PK_GEO_TRY===k) return false; PK_GEO_TRY=k;
+  const host=document.createElement('div'); host.className='fcshothost'; host.style.cssText='position:fixed;left:-9000px;top:0;width:80px;pointer-events:none;z-index:-1';
+  host.innerHTML='<div class="viewer" style="width:80px;height:60px!important;display:block"><canvas style="display:block;width:100%;height:100%"></canvas><div class="lbls"></div></div>'; document.body.appendChild(host);
+  try{ const c=host.querySelector('canvas'); const V=makeViewer(c,host.querySelector('.lbls'),{lbl:'none',still:true}); buildInto(V,'design') }catch(e){ try{ console.warn('Fit Check: package drops',e) }catch(_){} }
+  finally{ try{ host.remove() }catch(_){} } return !!pkGeoGet() }
+function pkCurbUnit(pl){ try{ const o=rbrOpt(); const n=o&&o.unit?pkgDims(o.unit):null; if(!n||!n.l||!n.w||!n.c) return null; const ops=chassisOpenings(n.c,true,false); const s=ops.find(q=>q.k==='s'), r=ops.find(q=>q.k==='r'); if(!s||s.x==null) return null;
+  const sx=s.x+s.w/2, sz=s.z+s.h/2; let y0=(sx-n.l)/12, y1=sx/12; const free=(pl.faces||[]).find(f=>f.k==='N'||f.k==='S'); const sg=free&&free.k==='N'?1:-1;   /* the side the layout puts the return on */
+  if(r&&r.x!=null){ const yr=-((r.x+r.w/2)-sx)/12; if(yr*sg<0){ const a=-y1, b=-y0; y0=a; y1=b } } return [(0-sz)/12,y0,(n.w-sz)/12,y1] }catch(e){ return null } }
+function pkTileParts(pl){ const g=pkGeoGet(); const parts=[]; const B=(k,x0,y0,x1,y1,t,asm)=>parts.push({k,x0,y0,x1,y1,t,asm:!!asm});
+  if(pl.kind==='pk'){ let R=[]; try{ R=dnObs(null,{pl,U:[0,0]}).filter(x=>!x.soft) }catch(e){} R.forEach(x=>{ if(x.k==='plen') B('sup',x.x0,x.y0,x.x1,x.y1,'supply drop · new curb'); else if(x.k==='ret') B('rpl',x.x0,x.y0,x.x1,x.y1,'return drop · new curb') }) }
+  else { const sw=g?g[4]:14/12, sd=g?g[5]:14/12; B('sup',-sw/2,-sd/2,sw/2,sd/2,'supply drop',!g);
+    if(g&&g.length>=10) B('rpl',g[6]-g[8]/2,g[7]-g[9]/2,g[6]+g[8]/2,g[7]+g[9]/2,'return drop');
+    else if(pl.ret) B('rpl',pl.ret.dx-pl.ret.r,pl.ret.dy-pl.ret.r,pl.ret.dx+pl.ret.r,pl.ret.dy+pl.ret.r,'return drop');
+    else { const y=(S.pkFree===-1?1:-1)*(sd+4/12); B('rpl',-sw/2,y-sd/2,sw/2,y+sd/2,'return drop',true) } }
+  if(!parts.length) return null;
+  let u=g?g.slice(0,4):(pl.kind==='pk'?pkCurbUnit(pl):null);
+  if(!u){ let L=51, W=47; try{ const o=rbrOpt(); const n=o&&o.unit?pkgDims(o.unit):null; if(n&&n.l&&n.w){ L=n.l; W=n.w } }catch(e){} const ys=parts.flatMap(q=>[q.y0,q.y1]); const cy=(Math.min(...ys)+Math.max(...ys))/2;
+    u=pl.kind==='pk'?[-W/24,cy-L/24,W/24,cy+L/24]:[(18+8)/12,cy-L/24,(18+8)/12+W/12,cy+L/24] }   /* assumed: over the drops on a curb, on its stand off the jack (the elbow's 18" run and the jack) on a kept elbow */
+  parts.unshift({k:'roof',x0:u[0],y0:u[1],x1:u[2],y1:u[3],t:'the unit on the roof',asm:!g&&pl.kind!=='pk'}); return parts }
+function rbrEqParts(){ let pl=null; try{ pl=dnPlenum() }catch(e){ return null } if(!pl) return null; const rr=unitRot(); let parts=[];
+  if(pl.kind==='pk'||pl.kind==='drop'){ parts=pkTileParts(pl)||[]; if(!parts.length) return null; if(rr) parts=parts.map(q=>uRotRect([0,0],q,rr)); return {pl:dnRotPl(pl,rr),parts,rot:rr} }
+  let R=[]; try{ R=dnObs(null,{pl,U:[0,0]}).filter(x=>!x.soft) }catch(e){ return null } if(!R.length) return null;
   R.forEach(x=>{ if(x.k==='plen') parts.push({k:'sup',x0:x.x0,x1:x.x1,y0:x.y0,y1:x.y1,t:pl.kind==='pk'?'supply drop':(pl.kind==='v'?'supply riser':'supply plenum')});
     else if(x.k==='unit'){ const rl=Math.min(retPlenLen()/12,(x.y1-x.y0)*0.45); parts.push({k:'cab',x0:x.x0,x1:x.x1,y0:x.y0,y1:x.y1-rl,t:'coil · furnace'}); parts.push({k:'rpl',x0:x.x0,x1:x.x1,y0:x.y1-rl,y1:x.y1,t:'return plenum'}) }
     else if(x.k==='ret') parts.push({k:'rpl',x0:x.x0,x1:x.x1,y0:x.y0,y1:x.y1,t:'return drop'}) });
-  return parts.length?{pl,parts}:null }
+  if(rr) parts=parts.map(q=>uRotRect([0,0],q,rr));   /* v2.61: laid out in the unit's own frame, turned onto the grid */
+  return parts.length?{pl:dnRotPl(pl,rr),parts,rot:rr}:null }
 function rbrUnitTile(G,px){ const Q=rbrEqParts();
   if(!Q){ rbrDrag(mkTile(G,px,'unit',S.unitPos.x,S.unitPos.y,6,6,'UNIT','drop'),S.unitPos,px,true); return }
   const m=0.3; let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; Q.parts.forEach(q=>{ x0=Math.min(x0,q.x0); y0=Math.min(y0,q.y0); x1=Math.max(x1,q.x1); y1=Math.max(y1,q.y1) });
   x0-=m; y0-=m; x1+=m; y1+=m; const w=x1-x0, d=y1-y0, ox=3+x0, oy=3+y0; const k=Q.pl.kind;
-  const t=mkTile(G,px,'unit eq',S.unitPos.x+ox,S.unitPos.y+oy,w,d,'UNIT',k==='h'?'supply · unit · return':(k==='pk'?'supply · return drops':'supply riser'));
-  Q.parts.forEach(q=>{ const e=document.createElement('div'); e.className='eqp '+q.k; e.style.left=((q.x0-x0)*px).toFixed(1)+'px'; e.style.top=((q.y0-y0)*px).toFixed(1)+'px'; e.style.width=((q.x1-q.x0)*px).toFixed(1)+'px'; e.style.height=((q.y1-q.y0)*px).toFixed(1)+'px'; e.title=q.t+' '+fmt((q.x1-q.x0)*12)+'×'+fmt((q.y1-q.y0)*12)+'"'; t.appendChild(e) });
+  const pk=k==='pk'||k==='drop'; const t=mkTile(G,px,'unit eq'+(pk?' pk':''),S.unitPos.x+ox,S.unitPos.y+oy,w,d,'UNIT',k==='h'?'supply · unit · return':(pk?'on the roof · supply · return drops':'supply riser'));
+  t.dataset.rot=String(Q.rot||0); if(pk&&!pkGeoGet()) setTimeout(()=>{ try{ if(pkGeoEnsure()) rbrGrid() }catch(e){} },40);   /* v2.61: the drops as the 3D draws them, once it has been built */
+  Q.parts.forEach(q=>{ const e=document.createElement('div'); e.className='eqp '+q.k+(q.asm?' asm':''); e.style.left=((q.x0-x0)*px).toFixed(1)+'px'; e.style.top=((q.y0-y0)*px).toFixed(1)+'px'; e.style.width=((q.x1-q.x0)*px).toFixed(1)+'px'; e.style.height=((q.y1-q.y0)*px).toFixed(1)+'px'; e.title=q.t+' '+fmt((q.x1-q.x0)*12)+'×'+fmt((q.y1-q.y0)*12)+'"'; t.appendChild(e) });
   t.title='The unit at its size — drag it to where it sits (it may sit past the rooms: the attic is bigger than the part of the house this system cools)';
   rbrDrag(t,S.unitPos,px,true,null,{ox,oy,w,d}) }
 function mkTile(G,px,cls,x,y,w,d,a,b){ const t=document.createElement('div'); t.className='tile '+cls;
@@ -8360,11 +8427,17 @@ function fcPlanXform(kind){ const P=S.plan; if(!P) return; const pd=P.pad||0, W=
     r.poly=r.poly.map(mp); if(!turn) r.poly.reverse(); const c=f(r.cx,r.cy); r.cx=r2(c[0]); r.cy=r2(c[1]);
     const bb=window.FCDxf.bbox(r.poly); r.x=r2(bb.x0); r.y=r2(bb.y0); r.w=r2(Math.max(1,bb.w)); r.d=r2(Math.max(1,bb.d));
     if(r.vp) r.vp=abs.map(a=>{ if(!a) return null; const q=f(a[0],a[1]); return {dx:+(q[0]-r.x).toFixed(2),dy:+(q[1]-r.y).toFixed(2)} }) });
-  const U=S.unitPos; if(U){ const c=f(U.x+3,U.y+3); U.x=Math.round(c[0]-3); U.y=Math.round(c[1]-3);
+  const U=S.unitPos; if(U){ const c=f(U.x+3,U.y+3); U.x=Math.round(c[0]-3); U.y=Math.round(c[1]-3); U.r=turn?(unitRot()+90)%360:(360-unitRot())%360;   /* v2.61: the unit turns (or mirrors) with the house */
     /* the equipment stays whole on the turned grid (it points the same way whatever the house does) */ const F=fcField(); let e=[-3,-3,3,3]; try{ const Q=rbrEqParts(); if(Q){ e=[1e9,1e9,-1e9,-1e9]; Q.parts.forEach(q=>{ e[0]=Math.min(e[0],q.x0); e[1]=Math.min(e[1],q.y0); e[2]=Math.max(e[2],q.x1); e[3]=Math.max(e[3],q.y1) }) } }catch(err){}
     U.x=Math.max(Math.ceil(-e[0]-3),Math.min(Math.floor(F.w-e[2]-3),U.x)); U.y=Math.max(Math.ceil(-e[1]-3),Math.min(Math.floor(F.d-e[3]-3),U.y)) }
   const R=S.retPos; if(R){ const c=f(R.x+2,R.y+2); R.x=Math.round(c[0]-2); R.y=Math.round(c[1]-2) }
   if(S.auto) S.auto.rbr=false; fcApplyRuns(); save() }
+// v2.61 — turn the unit a quarter (or half) turn about its own middle, to sit the way the one in the attic does. It stays whole on the grid; an
+// assumed return moves round behind it, a placed one stays where the SM put it; the layout, the sheet and the 3D all read the turn.
+function fcUnitTurn(dg){ const U=S.unitPos; if(!U) return; U.r=(unitRot()+(+dg||90))%360; const F=fcField(); let e=[-3,-3,3,3];
+  try{ const Q=rbrEqParts(); if(Q){ e=[1e9,1e9,-1e9,-1e9]; Q.parts.forEach(q=>{ e[0]=Math.min(e[0],q.x0); e[1]=Math.min(e[1],q.y0); e[2]=Math.max(e[2],q.x1); e[3]=Math.max(e[3],q.y1) }) } }catch(err){}
+  U.x=Math.max(Math.ceil(-e[0]-3),Math.min(Math.floor(F.w-e[2]-3),U.x)); U.y=Math.max(Math.ceil(-e[1]-3),Math.min(Math.floor(F.d-e[3]-3),U.y));
+  if(S.retPos&&!S.retPos.set) fcRetReset(); fcApplyRet(); save(); rbrModel(); rbrOut(); rbrSync(); rbrGrid() }
 function fcPlanClear(){ S.plan=null; S.rooms=[]; S.blocks=[]; S.rbrHand=false; S.rbrNew=false; save() }
 function fcUnitInside(){ const F=fcField(); if(!F.poly) return; const u=S.unitPos; if(fcRectIn(F.poly,u.x,u.y,6,6)) return;
   const c=fcCent(F.poly); let bx=Math.max(0,Math.min(F.w-6,c[0]-3)), by=Math.max(0,Math.min(F.d-6,c[1]-3));
@@ -8403,6 +8476,7 @@ function rbrScanWire(){
     fr.onerror=()=>fcScanStat('Could not read that file.','warn'); fr.readAsText(file) }) }
   const h=$('#rbrHand'); if(h) h.addEventListener('click',()=>{ S.rbrHand=true; if(!S.rooms.length){ rbrSeed(fcTop()); if(fcHasShape()) fcPack() } save(); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) });
   const x=$('#rbrScanX'); if(x) x.addEventListener('click',()=>{ fcPlanClear(); rbrRender(); rbrSync() });
+  [['#rbrUTurn',90],['#rbrUFlip',180]].forEach(([id,dg])=>{ const b=$(id); if(b&&!b.dataset.wired){ b.dataset.wired='1'; b.addEventListener('click',()=>fcUnitTurn(dg)) } });   // v2.61
   [['#rbrTurn','turn'],['#rbrMir','mir']].forEach(([id,k])=>{ const b=$(id); if(b) b.addEventListener('click',()=>{ fcPlanXform(k); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) }) });   // v2.60
   // drag a file onto the panel
   ['#rbrPanel','#fcTop1'].forEach(sel=>{ const pn=$(sel); if(pn&&!pn.dataset.drop){ pn.dataset.drop='1'; pn.addEventListener('dragover',e=>{ e.preventDefault() }); pn.addEventListener('drop',e=>{ const file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!file||!/\.(dxf|json)$/i.test(file.name)) return; e.preventDefault(); const fr=new FileReader(); fr.onload=()=>{ if(fcPlanLoad(String(fr.result||''),file.name)){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } }; fr.readAsText(file) }) } })
