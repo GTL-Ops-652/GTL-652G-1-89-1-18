@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-27 v2.59 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-28 v2.60 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -224,7 +224,16 @@ dialog .in{padding:18px}
 .gridwrap .tile.hi{border-color:var(--warn);background:var(--warnbg)}.gridwrap .tile.hi .tn{color:#7a4a12}
 .gridwrap .tile.lo{border-color:var(--gray);background:rgba(192,184,182,.22)}
 .gridwrap .tile.unit{border:2px solid var(--db);background:#003963}.gridwrap .tile.unit .tn{color:#fff}.gridwrap .tile.unit .tc{color:#9fc3dd}
-.gridwrap .tile.ret{border:2px solid #4a3496;background:#6c4fd0;z-index:2}.gridwrap .tile.ret .tn{color:#fff;font-size:10px}.gridwrap .tile.ret .tc{color:#e4dcff;font-size:8.5px} /* v2.55: the return filter grille, placed like the unit · v2.56: violet, the return's colour */
+.gridwrap .tile.ret{border:2px solid #4a3496;background:#6c4fd0;z-index:2}
+/* v2.60: the RETURN grille and the UNIT drawn at their real size — a dashed handle round the real parts, the label outside it */
+.gridwrap .tile.ret.sc,.gridwrap .tile.unit.eq{padding:0;overflow:visible;background:rgba(255,255,255,.35);border-radius:4px}
+.gridwrap .tile.ret.sc{border:1.5px dashed #6c4fd0}.gridwrap .tile.unit.eq{border:1.5px dashed var(--db);z-index:2}
+.gridwrap .tile.sc .gbx,.gridwrap .tile.eq .eqp{position:absolute;border-radius:2px;pointer-events:none}
+.gridwrap .tile.sc .gbx{background:#6c4fd0;border:1px solid #4a3496}
+.gridwrap .tile.eq .eqp.sup{background:#003963}.gridwrap .tile.eq .eqp.cab{background:#2f6d99}.gridwrap .tile.eq .eqp.rpl{background:#6c4fd0}
+.gridwrap .tile.sc .tn,.gridwrap .tile.sc .tc,.gridwrap .tile.eq .tn,.gridwrap .tile.eq .tc{position:absolute;left:50%;transform:translateX(-50%);white-space:nowrap;max-width:none;background:rgba(255,255,255,.92);padding:0 3px;border-radius:4px;pointer-events:none;line-height:1.25}
+.gridwrap .tile.sc .tn,.gridwrap .tile.eq .tn{bottom:100%;margin-bottom:1px;font-size:9.5px}.gridwrap .tile.sc .tc,.gridwrap .tile.eq .tc{top:100%;margin-top:1px;font-size:8px}
+.gridwrap .tile.ret.sc .tn{color:#4a3496}.gridwrap .tile.ret.sc .tc{color:#6c4fd0}.gridwrap .tile.unit.eq .tn{color:#003963}.gridwrap .tile.unit.eq .tc{color:#2f6d99}.gridwrap .tile.ret .tn{color:#fff;font-size:10px}.gridwrap .tile.ret .tc{color:#e4dcff;font-size:8.5px} /* v2.55: the return filter grille, placed like the unit · v2.56: violet, the return's colour */
 .gridwrap .tile .rs{position:absolute;right:-1px;top:50%;transform:translateY(-50%);width:16px;height:38px;border-radius:5px;background:var(--db);opacity:.75;cursor:ew-resize;display:grid;place-items:center;color:#fff;font-size:10px;line-height:1;touch-action:none}
 /* v2.37 — address lookup, aerial, traced shape */
 .fcrow{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end}
@@ -1546,7 +1555,7 @@ window.FCProp={lookupAddress,lookupCandidate,bounds,ringAreaSqFt,RELAY};
 })();
 </script>
 <script>
-// fcdxf.js — v2.54 floor-plan import. Reads a DXF (3D Snap / RoomPlan, magicplan, AutoCAD) into
+// fcdxf.js — v2.54 floor-plan import (v2.60: + Apple RoomPlan JSON, and a RoomPlan DXF read the right way up). Reads a DXF (3D Snap / RoomPlan, magicplan, AutoCAD) into
 // walls, doors, windows, furniture and the enclosed rooms, all in FEET on the plan's own axes.
 // No dependencies. Written to be inlined into template.html (classic script) — the last line hangs
 // the entry point on window when a window exists, and on module.exports under node.
@@ -1681,6 +1690,18 @@ function unitsToM(units, extentMax){
   for(const [u,k] of cands) if(ok(k)) return k;
   return f||1;
 }
+// v2.60 (Stephen 2026-09-28: "it's almost like it flips it 180"). A DXF written off an Apple RoomPlan scan (3D Snap, and the other apps
+// on Apple's exporter) is drawn with its y running DOWN the page — RoomPlan's z straight into the DXF's y — so read the CAD way (y up) the
+// house comes in mirrored top to bottom: the living room at the top of the plan when the scan's own sheet has it at the bottom. Proven on
+// Stephen's scan against the RoomPlan JSON of the same capture (the JSON's frame is right-handed, so its top view cannot be mirrored) and
+// 3D Snap's own sheet. The exporter signs its files: blocks named FURNITURE_<RoomPlan category> on a WALLS / DOORS / WINDOWS / FURNITURE /
+// DIMENSIONS layer set. A signed file keeps its y as it is; every other DXF (AutoCAD, magicplan) is flipped once, the CAD way, as before.
+function dxfYDown(d){
+  if(Object.keys(d.blocks).some(n=>/^FURNITURE_/i.test(n))) return true;
+  if(d.ents.some(e=>e.t==='INSERT'&&/^FURNITURE_/i.test(e.name||''))) return true;
+  const L=new Set(d.ents.map(e=>String(e.layer||'').toUpperCase()));
+  return L.has('WALLS')&&L.has('DIMENSIONS')&&L.has('FURNITURE')&&(L.has('DOORS')||L.has('WINDOWS'));
+}
 function planFromDxf(text){
   const d=parseDxf(text);
   const isWall=e=>/wall|mur|wand|pared/i.test(e.layer)||(e.layer==='0'&&e.t==='LINE');
@@ -1689,27 +1710,44 @@ function planFromDxf(text){
   d.ents.forEach(e=>{ if(isDim(e)) return; if(e.t==='LINE'&&isWall(e)) segsRaw.push([e.x1,e.y1,e.x2,e.y2]);
     else if(e.t==='PL'&&isWall(e)){ for(let i=0;i+1<e.pts.length;i++) segsRaw.push([e.pts[i][0],e.pts[i][1],e.pts[i+1][0],e.pts[i+1][1]]); if(e.closed&&e.pts.length>2){ const a=e.pts[e.pts.length-1],b=e.pts[0]; segsRaw.push([a[0],a[1],b[0],b[1]]) } } });
   if(!segsRaw.length) d.ents.forEach(e=>{ if(isDim(e)) return; if(e.t==='LINE') segsRaw.push([e.x1,e.y1,e.x2,e.y2]) });
-  if(!segsRaw.length) return {ok:false, why:'No wall lines found in the file. Export the floor plan as a DXF with the walls on a WALLS layer (3D Snap ▸ Export ▸ DXF).'};
+  if(!segsRaw.length) return {ok:false, why:'No wall lines found in the file. Export the floor plan as a DXF with the walls on a WALLS layer (3D Snap ▸ Export ▸ DXF), or upload the scan\'s JSON.'};
   let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity; segsRaw.forEach(s=>{ x0=Math.min(x0,s[0],s[2]); y0=Math.min(y0,s[1],s[3]); x1=Math.max(x1,s[0],s[2]); y1=Math.max(y1,s[1],s[3]) });
   const k=unitsToM(d.units, Math.max(x1-x0,y1-y0));
-  // the DXF's y runs up the page; the plan's runs down it (screen / grid / sheet), so it is flipped here once and every angle with it
-  const toM=(x,y)=>[(x-x0)*k,(y1-y)*k];
+  const yDown=dxfYDown(d);
+  // a CAD DXF's y runs up the page and the plan's runs down it (screen / grid / sheet), so it is flipped here once and every angle with it.
+  // v2.60: a RoomPlan DXF's y already runs down the page — it is read as it is (see dxfYDown).
+  const toM=yDown?(x,y)=>[(x-x0)*k,(y-y0)*k]:(x,y)=>[(x-x0)*k,(y1-y)*k];
   const segs=segsRaw.map(s=>{ const a=toM(s[0],s[1]), b=toM(s[2],s[3]); return [a[0],a[1],b[0],b[1]] }).filter(s=>Math.hypot(s[2]-s[0],s[3]-s[1])>0.02);
-  const G=buildRooms(segs);
   // inserts: doors / windows / furniture — a block is a unit square scaled by sx/sy and turned by rot
   const doors=[],wins=[],furn=[];
   d.ents.forEach(e=>{ if(e.t!=='INSERT') return; const nm=(e.name||'')+' '+(e.layer||''); const p=toM(e.x,e.y); const blk=d.blocks[e.name]; let bw=1,bh=1; if(blk&&blk.ents.length){ const pts=[]; blk.ents.forEach(b=>{ if(b.t==='PL') pts.push(...b.pts); else if(b.t==='LINE') pts.push([b.x1,b.y1],[b.x2,b.y2]) }); if(pts.length){ const bb=bbox(pts); bw=bb.w||1; bh=bb.d||1 } }
-    const w=Math.abs(e.sx)*bw*k, h=Math.abs(e.sy)*bh*k, rot=-(e.rot||0);   // flipped with the y axis
-    const r=rot*Math.PI/180; const sy=e.sy<0?1:-1; /* the block's +y (its depth) points the other way once the page is flipped */ const c=[p[0]+(w/2)*Math.cos(r)-(h/2)*Math.sin(r)*sy, p[1]+(w/2)*Math.sin(r)+(h/2)*Math.cos(r)*sy];
+    const w=Math.abs(e.sx)*bw*k, h=Math.abs(e.sy)*bh*k, rot=yDown?(e.rot||0):-(e.rot||0);   // flipped with the y axis (a RoomPlan DXF: not flipped)
+    const r=rot*Math.PI/180; const sy=yDown?(e.sy<0?-1:1):(e.sy<0?1:-1); /* the block's +y (its depth) points the other way once the page is flipped */ const c=[p[0]+(w/2)*Math.cos(r)-(h/2)*Math.sin(r)*sy, p[1]+(w/2)*Math.sin(r)+(h/2)*Math.cos(r)*sy];
     if(/door/i.test(nm)) doors.push({x:p[0],y:p[1],w,rot,closed:/closed|slid/i.test(nm)});
     else if(/window|fen/i.test(nm)) wins.push({x:p[0],y:p[1],w,rot});
     else furn.push({kind:kindOf(nm),name:e.name,x:p[0],y:p[1],w,h,rot,c}) });
-  // rooms: name from what is inside
+  const P=finishPlan({segs,doors,wins,furn,sections:[],walls3:null});
+  if(!P.ok) return P;
+  return Object.assign(P,{units:d.units, scale:k, src:'dxf', yDown});
+}
+// v2.60 — the rooms and the plan, shared by the DXF and the RoomPlan JSON (metres in, feet out)
+const LABEL={bedroom:['Bedroom','bed'],livingroom:['Living room','living'],bathroom:['Bathroom','bath'],kitchen:['Kitchen','kitchen'],diningroom:['Dining','dining'],
+  laundryroom:['Laundry','laundry'],office:['Office','office'],garage:['Garage','room'],hallway:['Hall','hall'],closet:['Closet','closet']};
+function finishPlan(o){
+  const segs=o.segs, doors=o.doors, wins=o.wins, furn=o.furn;
+  if(!segs.length) return {ok:false, why:'No walls found in the file.'};
+  const G=buildRooms(segs);
   const rooms=G.rooms.map((r,i)=>{ const inside=furn.filter(f=>pointIn(r.poly,f.c)); const has=kd=>inside.some(f=>f.kind===kd); const cnt=kd=>inside.filter(f=>f.kind===kd).length;
     const sf=r.area*M2FT*M2FT; const bbf={w:r.bb.w*M2FT,d:r.bb.d*M2FT}; const minW=Math.min(bbf.w,bbf.d);
     const nDoors=doors.filter(dd=>{ const rr=dd.rot*Math.PI/180; const m=[dd.x+dd.w/2*Math.cos(rr),dd.y+dd.w/2*Math.sin(rr)]; return ptPolyDist(r.poly,m)<0.15 }).length;
     let name,kind='room';
-    if(has('toilet')) { name='Bathroom'; kind='bath' }
+    // v2.60: the scan's own label for the room (RoomPlan sections) wins; the furniture guess is the fallback
+    const sec=(o.sections||[]).find(s=>pointIn(r.poly,s.c)&&LABEL[String(s.label||'').toLowerCase()]);
+    const unid=(o.sections||[]).some(s=>pointIn(r.poly,s.c)&&/^unidentified$/i.test(String(s.label||'')));   // the scan says it does not know: no bedroom guess
+    if(sec){ const L=LABEL[String(sec.label).toLowerCase()]; name=L[0]; kind=L[1];
+      if(kind==='living'&&sf<=250&&!/living/i.test(sec.label)) name='Family room';
+      if(kind==='hall'&&sf<45) { name='Closet'; kind='closet' } }
+    else if(has('toilet')) { name='Bathroom'; kind='bath' }
     else if(has('washer')) { name='Laundry'; kind='laundry' }
     else if(has('kitchen')) { name='Kitchen'; kind='kitchen' }
     else if(has('bed')) { name='Bedroom'; kind='bed' }
@@ -1718,24 +1756,82 @@ function planFromDxf(text){
     else if(sf<45&&(has('storage')||!nDoors)) { name='Closet'; kind='closet' }
     else if(minW<5.5&&sf<140&&nDoors>=2) { name='Hall'; kind='hall' }
     else if(has('table')||has('chair')) { name=sf>200?'Great room':'Office'; kind=sf>200?'living':'office' }
-    else if(sf>=90) { name='Bedroom'; kind='bed' }
+    else if(sf>=90&&!unid) { name='Bedroom'; kind='bed' }
     else { name='Room'; kind='room' }
-    return {poly:r.poly.map(p=>[p[0]*M2FT,p[1]*M2FT]), sf:Math.round(sf), name, kind, nDoors, items:inside.map(f=>f.kind), c:polyCent(r.poly).map(v=>v*M2FT), w:bbf.w, d:bbf.d} });
+    const out={poly:r.poly.map(p=>[p[0]*M2FT,p[1]*M2FT]), sf:Math.round(sf), name, kind, nDoors, items:inside.map(f=>f.kind), c:polyCent(r.poly).map(v=>v*M2FT), w:bbf.w, d:bbf.d};
+    // v2.60: a RoomPlan JSON carries every wall's height — the room's ceiling is the lowest wall round it that is 2 ft or longer (a closet
+    // under a lower ceiling reads its own 8'5", not the 10' of the room beside it — 3D Snap's own sheet reads it the same way)
+    if(o.walls3){ let hmin=Infinity; o.walls3.forEach(W=>{ const m=[(W.s[0]+W.s[2])/2,(W.s[1]+W.s[3])/2]; if(ptPolyDist(r.poly,m)>0.2) return; if(Math.hypot(W.s[2]-W.s[0],W.s[3]-W.s[1])<0.6) return; if(W.h>1.5) hmin=Math.min(hmin,W.h) });
+      if(isFinite(hmin)) out.h=+(hmin*M2FT).toFixed(1) }
+    return out });
   // number duplicates
   const seen={}; rooms.sort((a,b)=>(a.c[1]-b.c[1])||(a.c[0]-b.c[0])); rooms.forEach(r=>{ seen[r.name]=(seen[r.name]||0)+1 }); const idx={}; rooms.forEach(r=>{ if(seen[r.name]>1){ idx[r.name]=(idx[r.name]||0)+1; r.name+=' '+idx[r.name] } });
-  const W=(x1-x0)*k*M2FT, Dp=(y1-y0)*k*M2FT;
+  let X1=0,Y1=0; segs.forEach(s=>{ X1=Math.max(X1,s[0],s[2]); Y1=Math.max(Y1,s[1],s[3]) });
   const totalSf=rooms.reduce((s,r)=>s+r.sf,0);
-  return {ok:true, units:d.units, scale:k, w:W, d:Dp, rooms, totalSf,
+  return {ok:true, w:X1*M2FT, d:Y1*M2FT, rooms, totalSf,
     walls:segs.map(s=>s.map(v=>v*M2FT)), doors:doors.map(o=>({x:o.x*M2FT,y:o.y*M2FT,w:o.w*M2FT,rot:o.rot,closed:o.closed})), windows:wins.map(o=>({x:o.x*M2FT,y:o.y*M2FT,w:o.w*M2FT,rot:o.rot})),
     furniture:furn.map(f=>({kind:f.kind,x:f.x*M2FT,y:f.y*M2FT,w:f.w*M2FT,h:f.h*M2FT,rot:f.rot,c:f.c.map(v=>v*M2FT)})),
     outline:outlineOf(rooms) };
 }
+// ---------- 5. v2.60 — the Apple RoomPlan JSON (CapturedRoom / CapturedStructure, iOS 16–18 Codable export: 3D Snap ▸ Export ▸ JSON)
+// Every wall, door, window and opening is a box: `dimensions` [length, height, depth] in metres and a 4×4 `transform` (column-major) whose
+// translation is its middle and whose first column is its length. RoomPlan's world is right-handed with y up, so the top view is (x, z) with
+// z running DOWN the page — no flip. The house is turned square to the page off its own walls (length-weighted 4θ mean), so a scan that
+// started at an angle lands on the grid square. `sections` (iOS 17+) label the rooms; `story` numbers the floors — the TOP floor is read,
+// the one Room by room designs (Fit Check's two-storey rule).
+const RP_KIND={bed:'bed',sofa:'sofa',chair:'chair',table:'table',television:'tv',toilet:'toilet',bathtub:'toilet',sink:'sink',storage:'storage',
+  refrigerator:'kitchen',stove:'kitchen',oven:'kitchen',dishwasher:'kitchen',washerdryer:'washer',washer:'washer',dryer:'washer',fireplace:'other',stairs:'other'};
+function rpCat(o){ const c=o&&o.category; if(!c) return ''; if(typeof c==='string') return c; return Object.keys(c)[0]||'' }
+function rpBox(o){ const t=o&&o.transform; if(!Array.isArray(t)||t.length!==16) return null; const dm=o.dimensions||[0,0,0];
+  const ax=[t[0],t[2]], L=Math.hypot(ax[0],ax[1])||1; return {c:[t[12],t[14]], u:[ax[0]/L,ax[1]/L], len:+dm[0]||0, h:+dm[1]||0, dep:+dm[2]||0} }
+function planFromRoomPlan(json){
+  let d=json; if(typeof d==='string'){ try{ d=JSON.parse(d) }catch(e){ return {ok:false, why:'That file is not valid JSON.'} } }
+  if(!d||typeof d!=='object') return {ok:false, why:'That file is not a RoomPlan scan.'};
+  // a merged structure lists everything at the top; a single capture may nest it in rooms[]
+  const pick=k=>{ const top=Array.isArray(d[k])?d[k]:[]; if(top.length) return top; return (Array.isArray(d.rooms)?d.rooms:[]).reduce((a,r)=>a.concat(Array.isArray(r[k])?r[k]:[]),[]) };
+  let walls=pick('walls'); if(!walls.length) return {ok:false, why:'No walls in that JSON. Use the RoomPlan JSON export of the scan (3D Snap ▸ Export ▸ JSON).'};
+  const stories=[...new Set(walls.map(w=>w.story|0))]; const top=Math.max(...stories);
+  const onTop=a=>a.filter(x=>(x.story|0)===top);
+  walls=onTop(walls); const doorsR=onTop(pick('doors')), winsR=onTop(pick('windows')), opensR=onTop(pick('openings')), objsR=onTop(pick('objects')), secs=onTop(pick('sections'));
+  const WB=walls.map(rpBox).filter(b=>b&&b.len>0.05);
+  if(!WB.length) return {ok:false, why:'No walls in that JSON.'};
+  // square the house to the page: the angle the walls agree on, mod 90°
+  let sx=0,sy=0; WB.forEach(b=>{ const a=Math.atan2(b.u[1],b.u[0])*4; sx+=Math.cos(a)*b.len; sy+=Math.sin(a)*b.len }); const th=-Math.atan2(sy,sx)/4; const ct=Math.cos(th), st=Math.sin(th);
+  const R=p=>[p[0]*ct-p[1]*st, p[0]*st+p[1]*ct]; const Ru=u=>R(u);
+  const ends=b=>{ const a=R([b.c[0]-b.u[0]*b.len/2,b.c[1]-b.u[1]*b.len/2]), e=R([b.c[0]+b.u[0]*b.len/2,b.c[1]+b.u[1]*b.len/2]); return [a[0],a[1],e[0],e[1]] };
+  let segs=WB.map(ends); let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity; segs.forEach(s=>{ x0=Math.min(x0,s[0],s[2]); y0=Math.min(y0,s[1],s[3]); x1=Math.max(x1,s[0],s[2]); y1=Math.max(y1,s[1],s[3]) });
+  // a house wider than it is deep is stood up a quarter turn (x, y) → (y, −x): portrait, as 3D Snap lays its own sheet and its DXF — the same
+  // scan's JSON and DXF land on the grid the same way round. Turn 90° on the plan strip turns any scan after it is in.
+  if(x1-x0>y1-y0){ const R0=R; const R1=p=>{ const q=R0(p); return [q[1],-q[0]] }; return planFromRoomPlanR(d,{walls,doorsR,winsR,opensR,objsR,secs,WB,stories,top},R1) }
+  return planFromRoomPlanR(d,{walls,doorsR,winsR,opensR,objsR,secs,WB,stories,top},R) }
+function planFromRoomPlanR(d,A,R){ const {doorsR,winsR,opensR,objsR,secs,WB,stories,top}=A; const Ru=u=>R(u);
+  const ends=b=>{ const a=R([b.c[0]-b.u[0]*b.len/2,b.c[1]-b.u[1]*b.len/2]), e=R([b.c[0]+b.u[0]*b.len/2,b.c[1]+b.u[1]*b.len/2]); return [a[0],a[1],e[0],e[1]] };
+  let segs=WB.map(ends); let x0=Infinity,y0=Infinity; segs.forEach(s=>{ x0=Math.min(x0,s[0],s[2]); y0=Math.min(y0,s[1],s[3]) });
+  const sh=p=>[p[0]-x0,p[1]-y0];
+  segs=segs.map(s=>{ const a=sh([s[0],s[1]]), b=sh([s[2],s[3]]); return [a[0],a[1],b[0],b[1]] });
+  const walls3=segs.map((s,i)=>({s,h:WB[i].h}));
+  const lin=(o,closed)=>{ const b=rpBox(o); if(!b||!(b.len>0)) return null; const s=ends(b); const a=sh([s[0],s[1]]), e=sh([s[2],s[3]]); return {x:a[0],y:a[1],w:b.len,rot:Math.atan2(e[1]-a[1],e[0]-a[0])*180/Math.PI,closed} };
+  const doors=[]; doorsR.forEach(o=>{ const c=o.category&&o.category.door; const q=lin(o,!!(c&&c.isOpen===false)); if(q) doors.push(q) });
+  opensR.forEach(o=>{ const q=lin(o,false); if(q) doors.push(q) });   // a cased opening counts as a way through, as a DXF's open door does
+  const wins=winsR.map(o=>lin(o)).filter(Boolean);
+  const furn=objsR.map(o=>{ const b=rpBox(o); if(!b) return null; const cat=rpCat(o); const k=RP_KIND[cat.toLowerCase()]||kindOf(cat); const c=sh(R(b.c)); const u=Ru(b.u);
+    return {kind:k,name:cat,x:c[0],y:c[1],w:b.len,h:b.dep,rot:Math.atan2(u[1],u[0])*180/Math.PI,c} }).filter(Boolean);
+  const sections=secs.filter(s=>Array.isArray(s.center)).map(s=>({label:s.label,c:sh(R([s.center[0],s.center[2]]))}));
+  const P=finishPlan({segs,doors,wins,furn,sections,walls3});
+  if(!P.ok) return P;
+  return Object.assign(P,{units:6, scale:1, src:'json', stories:stories.length, story:top});
+}
+// the one entry point the app calls: JSON or DXF by what the file IS, not what it is called
+function planFromFile(text){ const t=String(text||'').replace(/^\uFEFF/,'').trim();
+  if(t[0]==='{'){ let d; try{ d=JSON.parse(t) }catch(e){ return {ok:false, why:'That file is not valid JSON.'} } return planFromRoomPlan(d) }
+  if(/\bSECTION\b[\s\S]*\bENTITIES\b/.test(t)) return planFromDxf(text);
+  return {ok:false, notPlan:true, why:'That is not a floor plan. In 3D Snap use Export ▸ JSON (best) or Export ▸ DXF and pick that file.'} }
 function ptPolyDist(P,pt){ let m=Infinity; for(let i=0;i<P.length;i++){ m=Math.min(m,ptSegDist(pt,P[i],P[(i+1)%P.length])) } return m }
 // the union outline of the rooms — the convex-ish hull is enough for the aerial / grid; the walls themselves draw the real edges
 function outlineOf(rooms){ const pts=[]; rooms.forEach(r=>pts.push(...r.poly)); if(!pts.length) return []; return hull(pts) }
 function hull(P){ const pts=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]); const cross=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]); const lo=[]; for(const p of pts){ while(lo.length>=2&&cross(lo[lo.length-2],lo[lo.length-1],p)<=0) lo.pop(); lo.push(p) } const up=[]; for(let i=pts.length-1;i>=0;i--){ const p=pts[i]; while(up.length>=2&&cross(up[up.length-2],up[up.length-1],p)<=0) up.pop(); up.push(p) } up.pop(); lo.pop(); return lo.concat(up) }
 
-const api={parseDxf,planFromDxf,polyArea,polyCent,pointIn,bbox};
+const api={parseDxf,planFromDxf,planFromRoomPlan,planFromFile,dxfYDown,polyArea,polyCent,pointIn,bbox};
 if(typeof module!=='undefined'&&module.exports) module.exports=api; else if(typeof window!=='undefined') window.FCDxf=api;
 })();
 
@@ -5836,12 +5932,21 @@ function fcBind(){ const F=S.home.floors[fcTop()]; S.unitPos=F.unitPos; if(!F.re
 // 3D routes the return duct to it and drops the filter grille there; the return run length reads off it instead of "the middle of the house".
 function fcRetDefault(u){ return {x:(u?u.x:23)+1,y:(u?u.y:18)+13,set:false} } // 12 ft behind the unit tile's centre — on a horizontal attic furnace that is a few feet past the return plenum, where the run turned down before v2.55
 function fcRetReset(){ const F=S.home.floors[fcTop()]; F.retPos=fcRetDefault(F.unitPos); S.retPos=F.retPos; fcRetInside() }
-function fcRetInside(){ const F=fcField(); const r=S.retPos; if(!r) return; r.x=Math.max(0,Math.min(F.w-4,r.x)); r.y=Math.max(0,Math.min(F.d-4,r.y)); if(!F.poly||fcRectIn(F.poly,r.x,r.y,4,4)) return;
+function fcRetInside(){ const F=fcField(); const r=S.retPos; if(!r) return; r.x=Math.max(-1,Math.min(F.w-3,r.x)); r.y=Math.max(-1,Math.min(F.d-3,r.y)); if(r.set||!F.poly||fcRectIn(F.poly,r.x,r.y,4,4)) return;   // v2.60: the grille's middle stays on the grid; one the SM PLACED stays where he put it, in the scan or not (the scan may be only the part of the house on this system) — only an assumed one is moved in
   const u=S.unitPos; const c=fcCent(F.poly); const tries=[[u.x+1,u.y+13],[u.x+1,u.y+8],[u.x+8,u.y+1],[u.x-6,u.y+1],[u.x+1,u.y-6],[c[0]-2,c[1]-2]];
   for(const [x,y] of tries){ const bx=Math.max(0,Math.min(F.w-4,x)), by=Math.max(0,Math.min(F.d-4,y)); if(fcRectIn(F.poly,bx,by,4,4)){ r.x=bx; r.y=by; return } }
   outer: for(let y=0;y+4<=F.d;y+=1) for(let x=0;x+4<=F.w;x+=1) if(fcRectIn(F.poly,x,y,4,4)){ r.x=x; r.y=y; break outer } }
 function fcRetC(){ const r=S.retPos; if(!r||!(S.plan||S.rbrHand||(S.rooms&&S.rooms.length))) return null; return [r.x+2,r.y+2,!!r.set] } // the grille's centre in plan feet (null = no plan or grid to place it on)
 fcBind();
+// v2.60  THE PLAN IN THE MIDDLE OF THE GRID (Stephen 2026-09-28: "allow us to put things outside the room area, the attic may be bigger and I may just be
+// cooling a certain part of the home. So place the outline of the home in the middle of the grid"). A scan is stored FC_PLAN_PAD ft in from the grid's
+// corner on every side (S.plan.pad); a job saved before v2.60 is moved in once here — the plan, its rooms, the unit and the return together.
+const FC_PLAN_PAD=10;
+function fcPlanShiftAll(dx,dy){ const P=S.plan; if(!P) return; const r2=v=>+(+v).toFixed(2), m=p=>[r2(p[0]+dx),r2(p[1]+dy)];
+  P.walls=(P.walls||[]).map(w=>[r2(w[0]+dx),r2(w[1]+dy),r2(w[2]+dx),r2(w[3]+dy)]); ['doors','windows','furn'].forEach(k=>{ P[k]=(P[k]||[]).map(o=>Object.assign({},o,{x:r2(o.x+dx),y:r2(o.y+dy)})) }); P.outline=(P.outline||[]).map(m);
+  (S.rooms||[]).forEach(r=>{ if(!r.plan&&!r.poly) return; if(r.poly) r.poly=r.poly.map(m); r.x=r2(r.x+dx); r.y=r2(r.y+dy); if(r.cx!=null) r.cx=r2(r.cx+dx); if(r.cy!=null) r.cy=r2(r.cy+dy) });
+  const F=S.home.floors[fcTop()]; if(F&&F.unitPos){ F.unitPos.x+=dx; F.unitPos.y+=dy } if(F&&F.retPos){ F.retPos.x+=dx; F.retPos.y+=dy } }
+if(S.plan&&S.plan.pad==null){ fcPlanShiftAll(FC_PLAN_PAD,FC_PLAN_PAD); S.plan.pad=FC_PLAN_PAD }
 
 /* ---------- square footage: the cap is the sum of the per-floor figures ---------- */
 function fcSum(){ return S.home.floors.reduce((a,f)=>a+(parseFloat(f.sf)||0),0) }
@@ -5892,7 +5997,7 @@ function fcApplyRet(){ if(fcHasShape()){ fcApplyRuns(); return } const rp=fcRetC
 // the grid's extent in feet, with the outline moved so its bbox corner is the origin (room coords). v2.46: the rooms' floor is the top one.
 function fcField(i){
   if(i==null) i=fcTop();
-  if(S.plan&&i===fcTop()) return {w:Math.max(12,S.plan.w),d:Math.max(12,S.plan.d),poly:S.plan.outline,ox:0,oy:0,plan:true}; // v2.54 — the scan is the field: its own feet, its own origin
+  if(S.plan&&i===fcTop()){ const pd=S.plan.pad||0; return {w:Math.max(12,S.plan.w+2*pd),d:Math.max(12,S.plan.d+2*pd),poly:S.plan.outline,ox:0,oy:0,plan:true,pad:pd} } // v2.54 — the scan is the field: its own feet · v2.60: with FC_PLAN_PAD ft of grid round it (the plan is stored shifted by it), so the unit, the return and the attic past the rooms have somewhere to go
   const o=fcOutline(i);
   if(!o) return {w:RBR_GW,d:RBR_GD,poly:null};
   let a=1e9,b=1e9,c=-1e9,e=-1e9;
@@ -6713,7 +6818,7 @@ function dnRegsFromRooms(){ const out=[]; (S.rooms||[]).forEach(r=>{ if(r.nr||!r
 const DN_DIR=['east','south-east','south','south-west','west','north-west','north','north-east'];
 function dnCompass(v){ const a=dnMod(dv.ang(v)*180/Math.PI,360); return DN_DIR[Math.round(a/45)%8] }
 function dnOutline(regs){ let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; const grow=(a,b,c,d)=>{ x0=Math.min(x0,a); y0=Math.min(y0,b); x1=Math.max(x1,c); y1=Math.max(y1,d) };
-  if(S.plan&&S.plan.w){ grow(0,0,S.plan.w,S.plan.d) } (S.rooms||[]).forEach(r=>grow(r.x,r.y,r.x+r.w,r.y+r.d)); if(!(x1>x0)) regs.forEach(g=>grow(g.x,g.y,g.x,g.y)); return {x0,y0,x1,y1,w:Math.max(1,x1-x0),d:Math.max(1,y1-y0)} }
+  if(S.plan&&S.plan.w){ const pd=S.plan.pad||0; grow(pd,pd,pd+S.plan.w,pd+S.plan.d) } (S.rooms||[]).forEach(r=>grow(r.x,r.y,r.x+r.w,r.y+r.d)); if(!(x1>x0)) regs.forEach(g=>grow(g.x,g.y,g.x,g.y)); return {x0,y0,x1,y1,w:Math.max(1,x1-x0),d:Math.max(1,y1-y0)} }
 function dnSpread(regs,U){ // the smallest angle around the unit that holds 80% of the air
   const tot=regs.reduce((s,g)=>s+g.q,0)||1; const a=regs.map(g=>({a:dnMod(dv.ang(dv.sub([g.x,g.y],U)),2*Math.PI),q:g.q})).sort((p,q)=>p.a-q.a); if(!a.length) return 0; let best=360;
   for(let i=0;i<a.length;i++){ let q=0; for(let j=0;j<a.length;j++){ const g=a[(i+j)%a.length]; q+=g.q; if(q>=0.8*tot-1e-9){ const span=dnMod(g.a-a[i].a,2*Math.PI)*180/Math.PI; if(span<best) best=span; break } } } return best }
@@ -7371,7 +7476,11 @@ function dnDraw3D(base,plane,opt){ const T=opt.tree, N=T&&T.net; if(!N) return; 
   // flex drapes over flex. A run never humps over the run it leaves from or the runs that leave the same TY with it.
   const ghosts=[]; let ghostEx=null;
   const hitAt=(pts,y,r)=>solids.concat(ghostEx?ghosts.filter(g=>!ghostEx.has(g.ghost)):ghosts).filter(b=>pts.some(p=>p[0]+r>b.x+0.5&&p[0]-r<b.x+b.dx-0.5&&y+r>b.y+0.5&&y-r<b.y+b.dy-0.5&&p[2]+r>b.z+0.5&&p[2]-r<b.z+b.dz-0.5));
-  const ghostRun=(pts,d,id)=>{ const r=d/2; let acc=0; for(let i=0;i<pts.length;i++){ if(i>0) acc+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1],pts[i][2]-pts[i-1][2]); if(i>0&&i<pts.length-1&&acc<4) continue; acc=0; const p=pts[i]; ghosts.push({ghost:id,x:p[0]-r,y:p[1]-r,z:p[2]-r,dx:2*r,dy:2*r,dz:2*r}) } };
+  const ghostLines=[];   /* v2.60: every run laid, point by point (its ends marked), for the strict "no two ducts in one space" test inside hump() */
+  const ghostRun=(pts,d,id)=>{ const r=d/2; let acc=0; for(let i=0;i<pts.length;i++){ if(i>0) acc+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1],pts[i][2]-pts[i-1][2]); if(i>0&&i<pts.length-1&&acc<4) continue; acc=0; const p=pts[i]; ghosts.push({ghost:id,x:p[0]-r,y:p[1]-r,z:p[2]-r,dx:2*r,dy:2*r,dz:2*r}) }
+    { let tot=0; for(let i=1;i<pts.length;i++) tot+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1],pts[i][2]-pts[i-1][2]); let cum=0; const Q=[]; const bb=[1e9,1e9,1e9,-1e9,-1e9,-1e9];
+      for(let i=0;i<pts.length;i++){ if(i) cum+=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1],pts[i][2]-pts[i-1][2]); if(cum<=d*1.2||cum>=tot-d*1.2) continue; const p=pts[i]; Q.push(p); for(let k=0;k<3;k++){ bb[k]=Math.min(bb[k],p[k]); bb[k+3]=Math.max(bb[k+3],p[k]) } }
+      if(Q.length) ghostLines.push({ghost:id,d,Q,bb}) } };
   const regCls=(opt.regCls==='bad'||opt.regCls==='warn')?opt.regCls:''; let first=true, canLbl=true; const tyLbl=new Set();
   const metal=(p0,p1,d,d2,o)=>{ const it=pushTube(p0,p1,{a:d,h:d,a2:d2!=null?d2:undefined,h2:d2!=null?d2:undefined,round:true},DN_GALV,.97,Object.assign({},X,{metal:true,nocap:true},o||{})); return flT(it,1,'s') };   // every metal piece carries the air p0 → p1
   const bead=(p,dir,d)=>{ const q0=[p[0]-dir[0]*0.35,p[1]-dir[1]*0.35,p[2]-dir[2]*0.35], q1=[p[0]+dir[0]*0.35,p[1]+dir[1]*0.35,p[2]+dir[2]*0.35]; return pushTube(q0,q1,{a:d+0.9,h:d+0.9,round:true},DN_GALV,.97,Object.assign({},X,{metal:true,bead:true,nocap:true,fine:true})) };
@@ -7387,9 +7496,9 @@ function dnDraw3D(base,plane,opt){ const T=opt.tree, N=T&&T.net; if(!N) return; 
   // a vertical S: the run rises (or drops) from y0 to y1 over its first stretch, a smooth offset the way flex drapes over something — never four stacked 90s
   // over the cabinet, the plenums or the return run: a smooth hump — up just before it, over, and back down to the run's own height just after it
   // (the way flex drapes over something in the field), never four stacked 90s; a run that ends before it is past stays up and drops from there
-  const hump=(pts,y0,d,s0,yUnder,uObs,isRoot,endKeep)=>{ endKeep=endKeep||0; const L=[0]; for(let i=1;i<pts.length;i++) L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][2]-pts[i-1][2])); const tot=L[L.length-1];
+  const hump0=(pts,y0,d,s0,yUnder,uObs,isRoot,endKeep,xo)=>{ endKeep=endKeep||0; const L=[0]; for(let i=1;i<pts.length;i++) L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][2]-pts[i-1][2])); const tot=L[L.length-1];
     const at=s=>{ let i=1; while(i<L.length-1&&L[i]<s) i++; const k=(s-L[i-1])/Math.max(1e-6,L[i]-L[i-1]); const a=pts[i-1], b=pts[i]; return [a[0]+(b[0]-a[0])*k,y0,a[2]+(b[2]-a[2])*k] };
-    const own=new Set(hitAt([pts[0]],y0,d/2+1.5));   /* the plenum (or cabinet) a run comes out of is not something it must climb over (v2.59: the TYs keep off the return run on the plan, so a leg never starts inside it) */
+    const own=new Set(hitAt([pts[0]],y0,d/2+1.5).filter(o=>!(xo&&xo.ret&&(o.ghost||(o.flow&&o.flow.k==='r')))));   /* v2.60: with xo.ret a return piece or another run beside a run's start is never taken for the plenum it leaves */   /* the plenum (or cabinet) a run comes out of is not something it must climb over (v2.59: the TYs keep off the return run on the plan, so a leg never starts inside it) */
     let sA=null, sB=null, top=-1e9, bot=1e9; for(let s=0;s<=tot;s+=3){ const q=at(s); const h=(yUnder!=null&&uObs)?uObs.filter(o=>q[0]+d/2+1>o.x&&q[0]-d/2-1<o.x+o.dx&&q[2]+d/2+1>o.z&&q[2]-d/2-1<o.z+o.dz):hitAt([q],y0,d/2+1).filter(b=>!own.has(b)&&b.y+b.dy-y0<=Math.max(30,2*d));   /* flex drapes over a trunk or a lying cabinet — never up a drop, a riser or a roof stand's legs */ if(h.length){ if(sA==null) sA=s; sB=s; top=Math.max(top,...h.map(x=>x.y+x.dy)); bot=Math.min(bot,...h.map(x=>x.y)) } }
     if(sA==null) return {pts,yEnd:y0};
     const make=y1=>{ const dy=y1-y0; const Ls=Math.max(2.5*d,Math.abs(dy)*1.6);   /* v2.58: or UNDER it, when the can it lands on sits under it */
@@ -7415,9 +7524,30 @@ function dnDraw3D(base,plane,opt){ const T=opt.tree, N=T&&T.net; if(!N) return; 
     // ceiling leaves room, and failing both the run stays flat (a kiss on another flex beats a duct through the stand)
     const rr=d/2; const solidHits=P=>new Set(solids.filter(b=>!own.has(b)&&P.some(p=>p[0]+rr>b.x+0.5&&p[0]-rr<b.x+b.dx-0.5&&p[1]+rr>b.y+0.5&&p[1]-rr<b.y+b.dy-0.5&&p[2]+rr>b.z+0.5&&p[2]-rr<b.z+b.dz-0.5)));
     const flat=solidHits(pts.map(p=>[p[0],y0,p[2]])); const worse=H=>[...solidHits(H.pts)].some(b=>!flat.has(b));
+    const under=()=>{ if(!up&&yUnder==null&&bot<1e8){ const yu=bot-4-d/2; if(yu>=plane.y+d/2+1.5&&yu<y0-0.5){ const H2=make(yu); if(!worse(H2)) return H2 } } return null };
+    if(xo&&xo.under){ const H2=under(); if(H2) return H2 }
     const H1=make(yUnder!=null?yUnder:top+4+d/2); if(!worse(H1)) return H1;
-    if(!up&&yUnder==null&&bot<1e8){ const yu=bot-4-d/2; if(yu>=plane.y+d/2+1.5&&yu<y0-0.5){ const H2=make(yu); if(!worse(H2)) return H2 } }
+    { const H2=under(); if(H2) return H2 }
     return {pts,yEnd:y0} };
+  // v2.60 — NO SUPPLY RUN THROUGH THE RETURN, NONE THROUGH ANOTHER RUN (test_matrix 33f on the right-way-up scan). The hump above senses what it must clear
+  // with a 1" margin and starts its rise where it can; a TY or a collar sitting right beside the return run (the RETURN tile dragged so its run passes
+  // just past a TY) left the rise too late, or took the return for the piece the run leaves — and the run went through its edge. Every hump is now
+  // checked the way the harness checks the scene (the run's own ends aside, the parent and the TY siblings aside); a run that still passes through the
+  // return or another run tries, in order: the return counted as something to clear, going UNDER it, and both again with the rise starting at once —
+  // and keeps the first that is clean (the least-bad if none is). A run that was already clean is never touched.
+  const retSolid=solids.filter(o=>o.flow&&o.flow.k==='r'&&!o.bend&&!o.sweep);
+  const clashN=(P,d)=>{ let tot=0; for(let i=1;i<P.length;i++) tot+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1],P[i][2]-P[i-1][2]); const r=d/2-0.75; let n=0, cum=0;
+    const bb=[1e9,1e9,1e9,-1e9,-1e9,-1e9]; P.forEach(p=>{ for(let k=0;k<3;k++){ bb[k]=Math.min(bb[k],p[k]); bb[k+3]=Math.max(bb[k+3],p[k]) } });
+    const G=ghostLines.filter(g=>!(ghostEx&&ghostEx.has(g.ghost))&&[0,1,2].every(k=>g.bb[k]-(g.d+d)/2<=bb[k+3]&&g.bb[k+3]+(g.d+d)/2>=bb[k]));
+    for(let i=0;i<P.length;i++){ if(i) cum+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1],P[i][2]-P[i-1][2]); if(cum<=d*1.2||cum>=tot-d*1.2) continue; const p=P[i];
+      if(retSolid.some(o=>p[0]+r>o.x+0.5&&p[0]-r<o.x+o.dx-0.5&&p[1]+r>o.y+0.5&&p[1]-r<o.y+o.dy-0.5&&p[2]+r>o.z+0.5&&p[2]-r<o.z+o.dz-0.5)){ n++; continue }
+      if(G.some(g=>{ const lim=(g.d+d)/2-0.75; return g.Q.some(q=>Math.abs(q[0]-p[0])<lim&&Math.abs(q[2]-p[2])<lim&&Math.abs(q[1]-p[1])<lim&&Math.hypot(q[0]-p[0],q[1]-p[1],q[2]-p[2])<lim) })) n++ }
+    return n };
+  const hump=(pts,y0,d,s0,yUnder,uObs,isRoot,endKeep,fin)=>{ const F=H=>fin?fin(H):H.pts;   /* fin: the run as it will be laid (the drop onto its can, despiked) */
+    const H0=hump0(pts,y0,d,s0,yUnder,uObs,isRoot,endKeep); let best=H0, bc=clashN(F(H0),d); if(!bc) return H0;
+    const alt=[{ret:true},{ret:true,under:true},{ret:true,s0:0},{ret:true,under:true,s0:0}];
+    for(const xo of alt){ const H=hump0(pts,y0,d,xo.s0!=null?xo.s0:s0,yUnder,uObs,isRoot,endKeep,xo); const c=clashN(F(H),d); if(c<bc){ best=H; bc=c } if(!bc) break }
+    return best };
   // the end of a run at its can: the last straight gives up R, a quarter bend turns it down, a straight drop lands it on the can
   const drop=(pts,d,yFrom)=>{ const bot=up?plane.y-6:plane.y+2; const gap=dn*(bot-yFrom);
     if(gap<=0.5) return pts;   /* v2.58: already at the can's level — it runs straight in, never a bend that doubles back */
@@ -7466,7 +7596,7 @@ function dnDraw3D(base,plane,opt){ const T=opt.tree, N=T&&T.net; if(!N) return; 
         const Cb=S3([b.x,b.y],y), r=d/2, low=plane.y+d/2+1.5; const near=dnLeaves(N,b).filter(c=>Math.hypot(c.x-b.x,c.y-b.y)<4).map(c=>S3([c.x,c.y],y));
         const over=solids.filter(o=>near.some(q=>q[0]+r>o.x&&q[0]-r<o.x+o.dx&&q[2]+r>o.z&&q[2]-r<o.z+o.dz)&&o.y>plane.y&&o.y<y+d&&Cb[0]+r>o.x-24&&Cb[0]-r<o.x+o.dx+24&&Cb[2]+r>o.z-24&&Cb[2]-r<o.z+o.dz+24);
         if(over.length&&over.every(o=>o.y-(low+d/2)>=0.5)){ yU=low; uO=over } }
-      const H=hump(pts,y,d,e.root?6:3,yU,uO,!!e.root,b.t==='can'?1.5*d+1:0); ghostEx=null; pts=H.pts; y=H.yEnd }   /* v2.58: …and over every run already laid */
+      const H=hump(pts,y,d,e.root?6:3,yU,uO,!!e.root,b.t==='can'?1.5*d+1:0,Hx=>despike(b.t==='can'?drop(Hx.pts,d,Hx.yEnd):Hx.pts)); ghostEx=null; pts=H.pts; y=H.yEnd }   /* v2.58: …and over every run already laid */
     nodeY[e.b]=y;
     if(b.t==='can'){ pts=drop(pts,d,y) }
     pts=despike(pts);   // v2.58: a sliver of route that doubles back (a can inside its TY leg's reach) is dropped, not bent round
@@ -7608,7 +7738,8 @@ function rbrPlanSvg(S_){
   const SC=S_||18, rooms=S.rooms; if(!rooms.length) return '';
   let bx1=1e9,by1=1e9,bx2=-1e9,by2=-1e9;
   rooms.forEach(r=>{ bx1=Math.min(bx1,r.x); by1=Math.min(by1,r.y); bx2=Math.max(bx2,r.x+r.w); by2=Math.max(by2,r.y+r.d) });
-  if(S.plan){ bx1=Math.min(bx1,0); by1=Math.min(by1,0); bx2=Math.max(bx2,S.plan.w); by2=Math.max(by2,S.plan.d) }   // v2.54 — the sheet is the whole scan
+  if(S.plan){ const pd=S.plan.pad||0; bx1=Math.min(bx1,pd); by1=Math.min(by1,pd); bx2=Math.max(bx2,pd+S.plan.w); by2=Math.max(by2,pd+S.plan.d) }   // v2.54 — the sheet is the whole scan (v2.60: the house, not the grid round it)
+  { const rp=S.retPos; if(rp){ bx1=Math.min(bx1,rp.x+0.5); by1=Math.min(by1,rp.y+0.5); bx2=Math.max(bx2,rp.x+3.5); by2=Math.max(by2,rp.y+3.5) } }   // v2.60: a return placed past the rooms stays on the sheet
   bx1=Math.min(bx1,S.unitPos.x)-1.5; by1=Math.min(by1,S.unitPos.y)-1.5;
   bx2=Math.max(bx2,S.unitPos.x+6)+1.5; by2=Math.max(by2,S.unitPos.y+6+((RM.down&&RM.down.length)?(RM.down.length*22+10)/SC:0))+1.5;
   const ML=48,MT=74,MR=48,MB=221, PW=(bx2-bx1)*SC, PH=(by2-by1)*SC, W=PW+ML+MR, H=PH+MT+MB;
@@ -7690,10 +7821,11 @@ function rbrPlanSvg(S_){
   placed.push({x1:u[0],x2:u[0]+6*SC,y1:u[1],y2:u[1]+6*SC}); }
   const EQc=EQB?[(EQB.x0+EQB.x1)/2,EQB.y1]:[u[0]+3*SC,u[1]+6*SC];   /* under the equipment: the layout name, then any duct down */
   { const rp=S.retPos; if(rp){ const q=p(rp.x,rp.y); const cG=(typeof comp==='function')?comp('grille'):null; // v2.55 — the return filter grille, where the RETURN tile sits
-    s+=`<rect x="${q[0].toFixed(1)}" y="${q[1].toFixed(1)}" width="${4*SC}" height="${4*SC}" rx="3" fill="#6c4fd0" stroke="#4a3496" stroke-width="1"/>`;   // v2.56: the return in violet, as on the 3D
-    s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+1.3*SC).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="800" fill="#fff">RETURN</text>`;
-    s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+2.3*SC).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#e4dcff">${cG&&cG.size?rbrEsc(cG.size):'filter grille'}</text>`;
-    s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+3.3*SC).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#e4dcff">${rp.set?'placed':'assumed'}</text>`;
+    // v2.60: the grille(s) at their real size round the tile's middle (Stephen 2026-09-28: "it's taking up too much space, it's not to scale") — the design grille once it is replaced
+    { const B=rbrGrilleBoxes(), gap=0.5, W=B.reduce((a,g)=>a+g.w,0)+gap*(B.length-1), H=Math.max(...B.map(g=>g.h)); const c=p(rp.x+2,rp.y+2); let gx=c[0]-W*SC/2;
+      B.forEach(g=>{ s+=`<rect x="${gx.toFixed(1)}" y="${(c[1]-g.h*SC/2).toFixed(1)}" width="${(g.w*SC).toFixed(1)}" height="${(g.h*SC).toFixed(1)}" rx="1.5" fill="#6c4fd0" stroke="#4a3496" stroke-width="1"/>`; gx+=(g.w+gap)*SC });
+      const lx=c[0]+W*SC/2+5, tl=(y,t,sz,f)=>`<text x="${lx.toFixed(1)}" y="${y.toFixed(1)}" font-size="${sz}" font-weight="800" fill="${f}" stroke="#fff" stroke-width="3" paint-order="stroke">${t}</text>`;
+      s+=tl(c[1]-5,'RETURN',9.5,'#4a3496')+tl(c[1]+5,rbrEsc(rbrGrilleSize(B)),7.5,'#6c4fd0')+tl(c[1]+14,rp.set?'placed':'assumed',7.5,'#6c4fd0'); placed.push({x1:c[0]-W*SC/2,x2:lx+90,y1:c[1]-H*SC/2-10,y2:c[1]+H*SC/2+10}) }
     placed.push({x1:q[0],x2:q[0]+4*SC,y1:q[1],y2:q[1]+4*SC}) } }
   // v2.46 — the duct down to each lower floor: a tagged riser symbol under the plenum
   (RM.down||[]).forEach((x,i)=>{ const dx=EQc[0], dy=EQc[1]+(EQB?20:8)+i*22;
@@ -8023,11 +8155,11 @@ function rbrRoomRows(){
 function rbrGrid(){
   const G=$('#rbrGrid'); if(!G) return;
   const F=fcField();
-  const px=Math.max(6,Math.min(13,(G.clientWidth||620)/F.w));
+  const px=Math.max(S.plan?4:6,Math.min(13,(G.clientWidth||620)/F.w));   // v2.60: a scan's grid carries a margin round the house — it may shrink further to fit
   G.style.setProperty('--cell',(px*2)+'px'); G.style.height=(F.d*px)+'px'; G.innerHTML='';
   G.classList.toggle('plan',!!S.plan);
   if(S.plan){ rbrPlanGrid(G,px); S.rooms.filter(r=>r.fl===fcTop()&&!r.poly).forEach(r=>{ const t=mkTile(G,px,r.ld==='high'?'hi':(r.ld==='low'?'lo':''),r.x,r.y,r.w,r.d,r.n,CFM(r.cfm)+' CFM · '+r.nReg+'v'); t.dataset.id=r.id; rbrDrag(t,r,px) });
-    rbrDrag(mkTile(G,px,'unit',S.unitPos.x,S.unitPos.y,6,6,'UNIT','drop'),S.unitPos,px,true); rbrRetTile(G,px); rbrVentDots(G,px); return }   // v2.54 — the real house; only the drop moves · v2.55: and the return grille
+    rbrUnitTile(G,px); rbrRetTile(G,px); rbrVentDots(G,px); return }   // v2.54 — the real house; only the drop moves · v2.55: and the return grille
   // the traced envelope, scaled to this floor's square footage — the boundary the rooms sit in
   if(F.poly){
     // v2.46 — the aerial, faint, under the rooms: the traced box maps onto the outline's box (same shape, so one scale fits both axes),
@@ -8051,7 +8183,7 @@ function rbrGrid(){
     t.dataset.id=r.id; rbrDrag(t,r,px);
     const h=document.createElement('div'); h.className='rs'; h.textContent='⇔'; h.title='Stretch — same sq ft, new shape';
     t.appendChild(h); rbrResize(h,t,r,px); });
-  rbrDrag(mk('unit',S.unitPos.x,S.unitPos.y,6,6,'UNIT','drop'),S.unitPos,px,true); rbrRetTile(G,px); rbrVentDots(G,px);
+  rbrUnitTile(G,px); rbrRetTile(G,px); rbrVentDots(G,px);
 }
 // v2.58 — THE VENTS ON THE GRID. Each register is a small square where the design has it (assumed: 2 ft off the outside wall, by the glass).
 // Drag one to where it really is — it stays there (r.vp, feet from the room's corner) and the layout routes to it; double-tap puts it back to assumed.
@@ -8071,20 +8203,49 @@ function rbrVentDrag(el,r,j,px){ let last=0;
       if(!moved) return; r.vp=r.vp||[]; while(r.vp.length<j) r.vp.push(null); r.vp[j]={dx:+(x-r.x).toFixed(2),dy:+(y-r.y).toFixed(2)};
       if(S.auto) S.auto.rbr=false; save(); rbrModel(); rbrOut(); rbrSync(); rbrGrid() };
     el.addEventListener('pointermove',mv); el.addEventListener('pointerup',up); el.addEventListener('pointercancel',up) }) }
-function rbrRetTile(G,px){ if(!S.retPos) return; fcRetInside(); const t=mkTile(G,px,'ret',S.retPos.x,S.retPos.y,4,4,'RETURN',S.retPos.set?'filter grille':'assumed'); t.title='Drag to where the return filter grille is'; rbrDrag(t,S.retPos,px,4,()=>{ S.retPos.set=true; t.querySelector('.tc').textContent='filter grille' }) } // v2.55
+// v2.60  THE RETURN GRILLE AT ITS SIZE (Stephen 2026-09-28: "when we replace the return grill, make it smaller, right now it's taking up too much space,
+// it's not to scale"). The tile is the grille(s) themselves — the design's once the grille is replaced, else the one in the ceiling, 20×20 when neither is
+// entered — side by side 6" apart as the 3D lays them, round the same middle as before (S.retPos + 2 ft), with a dashed handle round them to drag by.
+function rbrGrilleBoxes(){ let sp=null; try{ sp=fixSpec(S.fix&&S.fix.grille)||fixSpec(grilleBase()) }catch(e){} let b=null; try{ b=specBoxes(sp,20,20) }catch(e){}
+  if(!b||!b.length) b=[{w:20,h:20}]; return b.map(q=>({w:(+q.w||20)/12,h:(+q.h||20)/12,add:!!q.add})) }
+function rbrGrilleSize(B){ const t=B.map(g=>fmt(g.w*12)+'×'+fmt(g.h*12)); const one=t.every(x=>x===t[0]); return one&&t.length>1?t.length+' × '+t[0]:t.join(' + ') }
+function rbrRetTile(G,px){ if(!S.retPos) return; fcRetInside(); const B=rbrGrilleBoxes(), gap=0.5, m=0.3;
+  const W=B.reduce((a,g)=>a+g.w,0)+gap*(B.length-1), H=Math.max(...B.map(g=>g.h)), w=W+2*m, d=H+2*m, ox=2-w/2, oy=2-d/2;
+  const t=mkTile(G,px,'ret sc',S.retPos.x+ox,S.retPos.y+oy,w,d,'RETURN',S.retPos.set?'filter grille':'assumed');
+  let x=m; B.forEach(g=>{ const e=document.createElement('div'); e.className='gbx'+(g.add?' add':''); e.style.left=(x*px).toFixed(1)+'px'; e.style.top=((m+(H-g.h)/2)*px).toFixed(1)+'px'; e.style.width=(g.w*px).toFixed(1)+'px'; e.style.height=(g.h*px).toFixed(1)+'px'; t.appendChild(e); x+=g.w+gap });
+  t.title='Return filter grille '+rbrGrilleSize(B)+' — drag it to where it is'; t.dataset.size=rbrGrilleSize(B);
+  rbrDrag(t,S.retPos,px,4,()=>{ S.retPos.set=true; t.querySelector('.tc').textContent='filter grille' },{ox,oy,w,d}) } // v2.55 · v2.60 at its size
+// v2.60  THE UNIT AT ITS SIZE (Stephen 2026-09-28: "when we place the unit, we really should be placing a more to scale supply and return plenum").
+// The UNIT tile is the equipment's real footprint — exactly what the layout routes round (dnObs): a horizontal's supply plenum, the cabinet behind it
+// (coil + furnace) and the return plenum on its end; an upright's riser; a new curb's supply and return drops. A kept roof drop keeps the 6 ft tile, as
+// on the sheet. The unit's middle is where it always was (S.unitPos + 3 ft), so every run length and every layout reads the same point.
+function rbrEqParts(){ let pl=null; try{ pl=dnPlenum() }catch(e){ return null } if(!pl||pl.kind==='drop') return null;
+  let R=[]; try{ R=dnObs(null,{pl,U:[0,0]}).filter(x=>!x.soft) }catch(e){ return null } if(!R.length) return null; const parts=[];
+  R.forEach(x=>{ if(x.k==='plen') parts.push({k:'sup',x0:x.x0,x1:x.x1,y0:x.y0,y1:x.y1,t:pl.kind==='pk'?'supply drop':(pl.kind==='v'?'supply riser':'supply plenum')});
+    else if(x.k==='unit'){ const rl=Math.min(retPlenLen()/12,(x.y1-x.y0)*0.45); parts.push({k:'cab',x0:x.x0,x1:x.x1,y0:x.y0,y1:x.y1-rl,t:'coil · furnace'}); parts.push({k:'rpl',x0:x.x0,x1:x.x1,y0:x.y1-rl,y1:x.y1,t:'return plenum'}) }
+    else if(x.k==='ret') parts.push({k:'rpl',x0:x.x0,x1:x.x1,y0:x.y0,y1:x.y1,t:'return drop'}) });
+  return parts.length?{pl,parts}:null }
+function rbrUnitTile(G,px){ const Q=rbrEqParts();
+  if(!Q){ rbrDrag(mkTile(G,px,'unit',S.unitPos.x,S.unitPos.y,6,6,'UNIT','drop'),S.unitPos,px,true); return }
+  const m=0.3; let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; Q.parts.forEach(q=>{ x0=Math.min(x0,q.x0); y0=Math.min(y0,q.y0); x1=Math.max(x1,q.x1); y1=Math.max(y1,q.y1) });
+  x0-=m; y0-=m; x1+=m; y1+=m; const w=x1-x0, d=y1-y0, ox=3+x0, oy=3+y0; const k=Q.pl.kind;
+  const t=mkTile(G,px,'unit eq',S.unitPos.x+ox,S.unitPos.y+oy,w,d,'UNIT',k==='h'?'supply · unit · return':(k==='pk'?'supply · return drops':'supply riser'));
+  Q.parts.forEach(q=>{ const e=document.createElement('div'); e.className='eqp '+q.k; e.style.left=((q.x0-x0)*px).toFixed(1)+'px'; e.style.top=((q.y0-y0)*px).toFixed(1)+'px'; e.style.width=((q.x1-q.x0)*px).toFixed(1)+'px'; e.style.height=((q.y1-q.y0)*px).toFixed(1)+'px'; e.title=q.t+' '+fmt((q.x1-q.x0)*12)+'×'+fmt((q.y1-q.y0)*12)+'"'; t.appendChild(e) });
+  t.title='The unit at its size — drag it to where it sits (it may sit past the rooms: the attic is bigger than the part of the house this system cools)';
+  rbrDrag(t,S.unitPos,px,true,null,{ox,oy,w,d}) }
 function mkTile(G,px,cls,x,y,w,d,a,b){ const t=document.createElement('div'); t.className='tile '+cls;
     t.style.left=(x*px)+'px'; t.style.top=(y*px)+'px'; t.style.width=(w*px)+'px'; t.style.height=(d*px)+'px';
     t.innerHTML=`<span class="tn">${rbrEsc(a)}</span>`+(b?`<span class="tc">${b}</span>`:''); G.appendChild(t); return t }
-function rbrDrag(el,obj,px,isUnit,onUp){ const fw=isUnit===true?6:(isUnit||0); // v2.55: a fixed-size tile passes its size (the unit 6, the return 4)
+function rbrDrag(el,obj,px,isUnit,onUp,geo){ const fw=isUnit===true?6:(isUnit||0); // v2.55: a fixed-size tile passes its size (the unit 6, the return 4) · v2.60: geo = a tile drawn at its real size {ox,oy,w,d} ft off obj.x / obj.y
   el.addEventListener('pointerdown',e=>{
     if(e.target.classList.contains('rs')) return;
     e.preventDefault(); el.setPointerCapture(e.pointerId); el.classList.add('drag');
     const r0=el.getBoundingClientRect(), gx=$('#rbrGrid').getBoundingClientRect();
-    const ox=e.clientX-r0.left, oy=e.clientY-r0.top, w=fw||obj.w, d=fw||obj.d;
+    const ox=e.clientX-r0.left, oy=e.clientY-r0.top, w=geo?geo.w:(fw||obj.w), d=geo?geo.d:(fw||obj.d), gx0=geo?geo.ox:0, gy0=geo?geo.oy:0;
     const FD=fcField();
-    const mv=ev=>{ const x=Math.round((ev.clientX-gx.left-ox)/px), y=Math.round((ev.clientY-gx.top-oy)/px);
-      obj.x=Math.max(0,Math.min(FD.w-w,x)); obj.y=Math.max(0,Math.min(FD.d-d,y));
-      el.style.left=(obj.x*px)+'px'; el.style.top=(obj.y*px)+'px' };
+    const mv=ev=>{ const x=Math.round((ev.clientX-gx.left-ox)/px-gx0), y=Math.round((ev.clientY-gx.top-oy)/px-gy0);
+      obj.x=Math.max(Math.ceil(-gx0),Math.min(Math.floor(FD.w-w-gx0),x)); obj.y=Math.max(Math.ceil(-gy0),Math.min(Math.floor(FD.d-d-gy0),y));
+      el.style.left=((obj.x+gx0)*px)+'px'; el.style.top=((obj.y+gy0)*px)+'px' };
     const up=()=>{ el.classList.remove('drag');
       el.removeEventListener('pointermove',mv); el.removeEventListener('pointerup',up); el.removeEventListener('pointercancel',up);
       // §6 — the drop and the rooms ARE the run lengths, so moving one re-measures them
@@ -8158,30 +8319,52 @@ function fcScanStat(msg,cls){ const el=$('#rbrScanStat'); if(!el) return; el.cla
 function fcSegNear(poly,x,y,tol){ for(let i=0;i<poly.length;i++){ const a=poly[i],b=poly[(i+1)%poly.length]; const dx=b[0]-a[0],dy=b[1]-a[1]; const L2=dx*dx+dy*dy||1e-9; let t=((x-a[0])*dx+(y-a[1])*dy)/L2; t=Math.max(0,Math.min(1,t)); if(Math.hypot(x-(a[0]+t*dx),y-(a[1]+t*dy))<tol) return true } return false }
 function fcWinMid(w){ const r=w.rot*Math.PI/180; return [w.x+w.w/2*Math.cos(r),w.y+w.w/2*Math.sin(r)] }
 function fcPlanLoad(text,name){
-  if(!/\bSECTION\b[\s\S]*\bENTITIES\b/.test(text||'')) { fcScanStat('That is not a DXF floor plan. In 3D Snap use Export ▸ DXF and pick the .dxf file.','warn'); return false }
-  let P; try{ P=window.FCDxf.planFromDxf(text) }catch(e){ P={ok:false,why:'That file could not be read as a DXF — '+rbrEsc(e&&e.message||e)+'.'} }
-  if(!P.ok){ fcScanStat(P.why,'warn'); return false }
+  // v2.60: the scan's RoomPlan JSON (best — its own room labels and ceiling heights) or its DXF, told apart by what the file is
+  let P; try{ P=window.FCDxf.planFromFile(text||'') }catch(e){ P={ok:false,why:'That file could not be read as a floor plan — '+rbrEsc(e&&e.message||e)+'.'} }
+  if(!P.ok){ fcScanStat(P.notPlan?'That is not a DXF floor plan or a RoomPlan JSON. In 3D Snap use Export ▸ JSON (best) or Export ▸ DXF and pick that file.':P.why,'warn'); return false }
   if(!P.rooms.length){ fcScanStat('No enclosed rooms were found in that plan — the walls do not close up. Check the export from 3D Snap, or lay the rooms out by hand.','warn'); return false }
   fcPlanApply(P,name); return true }
 function fcPlanApply(P,name){
   const top=fcTop(), r2=v=>+(+v).toFixed(2);
-  const prev=rbrHomeSf();
+  const prev=rbrHomeSf(); fcPlanPadIn(P,FC_PLAN_PAD);   // v2.60: the house in the middle of the grid
   S.plan={name:name||'floor plan',w:r2(P.w),d:r2(P.d),sf:Math.round(P.totalSf),units:P.units,scale:P.scale,
     walls:P.walls.map(s=>s.map(r2)),doors:P.doors.map(o=>({x:r2(o.x),y:r2(o.y),w:r2(o.w),rot:Math.round(o.rot)})),
     windows:P.windows.map(o=>({x:r2(o.x),y:r2(o.y),w:r2(o.w),rot:Math.round(o.rot)})),
     outline:P.outline.map(p=>[r2(p[0]),r2(p[1])]),furn:P.furniture.map(f=>({k:f.kind,x:r2(f.c[0]),y:r2(f.c[1])})),
-    prevSf:(prev&&Math.abs(prev-P.totalSf)>P.totalSf*0.1)?Math.round(prev):null,at:Date.now()};
+    prevSf:(prev&&Math.abs(prev-P.totalSf)>P.totalSf*0.1)?Math.round(prev):null,at:Date.now(),pad:FC_PLAN_PAD,src:P.src||'dxf'};
   S.rooms=[]; S.blocks=[]; S.rbrHand=false;
   P.rooms.forEach(r=>{ const bb=window.FCDxf.bbox(r.poly); const wins=P.windows.filter(w=>{ const m=fcWinMid(w); return fcSegNear(r.poly,m[0],m[1],0.6) });
     const winFt=wins.reduce((s,w)=>s+w.w,0), perim=2*(bb.w+bb.d); const nr=(r.kind==='hall'||r.kind==='closet');
     const ld= r.kind==='kitchen'?'high':(r.kind==='bath'||r.kind==='laundry'||nr)?'low':((wins.length>=2&&winFt>0.18*perim)?'high':'avg');
-    S.rooms.push({id:'r'+(S.rbrSeq++),n:r.name,sf:Math.max(1,Math.round(r.sf)),h:10,ld,x:r2(bb.x0),y:r2(bb.y0),w:r2(Math.max(1,bb.w)),d:r2(Math.max(1,bb.d)),fl:top,
+    S.rooms.push({id:'r'+(S.rbrSeq++),n:r.name,sf:Math.max(1,Math.round(r.sf)),h:(r.h>=6&&r.h<=30)?Math.round(r.h*10)/10:10,ld,x:r2(bb.x0),y:r2(bb.y0),w:r2(Math.max(1,bb.w)),d:r2(Math.max(1,bb.d)),fl:top,
       poly:r.poly.map(p=>[r2(p[0]),r2(p[1])]),cx:r2(r.c[0]),cy:r2(r.c[1]),kind:r.kind,nr,win:wins.length,plan:true}) });
   // the scan IS the served area — the Manual J runs on it, the traced aerial shape (if any) steps aside
   fcPlanSetSf(Math.round(P.totalSf)); S.home.floors[top].shape=null; S.home.floors[top].tpts=null;
   const c=window.FCDxf.polyCent(P.outline); S.unitPos.x=Math.round(c[0]-3); S.unitPos.y=Math.round(c[1]-3); fcUnitInside(); fcRetReset();
   S.auto=S.auto||{}; S.auto.rbr=false; S.rbrOpen=true;
   fcApplyRuns(); save(); }
+// v2.60: move a fresh import in from the grid's corner (feet) — walls, openings, furniture, rooms, outline
+function fcPlanPadIn(P,pd){ const m=p=>[p[0]+pd,p[1]+pd]; P.walls=P.walls.map(w=>[w[0]+pd,w[1]+pd,w[2]+pd,w[3]+pd]); P.doors.forEach(o=>{ o.x+=pd; o.y+=pd }); P.windows.forEach(o=>{ o.x+=pd; o.y+=pd });
+  P.furniture.forEach(f=>{ f.x+=pd; f.y+=pd; f.c=m(f.c) }); P.outline=P.outline.map(m); P.rooms.forEach(r=>{ r.poly=r.poly.map(m); r.c=m(r.c) }) }
+// v2.60  TURN 90° / MIRROR on the plan strip: no scanner app keeps north or the street side the same way round, so the SM turns the plan to match the
+// house. The house turns about the middle of its own box, inside the same margin; the rooms, their placed vents, the unit and the return go with it.
+function fcPlanXform(kind){ const P=S.plan; if(!P) return; const pd=P.pad||0, W=P.w, D=P.d, r2=v=>+(+v).toFixed(2), turn=kind==='turn';
+  const f=turn?(x,y)=>[pd+(D-(y-pd)),pd+(x-pd)]:(x,y)=>[pd+(W-(x-pd)),y];
+  const fa=a=>{ const v=turn?(+a||0)+90:180-(+a||0); return ((Math.round(v)%360)+360)%360 }; const mp=p=>f(p[0],p[1]).map(r2);
+  P.walls=P.walls.map(w=>{ const a=f(w[0],w[1]), b=f(w[2],w[3]); return [a[0],a[1],b[0],b[1]].map(r2) });
+  const mo=o=>{ const q=f(o.x,o.y); return Object.assign({},o,{x:r2(q[0]),y:r2(q[1]),rot:fa(o.rot)}) }; P.doors=(P.doors||[]).map(mo); P.windows=(P.windows||[]).map(mo);
+  P.furn=(P.furn||[]).map(o=>{ const q=f(o.x,o.y); return Object.assign({},o,{x:r2(q[0]),y:r2(q[1])}) });
+  P.outline=(P.outline||[]).map(mp); if(!turn) P.outline.reverse();
+  if(turn){ P.w=D; P.d=W } P.orient=((P.orient||0)+(turn?1:0))%4; if(!turn) P.mir=!P.mir;
+  (S.rooms||[]).forEach(r=>{ if(!r.poly) return; const abs=(r.vp||[]).map(v=>v?[r.x+v.dx,r.y+v.dy]:null);
+    r.poly=r.poly.map(mp); if(!turn) r.poly.reverse(); const c=f(r.cx,r.cy); r.cx=r2(c[0]); r.cy=r2(c[1]);
+    const bb=window.FCDxf.bbox(r.poly); r.x=r2(bb.x0); r.y=r2(bb.y0); r.w=r2(Math.max(1,bb.w)); r.d=r2(Math.max(1,bb.d));
+    if(r.vp) r.vp=abs.map(a=>{ if(!a) return null; const q=f(a[0],a[1]); return {dx:+(q[0]-r.x).toFixed(2),dy:+(q[1]-r.y).toFixed(2)} }) });
+  const U=S.unitPos; if(U){ const c=f(U.x+3,U.y+3); U.x=Math.round(c[0]-3); U.y=Math.round(c[1]-3);
+    /* the equipment stays whole on the turned grid (it points the same way whatever the house does) */ const F=fcField(); let e=[-3,-3,3,3]; try{ const Q=rbrEqParts(); if(Q){ e=[1e9,1e9,-1e9,-1e9]; Q.parts.forEach(q=>{ e[0]=Math.min(e[0],q.x0); e[1]=Math.min(e[1],q.y0); e[2]=Math.max(e[2],q.x1); e[3]=Math.max(e[3],q.y1) }) } }catch(err){}
+    U.x=Math.max(Math.ceil(-e[0]-3),Math.min(Math.floor(F.w-e[2]-3),U.x)); U.y=Math.max(Math.ceil(-e[1]-3),Math.min(Math.floor(F.d-e[3]-3),U.y)) }
+  const R=S.retPos; if(R){ const c=f(R.x+2,R.y+2); R.x=Math.round(c[0]-2); R.y=Math.round(c[1]-2) }
+  if(S.auto) S.auto.rbr=false; fcApplyRuns(); save() }
 function fcPlanClear(){ S.plan=null; S.rooms=[]; S.blocks=[]; S.rbrHand=false; S.rbrNew=false; save() }
 function fcUnitInside(){ const F=fcField(); if(!F.poly) return; const u=S.unitPos; if(fcRectIn(F.poly,u.x,u.y,6,6)) return;
   const c=fcCent(F.poly); let bx=Math.max(0,Math.min(F.w-6,c[0]-3)), by=Math.max(0,Math.min(F.d-6,c[1]-3));
@@ -8205,23 +8388,24 @@ function fcPlanPaths(map,o){ const P=S.plan; if(!P) return ''; o=o||{}; let s=''
 // the scan strip at the top of Room by room, and the upload block
 function rbrScanHtml(){ const P=S.plan;
   if(P){ const n=S.rooms.length, nr=S.rooms.filter(r=>r.nr).length;
-    return `<div class="scanbar on"><div class="sb1"><b>${rbrEsc(P.name)}</b><span class="asm">measured</span></div><div class="sb2">${n} rooms${nr?' ('+nr+' hall / closet, no register)':''} · <b>${CFM(P.sf)} sq ft</b> served by this system${P.prevSf?` · the record says ${CFM(P.prevSf)} sq ft — the rest is on another system`:''}</div><div class="sb3"><label class="btn sm ghost" for="rbrDxf">Replace</label><button class="btn sm ghost" id="rbrScanX">Remove</button></div></div>` }
+    return `<div class="scanbar on"><div class="sb1"><b>${rbrEsc(P.name)}</b><span class="asm">measured</span></div><div class="sb2">${n} rooms${nr?' ('+nr+' hall / closet, no register)':''} · <b>${CFM(P.sf)} sq ft</b> served by this system${P.prevSf?` · the record says ${CFM(P.prevSf)} sq ft — the rest is on another system`:''}</div><div class="sb3"><button class="btn sm ghost" id="rbrTurn" title="Turn the plan a quarter turn">Turn 90°</button><button class="btn sm ghost" id="rbrMir" title="Mirror the plan left to right">Mirror</button><label class="btn sm ghost" for="rbrDxf">Replace</label><button class="btn sm ghost" id="rbrScanX">Remove</button></div></div>` }
   const hand=!!S.rbrHand;
-  return `<div class="scanbox${hand?' mini':''}"><div class="scanico">&#9636;</div><div class="scantxt"><b>${hand?'Upload a floor plan instead':'Upload the floor plan of the area this system serves'}</b>${hand?'':'<span>3D Snap &#9656; Export &#9656; DXF. Scan only what this unit cools &mdash; the upstairs on a two-storey, or the part of the house on this system.</span>'}</div><label class="btn sm" for="rbrDxf">Choose the DXF</label></div>`+
+  return `<div class="scanbox${hand?' mini':''}"><div class="scanico">&#9636;</div><div class="scantxt"><b>${hand?'Upload a floor plan instead':'Upload the floor plan of the area this system serves'}</b>${hand?'':'<span>3D Snap &#9656; Export &#9656; JSON (best) or DXF. Scan only what this unit cools &mdash; the upstairs on a two-storey, or the part of the house on this system.</span>'}</div><label class="btn sm" for="rbrDxf">Choose the scan</label></div>`+
     (hand?'':`<div class="row" style="margin-top:8px"><button class="btn sm ghost" id="rbrHand">No scan? Lay the rooms out by hand &#9656;</button></div>`) }
 // v2.59 (Stephen 2026-09-27: "since we are going to use the file upload for room by room designs, thats the preferred sizing method, add that upload button to
 // the front screen, right at the top of the home … either upload the file, give me the address, or manually type in the Sq Ft, in that order")
 function fcTopUpHtml(){ const P=S.plan;
   if(P){ const n=S.rooms.length; return `<div class="scanbar on top"><div class="sb1"><b>${rbrEsc(P.name)}</b><span class="asm">floor plan</span></div><div class="sb2">${n} rooms · <b>${CFM(P.sf)} sq ft</b> served by this system</div><div class="sb3"><label class="btn sm ghost" for="rbrDxf">Replace</label></div></div>` }
-  return `<div class="scanbox top" id="fcUpTop"><div class="scanico">&#9636;</div><div class="scantxt"><b>1 · Upload the floor plan</b><span>No plan? 2 · look up the address · 3 · or type the sq ft — in that order.</span></div><label class="btn sm" for="rbrDxf">Choose the DXF</label></div>` }
+  return `<div class="scanbox top" id="fcUpTop"><div class="scanico">&#9636;</div><div class="scantxt"><b>1 · Upload the floor plan</b><span>No plan? 2 · look up the address · 3 · or type the sq ft — in that order.</span></div><label class="btn sm" for="rbrDxf">Choose the scan</label></div>` }
 function rbrScanWire(){
   const f=$('#rbrDxf'); if(f&&!f.dataset.wired){ f.dataset.wired='1'; f.addEventListener('change',()=>{ const file=f.files&&f.files[0]; if(!file) return; fcScanStat('Reading '+rbrEsc(file.name)+'…');
     const fr=new FileReader(); fr.onload=()=>{ const ok=fcPlanLoad(String(fr.result||''),file.name); f.value=''; if(ok){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } else if(!S.rbrOpen){ S.rbrOpen=true; save(); rbrRender() } };   /* v2.59: an upload from the top of the home that fails opens Room by room, where the reason shows */
     fr.onerror=()=>fcScanStat('Could not read that file.','warn'); fr.readAsText(file) }) }
   const h=$('#rbrHand'); if(h) h.addEventListener('click',()=>{ S.rbrHand=true; if(!S.rooms.length){ rbrSeed(fcTop()); if(fcHasShape()) fcPack() } save(); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) });
   const x=$('#rbrScanX'); if(x) x.addEventListener('click',()=>{ fcPlanClear(); rbrRender(); rbrSync() });
+  [['#rbrTurn','turn'],['#rbrMir','mir']].forEach(([id,k])=>{ const b=$(id); if(b) b.addEventListener('click',()=>{ fcPlanXform(k); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) }) });   // v2.60
   // drag a file onto the panel
-  ['#rbrPanel','#fcTop1'].forEach(sel=>{ const pn=$(sel); if(pn&&!pn.dataset.drop){ pn.dataset.drop='1'; pn.addEventListener('dragover',e=>{ e.preventDefault() }); pn.addEventListener('drop',e=>{ const file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!file||!/\.dxf$/i.test(file.name)) return; e.preventDefault(); const fr=new FileReader(); fr.onload=()=>{ if(fcPlanLoad(String(fr.result||''),file.name)){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } }; fr.readAsText(file) }) } })
+  ['#rbrPanel','#fcTop1'].forEach(sel=>{ const pn=$(sel); if(pn&&!pn.dataset.drop){ pn.dataset.drop='1'; pn.addEventListener('dragover',e=>{ e.preventDefault() }); pn.addEventListener('drop',e=>{ const file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!file||!/\.(dxf|json)$/i.test(file.name)) return; e.preventDefault(); const fr=new FileReader(); fr.onload=()=>{ if(fcPlanLoad(String(fr.result||''),file.name)){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } }; fr.readAsText(file) }) } })
 }
 // the plan on the grid: the real house, rooms named and loaded, the UNIT tile the only thing that moves
 function rbrPlanGrid(G,px){ const P=S.plan, F=fcField();
