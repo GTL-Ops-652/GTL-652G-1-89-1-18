@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-27 v2.58 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-27 v2.59 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -258,6 +258,7 @@ dialog .in{padding:18px}
 .scanbox .scanico{font-size:26px;color:var(--db);line-height:1}.scanbox.mini .scanico{font-size:18px}
 .scanbox .scantxt{flex:1;min-width:160px}.scanbox .scantxt b{display:block;font-size:14px;color:var(--db)}.scanbox .scantxt span{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
 .scanbox label.btn{cursor:pointer}
+.scanbox.top{margin:2px 0 14px}.scanbar.top{margin:2px 0 14px}   /* v2.59: the floor plan upload leads the home */
 .scanbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:10px;padding:10px 14px;border:1.5px solid #7fcaa0;border-radius:12px;background:#eefaf3}
 .scanbar .sb1{font-size:14px;color:var(--db)}.scanbar .sb1 .asm{margin-left:6px}.scanbar .sb2{flex:1;min-width:200px;font-size:13px;color:var(--ink)}.scanbar .sb3{display:flex;gap:6px}.scanbar label.btn{cursor:pointer}
 .rrow input[readonly]{background:#f2f5f8;color:var(--muted)}
@@ -785,6 +786,7 @@ body.pack .tp .noapp{display:none}
 <section class="panel active" id="p1">
   <div class="card" id="homeCard">
     <h2>The home</h2>
+    <div id="fcTop1"></div>
     <div class="sect stat"><div class="sh"><span class="sn"></span><span class="st">Size, build &amp; attic</span><span class="sd">Sets the tonnage, and the way out of it</span></div><div class="sb">
       <div class="fcrow">
         <div class="field" style="flex:2;min-width:220px"><label>Address <small>optional</small></label><input id="fcAddr" type="text" inputmode="text" autocomplete="off" placeholder="5482 N Jones Blvd"></div>
@@ -5116,7 +5118,7 @@ async function fcAppSource(){
 // Everything the app rendered while it was running has to come back out, or the pack carries a stale
 // copy of every card — and, worse, the two 1.6 MB print stills inside #printReport.
 const FC_DOM_RESET=['#airCard','#recCard','#sumCard','#sumHero','#fitHero','#planHero','#printReport','#savedWrap',
-  '#planActions','#planReadout','#lbls','#duct2d','#packStory','#packTech','#cmpCard','#pkgCard','#fitShot','#supCfgNote','#tonsSrc','#tiers','#optHero','#optBody'];
+  '#planActions','#planReadout','#lbls','#duct2d','#packStory','#packTech','#cmpCard','#pkgCard','#fitShot','#supCfgNote','#tonsSrc','#tiers','#optHero','#optBody','#fcTop1'];
 function fcDomSource(){
   const d=document.documentElement.cloneNode(true);
   FC_DOM_RESET.forEach(sel=>{ const e=d.querySelector(sel); if(e) e.innerHTML='' });
@@ -6784,12 +6786,14 @@ function dnRegItems(regs,U){ const rc=new Map(); regs.forEach(g=>{ if(!rc.has(g.
 // side of the way the air comes (both 45° legs then head nearly straight at their runs, the TY on the perpendicular bisector of the two, far enough back
 // that both are ahead of it) — and a reducing TY where they sit one behind the other (the run leg goes on to the far one, the 45° leg peels off to the
 // near one): "split symmetrically where the rooms allow". The straight run in wants 5 ft off the plenum and 4 ft between TYs; it takes 3 when tight.
-function dnWyeGroup(N,set,level,P,fDir,fixed){
+function dnWyeGroup(N,set,level,P,fDir,fixed,topo){
   if(set.length===1){ const g=set[0]; return dnNode(N,{t:'can',x:g.x,y:g.y,reg:g,level}) }
   const c=dnCw(set); const u0=fixed?fDir:(dv.dist(c,P)>0.1?dv.unit(dv.sub(c,P)):(fDir||[1,0]));
-  let [A,B]=dnSplit2(set,u0); if(!B.length) return dnWyeGroup(N,A,level,P,fDir,fixed);
+  const lvs=x=>Array.isArray(x)?x.flatMap(lvs):[x]; if(topo&&!(Array.isArray(topo)&&topo.length===2&&lvs(topo).length===set.length)) topo=null;   /* v2.59: the pairing the grouping search chose */
+  let [A,B]=topo?[lvs(topo[0]),lvs(topo[1])]:dnSplit2(set,u0); if(!B.length) return dnWyeGroup(N,A,level,P,fDir,fixed);
+  const tOf=x=>!topo?null:(x===A?(Array.isArray(topo[0])?topo[0]:null):(Array.isArray(topo[1])?topo[1]:null));
   const along=g=>dv.dot(dv.sub([g.x,g.y],P),u0);
-  if(set.length===3){ const s3=set.slice().sort((p,q)=>along(p)-along(q)); const pr=[A,B].find(x=>x.length===2)||A; const pc=dnCw(pr), sg=[A,B].find(x=>x.length===1)||B;
+  if(set.length===3&&!topo){ const s3=set.slice().sort((p,q)=>along(p)-along(q)); const pr=[A,B].find(x=>x.length===2)||A; const pc=dnCw(pr), sg=[A,B].find(x=>x.length===1)||B;
     const lat=Math.abs(dv.dot(dv.sub(pc,[sg[0].x,sg[0].y]),dv.perp(u0))), alo=Math.abs(dv.dot(dv.sub(pc,[sg[0].x,sg[0].y]),u0)); if(lat<0.5*alo){ A=[s3[0]]; B=s3.slice(1) } }   // in line: the near one peels off first
   let CA=dnCw(A), CB=dnCw(B); let M=dv.mul(dv.add(CA,CB),0.5); let d=dv.dist(P,M);
   // the TY's axis: off the plenum it faces the middle of its two runs; under another TY it carries on along the 45° leg that feeds it (no bend between)
@@ -6805,7 +6809,7 @@ function dnWyeGroup(N,set,level,P,fDir,fixed){
     let t=an-Math.max(ln,1.5); if(t<tgt) t=Math.max(Math.min(tgt,an-1.2),mn); if(t>an-0.8) t=Math.max(0.8,an-0.8);
     T=dnNode(N,{t:'ty',x:P[0]+u[0]*t,y:P[1]+u[1]*t,ax:u,level,sym:false,inline:true});
     const sN=Math.sign(dv.cr(u,dv.sub(Cn,[T.x,T.y])))||1; const dN=dv.rot(u,sN*Math.PI/4);
-    const kN=dnWyeGroup(N,nset,level+1,legTo(T,dN),dN,true), kF=dnWyeGroup(N,fset,level+1,legTo(T,u),u,true);
+    const kN=dnWyeGroup(N,nset,level+1,legTo(T,dN),dN,true,tOf(nset)), kF=dnWyeGroup(N,fset,level+1,legTo(T,u),u,true,tOf(fset));
     dnEdge(N,T,kN,{k:nset.length>1?'branch':'leg',leave:'branch',side:sN}); dnEdge(N,T,kF,{k:fset.length>1?'branch':'leg',leave:'run',side:0});
     return T }
   // side by side: a symmetric wye — its two runs pushed deeper into their rooms when they sit too close to the feed for the TY's rules
@@ -6815,7 +6819,7 @@ function dnWyeGroup(N,set,level,P,fDir,fixed){
   const t=aM-back; T=dnNode(N,{t:'ty',x:P[0]+u[0]*t,y:P[1]+u[1]*t,ax:u,level,sym:true});
   const side=K=>Math.sign(dv.cr(u,dv.sub(K,[T.x,T.y])))||1; const sA=side(CA), sB=sA===side(CB)?-sA:side(CB);
   const dA=dv.rot(u,sA*Math.PI/4), dB=dv.rot(u,sB*Math.PI/4);
-  const kA=dnWyeGroup(N,A,level+1,legTo(T,dA),dA,true), kB=dnWyeGroup(N,B,level+1,legTo(T,dB),dB,true);
+  const kA=dnWyeGroup(N,A,level+1,legTo(T,dA),dA,true,tOf(A)), kB=dnWyeGroup(N,B,level+1,legTo(T,dB),dB,true,tOf(B));
   dnEdge(N,T,kA,{k:A.length>1?'branch':'leg',leave:'branch',side:sA}); dnEdge(N,T,kB,{k:B.length>1?'branch':'leg',leave:'branch',side:sB}); return T }
 // Stepped Trunk: one trunk down the wing, a reducing TY per branch (the trunk steps down after every one), the last TY splits into the final two runs
 // branches: [{set, at:[x,y]}] — a one-vent room is a run to its can, a two-vent room a branch to its own wye
@@ -6836,9 +6840,75 @@ function dnStepTrunk(N,branches,from,axis){ const P=dv.perp(axis); const along=p
     else dnEdge(N,T,k1,{k:bs[i].b.set.length>1?'branch':'leg',leave:'branch',side:s1});
     pv=T }
   return first }
+// v2.59 — THE SHORTEST WAY BACK (Stephen 2026-09-27: "each duct took the shortest possible path back toward the unit, tying the ducts together with TYs the
+// most efficient way, to minimize each duct's length"). The trunks were cut by angle round the unit, so a register could be tied to a trunk heading off to
+// the far side of the area (a bathroom TYed off the duct on the other side). Now the grouping is searched: which registers share a trunk, which ride a
+// direct run, and how each trunk's TYs pair them — scored on the duct itself: every piece's length weighted by its size (a 14" costs more a foot than a
+// 6"), each TY where the ducts meeting there are shortest (a weighted Fermat point, held off the plenum and the TY before it by the straight runs the
+// rules want). The search starts from the angle cut and only keeps a move that shortens the duct; the network it builds is then compared, laid out and
+// routed, with the one the angle cut builds — the shorter one wins.
+const DN_SAME={same:true};
+const dnW=q=>Math.pow(Math.max(q,20)/100,0.38);           // a duct's cost per foot by the air it carries (its diameter goes as Q^0.38)
+function dnTreeEst(topo,U,obs){ // topo: a register · [a,b] · [[a,b],c] · [[a,b],[c,d]] → {cost, segs}
+  const lv=x=>Array.isArray(x)?x.flatMap(lv):[x]; const qOf=x=>lv(x).reduce((s,g)=>s+g.q,0); const P=g=>[g.x,g.y];
+  if(!Array.isArray(topo)) return {cost:dnW(topo.q)*dv.dist(U,P(topo)),segs:[[U,P(topo)]]};
+  // Steiner points: T1 under the plenum's collar, T2 / T3 the second level
+  const pts=[]; const nb=[]; const mk=(kids,par,minPar)=>{ const i=pts.length; pts.push(null); nb.push({par,minPar,kids:[]}); kids.forEach(k=>{ if(Array.isArray(k)){ const j=mk(k,i,3.2); nb[i].kids.push({j,w:dnW(qOf(k))}) } else nb[i].kids.push({p:P(k),w:dnW(k.q)}) }); nb[i].w=dnW(qOf(kids)); return i };
+  mk(topo,-1,4.5);
+  // start each point at the air-weighted middle of what it feeds
+  const cen=i=>{ let sx=0,sy=0,sw=0; nb[i].kids.forEach(k=>{ const p=k.p||cen(k.j); sx+=p[0]*k.w; sy+=p[1]*k.w; sw+=k.w }); return [sx/sw,sy/sw] };
+  for(let i=pts.length-1;i>=0;i--) pts[i]=cen(i);
+  for(let it=0,mv=1;it<16&&mv>0.02;it++){ mv=0; for(let i=0;i<pts.length;i++){ const T=pts[i]; const ns=[]; const par=nb[i].par<0?U:pts[nb[i].par]; ns.push([par,nb[i].w]); nb[i].kids.forEach(k=>ns.push([k.p||pts[k.j],k.w]));
+    let sx=0,sy=0,sw=0; ns.forEach(([p,w])=>{ const d=Math.max(0.05,dv.dist(T,p)); sx+=w*p[0]/d; sy+=w*p[1]/d; sw+=w/d }); let N2=[sx/sw,sy/sw];
+    const v=dv.sub(N2,par), l=dv.len(v); if(l<nb[i].minPar){ const dir=l>0.05?dv.unit(v):dv.unit(dv.sub(cen(i),par)); N2=dv.add(par,dv.mul(dir,nb[i].minPar)) } mv=Math.max(mv,dv.dist(N2,T)); pts[i]=N2 } }
+  let cost=0; const segs=[]; for(let i=0;i<pts.length;i++){ const par=nb[i].par<0?U:pts[nb[i].par]; cost+=nb[i].w*dv.dist(par,pts[i]); segs.push([par,pts[i]]); nb[i].kids.forEach(k=>{ if(k.p){ cost+=k.w*dv.dist(pts[i],k.p); segs.push([pts[i],k.p]) } }) }
+  if(obs&&obs.length) segs.forEach(([a,b])=>{ if(obs.some(R=>R.k!=='plen'&&!R.soft&&dnSegHitsRect(a,b,R,0.3))) cost+=4 });   /* a piece that would have to go round the cabinet */
+  return {cost,segs} }
+// the best TY pairing for a set of up to four (two TY levels at most)
+function dnTopoBest(set,U,obs){ const n=set.length; let cands;
+  if(n===1) cands=[set[0]]; else if(n===2) cands=[[set[0],set[1]]];
+  else if(n===3){ const [a,b,c]=set; cands=[[[a,b],c],[[a,c],b],[[b,c],a]] }
+  else if(n===4){ const [a,b,c,d]=set; cands=[[[a,b],[c,d]],[[a,c],[b,d]],[[a,d],[b,c]]] }
+  else return null;
+  let best=null; cands.forEach(t=>{ const e=dnTreeEst(t,U,obs); if(!best||e.cost<best.cost) best={topo:t,cost:e.cost,segs:e.segs} }); return best }
+const DN_OPT_CACHE=new Map();   // the searched grouping by what it was searched on — a redraw, a plan swap and the pack all ask again for the same house
+function dnOptGroups(seed,U,o){ const sig=JSON.stringify([U,o.maxG,Math.round(o.maxQ),o.leafCap,(o.obs||[]).map(R=>[R.k,+R.x0.toFixed(2),+R.y0.toFixed(2),+R.x1.toFixed(2),+R.y1.toFixed(2)]),seed.map(g=>g.map(x=>[x.id,+x.x.toFixed(2),+x.y.toFixed(2),Math.round(x.q),x.rid]))]);
+  if(DN_OPT_CACHE.has(sig)){ const ids=DN_OPT_CACHE.get(sig); if(!ids) return null; const all=new Map(seed.flat().map(x=>[x.id,x])); const mapT=t=>Array.isArray(t)?t.map(mapT):all.get(t);
+    return ids.map(g=>({set:g.set.map(id=>all.get(id)),topo:g.topo==null?null:mapT(g.topo)})) }
+  const out=dnOptGroups1(seed,U,o); if(DN_OPT_CACHE.size>12) DN_OPT_CACHE.delete(DN_OPT_CACHE.keys().next().value);
+  const idT=t=>Array.isArray(t)?t.map(idT):t.id; DN_OPT_CACHE.set(sig,out?out.map(g=>({set:g.set.map(x=>x.id),topo:g.topo==null?null:idT(g.topo)})):null); return out }
+function dnOptGroups1(seed,U,o){ // seed: arrays of registers (a one-register array is a direct run) · o: {maxG, maxQ, leafCap, tot, obs} → null when the angle cut already is the shortest
+  const memo=new Map(); const key=g=>g.map(x=>x.id).sort().join('|');
+  const gEst=g=>{ const k=key(g); if(memo.has(k)) return memo.get(k); let v;
+    if(g.length>o.leafCap||g.reduce((s,x)=>s+x.q,0)>o.maxQ*1.02&&g.length>1) v={cost:1e6}; else { const b=dnTopoBest(g,U,o.obs); v={cost:b.cost+2+(g.length===1&&dv.dist(U,[g[0].x,g[0].y])>DN_DIRECT_FT*1.6?20:0),topo:b.topo,segs:b.segs} }
+    memo.set(k,v); return v };
+  const total=G=>{ let c=0; G.forEach(g=>c+=gEst(g).cost); const tr=G.filter(g=>g.length>1); const nReg=G.reduce((s,g)=>s+g.length,0);
+    if(nReg>=3&&tr.length<2&&G.length>=2) c+=200; if(tr.length>=2){ const sh=Math.max(...tr.map(g=>g.reduce((s,x)=>s+x.q,0)))/(o.tot||1); if(sh>0.55) c+=(sh-0.55)*300 }
+    const rooms=new Map(); G.forEach((g,i)=>g.forEach(x=>{ if(!rooms.has(x.rid)) rooms.set(x.rid,new Set()); rooms.get(x.rid).add(i) })); rooms.forEach(s=>{ c+=3*(s.size-1) });
+    return c };
+  let G=seed.map(g=>g.slice()).filter(g=>g.length); if(G.length>o.maxG||G.some(g=>g.length>o.leafCap)) return null; let cur=total(G), moved=false;   /* a seed deeper than two TY levels is left to the angle cut */
+  // a register only ever moves to one of the three trunks nearest it (the nearest of their registers) — the rest cannot shorten anything
+  const near=(r,G,skip)=>G.map((g,j)=>({j,d:j===skip||!g.length?1e9:Math.min(...g.map(x=>Math.hypot(x.x-r.x,x.y-r.y)))})).filter(x=>x.d<1e8).sort((a,b)=>a.d-b.d).slice(0,3).map(x=>x.j);
+  for(let pass=0;pass<14;pass++){ let best=null; const tryG=H=>{ const H2=H.filter(g=>g.length); if(H2.length>o.maxG) return; const c=total(H2); if(c<cur-0.05&&(!best||c<best.c)) best={c,G:H2} };
+    for(let i=0;i<G.length;i++) for(let a=0;a<G[i].length;a++){ const r=G[i][a]; const nj=near(r,G,i);
+      for(const j of nj){ if(G[j].length<o.leafCap){ const H=G.map(g=>g.slice()); H[i].splice(a,1); H[j].push(r); tryG(H) }
+        for(let b=0;b<G[j].length;b++){ const H=G.map(g=>g.slice()); const t=H[j][b]; H[i][a]=t; H[j][b]=r; tryG(H) } }
+      if(G.length<o.maxG&&G[i].length>1){ const H=G.map(g=>g.slice()); H[i].splice(a,1); H.push([r]); tryG(H) } }
+    for(let i=0;i<G.length;i++) for(let j=i+1;j<G.length;j++){ if(G[i].length+G[j].length>o.leafCap) continue; const H=G.map(g=>g.slice()); H[i]=H[i].concat(H[j]); H[j]=[]; tryG(H) }
+    // a chain: r moves into a full trunk j, and one of j's moves on to a third that has room (the bathroom takes the kitchen trunk's slot, a kitchen vent rides the next trunk over)
+    if(!best) for(let i=0;i<G.length;i++) for(let a=0;a<G[i].length;a++) for(const j of near(G[i][a],G,i)){ if(G[j].length<o.leafCap) continue;
+      for(let b=0;b<G[j].length;b++) for(const k of near(G[j][b],G,j)){ if(k===i||G[k].length>=o.leafCap) continue; const H=G.map(g=>g.slice()); const r=H[i][a], t=H[j][b]; H[i].splice(a,1); H[j][b]=r; H[k].push(t); tryG(H) } }
+    if(!best) break; G=best.G; cur=best.c; moved=true }
+  if(!moved&&G.every(g=>g.length<3)) return null;   /* nothing moved and no TY pairing to choose: the angle cut's network is the one */
+  return G.map(g=>({set:g,topo:gEst(g).topo})) }
+// the network's own cost, laid out and routed: its duct weighted by size, a TY rule it misses, a run it could not route round the equipment, a room short of air
+function dnNetCost(N){ if(!N) return 1e9; let c=0; N.edges.forEach(e=>{ c+=(e.len||0)*dnW(e.q||0); if(e.obsHit) c+=30 });
+  N.checks.forEach(k=>{ if(!k.ok) c+=k.hard?1e4:(/^ty/.test(k.k)?60:25) });   /* a TY rule missed outweighs a few feet of duct */ if(N.worst&&N.worst.pct<1) c+=(1-N.worst.pct)*300; return c }
 // ---------------------------------------------------------------- BUILD one layout
 // ctx: {regs, U:[x,y] plenum centre, pl (dnPlenum), tons, fr, asp, telRet, downs (collars a duct down takes), kept (a kept drop)}
-function dnBuild(lay,ctx){ const N=dnNet(lay); const U=ctx.U; const cap=dnCap(ctx.tons); const pl=ctx.pl; const kept=pl.kind==='drop';
+function dnBuild(lay,ctx){ const A=dnBuild1(lay,Object.assign({},ctx)); if(lay==='step') return A; let B=null; try{ B=dnBuild1(lay,Object.assign({},ctx,{opt:true})) }catch(e){ if(e!==DN_SAME) try{ console.warn('Fit Check: grouping search',e) }catch(_){} B=null }
+  if(B&&dnNetCost(B)<dnNetCost(A)-1){ B.opt=true; return B } return A }   // v2.59: the searched grouping, when it builds the shorter network
+function dnBuild1(lay,ctx){ const N=dnNet(lay); const U=ctx.U; const cap=dnCap(ctx.tons); const pl=ctx.pl; const kept=pl.kind==='drop';
   let regs=ctx.regs.map(g=>Object.assign({},g)); dnKeepOut(regs,ctx); if(ctx.box) ctx=Object.assign({},ctx,{box:Object.assign({},ctx.box,{set:ctx.box.set.map(b=>regs.find(g=>g.id===b.id)).filter(Boolean)})}); const tot=regs.reduce((s,g)=>s+g.q,0)||1; N.tot=tot; N.cap=cap; N.pl=pl; N.U=U;
   const budget=kept?2:Math.max(1,cap.n-(ctx.downs||0));
   // directs: the one or two registers nearest the plenum, within ~15 ft, when the trunks still get their collars
@@ -6860,7 +6930,10 @@ function dnBuild(lay,ctx){ const N=dnNet(lay); const U=ctx.U; const cap=dnCap(ct
   else { let groups=null; const ri=dnRegItems(tree,U); const kMax=Math.max(1,trunkBudget); let kk0=Math.min(kMax,Math.max(tree.length>1?2:1,Math.ceil(tree.length/leafCap)));
     for(let kk=kk0;kk<=kMax&&kk<=ri.length;kk++){ const g=dnPartition(ri,kk,leafCap); if(g&&g.every(x=>x.reduce((s,y)=>s+y.q,0)<=maxQ*1.02)){ groups=g; break } }
     if(!groups){ const kk=Math.max(1,Math.min(kMax,ri.length)); for(let cap2=leafCap;cap2<=16&&!groups;cap2++) groups=dnPartition(ri,kk,cap2); if(!groups) groups=[ri]; if(groups.some(g=>g.length>leafCap)) N.notes.push('More registers than the collars allow two TY levels for — some splits go a third level down.') }
-    (groups||[]).forEach(gr=>{ const set=gr.flatMap(it=>it.set); roots.push(set.length===1?{k:'direct',set}:{k:'trunk',set,items:gr,mode:'wye'}) }) }
+    let res=null; if(ctx.opt&&groups){ const seed=groups.map(gr=>gr.flatMap(it=>it.set)).concat(direct.map(g=>[g])); res=dnOptGroups(seed,U,{maxG:budget-(boxSet?1:0),maxQ,leafCap,tot:tree.concat(direct).reduce((s,g)=>s+g.q,0),obs:dnObs(N,ctx)}) }
+    if(ctx.opt&&!res) throw DN_SAME;   /* the search kept the angle cut — the network is already built */
+    if(res){ res.forEach(x=>roots.push(x.set.length===1?{k:'direct',set:x.set}:{k:'trunk',set:x.set,mode:'wye',topo:x.topo})); direct=[]; N.direct=res.filter(x=>x.set.length===1).map(x=>x.set[0].id) }
+    else (groups||[]).forEach(gr=>{ const set=gr.flatMap(it=>it.set); roots.push(set.length===1?{k:'direct',set}:{k:'trunk',set,items:gr,mode:'wye'}) }) }
   direct.forEach(g=>roots.push({k:'direct',set:[g]}));
   if(boxSet) roots.push({k:'box',set:boxSet});
   N.roots=roots; return dnFinish(N,ctx) }
@@ -6869,16 +6942,37 @@ function dnHeading(U,set){ const c=dnCw(set); const v=dv.sub(c,U); return dv.len
 function dnFinish(N,ctx){ const U=ctx.U, fr=ctx.fr; let pl=ctx.pl; const kept=pl.kind==='drop';
   // provisional sizes of the roots (a trunk by what it carries, capped at the tonnage's largest collar; a direct at its register's run)
   const rootD=r=>{ const q=r.set.reduce((s,g)=>s+g.q,0); if(r.k==='direct') return Math.max(DN_MIN,r.set[0].d||0,dnD(q,fr,'br',dv.dist(U,[r.set[0].x,r.set[0].y]),0)); let d=Math.max(DN_TRUNK_MIN,dnD(q,fr,'sup',0,0)); return Math.min(d,Math.max(N.cap.max,DN_TRUNK_MIN)) };
+  const faceSc=(f,o)=>{ const al=f.nrm?dv.dot(f.nrm,o.h):0.3; const back=al<-0.25?(al+0.25)*2.4:0; const crowd=f.ds.length*0.35+(f.cap?0.15:0); return al+back-crowd-(f.rank||0)*3 };
+  // v2.59 — every collar on the face its rooms want, all at once. What a face costs a trunk is the run it would really take from there — its bends (a quarter
+  // turn a point) and its length, round the equipment where the straight way crosses it — plus the face's rank (a top collar costs about a quarter turn more
+  // than a side, the last resort far more) and how crowded it is. The best assignment over the faces (six or seven collars is a few thousand tries) — so a
+  // trunk is never left on the side facing away from its rooms, wrapping round the end cap, because a bigger one took its place.
+  const rootFaceCost=(f,o,q,obs)=>{ const W=(q.W||20)/12; const tn={_obs:obs}; let P, h=f.nrm||null;
+    if(q.kind==='h'){ const L=(q.L||24)/12; if(f.k==='N'){ P=[U[0],U[1]-L/2] } else { const y=U[1]+L/2-(f.head||0)/12-Math.max(0,f.len)/24; P=[f.k==='L'?U[0]-W/2:(f.k==='R'?U[0]+W/2:U[0]),y] } }
+    else { const H=(q.H||20)/12; P=f.k==='L'?[U[0]-W/2,U[1]]:f.k==='R'?[U[0]+W/2,U[1]]:f.k==='N'?[U[0],U[1]-H/2]:f.k==='S'?[U[0],U[1]+H/2]:U.slice() }
+    const T=dnCw(o.r.set); const Rr=dnR(o.d); const own=obs.find(x=>x.k==='plen')||null; let segs=h?dnRoute(P,h,0.5,T,null,0,Rr):dnRoute(P,dv.unit(dv.sub(T,P)),Rr+0.2,T,null,0,Rr); let pen=0;
+    if(dnObsHit(tn,segs,o.d,own,!h,h)){ const alt=dnDetour(tn,P,h,h?0.5:Rr+0.2,T,null,0,o.d,own,!h); if(alt) segs=alt; else pen=8 }
+    const inf=dnRouteInfo(segs); return (inf.turn+(h?0:90))/90+inf.len/25+pen };
+  const rankPen=f=>(f.rank||0)===1?1.2:(f.rank||0)*3; const RFC=new WeakMap();
+  const assign=(faces,q)=>{ const ord=N.roots.map(r=>({r,d:rootD(r),h:dnHeading(U,r.set)})).sort((a,b)=>b.d-a.d); if(ord.length>7) return null; q=q||pl; const obs=dnObs(N,Object.assign({},ctx,{pl:q}));
+    const C=ord.map(o=>faces.map(f=>{ let m=RFC.get(o.r); if(!m){ m={}; RFC.set(o.r,m) } const k=f.k+'/'+o.d; if(m[k]==null) m[k]=rootFaceCost(f,o,q,obs); return m[k]+rankPen(f)+(f.cap?0.15:0) }));   /* what a face costs a trunk is worked out once a build, not once a plenum length */ let best=null; const pick=Array(ord.length); const ds=faces.map(()=>[]);
+    const rec=(i,sc)=>{ if(best&&sc>=best.sc-1e-9) return; if(i===ord.length){ best={sc,pick:pick.slice(),ord,dir:pick.reduce((a,j,k)=>a+C[k][j]-rankPen(faces[j])-(faces[j].cap?0.15:0),0)}; return }
+      faces.forEach((f,j)=>{ const nd=ds[j].concat([ord[i].d]); if(!dnFaceFits(f,nd)) return; ds[j].push(ord[i].d); pick[i]=j; rec(i+1,sc+C[i][j]+(ds[j].length-1)*0.35); ds[j].pop() }) };
+    rec(0,0); return best||false };
+  const prefNeed=need0=>{ let bestDir=1e9; const got=[]; for(let L=need0;L<=Math.min(96,need0+12);L+=2){ const q=dnPlenumLen(pl,L); const A=assign(q.faces.filter(f=>!f.last),q); if(A){ got.push([L,A.dir]); bestDir=Math.min(bestDir,A.dir) } }
+    const hit=got.find(g=>g[1]<=bestDir+0.5); return hit?hit[0]:need0 };
   const place=(useLast)=>{ if(kept){ N.roots.forEach(r=>{ r.face='W'; r.fd=rootD(r) }); return true }
-    const faces=pl.faces.filter(f=>useLast||!f.last).map(f=>Object.assign({},f,{ds:[]})); const order=N.roots.map(r=>({r,d:rootD(r),h:dnHeading(U,r.set)})).sort((a,b)=>b.d-a.d);
-    for(const o of order){ let best=null; faces.forEach(f=>{ if(!dnFaceFits(f,f.ds.concat([o.d]))) return; const al=f.nrm?dv.dot(f.nrm,o.h):0.3; const crowd=f.ds.length*0.35+(f.cap?0.15:0); const sc=al-crowd-(f.rank||0)*3; if(!best||sc>best.sc) best={sc,f} });   /* v2.58: a face's rank outweighs where it points — the sides always before the top, the top before a last-resort face */
+    const faces=pl.faces.filter(f=>useLast||!f.last).map(f=>Object.assign({},f,{ds:[]}));
+    { const A=assign(faces); if(A===false) return false; if(A){ A.ord.forEach((o,i)=>{ const f=faces[A.pick[i]]; f.ds.push(o.d); o.r.face=f.k; o.r.fd=o.d }); N.faces=faces; return true } }
+    const order=N.roots.map(r=>({r,d:rootD(r),h:dnHeading(U,r.set)})).sort((a,b)=>b.d-a.d);
+    for(const o of order){ let best=null; faces.forEach(f=>{ if(!dnFaceFits(f,f.ds.concat([o.d]))) return; const sc=faceSc(f,o); if(!best||sc>best.sc) best={sc,f} });   /* v2.58: a face's rank outweighs where it points — the sides always before the top, the top before a last-resort face */
       if(!best) return false; best.f.ds.push(o.d); o.r.face=best.f.k; o.r.fd=o.d } N.faces=faces; return true };
   let folds=0; const capN=kept?2:N.cap.n-(ctx.downs||0);
   while(N.roots.length>Math.max(1,capN)&&N.roots.length>1){ const rs=N.roots.filter(r=>r.k!=='box').sort((a,b)=>a.set.reduce((s,g)=>s+g.q,0)-b.set.reduce((s,g)=>s+g.q,0)); if(rs.length<2) break; const a=rs[0]; let b=rs[1], bd=1e9; rs.slice(1).forEach(r=>{ const d=dv.dist(dnCw(a.set),dnCw(r.set)); if(d<bd){ bd=d; b=r } });
     N.roots=N.roots.filter(r=>r!==a&&r!==b).concat([{k:'trunk',set:a.set.concat(b.set),mode:N.lay==='step'?'wye':'wye',fold:true}]); folds++ }
   let ok=place();
   // a new duct system comes with a new supply plenum: when its length is not entered, it is sized to take its collars (never shorter than the one there)
-  if(!ok&&!kept&&pl.kind==='h'&&!pl.entered&&!ctx.noAutoLen){ const need=dnPlenNeed(pl,N.roots.map(rootD)); if(need<=96){ pl=dnPlenumLen(pl,need); ctx.pl=pl; N.pl=pl; ok=place(); if(ok){ N.plAuto=need; N.notes.push(`Supply plenum sized to ${need}" so its ${N.roots.length} collars fit, 2" edge to edge.`) } } }
+  if(!ok&&!kept&&pl.kind==='h'&&!pl.entered&&!ctx.noAutoLen){ const need0=dnPlenNeed(pl,N.roots.map(rootD)); const need=need0<=96?prefNeed(need0):need0; if(need<=96){ pl=dnPlenumLen(pl,need); ctx.pl=pl; N.pl=pl; ok=place(); if(ok){ N.plAuto=need; N.notes.push(`Supply plenum sized to ${need}" so its ${N.roots.length} collars fit, 2" edge to edge.`) } } }
   while(!ok&&N.roots.length>1){ // FOLD: two small runs become one bigger trunk + a TY (Stephen: "fold two small runs into one bigger trunk + TY and say so")
     const rs=N.roots.filter(r=>r.k!=='box').sort((a,b)=>a.set.reduce((s,g)=>s+g.q,0)-b.set.reduce((s,g)=>s+g.q,0)); if(rs.length<2) break; const a=rs[0]; let b=rs[1], bd=1e9; rs.slice(1).forEach(r=>{ const d=dv.dist(dnCw(a.set),dnCw(r.set)); if(d<bd){ bd=d; b=r } });
     N.roots=N.roots.filter(r=>r!==a&&r!==b).concat([{k:'trunk',set:a.set.concat(b.set),mode:'wye',fold:true}]); folds++; ok=place() }
@@ -6894,7 +6988,7 @@ function dnFinish(N,ctx){ const U=ctx.U, fr=ctx.fr; let pl=ctx.pl; const kept=pl
     if(r.k==='direct'){ const g=r.set[0]; first=dnNode(N,{t:'can',x:g.x,y:g.y,reg:g,level:0}) }
     else if(r.k==='box') first=dnBoxNode(N,r.set,U);
     else if(r.mode==='step') first=dnStepFromItems(N,r.items||dnRoomItems(r.set,U),U,h);
-    else first=dnWyeGroup(N,r.set,1,U,h);
+    else first=dnWyeGroup(N,r.set,1,U,h,false,r.topo);
     dnEdge(N,P,first,{k:r.k==='direct'?'direct':(r.k==='box'?'boxfeed':'trunk'),face:r.face||'W',root:true,fold:!!r.fold,leave:null,fd:r.fd}) });
   dnLay(N,ctx); dnSize(N,ctx); dnRefit(N,ctx); dnRepair(N,ctx); if(N.repaired){ dnSize(N,ctx); dnRefit(N,ctx) } dnPaths(N,ctx); dnCheck(N,ctx); dnTag(N); return N }
 // THE COLLARS AT THEIR FINAL SIZES: sizing can take a collar a size up (a long or bendy run, a TY's inlet at least its biggest leg) — check the faces again
@@ -6966,20 +7060,98 @@ function dnKeepOut(regs,ctx){ const pl=ctx.pl, U=ctx.U; DN_KO=[]; if(!pl) return
 function dnUnitRect(ctx){ const pl=ctx.pl; if(!pl||pl.kind!=='h') return null; const o=rbrOpt(); const F=o&&E[o.furn||o.ahu], C=o&&o.coil?E[o.coil]:null; const U=ctx.U;
   const ch_=C?(C.type==='coil_h'?C:{h:C.w,w:C.d,l:C.h}):null; const eq=((ch_?ch_.l:0)+(F?F.h:34)+retPlenLen())/12; const w=((F?F.d:28)+4)/12; return {x0:U[0]-w/2,x1:U[0]+w/2,y0:U[1]+(pl.L||24)/24,y1:U[1]+(pl.L||24)/24+eq} }
 function dnCrossesUnit(N,ctx,segs){ const R=N._ur!==undefined?N._ur:(N._ur=dnUnitRect(ctx)); if(!R) return false; const pts=dnRoutePts(segs,10); return pts.some(p=>p[0]>R.x0&&p[0]<R.x1&&p[1]>R.y0&&p[1]<R.y1) }
+// v2.59 — ROUTE AROUND THE EQUIPMENT (Stephen 2026-09-27: "it is bringing small supply ducts, right thru where the unit or plenum are, they cant occupy
+// the same space, the duct has to route around any obstructions"). The equipment's footprint on the plan — the supply plenum, the cabinet behind it (coil,
+// furnace, return plenum), a riser, a new curb's supply and return drops, a kept roof drop's return — is a keep-out, 2" of air round it past the duct's own
+// radius. A run whose route would cross it goes round the nearest corners instead (a shortest path over the corners, every corner a real flex bend);
+// a TY that lands on it slides off. The run a collar leaves from starts on its own plenum and is free to leave it; it may never come back over it.
+const DN_OBS_CLR=2/12;                                     // ft of air between a duct and the equipment
+function dnObs(N,ctx){ const pl=ctx.pl, U=ctx.U; const out=[]; if(!pl) return out;
+  if(pl.kind==='h'){ const W=(pl.W||20)/12, L=(pl.L||24)/12; out.push({k:'plen',x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-L/2,y1:U[1]+L/2}); const R=dnUnitRect(ctx); if(R) out.push(Object.assign({k:'unit'},R)) }
+  else if(pl.kind==='v'){ const W=(pl.W||20)/12, H=(pl.H||20)/12; out.push({k:'plen',x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-H/2,y1:U[1]+H/2}) }
+  else if(pl.kind==='pk'){ const W=(pl.W||12)/12, H=(pl.H||22)/12; out.push({k:'plen',x0:U[0]-W/2,x1:U[0]+W/2,y0:U[1]-H/2,y1:U[1]+H/2});
+    const free=(pl.faces||[]).find(f=>f.k==='N'||f.k==='S'); const sg=free&&free.k==="N"?1:-1; const g=2/12;   /* the return drop sits end to end with the supply, on the side away from the free face */
+    out.push({k:'ret',x0:U[0]-W/2,x1:U[0]+W/2,y0:sg>0?U[1]+H/2+g:U[1]-H/2-g-H,y1:sg>0?U[1]+H/2+g+H:U[1]-H/2-g}) }
+  else if(pl.kind==='drop'&&pl.ret){ const C=dv.add(U,[pl.ret.dx,pl.ret.dy]), r=pl.ret.r; out.push({k:'ret',x0:C[0]-r,x1:C[0]+r,y0:C[1]-r,y1:C[1]+r}) }
+  const rp=dnRetPath(ctx); if(rp){ const w=rp.hw; for(let i=1;i<rp.pts.length;i++){ const a=rp.pts[i-1], b=rp.pts[i]; out.push({k:'retrun',soft:true,x0:Math.min(a[0],b[0])-w,x1:Math.max(a[0],b[0])+w,y0:Math.min(a[1],b[1])-w,y1:Math.max(a[1],b[1])+w}) }
+    out.push({k:'retrun',soft:true,x0:rp.G[0]-1.2,x1:rp.G[0]+1.2,y0:rp.G[1]-1.2,y1:rp.G[1]+1.2}) }   /* soft: the TYs keep off the return run and its grille; the runs cross it over or under */
+  return out }
+// v2.59 — THE RETURN RUN ON THE PLAN (a split): the return leaves the back of the return plenum (a horizontal) or comes up into the attic beside the
+// unit (an upflow), runs back along the unit's line and turns across to the RETURN tile — the path the 3D draws (retOut), in plan feet. No TY may sit on it:
+// its legs would start inside the return duct. (The runs themselves cross it the way the 3D lays them — over or under.)
+function dnRetPath(ctx){ const pl=ctx.pl, U=ctx.U; if(!pl||(pl.kind!=='h'&&pl.kind!=='v')) return null; let RT=null; try{ RT=typeof fcRetC==='function'?fcRetC():null }catch(e){} if(!RT) return null;
+  const o=rbrOpt(); const F=o&&E[o.furn||o.ahu]; if(!F) return null; const C=o&&o.coil?E[o.coil]:null; const D=20, Rin=D, rbr=!!(S.rbrNew&&S.rooms&&S.rooms.length); const rpl=retPlenLen(); let O, under=null, band;
+  if(pl.kind==='h'){ const Rr=dnUnitRect(ctx); if(!Rr) return null; O=[U[0],Rr.y1]; under={x0:U[0]-F.d/24,x1:U[0]+F.d/24,y0:Rr.y1-rpl/12,y1:Rr.y1}; band=F.d/2+D/2+4+(rbr?20:0) }
+  else if(S.orient==='up'){ O=[U[0],U[1]+(F.d/2+16-D/2+Rin)/12]; band=F.w/2+D/2+4+(rbr?20:0) }
+  else { O=[U[0],U[1]+(F.d/2)/12]; if(S.orient!=='down') under={x0:U[0]-F.w/24,x1:U[0]+F.w/24,y0:U[1]-F.d/24,y1:U[1]+F.d/24}; band=F.w/2+D/2+4+(rbr?20:0) }
+  const G=[RT[0],RT[1]]; if(under&&G[0]>=under.x0-2/12&&G[0]<=under.x1+2/12&&G[1]>=under.y0-2/12&&G[1]<=under.y1+2/12) return {pts:[G],hw:D/24,G};   /* straight down out of the return plenum */
+  const ahead=(G[1]-O[1])*12, lat=Math.abs(G[0]-O[0])*12; let pts;
+  if(ahead>=(lat<=Rin+2?Rin+2:2*Rin+2)) pts=lat<=Rin+2?[O,[O[0],G[1]]]:[O,[O[0],G[1]],G];
+  else { let gx=G[0]; if(Math.abs(gx-O[0])*12<band) gx=O[0]+(gx>=O[0]?1:-1)*band/12; const yS=O[1]+(Rin+2)/12; pts=[O,[O[0],yS],[gx,yS]]; if(Math.abs(G[1]-yS)*12>=2*Rin+2) pts.push([gx,G[1]]) }
+  return {pts,hw:D/24,G} }
+function dnObsIn(R,p,c){ return p[0]>R.x0-c&&p[0]<R.x1+c&&p[1]>R.y0-c&&p[1]<R.y1+c }
+// the route's points, a sample at least every ~3" (the arcs every 6°)
+function dnObsPts(segs){ const out=[]; dnRoutePts(segs,6).forEach((p,i,a)=>{ if(i){ const q=a[i-1]; const n=Math.max(1,Math.ceil(dv.dist(p,q)/0.25)); for(let k=1;k<n;k++) out.push(dv.add(q,dv.mul(dv.sub(p,q),k/n))) } out.push(p) }); return out }
+// does the route cross the equipment? own = the plenum a collar leaves from (free until the route first clears it); ownAll = a top collar, above its own plenum
+function dnObsHit(N,segs,d,own,ownAll,hOwn){ const obs=(N._obs||[]).filter(R=>!R.soft); if(!obs.length||!segs||!segs.length) return false; const c=d/24+DN_OBS_CLR-0.02; const pts=dnObsPts(segs);
+  return obs.some(R=>{ if(R===own&&ownAll) return false; const Q=R===own?dnOwnRect(R,hOwn,c):null; return pts.some(p=>Q?(p[0]>Q.x0&&p[0]<Q.x1&&p[1]>Q.y0&&p[1]<Q.y1):dnObsIn(R,p,c)) }) }
+// the plenum a collar leaves from, grown by the clearance on every side but the collar's own face: the run may leave it and run along it, never come back over it
+function dnOwnRect(R,h,c){ const Q={x0:R.x0-c,x1:R.x1+c,y0:R.y0-c,y1:R.y1+c}; if(h){ if(h[0]>0.5) Q.x1=R.x1; else if(h[0]<-0.5) Q.x0=R.x0; else if(h[1]>0.5) Q.y1=R.y1; else if(h[1]<-0.5) Q.y0=R.y0 } return Q }
+function dnSegHitsRect(a,b,R,c){ // Liang–Barsky: does a→b pass through the rect grown by c (touching its edge is not a hit)
+  const x0=R.x0-c, x1=R.x1+c, y0=R.y0-c, y1=R.y1+c; let t0=0, t1=1; const dx=b[0]-a[0], dy=b[1]-a[1];
+  const cl=(p,q)=>{ if(Math.abs(p)<1e-12) return q>0; const r=q/p; if(p<0){ if(r>t1) return false; if(r>t0) t0=r } else { if(r<t0) return false; if(r<t1) t1=r } return true };
+  if(!cl(-dx,a[0]-x0)||!cl(dx,x1-a[0])||!cl(-dy,a[1]-y0)||!cl(dy,y1-a[1])) return false; return t1-t0>1e-6 }
+// a polyline to straights and flex bends: every corner filleted at R where the legs allow (a leg is shared by the bends at its two ends; `keep` holds a
+// straight at the start — the collar — and `tail` at the end — the run into a TY)
+function dnFillet(P,R,keep,tail){ const n=P.length; if(n<2) return []; const L=[]; for(let i=0;i<n-1;i++) L.push(dv.dist(P[i],P[i+1]));
+  const t=Array(n).fill(0), rr=Array(n).fill(0), th=Array(n).fill(0);
+  for(let i=1;i<n-1;i++){ const u=dv.unit(dv.sub(P[i],P[i-1])), v=dv.unit(dv.sub(P[i+1],P[i])); const a=Math.acos(Math.max(-1,Math.min(1,dv.dot(u,v)))); th[i]=a; if(a<1e-3) continue;
+    const availA=i===1?Math.max(0,L[0]-(keep||0)):L[i-1]/2, availB=i===n-2?Math.max(0,L[i]-(tail||0)):L[i]/2; const tn=Math.tan(Math.min(a,Math.PI*0.97)/2); let r=Math.min(R,Math.min(availA,availB)/tn); if(!(r>0.05)) r=0.05; rr[i]=r; t[i]=r*tn }
+  const segs=[]; let cur=P[0];
+  for(let i=1;i<n;i++){ const V=P[i]; if(i===n-1||th[i]<1e-3){ if(dv.dist(cur,V)>1e-4) segs.push({t:'L',p0:cur,p1:V}); cur=V; continue }
+    const u=dv.unit(dv.sub(V,P[i-1])), v=dv.unit(dv.sub(P[i+1],V)); const T1=dv.sub(V,dv.mul(u,t[i])), T2=dv.add(V,dv.mul(v,t[i])); if(dv.dist(cur,T1)>1e-4) segs.push({t:'L',p0:cur,p1:T1});
+    const s=dv.cr(u,v)>=0?1:-1; const C=dv.add(T1,dv.mul(dv.perp(u),s*rr[i])); segs.push(dnArc(C,rr[i],dv.ang(dv.sub(T1,C)),s*th[i])); cur=T2 }
+  return segs.filter(s=>dnSegLen(s)>1e-4) }
+// the way round: the shortest path over the grown corners of the equipment from where the run leaves to where it lands (a TY's straight run in kept)
+function dnDetour(N,P0,h0,L0,B,want,Lend,d,own,ownAll){ const obs=(N._obs||[]).filter(R=>!R.soft); if(!obs.length) return null; const R=dnR(d); const c=d/24+DN_OBS_CLR;
+  const free=!h0||ownAll; const keep=free?Math.max(0.3,1.5*d/12+0.1):Math.max(0.3,L0);
+  const S=free?P0:dv.add(P0,dv.mul(h0,Math.max(L0,0.3)+R*1.05));
+  const blocked=(a,b,cc)=>obs.some(Rr=>{ if(Rr===own&&(ownAll||free)) return false; return dnSegHitsRect(a,b,Rr,cc) });
+  const inObs=p=>obs.some(Q=>!(Q===own&&(ownAll||free))&&dnObsIn(Q,p,c-0.01));
+  // the way into a TY: its own heading when that approach is clear of the equipment, else the nearest heading that is (the TY turns to face it), else free
+  const heads=want?[0,20,-20,40,-40,60,-60,85,-85].map(a=>dv.rot(want,a*Math.PI/180)).filter(h=>{ const G=dv.sub(B,dv.mul(h,(Lend||0)+R*1.1)); return !inObs(G)&&!blocked(G,B,c-0.02) }):[];
+  if(want) heads.push(null);
+  for(const hw of (want?heads:[null])){ const G=hw?dv.sub(B,dv.mul(hw,(Lend||0)+R*1.1)):B;
+   for(const e of [0.5,0.9,1.4]){ const m=c+e*R*0.7; const nodes=[S,G];
+    obs.forEach(Rr=>[[Rr.x0-m,Rr.y0-m],[Rr.x1+m,Rr.y0-m],[Rr.x1+m,Rr.y1+m],[Rr.x0-m,Rr.y1+m]].forEach(p=>{ if(!inObs(p)) nodes.push(p) }));
+    const n=nodes.length, dist=Array(n).fill(1e9), prev=Array(n).fill(-1), done=Array(n).fill(false); dist[0]=0;
+    for(let it=0;it<n;it++){ let i=-1; for(let k=0;k<n;k++) if(!done[k]&&(i<0||dist[k]<dist[i])) i=k; if(i<0||dist[i]>=1e9) break; done[i]=true; if(i===1) break;
+      for(let k=0;k<n;k++){ if(done[k]||k===i) continue; if(blocked(nodes[i],nodes[k],c-0.02)) continue; const w=dist[i]+dv.dist(nodes[i],nodes[k]); if(w<dist[k]-1e-9){ dist[k]=w; prev[k]=i } } }
+    if(dist[1]>=1e9) continue; const path=[]; for(let k=1;k>=0;k=prev[k]){ path.unshift(nodes[k]); if(k===0) break }
+    const poly=(free?[]:[P0]).concat(path); if(hw) poly.push(B);
+    const P2=poly.filter((p,i)=>!i||dv.dist(p,poly[i-1])>1e-3); if(P2.length<2) continue;
+    const segs=dnFillet(P2,R,free?keep:Math.max(0.3,L0),hw?(Lend||0):0.3); if(!segs.length) continue;
+    if(!dnObsHit(N,segs,d,own,ownAll,free?null:h0)) return segs } }
+  return null }
+// a TY or a box that the layout dropped on the equipment slides off it, the shortest way out, clear of the duct and its bends
+function dnObsNodes(N){ const obs=N._obs||[]; if(!obs.length) return; Object.values(N.nodes).forEach(nd=>{ if(nd.t!=='ty'&&nd.t!=='box') return; const inE=N.edges.find(e=>e.id===nd.inE); const d=(inE&&(inE.d0||inE.d||inE.fd))||10; const m=d/24+DN_OBS_CLR+(nd.t==='box'?(nd.w||1)/2+0.2:0.8);
+    for(let pass=0;pass<3;pass++){ const R=obs.find(Q=>dnObsIn(Q,[nd.x,nd.y],m)); if(!R) break; const opts=[[R.x0-m-nd.x,0],[R.x1+m-nd.x,0],[0,R.y0-m-nd.y],[0,R.y1+m-nd.y]].sort((a,b)=>Math.hypot(...a)-Math.hypot(...b)); nd.x+=opts[0][0]+Math.sign(opts[0][0])*0.01; nd.y+=opts[0][1]+Math.sign(opts[0][1])*0.01; nd.obsMoved=true } }) }
+function dnOwnOf(N,c){ if(!c||!N._obs) return null; return N._obs.find(R=>R.k==='plen')||null }
 // trim a route's far end by L (the TY's or the box's own metal takes that much); hands back the heading it arrives on
 function dnTrimEnd(segs,L){ const out=segs.slice(); let left=L; while(left>1e-6&&out.length){ const s=out[out.length-1]; const l=dnSegLen(s); if(l<=left+1e-6){ out.pop(); left-=l; continue }
     if(s.t==='L'){ const u=dv.unit(dv.sub(s.p1,s.p0)); out[out.length-1]={t:'L',p0:s.p0,p1:dv.sub(s.p1,dv.mul(u,left))} } else { const k=(l-left)/l; out[out.length-1]=dnArc(s.c,s.r,s.a0,s.da*k) } left=0 } return out }
 function dnEndHeading(segs){ const s=segs[segs.length-1]; if(!s) return null; if(s.t==='L') return dv.unit(dv.sub(s.p1,s.p0)); const a=s.a0+s.da; const t=[-Math.sin(a),Math.cos(a)]; return s.da>=0?t:dv.mul(t,-1) }
 // a route that honours an arrival heading when it can do so gently, else lets the flex arrive however it naturally does
 function dnRouteSmart(P0,h0,L0,P1,h1,L1,R){ if(h1){ const r=dnRoute(P0,h0,L0,P1,h1,L1,R); if(r&&dnRouteInfo(r).turn<=150) return r } return dnRoute(P0,h0,L0,P1,null,0,R) }
-function dnLay(N,ctx){ const cp=dnCollarPts(N,ctx); N.collars=cp;
+function dnLay(N,ctx){ const cp=dnCollarPts(N,ctx); N.collars=cp; N._obs=dnObs(N,ctx); dnObsNodes(N);   /* v2.59: the equipment is a keep-out — a TY dropped on it slides off before anything is routed */
   const walk=(e,P0,h0,L0)=>{ dnLayEdge(N,ctx,e,P0,h0,L0).forEach(k=>walk(k,k.org,k.dir0,k.L0)) };
   N.edges.filter(e=>e.root).forEach(e=>walk(e,ctx.U,[1,0],0)) }
 const dnKids=(N,nd)=>(nd.outE||[]).map(id=>N.edges.find(x=>x.id===id));
 const dnR=d=>1.5*d/12;                                    // the flex's centreline radius — drawn and designed at 1.5 D
 // ONE run: its route from where it leaves (a collar, a TY leg, a box outlet) to what it feeds, and where that node's own runs leave from
-function dnLayEdge(N,ctx,e,P0,h0,L0){ const cp=N.collars; const b=N.nodes[e.b]; const d=e.d0||e.fd||8;
+function dnLayEdge(N,ctx,e,P0,h0,L0){ const cp=N.collars; const b=N.nodes[e.b]; const d=e.d0||e.fd||8; e.obsHit=false;
   if(e.root){ const c=cp[e.id]; P0=c.p; if(c.h){ h0=c.h; L0=0.5 } else { h0=dv.unit(dv.sub([b.x,b.y],P0)); L0=Math.max(0.4,dnR(d)+0.2); if(N.pl&&N.pl.ret) h0=dnAvoidRet(N,P0,h0,L0,[b.x,b.y],d) } }
+  const own=e.root&&N.pl&&N.pl.kind!=='drop'?dnOwnOf(N,cp[e.id]):null, ownAll=!!(own&&!cp[e.id].h);   /* v2.59: a collar's run starts on its own plenum (a top collar rides above it) */
   let segs;
   if(b.step&&N.nodes[e.a].t==='ty'&&N.nodes[e.a].step){ const a=N.nodes[e.a]; const t=Math.max(4,dv.dot(dv.sub([b.x,b.y],[a.x,a.y]),a.ax)); b.x=a.x+a.ax[0]*t; b.y=a.y+a.ax[1]*t; b.ax=a.ax.slice() }   // a stepped trunk runs dead straight between its TYs
   if(b.t==='ty'||b.t==='box'){ const body=b.t==='box'?(b.len||2)/2:DN_TY_IN; const Lin=b.t==='box'?5:(d>=12?5:3);
@@ -6990,9 +7162,10 @@ function dnLayEdge(N,ctx,e,P0,h0,L0){ const cp=N.collars; const b=N.nodes[e.b]; 
     else if(b.freeAx) want=null;
     else if(b.inline) want=b.ax;
     else if(b.t==='ty'&&ks.length===2){ const u1=dv.unit(dv.sub([N.nodes[ks[0].b].x,N.nodes[ks[0].b].y],[b.x,b.y])), u2=dv.unit(dv.sub([N.nodes[ks[1].b].x,N.nodes[ks[1].b].y],[b.x,b.y])); const bis=dv.add(u1,u2); if(dv.len(bis)>0.2) want=dv.unit(bis) }
-    const room=dv.dist(P0,[b.x,b.y]); const full=dnRouteSmart(P0,h0,L0,[b.x,b.y],want,Math.min(Lin+body,Math.max(0.6,room*0.6)),dnR(d));
+    const room=dv.dist(P0,[b.x,b.y]); const Lend=Math.min(Lin+body,Math.max(0.6,room*0.6)); let full=dnRouteSmart(P0,h0,L0,[b.x,b.y],want,Lend,dnR(d));
+    if(dnObsHit(N,full,d,own,ownAll,h0)){ const alt=dnDetour(N,P0,ownAll?null:h0,L0,[b.x,b.y],want,Lend,d,own,ownAll); if(alt) full=alt; else e.obsHit=true }   /* v2.59: round the equipment, never through it */
     b.ax=dnEndHeading(full)||want||h0; segs=dnTrimEnd(full,body) }
-  else segs=dnRoute(P0,h0,L0,[b.x,b.y],null,0,dnR(d));
+  else { segs=dnRoute(P0,h0,L0,[b.x,b.y],null,0,dnR(d)); if(dnObsHit(N,segs,d,own,ownAll,h0)){ const alt=dnDetour(N,P0,ownAll?null:h0,L0,[b.x,b.y],null,0,d,own,ownAll); if(alt) segs=alt; else e.obsHit=true } }
   e.segs=segs; const inf=dnRouteInfo(segs); e.len=inf.len; e.turn=inf.turn; e.bends=inf.bends; e.inStraight=dnStraightEnd(segs); e.outStraight=dnStraightStart(segs);
   if(e.root&&cp[e.id]&&(cp[e.id].face==='T'||cp[e.id].face==='B')){ e.turn+=90; e.bends++; e.len+=0.5 }   // off the top: up, and a 90° over into the attic (v2.58: off the bottom — down, and a 90° over)
   e.lift=false; if(dnCrossesUnit(N,ctx,segs)){ e.lift=true; e.turn+=90; e.bends++ }             // a run over the cabinet lifts through two gentle 45° offsets
@@ -7017,7 +7190,7 @@ function dnAvoidRet(N,P0,h0,L0,B,d){ const t=N.pl.ret; const C=dv.add(N.U,[t.dx,
 const DN_TY_STRAIGHT=3;                                    // ft of straight run into every TY, its own 6" inlet included (5 ft is the target on 12"+)
 function dnTyGapMin(N,a,t){ return (t.step&&a.step)?4:3 }
 function dnScore(N,es){ es=es||N.edges; let v=0, len=0;
-  es.forEach(e=>{ len+=e.len||0; const tr=(e.turn||0)-(e.lift?90:0); if(tr>100) v+=((tr-100)/30)*4; if(tr>160) v+=((tr-160)/20)*10; if(e.lift) v+=1.5; const t=N.nodes[e.b]; if(t.t==='box'){ v+=Math.max(0,5-(e.inStraight+(t.len||2)/2))*6; return } if(t.t!=='ty') return;
+  es.forEach(e=>{ len+=e.len||0; const tr=(e.turn||0)-(e.lift?90:0); if(tr>100) v+=((tr-100)/30)*4; if(tr>160) v+=((tr-160)/20)*10; if(e.lift) v+=1.5; if(e.obsHit) v+=30; const t=N.nodes[e.b]; if((t.t==='ty'||t.t==='box')&&(N._obs||[]).some(R=>dnObsIn(R,[t.x,t.y],0.9))) v+=40;   /* v2.59: never through the equipment, never a TY on it */ if(t.t==='box'){ v+=Math.max(0,5-(e.inStraight+(t.len||2)/2))*6; return } if(t.t!=='ty') return;
     v+=Math.max(0,DN_TY_STRAIGHT-(e.inStraight+DN_TY_IN))*10; const a=N.nodes[e.a]; if(a.t==='ty'){ const g=dv.dist([a.x,a.y],[t.x,t.y]); v+=Math.max(0,dnTyGapMin(N,a,t)-g)*10 }
     dnKids(N,t).forEach(k=>{ if(k.outStraight+DN_TY_LEG<1-0.05) v+=4 }) });
   return v+len/40 }
@@ -7214,9 +7387,9 @@ function dnDraw3D(base,plane,opt){ const T=opt.tree, N=T&&T.net; if(!N) return; 
   // a vertical S: the run rises (or drops) from y0 to y1 over its first stretch, a smooth offset the way flex drapes over something — never four stacked 90s
   // over the cabinet, the plenums or the return run: a smooth hump — up just before it, over, and back down to the run's own height just after it
   // (the way flex drapes over something in the field), never four stacked 90s; a run that ends before it is past stays up and drops from there
-  const hump=(pts,y0,d,s0,yUnder,uObs)=>{ const L=[0]; for(let i=1;i<pts.length;i++) L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][2]-pts[i-1][2])); const tot=L[L.length-1];
+  const hump=(pts,y0,d,s0,yUnder,uObs,isRoot,endKeep)=>{ endKeep=endKeep||0; const L=[0]; for(let i=1;i<pts.length;i++) L.push(L[i-1]+Math.hypot(pts[i][0]-pts[i-1][0],pts[i][2]-pts[i-1][2])); const tot=L[L.length-1];
     const at=s=>{ let i=1; while(i<L.length-1&&L[i]<s) i++; const k=(s-L[i-1])/Math.max(1e-6,L[i]-L[i-1]); const a=pts[i-1], b=pts[i]; return [a[0]+(b[0]-a[0])*k,y0,a[2]+(b[2]-a[2])*k] };
-    const own=new Set(hitAt([pts[0]],y0,d/2+1.5));   /* the plenum (or cabinet) a run comes out of is not something it must climb over */
+    const own=new Set(hitAt([pts[0]],y0,d/2+1.5));   /* the plenum (or cabinet) a run comes out of is not something it must climb over (v2.59: the TYs keep off the return run on the plan, so a leg never starts inside it) */
     let sA=null, sB=null, top=-1e9, bot=1e9; for(let s=0;s<=tot;s+=3){ const q=at(s); const h=(yUnder!=null&&uObs)?uObs.filter(o=>q[0]+d/2+1>o.x&&q[0]-d/2-1<o.x+o.dx&&q[2]+d/2+1>o.z&&q[2]-d/2-1<o.z+o.dz):hitAt([q],y0,d/2+1).filter(b=>!own.has(b)&&b.y+b.dy-y0<=Math.max(30,2*d));   /* flex drapes over a trunk or a lying cabinet — never up a drop, a riser or a roof stand's legs */ if(h.length){ if(sA==null) sA=s; sB=s; top=Math.max(top,...h.map(x=>x.y+x.dy)); bot=Math.min(bot,...h.map(x=>x.y)) } }
     if(sA==null) return {pts,yEnd:y0};
     const make=y1=>{ const dy=y1-y0; const Ls=Math.max(2.5*d,Math.abs(dy)*1.6);   /* v2.58: or UNDER it, when the can it lands on sits under it */
@@ -7224,7 +7397,7 @@ function dnDraw3D(base,plane,opt){ const T=opt.tree, N=T&&T.net; if(!N) return; 
     // back down before its end (its can, its TY) stays up and turns down from there. The S is two bends (and a straight between when it is steep) — a
     // real bend radius, sampled every 5° — not a cosine whose ends pinch to nothing.
     const minR=Math.max(0.3*Math.abs(dy),0.5*d);
-    const r0=Math.max(s0,sA-Ls), rA=sA-r0>=minR?sA:r0+minR, r1=Math.max(sB+3,rA); const tail=Math.max(6,1.5*d); const Lf=Math.min(Ls,tot-tail-r1);
+    const r0=Math.max(s0,sA-Ls); let rA=sA-r0>=minR?sA:r0+minR; if(endKeep>0&&rA>tot-endKeep) rA=Math.max(r0+Math.min(minR,2),tot-endKeep); const r1=Math.max(sB+3,rA);   /* v2.59: the rise is done before the bend down onto the can starts — the two never overlap into a kink */ const tail=Math.max(6,1.5*d); const Lf=Math.min(Ls,tot-tail-r1);
     const stayUp=Lf<minR; const f0=stayUp?1e9:r1+Lf;
     const prof=[[0,y0]]; if(r0>0) prof.push([r0,y0]);
     const ramp=(sa,sb,ya,yb)=>{ const Lr=sb-sa, H=yb-ya, h=Math.abs(H), sg=H<0?-1:1; if(h<1e-6||Lr<1e-6){ prof.push([sb,yb]); return }
@@ -7293,7 +7466,7 @@ function dnDraw3D(base,plane,opt){ const T=opt.tree, N=T&&T.net; if(!N) return; 
         const Cb=S3([b.x,b.y],y), r=d/2, low=plane.y+d/2+1.5; const near=dnLeaves(N,b).filter(c=>Math.hypot(c.x-b.x,c.y-b.y)<4).map(c=>S3([c.x,c.y],y));
         const over=solids.filter(o=>near.some(q=>q[0]+r>o.x&&q[0]-r<o.x+o.dx&&q[2]+r>o.z&&q[2]-r<o.z+o.dz)&&o.y>plane.y&&o.y<y+d&&Cb[0]+r>o.x-24&&Cb[0]-r<o.x+o.dx+24&&Cb[2]+r>o.z-24&&Cb[2]-r<o.z+o.dz+24);
         if(over.length&&over.every(o=>o.y-(low+d/2)>=0.5)){ yU=low; uO=over } }
-      const H=hump(pts,y,d,e.root?6:3,yU,uO); ghostEx=null; pts=H.pts; y=H.yEnd }   /* v2.58: …and over every run already laid */
+      const H=hump(pts,y,d,e.root?6:3,yU,uO,!!e.root,b.t==='can'?1.5*d+1:0); ghostEx=null; pts=H.pts; y=H.yEnd }   /* v2.58: …and over every run already laid */
     nodeY[e.b]=y;
     if(b.t==='can'){ pts=drop(pts,d,y) }
     pts=despike(pts);   // v2.58: a sliver of route that doubles back (a can inside its TY leg's reach) is dropped, not bent round
@@ -7495,11 +7668,27 @@ function rbrPlanSvg(S_){
     s+=pl(px_+5,py_+37,t3,{s:8,w:700,f:'#5b6b7c'}); });
 
   const u=p(S.unitPos.x,S.unitPos.y);
+  // v2.59 — the equipment at its real size (the plenum, the cabinet behind it, a curb's return drop): the runs go round what is drawn, so the sheet draws
+  // exactly what they go round — not a 6 ft block they seem to run through. A kept roof drop (no plenum in the attic) keeps the tile.
+  let EQB=null; { const N0=RM.net; const EQ=(N0&&N0.pl&&N0.pl.kind!=='drop')?dnObs(N0,{pl:N0.pl,U:N0.U}).filter(R=>!R.soft):null;
+    if(EQ&&EQ.length){ let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+      EQ.forEach(R=>{ const a=p(R.x0,R.y0), b=p(R.x1,R.y1); const x=Math.min(a[0],b[0]), y=Math.min(a[1],b[1]), w=Math.abs(b[0]-a[0]), h=Math.abs(b[1]-a[1]); x0=Math.min(x0,x); y0=Math.min(y0,y); x1=Math.max(x1,x+w); y1=Math.max(y1,y+h);
+        if(R.k==='unit') s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="#003963" stroke="#9fc3dd" stroke-width="1.2"/>`;
+        else if(R.k==='ret') s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="#6c4fd0" stroke="#4a3496" stroke-width="1.2"/>`;
+        else if(R.k==='plen'&&N0.pl.kind!=='h') s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="#003963"/>`;
+        placed.push({x1:x,x2:x+w,y1:y,y2:y+h}) });
+      EQB={x0,y0,x1,y1}; const pk=isPkg(); const UR=EQ.find(R=>R.k==='unit');
+      if(UR){ const a=p(UR.x0,UR.y0), b=p(UR.x1,UR.y1); const cx=(a[0]+b[0])/2, cy=(a[1]+b[1])/2, w=Math.abs(b[0]-a[0]), h=Math.abs(b[1]-a[1]); const vert=h>w; const rot=vert?` transform="rotate(-90 ${cx.toFixed(1)} ${cy.toFixed(1)})"`:'';
+        const sz=Math.max(6.5,Math.min(9.5,(vert?w:h)*0.28)); s+=`<text x="${cx.toFixed(1)}" y="${(cy-sz*0.15).toFixed(1)}" text-anchor="middle" font-size="${sz.toFixed(1)}" font-weight="800" fill="#fff"${rot}>${rbrOpt()&&rbrOpt().ahu&&!rbrOpt().furn?'AIR HANDLER · COIL':'FURNACE · COIL'}</text><text x="${cx.toFixed(1)}" y="${(cy+sz*1.05).toFixed(1)}" text-anchor="middle" font-size="${(sz*0.9).toFixed(1)}" font-weight="800" fill="#ffd166"${rot}>${CFM(RM.A.Qd)} CFM</text>` }
+      else { const lx=x1+6, ly=(y0+y1)/2; const tl=(y,t,sz,f)=>`<text x="${lx.toFixed(1)}" y="${y.toFixed(1)}" font-size="${sz}" font-weight="800" fill="${f}" stroke="#fff" stroke-width="3" paint-order="stroke">${t}</text>`;
+        s+=tl(ly-3,pk?'SUPPLY PLENUM · CURB':'SUPPLY RISER',9,'#003963')+tl(ly+9,CFM(RM.A.Qd)+' CFM',9,'#8a6a00'); placed.push({x1:lx,x2:lx+110,y1:ly-13,y2:ly+12}) } } }
+  if(!EQB){
   s+=`<rect x="${u[0].toFixed(1)}" y="${u[1].toFixed(1)}" width="${6*SC}" height="${6*SC}" rx="4" fill="#003963"/>`;
   s+=`<text x="${(u[0]+3*SC).toFixed(1)}" y="${(u[1]+1.25*SC).toFixed(1)}" text-anchor="middle" font-size="11.5" font-weight="800" fill="#fff">PLENUM</text>`;
   s+=`<text x="${(u[0]+3*SC).toFixed(1)}" y="${(u[1]+2.1*SC).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#9fc3dd">DROP FROM UNIT</text>`;
   s+=`<text x="${(u[0]+3*SC).toFixed(1)}" y="${(u[1]+4.9*SC).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="800" fill="#ffd166">${CFM(RM.A.Qd)} CFM</text>`;
-  placed.push({x1:u[0],x2:u[0]+6*SC,y1:u[1],y2:u[1]+6*SC});
+  placed.push({x1:u[0],x2:u[0]+6*SC,y1:u[1],y2:u[1]+6*SC}); }
+  const EQc=EQB?[(EQB.x0+EQB.x1)/2,EQB.y1]:[u[0]+3*SC,u[1]+6*SC];   /* under the equipment: the layout name, then any duct down */
   { const rp=S.retPos; if(rp){ const q=p(rp.x,rp.y); const cG=(typeof comp==='function')?comp('grille'):null; // v2.55 — the return filter grille, where the RETURN tile sits
     s+=`<rect x="${q[0].toFixed(1)}" y="${q[1].toFixed(1)}" width="${4*SC}" height="${4*SC}" rx="3" fill="#6c4fd0" stroke="#4a3496" stroke-width="1"/>`;   // v2.56: the return in violet, as on the 3D
     s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+1.3*SC).toFixed(1)}" text-anchor="middle" font-size="9.5" font-weight="800" fill="#fff">RETURN</text>`;
@@ -7507,7 +7696,7 @@ function rbrPlanSvg(S_){
     s+=`<text x="${(q[0]+2*SC).toFixed(1)}" y="${(q[1]+3.3*SC).toFixed(1)}" text-anchor="middle" font-size="7.5" font-weight="700" fill="#e4dcff">${rp.set?'placed':'assumed'}</text>`;
     placed.push({x1:q[0],x2:q[0]+4*SC,y1:q[1],y2:q[1]+4*SC}) } }
   // v2.46 — the duct down to each lower floor: a tagged riser symbol under the plenum
-  (RM.down||[]).forEach((x,i)=>{ const dx=u[0]+3*SC, dy=u[1]+6*SC+8+i*22;
+  (RM.down||[]).forEach((x,i)=>{ const dx=EQc[0], dy=EQc[1]+(EQB?20:8)+i*22;
     s+=`<rect x="${(dx-3*SC).toFixed(1)}" y="${dy.toFixed(1)}" width="${6*SC}" height="18" rx="3" fill="#fff" stroke="#003963" stroke-width="2" stroke-dasharray="5 3"/>`;
     s+=`<text x="${dx.toFixed(1)}" y="${(dy+12.5).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#003963">${x.tag} ▼ ${rdTxt(x).replace(/ × /,'×')} DOWN · FLOOR ${x.fl+1} · ${CFM(x.cfm)} CFM${x.short>0?' (SHORT '+CFM(x.short)+')':''}</text>`;
     placed.push({x1:dx-3*SC,x2:dx+3*SC,y1:dy,y2:dy+18}); });
@@ -7533,7 +7722,7 @@ function rbrPlanSvg(S_){
     N.edges.filter(e=>e.root).forEach(e=>{ const c=N.collars&&N.collars[e.id]; if(!c) return; const q=P2(c.p); s+=`<circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="${f1(Math.max(4,e.d*SC/24))}" fill="#fff" stroke="#003963" stroke-width="2"/>` });
     N.edges.filter(e=>N.nodes[e.b].t==='can'&&e.segs&&e.segs.length).forEach(e=>{ const pts=dnRoutePts(e.segs,10); let acc=0, at=pts[0], dir=[1,0]; for(let i=1;i<pts.length;i++){ const l=dv.dist(pts[i],pts[i-1]); dir=dv.unit(dv.sub(pts[i],pts[i-1])); if(acc+l>=Math.min(0.9,Math.max(0.3,e.len*0.3))){ const k=(Math.min(0.9,Math.max(0.3,e.len*0.3))-acc)/l; at=dv.add(pts[i-1],dv.mul(dv.sub(pts[i],pts[i-1]),k)); break } acc+=l; at=pts[i] }
       const q=P2(at); s+=damper(q,dir); placed.push({x1:q[0]-6,x2:q[0]+6,y1:q[1]-6,y2:q[1]+6}) });
-    s+=`<text x="${f1(u[0]+3*SC)}" y="${f1(u[1]+6*SC+13)}" text-anchor="middle" font-size="9" font-weight="800" fill="#003963">${rbrEsc(dnName(N.lay).toUpperCase())}</text>`; }
+    s+=`<text x="${f1(EQc[0])}" y="${f1(EQc[1]+13)}" text-anchor="middle" font-size="9" font-weight="800" fill="#003963" stroke="#fff" stroke-width="3" paint-order="stroke">${rbrEsc(dnName(N.lay).toUpperCase())}</text>`; }
   rooms.forEach(r=>{ r.taps.forEach(tp=>{
     tp.regs.forEach(g=>{ const q=g.g||{kind:'new',w:r.can,h:r.can}; const rp=p(g.x,g.y!=null?g.y:rbrCy(r)), half=Math.max(5,Math.max(q.w,q.h)*SC/24), ex=q.kind==='keep'||q.kind==='bar';
       // v2.46 — a kept face is drawn dashed at its own size (it stays where it is); a new or enlarged can is the solid square
@@ -7665,6 +7854,7 @@ function rbrRender(){
   $('#rbrPanel').classList.toggle('hidden',!S.rbrOpen);
   $('#rbrOut').classList.toggle('hidden',!S.rooms.length);
   // v2.54 — the scan block leads; the rooms, the grid and the design only once there is a plan or the hand grid was opened
+  const tp=$('#fcTop1'); if(tp) tp.innerHTML=fcTopUpHtml();   /* v2.59: the upload leads the home */
   const sc=$('#rbrScan'); if(sc){ sc.innerHTML=rbrScanHtml(); rbrScanWire() }
   const body=$('#rbrBody'); if(body) body.classList.toggle('hidden',!(S.plan||S.rbrHand||S.rooms.length));
   const gt=$('#rbrGridTitle'); if(gt) gt.textContent=S.plan?'Drag the UNIT tile to where the air drops in':'Arrange the rooms the way the house actually sits';
@@ -8019,14 +8209,19 @@ function rbrScanHtml(){ const P=S.plan;
   const hand=!!S.rbrHand;
   return `<div class="scanbox${hand?' mini':''}"><div class="scanico">&#9636;</div><div class="scantxt"><b>${hand?'Upload a floor plan instead':'Upload the floor plan of the area this system serves'}</b>${hand?'':'<span>3D Snap &#9656; Export &#9656; DXF. Scan only what this unit cools &mdash; the upstairs on a two-storey, or the part of the house on this system.</span>'}</div><label class="btn sm" for="rbrDxf">Choose the DXF</label></div>`+
     (hand?'':`<div class="row" style="margin-top:8px"><button class="btn sm ghost" id="rbrHand">No scan? Lay the rooms out by hand &#9656;</button></div>`) }
+// v2.59 (Stephen 2026-09-27: "since we are going to use the file upload for room by room designs, thats the preferred sizing method, add that upload button to
+// the front screen, right at the top of the home … either upload the file, give me the address, or manually type in the Sq Ft, in that order")
+function fcTopUpHtml(){ const P=S.plan;
+  if(P){ const n=S.rooms.length; return `<div class="scanbar on top"><div class="sb1"><b>${rbrEsc(P.name)}</b><span class="asm">floor plan</span></div><div class="sb2">${n} rooms · <b>${CFM(P.sf)} sq ft</b> served by this system</div><div class="sb3"><label class="btn sm ghost" for="rbrDxf">Replace</label></div></div>` }
+  return `<div class="scanbox top" id="fcUpTop"><div class="scanico">&#9636;</div><div class="scantxt"><b>1 · Upload the floor plan</b><span>No plan? 2 · look up the address · 3 · or type the sq ft — in that order.</span></div><label class="btn sm" for="rbrDxf">Choose the DXF</label></div>` }
 function rbrScanWire(){
   const f=$('#rbrDxf'); if(f&&!f.dataset.wired){ f.dataset.wired='1'; f.addEventListener('change',()=>{ const file=f.files&&f.files[0]; if(!file) return; fcScanStat('Reading '+rbrEsc(file.name)+'…');
-    const fr=new FileReader(); fr.onload=()=>{ const ok=fcPlanLoad(String(fr.result||''),file.name); f.value=''; if(ok){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } };
+    const fr=new FileReader(); fr.onload=()=>{ const ok=fcPlanLoad(String(fr.result||''),file.name); f.value=''; if(ok){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } else if(!S.rbrOpen){ S.rbrOpen=true; save(); rbrRender() } };   /* v2.59: an upload from the top of the home that fails opens Room by room, where the reason shows */
     fr.onerror=()=>fcScanStat('Could not read that file.','warn'); fr.readAsText(file) }) }
   const h=$('#rbrHand'); if(h) h.addEventListener('click',()=>{ S.rbrHand=true; if(!S.rooms.length){ rbrSeed(fcTop()); if(fcHasShape()) fcPack() } save(); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) });
   const x=$('#rbrScanX'); if(x) x.addEventListener('click',()=>{ fcPlanClear(); rbrRender(); rbrSync() });
   // drag a file onto the panel
-  const pn=$('#rbrPanel'); if(pn&&!pn.dataset.drop){ pn.dataset.drop='1'; pn.addEventListener('dragover',e=>{ e.preventDefault() }); pn.addEventListener('drop',e=>{ const file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!file||!/\.dxf$/i.test(file.name)) return; e.preventDefault(); const fr=new FileReader(); fr.onload=()=>{ if(fcPlanLoad(String(fr.result||''),file.name)){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } }; fr.readAsText(file) }) }
+  ['#rbrPanel','#fcTop1'].forEach(sel=>{ const pn=$(sel); if(pn&&!pn.dataset.drop){ pn.dataset.drop='1'; pn.addEventListener('dragover',e=>{ e.preventDefault() }); pn.addEventListener('drop',e=>{ const file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!file||!/\.dxf$/i.test(file.name)) return; e.preventDefault(); const fr=new FileReader(); fr.onload=()=>{ if(fcPlanLoad(String(fr.result||''),file.name)){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } }; fr.readAsText(file) }) } })
 }
 // the plan on the grid: the real house, rooms named and loaded, the UNIT tile the only thing that moves
 function rbrPlanGrid(G,px){ const P=S.plan, F=fcField();
