@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-28 v2.61 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-28 v2.62 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -40,6 +40,35 @@ header{background:var(--db);color:#fff;padding:calc(10px + env(safe-area-inset-t
 .step.active .n,.step.done .n{background:var(--db);color:#fff}
 .step.done{color:var(--ink)}
 .step{min-width:0}.step .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* v2.62 — five numbered steps; Will it Fit is an optional tab that appears while it is open */
+.steps{grid-template-columns:repeat(5,1fr)}.steps.fit{grid-template-columns:repeat(6,1fr)}
+.step.opt{border-style:dashed}.step.opt .n{background:#fff4dc;color:#8a5a00;font-size:11px}.step.opt.active .n{background:var(--db);color:#fff}
+.eqstrip{padding:10px 12px;margin:0 0 12px}
+.eqstrip .eqrow{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
+.eqstrip .plab{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);flex:none}
+.eqstrip .chips{display:inline-flex;flex-wrap:wrap;gap:6px}
+.eqstrip .chip{padding:5px 10px;font-size:12.5px}
+.eqstrip #eqTiers{display:flex;flex:1 1 auto}
+.eqstrip #eqTiers .chip{display:inline-flex;align-items:center;gap:5px}
+.eqstrip #eqTiers .ostar{font-size:11px;letter-spacing:0}.eqstrip #eqTiers .chip.on .ostar{color:#ffd166}
+.eqstrip .fdot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#cbd5e0;flex:none}
+.eqstrip .fdot.ok{background:var(--ok)}.eqstrip .fdot.warn{background:var(--warn)}.eqstrip .fdot.bad{background:var(--bad)}
+.eqstrip .note{margin-top:6px}
+.fitbtn{margin-left:auto;padding:9px 14px;font-size:14px;display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.fitbtn .fdot{width:10px;height:10px;box-shadow:0 0 0 2px rgba(255,255,255,.6)}
+.fitbtn small{font-weight:600;opacity:.85;font-size:12px}
+.fitback{display:flex;gap:10px;align-items:center;margin:0 0 4px}
+@media (max-width:640px){ .fitbtn{margin-left:0;width:100%;justify-content:center} .eqstrip #eqTiers .eqb{display:none} }
+/* v2.62 — the price book */
+dialog.wide{max-width:960px}
+.pbtabs{display:flex;gap:6px;flex-wrap:wrap;margin:4px 0 10px}
+.pbtbl{width:100%;border-collapse:collapse;font-size:12.5px}
+.pbtbl th,.pbtbl td{padding:4px 4px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+.pbtbl th{font-size:11px;color:var(--muted);font-weight:700}
+.pbtbl input{width:100%;border:1.5px solid var(--line);border-radius:8px;padding:5px 7px;font-size:12.5px;min-width:64px}
+.pbtbl input.code{font-family:ui-monospace,Menlo,monospace;text-transform:uppercase}
+.pbtbl td.lbl{font-weight:600;color:var(--ink);min-width:120px}
+.pbcell{display:grid;grid-template-columns:1fr 1fr;gap:4px;min-width:150px}
 @media (max-width:900px) and (min-width:641px){ .steps{gap:4px} .step{padding:7px 6px;gap:5px;font-size:12px} }
 main{max-width:960px;margin:0 auto;padding:12px 12px 90px}
 .panel{display:none}.panel.active{display:block}
@@ -360,7 +389,7 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
   header{padding:calc(6px + env(safe-area-inset-top)) 12px 6px}
   .logo{font-size:18px}.logo small{display:none}
   .iconbtn{padding:6px 9px}
-  .steps{grid-template-columns:repeat(7,1fr);gap:3px;padding:8px 6px 0}.step span.t{display:none}.step{justify-content:center;padding:6px}
+  .steps{grid-template-columns:repeat(5,1fr);gap:3px;padding:8px 6px 0}.steps.fit{grid-template-columns:repeat(6,1fr)}.step span.t{display:none}.step{justify-content:center;padding:6px}
   main{padding:8px 8px 96px}
   .card{padding:12px;border-radius:14px;margin:8px 0}
   h2{font-size:18px}
@@ -709,6 +738,40 @@ body.pack .tp .noapp{display:none}
 .ocard .oapprove{width:100%;padding:12px 14px;font-size:15px}
 .ocard.best .oapprove{background:var(--ok);border-color:var(--ok)}
 .ocard .oappd{background:var(--okbg);color:var(--ok);font-weight:800;border-radius:12px;padding:10px;text-align:center;font-size:13.5px}
+/* v2.62 — 4 · Options is the cart */
+.ocart{position:sticky;top:8px;z-index:5;display:flex;justify-content:flex-end;margin:0 0 10px;pointer-events:none}
+.ocart .cin{pointer-events:auto;display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;background:#fff;border:2px solid var(--db);border-radius:16px;padding:10px 14px;box-shadow:var(--shadow);max-width:100%}
+.ocart .ci{display:flex;flex-direction:column;min-width:0}
+.ocart .ci small{font-size:10.5px;font-weight:800;letter-spacing:.8px;text-transform:uppercase;color:var(--muted)}
+.ocart .ci b{font-family:var(--serif);font-size:18px;color:var(--ink);white-space:nowrap}
+.ocart .ci .pn{font-size:12px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:220px}
+.ocart .ceq{font-size:16px;color:var(--muted);font-weight:800}
+.ocart .ctot b{font-size:26px;color:var(--db)}
+.ocart .miss{color:var(--warn);font-weight:800;font-size:14px}
+.ocart .oapprove{padding:10px 16px;background:var(--ok);border-color:var(--ok);font-size:15px}
+.ocart .oappd{background:var(--okbg);color:var(--ok);font-weight:800;border-radius:12px;padding:8px 12px;font-size:13.5px}
+@media (max-width:640px){ .ocart{position:static;justify-content:stretch} .ocart .cin{width:100%} .ocart .ctot{margin-left:auto} }
+.ounits h2{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.ounits h2 .olink{margin-left:auto}
+.ugrid{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(210px,1fr))}
+.ucard{position:relative;background:#fff;border:2px solid var(--line);border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:3px;min-width:0}
+.ucard.on{border-color:var(--db);box-shadow:0 0 0 3px rgba(0,57,99,.15)}
+.ucard.bad{border-color:var(--bad)}.ucard.warn{border-color:var(--warn)}
+.ucard .ustars{color:#e0a05a;letter-spacing:1px;font-size:15px}
+.ucard .ubrand{font-family:var(--serif);font-weight:800;font-size:18px;color:var(--db)}
+.ucard .usub{font-size:12px;color:var(--muted);line-height:1.35}
+.ucard .umodel{font-size:11.5px;color:var(--muted);overflow-wrap:anywhere}
+.ucard .uprice{font-family:var(--serif);font-weight:800;font-size:22px;color:var(--ink);margin-top:auto;padding-top:6px}
+.ucard .uprice input{font-size:15px;font-family:inherit;font-weight:600;border:0;border-bottom:1.5px dashed var(--line);background:transparent;width:100%;padding:2px 0;border-radius:0}
+.ucard .uprice input:focus{outline:none;border-bottom-color:var(--mb)}
+.ucard .ufit{position:absolute;right:10px;top:10px}
+.ucard .upick{margin-top:8px;width:100%}
+.ucard.on .upick{background:var(--ok);border-color:var(--ok)}
+.ocard .odo li{grid-template-columns:18px 1fr auto}.ocard .odo li em{font-style:normal;font-size:12px;color:var(--muted);white-space:nowrap}.ocard .odo li em.q{color:var(--warn);font-weight:700}
+.ocard .oprice.calc{font-size:26px}.ocard .oprice .q{color:var(--warn);font-size:13px;font-family:inherit;font-weight:700;margin-left:6px}
+.ocard .oadj{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)}
+.ocard .oadj input{width:110px;border:1.5px solid var(--line);border-radius:8px;padding:5px 8px;font-size:13px}
+.ocard .ochoose{width:100%;padding:11px 14px;font-size:15px}
+.ocard.picked{border-color:var(--db);box-shadow:0 0 0 4px rgba(0,57,99,.16),var(--shadow)}
 /* v2.48 — the two extra scores, the not-fully-balanced callout, the recommend button */
 .osc2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:6px 12px 2px}
 .osc2>div{background:#f6f8fb;border:1px solid var(--line);border-radius:10px;padding:5px 8px;display:flex;flex-direction:column;align-items:flex-start;line-height:1.15;min-width:0}
@@ -775,11 +838,10 @@ body.pack .tp .noapp{display:none}
 <nav class="steps" id="steps">
   <div class="step active" data-go="1"><span class="n">1</span><span class="t">Existing</span></div>
   <div class="step" data-go="2"><span class="n">2</span><span class="t">Space</span></div>
-  <div class="step" data-go="3"><span class="n">3</span><span class="t">Equipment</span></div>
-  <div class="step" data-go="4"><span class="n">4</span><span class="t">Fit</span></div>
-  <div class="step" data-go="5"><span class="n">5</span><span class="t">Plan</span></div>
-  <div class="step" data-go="9"><span class="n">6</span><span class="t">Options</span></div>
-  <div class="step" data-go="6"><span class="n">7</span><span class="t">Summary</span></div>
+  <div class="step" data-go="5"><span class="n">3</span><span class="t">Plan</span></div>
+  <div class="step" data-go="9"><span class="n">4</span><span class="t">Options</span></div>
+  <div class="step" data-go="6"><span class="n">5</span><span class="t">Summary</span></div>
+  <div class="step opt hidden" data-go="4" id="stepFit"><span class="n">&#10530;</span><span class="t">Will it Fit</span></div>
 </nav>
 
 <!-- v2.39 — the tech pack's tabs. Hidden in the app; the boot block shows them. "3D Design" is data-pgo="5":
@@ -1183,35 +1245,31 @@ body.pack .tp .noapp{display:none}
 </section>
 
 <!-- ============ STEP 3 ============ -->
-<section class="panel" id="p3">
-  <div class="card">
-    <h2>What are you selling?</h2>
-    <h3>Tonnage</h3>
-    <div class="chips" id="tons"></div>
-    <div id="tonsSrc" class="note" style="margin-top:8px"></div>
-    <div id="afueWrap"><h3>Furnace efficiency</h3>
-      <div class="chips" id="afue"><button class="chip on" data-v="80">80% AFUE</button><button class="chip" data-v="90">90%+ AFUE</button></div></div>
-    <div id="flowNote" class="note" style="margin-top:8px"></div>
-  </div>
-  <div class="legend" style="padding:0 4px"><span><i style="background:var(--ok)"></i>Fits</span><span><i style="background:var(--warn)"></i>Tight fit</span><span><i style="background:var(--bad)"></i>May not fit</span></div>
-  <div class="tiers" id="tiers"></div>
-</section>
+<!-- v2.62 — panel 3 (Equipment) is gone: the tonnage · AFUE · tier chips sit at the top of 3 · Plan (#eqStrip), the tier cards on Will it Fit (panel 4) -->
 
 <!-- ============ STEP 4 ============ -->
 <!-- ============ STEP 4 — FIT: does this equipment physically go in / on what is there ============ -->
 <section class="panel" id="p4">
+  <div class="fitback"><button class="btn sm ghost" id="fitBack">&#8249; Back to 3 · Plan</button></div>
   <div id="fitHero"></div>
   <div class="card" id="cmpCard"></div>
   <div class="card" id="pkgCard"></div>
   <div class="card hidden" id="fitShotCard">
     <h2>How it sits</h2>
-    <p class="help">A still of the proposed unit where it lands. Rotate it and design the build on <b>5 · Plan</b>.</p>
+    <p class="help">A still of the proposed unit where it lands. Rotate it and design the build on <b>3 · Plan</b>.</p>
     <div class="recshot" id="fitShot"></div>
   </div>
+  <div class="legend" style="padding:0 4px"><span><i style="background:var(--ok)"></i>Fits</span><span><i style="background:var(--warn)"></i>Tight fit</span><span><i style="background:var(--bad)"></i>May not fit</span></div>
+  <div class="tiers" id="tiers"></div>
 </section>
 
 <!-- ============ STEP 5 — PLAN: what we are going to build ============ -->
 <section class="panel" id="p5">
+  <div class="card eqstrip" id="eqStrip">
+    <div class="eqrow"><span class="plab">Designing around</span><div class="chips" id="tons"></div><span id="afueWrap"><span class="chips" id="afue"><button class="chip on" data-v="80">80% AFUE</button><button class="chip" data-v="90">90%+ AFUE</button></span></span></div>
+    <div class="eqrow" style="margin-top:8px"><div class="chips" id="eqTiers"></div><button class="btn fitbtn" id="willFit"><span class="fdot"></span>Will it Fit &#8250;</button></div>
+    <div id="tonsSrc" class="note"></div><div id="flowNote" class="note hidden"></div>
+  </div>
   <div id="planHero"></div>
   <div class="card hidden" id="supCfgNewCard">
     <h2 id="supCfgNewTitle">Proposed supply configuration</h2>
@@ -1341,7 +1399,15 @@ body.pack .tp .noapp{display:none}
   </div>
   <p class="help">Defaults are the Goettl method: grille 2.0 CFM/sq in (20×20 → 2 ton, 20×25 → 2.5 ton, 20×50 → 5 ton), round return at 900 fpm (14"→2T, 16"→3T, 18"→4T, 20"→5T), supply trunk and jack/transition openings 900 fpm. ACCA-conservative would be grille 1.5, return duct 700.</p>
   <p class="help">Red is always "new is bigger than the space (or the opening)". When no measurements are entered, options are judged against the old equipment: Lots of room → orange only if it grows more than 8". Some room → orange if it grows up to the tight threshold, red beyond that. Package units: <b>Stand</b> is green when the unit sits on the deck, orange when it overhangs by up to the overhang limit (deck extension / rail support), red beyond; <b>Metal</b> uses the opening-alignment thresholds for both position and opening size. Static pressure is acceptable up to the ductwork threshold (0.5–0.7" is higher but within limits); over it the tool recommends ductwork remediation.</p>
+  <h3>Price book</h3>
+  <div class="row"><button class="btn sm ghost" id="pbOpen">Open the price book &#8250;</button><span class="note">One price and one ServiceTitan code per unit tier and per design fix — kept on this device; 4 · Options and the ServiceTitan text read it.</span></div>
   <div class="row" style="justify-content:flex-end"><button class="btn sm" id="dlgClose">Done</button></div>
+</div></dialog>
+<dialog id="dlgPrice" class="wide"><div class="in">
+  <h2>Price book</h2>
+  <div class="pbtabs" id="pbTabs"></div>
+  <div id="pbBody"></div>
+  <div class="row" style="justify-content:flex-end;margin-top:10px"><button class="btn sm" id="pbClose">Done</button></div>
 </div></dialog>
 
 <script>
@@ -2802,7 +2868,7 @@ function buildTons(){
   const L=loadTons(); const auto=S.tonsAuto!==false;
   { const w=tonsAutoPick(L); if(w) S.tons=w }
   if(!tons.includes(S.tons)) S.tons=tons.includes('3T')?'3T':tons[0];
-  tons.forEach(t=>{const b=document.createElement('button');b.className='chip'+(t===S.tons?' on':'');b.textContent=t.replace('T',' Ton');b.onclick=()=>{S.tons=t;S.tonsAuto=(L&&L.tons+'T'===t)?true:false;save();buildTons();renderTiers()};el.appendChild(b)});
+  tons.forEach(t=>{const b=document.createElement('button');b.className='chip'+(t===S.tons?' on':'');b.textContent=t.replace('T',' Ton');b.onclick=()=>{S.tons=t;S.tonsAuto=(L&&L.tons+'T'===t)?true:false;save();if(S.rooms&&S.rooms.length){try{rbrModel()}catch(e){}}buildTons();renderTiers();if(cur>3){try{renderCompare()}catch(e){}}};el.appendChild(b)});
   const src=$('#tonsSrc'); if(src){ src.innerHTML= L ? (auto||L.tons+'T'===S.tons ? `<b>${L.tons} ton</b> from the load on step 1 — ${L.why}.` : `Load on step 1 says <b>${L.tons} ton</b> (${L.why}) — you have <b>${tonNum(S.tons)} ton</b> selected. <button class="chip sm" id="tonsFollow">Use ${L.tons} ton</button>`) : 'Put the square footage and build type in on step 1 and the tonnage sets itself from the load.';
     const f=$('#tonsFollow'); if(f) f.onclick=()=>{ S.tonsAuto=true; save(); buildTons(); renderTiers() } }
 }
@@ -2952,11 +3018,27 @@ function renderTiers(){
     const card=document.createElement('div'); card.className='tier'; card.dataset.star=star;
     if(isPkg()) renderPkgTier(card,star,row,o); else renderSplitTier(card,star,row,o);
     if(S.star===star) card.classList.add('sel');
-    card.onclick=e=>{ if(e.target.closest('.chip,summary,details,button')) return; S.star=star; save(); $$('.tier').forEach(t=>t.classList.toggle('sel',t.dataset.star==star)); };
+    card.onclick=e=>{ if(e.target.closest('.chip,summary,details,button')) return; S.star=star; save(); $$('.tier').forEach(t=>t.classList.toggle('sel',t.dataset.star==star)); renderEqStrip(); if(cur>3) renderCompare(); };
     el.appendChild(card); }catch(err){ console.error('tier',star,err); const c=document.createElement('div'); c.className='tier'; c.innerHTML=`<div class="head"><div class="stars">${'★'.repeat(star)}</div><span class="status na">Data issue</span></div><div class="note">${err.message}</div>`; el.appendChild(c);} 
   });
   if(!S.star||!stars.includes(S.star)){S.star=stars[0];save();$$('.tier').forEach(t=>t.classList.toggle('sel',t.dataset.star==S.star))}
+  renderEqStrip();
 }
+// v2.62 — DESIGNING AROUND: the equipment strip at the top of 3 · Plan (Stephen 2026-09-28: "eliminate the equipment tab all together, and then add the
+// equipment selector to its own section at the top of the plan tab, don't take too much room with it … so as we plan the design, we can change the
+// equipment we're planning with right there"). Tonnage · AFUE · one chip per tier, and the Will it Fit button — the fit panel is optional now,
+// "to use when we feel it may be a tight fit". The tier cards with the other cabinet options live on that panel.
+function fitVerdict(o){ try{ if(!o) return 'na'; if(isPkg()&&S.setup!=='separate'){ const j=judgePkg(o.unit); return j.manual?'na':j.cls } return evaluate(o).overall.cls }catch(e){ return 'na' } }
+function tierModel(row,o){ if(isPkg()) return String((o&&o.unit)||row.unit||''); return String((o&&o.cond)||row.cond||'') }
+function tierSub(row,o){ const s=String(row.section||''); if(isPkg()) return s.split('·').slice(1).map(x=>x.trim()).filter(Boolean).join(' · ');
+  const tl=s.split('·').pop().trim(); if(tl&&!/▸/.test(tl)) return tl; const c=String((o&&o.cond)||row.cond||'');
+  return ({GLXS4:'Single-Stage GLXS4B',GLXS5:'Multi-Speed GLXS5B',GLZS4:'Single-Stage GLZS4B',GLZS5:'Multi-Speed GLZS5B',ML16K:'Two-Stage ML16KP2',ML17K:'Two-Stage ML17KC2',EL18K:'Variable-Speed EL18KCV',EL19K:'Variable-Speed EL19KPV'})[c.slice(0,5)]||c }
+function renderEqStrip(){ const el=$('#eqTiers'); if(!el) return; const byStar=rowsFor(); const stars=Object.keys(byStar).map(Number).sort();
+  el.innerHTML=stars.map(star=>{ const row=byStar[star]; let o=null; try{ o=pick(star,row) }catch(e){} const st=fitVerdict(o);
+    return `<button class="chip ${S.star===star?'on':''}" data-eqstar="${star}" title="${tpEsc(tierSub(row,o))}"><span class="ostar">${'★'.repeat(star)}</span><span class="eqb">${tpEsc(row.brand)} · </span>${tpEsc(tierModel(row,o))}<i class="fdot ${st}"></i></button>` }).join('');
+  el.querySelectorAll('[data-eqstar]').forEach(b=>b.onclick=()=>{ const st=+b.dataset.eqstar; if(S.star===st) return; S.star=st; save(); renderTiers(); if(cur>3) renderCompare(); if(cur===9){ try{ renderOptions() }catch(e){} } });
+  const fb=$('#willFit'); if(fb){ const row=byStar[S.star]; let st='na'; try{ if(row) st=fitVerdict(pick(S.star,row)) }catch(e){}
+    fb.innerHTML=`<span class="fdot ${st}"></span>Will it Fit &#8250;<small>${{ok:'fits',warn:'tight',bad:'may not fit',na:'not judged yet'}[st]||''}</small>`; fb.onclick=()=>go(4) } }
 function partRow(k,m,e,extra){
   if(!e) return '';
   const dims=e.type==='coil_h'?`${fmt(e.h)}H × ${fmt(e.w)}W × ${fmt(e.l)}L`:e.type==='cond'?`${fmt(e.h)}H × ${fmt(e.w)} × ${fmt(e.d)}`:`${fmt(e.h)}H × ${fmt(e.w)}W × ${fmt(e.d)}D`;
@@ -2989,7 +3071,7 @@ function renderSplitTier(card,star,row,o){
   card.innerHTML=`<div class="haze"></div><div class="head"><div><div class="stars">${'★'.repeat(star)}</div><div class="brand">${row.brand} · ${sub}${o.upsize?' · <span style="color:var(--ok)">↑ sized up for airflow</span>':(o.isDefault?'':' · <span style="color:var(--warn)">alt</span>')}</div></div><span class="status ${st}">${{ok:'Fits',warn:'Tight',bad:'May not fit',na:'No reference'}[st]}</span></div>
     <div class="parts">${parts.join('')}</div>${upsizeNoteHtml(o,tonNum(S.tons))}
     <div class="env">${dims}</div>${ev.acc.cls==='bad'||ev.acc.cls==='warn'?`<div class="msg ${ev.acc.cls}">Attic access: ${ev.acc.all.filter(a=>a.cls!=='ok').map(a=>`<b>${a.piece}</b> ${a.txt}`).join(' · ')}</div>`:''}${alts}
-    <div class="actions"><button class="btn sm" data-view="${star}">View in 3D ›</button></div>`;
+    <div class="actions"><button class="btn sm" data-view="${star}">Check this one ›</button></div>`;
   wireTier(card);
 }
 function wireTier(card){
@@ -3151,7 +3233,7 @@ function renderPkgTier(card,star,row,o){
     <div class="env two">${boxes}</div>
     ${j.manual?`<div class="msg">${j.msgs[0]||''}</div>`:''}
     <details class="alts"><summary>Other units at this tier ▾</summary><div class="chips" style="margin-top:8px">${opts}</div><div style="margin-top:8px"><button class="chip sm" data-reset="${star}">↺ Back to Goettl default</button></div></details>
-    <div class="actions"><button class="btn sm" data-view="${star}">View in 3D ›</button></div>`;
+    <div class="actions"><button class="btn sm" data-view="${star}">Check this one ›</button></div>`;
   wireTier(card);
 }
 
@@ -4345,7 +4427,7 @@ function wireScope(o){ $$('#recCard [data-scope]').forEach(cb=>cb.onchange=()=>{
 function recLines(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M) return null; const ch=proposedChanges(o); const strip=t=>String(t).replace(/<[^>]+>/g,'');
   return {M,M0,items:ch.map(c=>strip(c.txt)),score0:M0.score.total,score:M.score.total}; }
 // v2.42 — the Recommended design card is now just the build details (Stephen 2026-09-20: "way too much going on there that's
-// redundant" — the changes are in the checklist above, the buttons are under the 3D, the story is on 6 · Summary).
+// redundant" — the changes are in the checklist above, the buttons are under the 3D, the story is on 5 · Summary).
 function renderRecCard(o){ const el=$('#recCard'); if(!el) return; const R=recLines(o); if(!R){ el.classList.add('hidden'); el.innerHTML=''; return } el.classList.remove('hidden');
   el.innerHTML=designDetailsHtml(o)||'<p class="note">Nothing to build yet.</p>';
 }
@@ -4493,13 +4575,13 @@ function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); i
   const addS=(S.fix.addSup||[]), addR=(S.fix.addRet||[]); const supBlocked=newDuctSystem();
   const addChip=(k,i,txt)=>`<span class="addchip"><span>${txt}</span><button data-addstep="${k}:${i}:-1" aria-label="Smaller" title="Smaller">−</button><button data-addstep="${k}:${i}:1" aria-label="Bigger" title="Bigger">+</button><button data-addrm="${k}:${i}" aria-label="Take it out" title="Take it out">✕</button></span>`;
   const rowAdd=`<div class="prow" id="planAdd"><span class="plab">Add a run</span>${b('addsup','+ Add supply',false,supBlocked||addS.length>=4,` title="${supBlocked?'A new duct system replaces the supply — there is nothing to add a run beside':'One more supply run off '+addRunFrom('s')+' to its own register — less static, more CFM, the ducts that are there stay'}"`)}${b('addret','+ Add return',false,addR.length>=4,` title="A second return duct with its own filter grille, into ${addRunFrom('r')} — less static, more return CFM, the return that is there stays"`)}${supBlocked?'':addS.map((a,i)=>addChip('s',i,`Supply Ø${fmt(a.d)}"`)).join('')}${addR.map((a,i)=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); return addChip('r',i,`Return Ø${fmt(a.d)}" + ${g[0]}×${g[1]}`) }).join('')}</div>`;
-  // v2.47 — PLANS: save the design on screen as one of up to four, and put a saved one back up. They line up side by side on 6 · Options.
+  // v2.47 — PLANS: save the design on screen as one of up to four, and put a saved one back up. They line up side by side on 4 · Options.
   let rowPlans=''; { const plans=S.plans||[]; const mt=planMatch(); const ed=planById(S.planEdit); const full=plans.length>=PLAN_MAX; const apId=S.planApproved;
     const chip=p=>`<button class="chip sm ${mt&&mt.id===p.id?'on':''}" data-pload="${p.id}" title="Put ${tpEsc(planName(p))} back up on the 3D">${tpEsc(planName(p))}${apId===p.id?' ✓':''}</button>`;
     const saveBtn= mt ? `<span class="note psaved">✓ Saved as <b>${tpEsc(planName(mt))}</b></span>`
       : b('psave',`💾 Save ${plans.length?'as a new plan':'plan'}${plans.length?` (${plans.length} of ${PLAN_MAX})`:''}`,true,full,mode==='plan'?' id="planSave"':'')
         +((ed&&planSig(ed.d)!==planSig(planCapture()))?b('pupd',`Update ${tpEsc(planName(ed))}`,false,false,` data-pid="${ed.id}" title="Write this design over ${tpEsc(planName(ed))}"`):'');
-    rowPlans=`<div class="prow" id="planPlans"><span class="plab">Plans</span>${saveBtn}${plans.map(chip).join('')}${plans.length?b('popts','Compare on 6 · Options ›',false,false):''}${full&&!mt?'<span class="note">4 of 4 saved — delete one on 6 · Options to save another</span>':''}</div>` }
+    rowPlans=`<div class="prow" id="planPlans"><span class="plab">Plans</span>${saveBtn}${plans.map(chip).join('')}${plans.length?b('popts','Compare on 4 · Options ›',false,false):''}${full&&!mt?'<span class="note">4 of 4 saved — delete one on 4 · Options to save another</span>':''}</div>` }
   const rowLay=newDuctSystem()?dnPickerHtml():'';   // v2.57: with a new duct system, how the ducts are laid out
   // v2.58 — the rooms whose vents cannot pass their share at 500 fpm, each with its call (Push · Enlarge · Add) — right under the 3D, where the design is looked at
   const mr=(S.rbrNew&&RM&&RM.moreRooms)?RM.moreRooms.filter(r=>S.rooms.includes(r)):[];
@@ -4515,7 +4597,7 @@ function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); i
     else if(k==='clear'){ S.fix={install:'reuse',insul:'none'}; S.scope={}; S.rbrNew=false }
     else if(k==='rbrnew'){ S.rbrNew=!S.rbrNew; if(S.rbrNew&&!isPkg()){ S.scope=S.scope||{}; S.scope.ducts=true } if(S.rbrNew) rbrModel(); }
     else if(k==='addsup'||k==='addret'){ const kind=k==='addret'?'r':'s', key=kind==='r'?'addRet':'addSup'; const z=addRunSize(o,kind); S.fix[key]=(S.fix[key]||[]).concat([kind==='r'?{d:z.d,g:addRetGrille(z.d)}:{d:z.d}]) }
-    else if(k==='psave'){ const p=planSaveNew(); if(p){ try{ flash('Saved as '+planName(p)+' — see it on 6 · Options') }catch(e){} } }
+    else if(k==='psave'){ const p=planSaveNew(); if(p){ try{ flash('Saved as '+planName(p)+' — see it on 4 · Options') }catch(e){} } }
     else if(k==='pupd'){ const p=planUpdate(btn.dataset.pid); if(p){ try{ flash(planName(p)+' updated') }catch(e){} } }
     else if(k==='popts'){ go(9); return }
     save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() });
@@ -4554,25 +4636,25 @@ function renderFitHero(o){ const el=$('#fitHero'); if(!el) return;
     const hs=j.manual?'Separate return and supply penetrations — the openings have to be looked at on the roof before this one can be judged.'
       :{ok:'The stand and the existing metal both work with this unit. The line-up below shows how the openings land.',
         warn:'An adapter, a collar or some transition metal is needed. The line-up below shows exactly where it is off.',
-        bad:'Something has to change — the stand, the metal, or the install method. Line it up below, or convert to a curb on <b>5 · Plan</b>.',
+        bad:'Something has to change — the stand, the metal, or the install method. Line it up below, or convert to a curb on <b>3 · Plan</b>.',
         na:'Tape the stand and the metal on <b>2 · Space</b>, or look the old unit up on <b>1 · Existing</b> so its spec openings can stand in.'}[cls];
     const tiles=j.boxes.map(b=>`<div class="htile"><div class="k">${b.lbl}</div><div class="v">${strip(b.val)}</div><div class="d">${strip(b.sub)}</div></div>`).join('');
-    el.innerHTML=`<div class="hero ${cls}"><div class="hk">Step 4 · Does it fit</div><div class="hv">${hv}</div><div class="hs">${hs}</div><div class="htiles">${tiles}</div></div>`; return }
+    el.innerHTML=`<div class="hero ${cls}"><div class="hk">Will it fit</div><div class="hv">${hv}</div><div class="hs">${hs}</div><div class="htiles">${tiles}</div></div>`; return }
   const ev=evaluate(o); const cls=ev.overall.cls; const sp=spaceVals();
   const hv={ok:'It fits',warn:'It fits — but it is tight',bad:'It may not fit',na:'No measurements to judge it against'}[cls];
   const hs={ok:'The new equipment goes in the space you measured, with room left for the plenum, flue and drain.',
     warn:'Under ' + S.thr.tight + '" of clearance somewhere — check the plenum, flue and drain before you promise it.',
-    bad:'The new equipment is bigger than the space measured. Re-measure, or take a different option on <b>3 · Equipment</b>.',
+    bad:'The new equipment is bigger than the space measured. Re-measure, or pick another tier at the top of <b>3 · Plan</b>.',
     na:'Enter the space on <b>2 · Space</b> — until then this is judged against the old equipment only.'}[cls];
   const tiles=ev.dims.map((d,i)=>`<div class="htile"><div class="k">${d.lbl}</div><div class="v">${fmt(d.v)}"</div><div class="d">space ${sp[i]!=null?fmt(sp[i])+'"':'not entered'} · ${strip(d.j.txt)}</div></div>`).join('')
     + (ev.acc.cls!=='na'?`<div class="htile"><div class="k">Attic access</div><div class="v">${{ok:'Passes',warn:'Tight',bad:'Blocked'}[ev.acc.cls]||'—'}</div><div class="d">${strip(ev.acc.all.map(a=>a.piece+' '+a.txt).join(' · '))}</div></div>`:'');
-  el.innerHTML=`<div class="hero ${cls}"><div class="hk">Step 4 · Does it fit</div><div class="hv">${hv}</div><div class="hs">${hs}</div><div class="htiles">${tiles}</div></div>`;
+  el.innerHTML=`<div class="hero ${cls}"><div class="hk">Will it fit</div><div class="hv">${hv}</div><div class="hs">${hs}</div><div class="htiles">${tiles}</div></div>`;
 }
 
 // ---- 5 Plan -----------------------------------------------------------------
 function renderPlanHero(o){ const el=$('#planHero'); if(!el) return;
   const M=flowModel(o,S.fix), M0=flowModel(o,TODAY);
-  if(!M||!M0){ el.innerHTML=`<div class="hero na"><div class="hk">Step 5 · The plan</div><div class="hv">Nothing to design yet</div><div class="hs">Put the return grille, the return duct and the supply size in on <b>1 · Existing</b> and the airflow model has something to work with.</div></div>`; return }
+  if(!M||!M0){ el.innerHTML=`<div class="hero na"><div class="hk">Step 3 · The plan</div><div class="hv">Nothing to design yet</div><div class="hs">Put the return grille, the return duct and the supply size in on <b>1 · Existing</b> and the airflow model has something to work with.</div></div>`; return }
   const sc=M.score.total, sc0=M0.score.total, cls=scoreCls(sc);
   const stT=v=>v==null?'—':v.toFixed(2)+'"';
   const arw=(a,b,f)=>a===b?`${f(b)}`:`${f(a)} → <b>${f(b)}</b>`;
@@ -4583,7 +4665,7 @@ function renderPlanHero(o){ const el=$('#planHero'); if(!el) return;
     : sc>=100 ? `Every spot passes — ${M.perTon} CFM/ton — attic at R-38 or better.`
     : (M.score.ac>=85 ? `Air side complete (85 of 85). The last ${100-sc} point${100-sc===1?'':'s'} ${M.ins.known?'are the attic — Fix insulation.':'need the insulation entered on step 1.'}`
     : (M.blowerBound ? `Every spot passes — the ducts deliver all ${CFM(M.Qb)} CFM this blower can push.` : 'No chokepoints left.'));
-  el.innerHTML=`<div class="hero ${cls}"><div class="hk">Step 5 · The plan</div>
+  el.innerHTML=`<div class="hero ${cls}"><div class="hk">Step 3 · The plan</div>
     <div class="hv">Comfort score ${sc0} → ${sc}</div>
     <div class="rail"><i style="width:${Math.max(2,Math.min(100,sc))}%"></i><b style="left:${Math.max(0,Math.min(99,sc0))}%"></b></div>
     <div class="railkey"><span>new AC on today's ducts ${sc0}</span><span>this design ${sc}</span><span>100</span></div>
@@ -4672,7 +4754,7 @@ function renderSumCard(o){
   const P=issuePairs(o); const solved=P.filter(x=>x.fixed).length; const allDone=P.length&&solved===P.length;
   // v2.24 CLIENT MODE — the customer is looking at this page. The 38 is not "the old unit": it is what THIS new unit scores on
   // the ducts as they are. Say so, then show the picture, then explain why each fix matters.
-  if(hero) hero.innerHTML=`<div class="hero ${scoreCls(sc)}"><div class="hk">Step 7 · Summary</div>
+  if(hero) hero.innerHTML=`<div class="hero ${scoreCls(sc)}"><div class="hk">Step 5 · Summary</div>
     <div class="hv">New AC on today's ducts: ${sc0} &nbsp;→&nbsp; Goettl design: ${sc}</div>
     ${sumPlanLine()}
     <div class="hs">${P.length?(allDone?`Every one of the ${P.length} problems found on this system is answered by the design.`:`${solved} of ${P.length} problem${P.length===1?'':'s'} solved — ${P.length-solved} still open; the pairs below show which and what closes ${P.length-solved===1?'it':'them'}.`):'Nothing wrong found — the new equipment goes in as it sits and the ductwork carries what it wants to move.'}${gain>0?` A new unit alone would score <b>${sc0}</b>; this design scores <b>${sc}</b>.`:''}</div></div>`;
@@ -4712,9 +4794,9 @@ function renderSumCard(o){
 }
 // v2.47 — the Summary says which option it is showing: the approved plan, the approved plan changed since, or no plan approved yet
 function sumPlanLine(){ const ap=planApproved(); const n=(S.plans||[]).length; if(!ap&&!n) return '';
-  if(ap&&ap.same) return `<div class="hs"><b>Approved option: ${tpEsc(planName(ap.p))}</b>${n>1?` — one of ${n} on 6 · Options`:''}.</div>`;
-  if(ap) return `<div class="hs">Approved option <b>${tpEsc(planName(ap.p))}</b> — the design below has changed since it was approved. Approve it again on <b>6 · Options</b>, or save the change as a plan.</div>`;
-  return `<div class="hs">No option approved yet — this is the design on the Plan tab. Approve one on <b>6 · Options</b> to lock it in.</div>` }
+  if(ap&&ap.same) return `<div class="hs"><b>Approved option: ${tpEsc(planName(ap.p))}</b>${n>1?` — one of ${n} on 4 · Options`:''}.</div>`;
+  if(ap) return `<div class="hs">Approved option <b>${tpEsc(planName(ap.p))}</b> — the design below has changed since it was approved. Approve it again on <b>4 · Options</b>, or save the change as a plan.</div>`;
+  return `<div class="hs">No option approved yet — this is the design on the Plan tab. Approve one on <b>4 · Options</b> to lock it in.</div>` }
 // the Summary's two 3Ds: Today with its chokepoints called out, the design with what is new. A turned view stays turned across redraws.
 let SV={before:null,after:null};
 function sumViewersInit(){ const c0=$('#sumC0'), c1=$('#sumC1'); if(!c0||!c1) return;
@@ -4736,13 +4818,16 @@ window.addEventListener('resize',()=>{ try{ if(curTab()===6&&SV.before&&SV.befor
 // (withPlan swaps the design in for one read and puts the working design back — save() is held while it is swapped in), never stored,
 // never stale. Approve makes a plan the working design, so the Summary, the ServiceTitan text, the PDF and Send to tech all follow it.
 // The plans ride along in the texted file (they are a few hundred bytes of design each), and the file's Options tab is this one.
-const PLAN_KEYS=['fix','scope','rbrNew','star','tons','tonsAuto','sel','afue','supNew','pos','so','layout'];   // v2.57: + the duct layout
+const PLAN_KEYS=['fix','scope','rbrNew','tons','tonsAuto','supNew','pos','so','layout'];   // v2.57: + the duct layout · v2.62: the unit (star · sel · afue) is the job's, not the plan's
 const PLAN_F=['new_tk_add','new_splen','new_trunk_ft'];
 const PLAN_MAX=4;
 const PLAN_TIER={perfect:{k:'perfect',rib:'Best',name:'Perfect design',sub:'Every spot opened up — everything this system can do',cls:'best'},
                  compromise:{k:'compromise',rib:'Better',name:'Compromise',sub:'The airflow this unit needs, for less',cls:'better'},
                  minimum:{k:'minimum',rib:'Good',name:'Minimum',sub:'The essentials — some air still left on the table',cls:'good'}};
 S.plans=Array.isArray(S.plans)?S.plans.filter(p=>p&&p.id&&p.d&&typeof p.d==='object').slice(0,PLAN_MAX):[];
+// v2.62 — a plan saved before v2.62 carried the unit and a typed price: the unit comes off (the job has one), the typed price becomes the adjustment line
+S.plans.forEach(p=>{ ['star','sel','afue'].forEach(k=>{ delete p.d[k] }); if(p.price!=null&&p.adj==null){ if(String(p.price).trim()) p.adj=String(p.price); delete p.price } });
+if(S.planPick&&!S.plans.some(p=>p.id===S.planPick)) delete S.planPick;
 if(S.planApproved&&!S.plans.some(p=>p.id===S.planApproved)) S.planApproved=null;
 // v2.48 — THE RECOMMENDED PLAN IS PICKED (Stephen 2026-09-25: "when we display all the options on the options tab, let us select the recommended
 // package"). S.planRec = a plan id (that plan carries ★ Goettl recommends and leads the row) · 'none' (no plan carries it) · unset (the old
@@ -4783,7 +4868,7 @@ function planSig(d){ try{ const x=pClone(d)||{}; delete x.pos; delete x.tonsAuto
 const planById=id=>(S.plans||[]).find(p=>p.id===id)||null;
 const planName=p=>String((p&&p.name)||('Plan '+((p&&p.letter)||''))).trim();
 function planMatch(){ const s=planSig(planCapture()); return (S.plans||[]).find(p=>planSig(p.d)===s)||null }
-function planApproved(){ const p=planById(S.planApproved); if(!p) return null; return {p,same:planSig(p.d)===planSig(planCapture())} }
+function planApproved(){ const p=planById(S.planApproved); if(!p) return null; return {p,same:planSig(p.d)===planSig(planCapture())&&(p.apStar==null||p.apStar===S.star)} } // v2.62: the unit is part of what was approved
 function planLetter(){ const used=S.plans.map(p=>p.letter); return 'ABCDEFGH'.split('').find(l=>!used.includes(l))||'X' }
 function planTierAuto(M){ if(M.score.total>=100) return 'perfect'; if(M.blowerBound||M.delivered>=M.need2-0.5) return 'compromise'; return 'minimum' }
 function planTier(p,E){ return PLAN_TIER[p&&p.tier]||PLAN_TIER[E&&E.M?planTierAuto(E.M):'minimum'] }
@@ -4802,7 +4887,7 @@ function planChangeList(o,M,M0){ const out=[]; const inst=S.fix.install||'reuse'
     if(k==='plenums') return;
     if(k==='install'){ out.push({k:'install',cat:'curb',t:inst==='curb'?'New curb + new plenums through the roof':'New curb over the existing roof holes'}); return }
     if(k==='rbrnew'){ out.push({k,cat:'rbr',t:'New duct system, designed room by room'}); return }
-    if(k.indexOf('scope:')===0){ const l=(SCOPE_SPLIT.find(x=>'scope:'+x[0]===k)||[k,k.slice(6)])[1]; out.push({k,cat:k,t:l.replace(/ — .*$/,'')}); return }
+    if(k.indexOf('scope:')===0){ const l=(SCOPE_SPLIT.find(x=>'scope:'+x[0]===k)||[k,k.slice(6)])[1]; let cat=k; try{ if(k.indexOf('scope:cfg:')===0&&supNew()===supOld()) cat='layout' }catch(e){} out.push({k,cat,t:l.replace(/ — .*$/,'')}); return }
     if(k==='tkadd'){ const a=takeoffSpec(val('new_tk_add')); out.push({k,cat:'takeoff',t:'Add supply take-offs'+(a?' '+a.size:'')}); return }
     if(k==='addsup'){ const a=((it.txt||'').match(/Ø[\d½¼¾.]+"/)||[''])[0]; out.push({k,cat:'addsup',t:`Add a supply run ${a}`.trim()}); return }
     if(k==='addret'){ const a=((it.txt||'').match(/Ø[\d½¼¾.]+"/)||[''])[0], g=((it.txt||'').match(/\d+×\d+/)||[''])[0]; out.push({k,cat:'addret',t:`Add a return ${a}${g?' + '+g+' filter grille':''}`.trim()}); return }
@@ -4817,14 +4902,69 @@ function planChangeList(o,M,M0){ const out=[]; const inst=S.fix.install||'reuse'
 function planGuard(p){ if(!p) return false; const mt=planMatch(); if(mt||planSig(p.d)===planSig(planCapture())) return true;
   try{ return confirm('The design on the Plan tab has changes that are not saved as a plan. Replace it with '+planName(p)+'?') }catch(e){ return true } }
 function planSaveNew(){ if(S.plans.length>=PLAN_MAX) return null; const o=curOpt(); if(!o||!flowModel(o,S.fix)) return null;
-  const p={id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),letter:planLetter(),name:'',tier:null,price:'',at:Date.now(),d:planCapture()};
+  const p={id:'p'+Date.now().toString(36)+Math.random().toString(36).slice(2,6),letter:planLetter(),name:'',tier:null,adj:'',at:Date.now(),d:planCapture()};
   S.plans.push(p); S.planEdit=p.id; save(); return p }
 function planUpdate(id){ const p=planById(id); if(!p) return null; p.d=planCapture(); p.at=Date.now(); save(); return p }
-function planDelete(id){ S.plans=S.plans.filter(p=>p.id!==id); if(S.planApproved===id) S.planApproved=null; if(S.planRec===id) delete S.planRec; if(S.planEdit===id) S.planEdit=null; save() }
-function planUse(id,approve){ const p=planById(id); if(!p) return null; planApply(p.d); S.planEdit=p.id; if(S.tonsAuto!==false){ try{ const w=tonsAutoPick(); if(w&&w!==S.tons) S.tonsAuto=false }catch(e){} } if(approve){ S.planApproved=p.id; p.approvedAt=Date.now() }
+function planDelete(id){ S.plans=S.plans.filter(p=>p.id!==id); if(S.planApproved===id) S.planApproved=null; if(S.planRec===id) delete S.planRec; if(S.planEdit===id) S.planEdit=null; if(S.planPick===id) delete S.planPick; save() }
+function planUse(id,approve){ const p=planById(id); if(!p) return null; planApply(p.d); S.planEdit=p.id; if(S.tonsAuto!==false){ try{ const w=tonsAutoPick(); if(w&&w!==S.tons) S.tonsAuto=false }catch(e){} } if(approve){ S.planApproved=p.id; S.planPick=p.id; p.approvedAt=Date.now(); p.apStar=S.star }
   save(); if(S.rooms&&S.rooms.length){ try{ rbrModel() }catch(e){} }
   try{ $$('#afue .chip').forEach(x=>x.classList.toggle('on',x.dataset.v===S.afue)) }catch(e){} try{ syncSupCfg() }catch(e){} try{ buildTons(); renderTiers() }catch(e){}
   return p }
+// ============================================================ v2.62 · THE PRICE BOOK
+// Stephen 2026-09-28: "for each item we can add in the setting tab, where we edit the price, have a field for ST code, so we know how to find that
+// code in ServiceTitan where we'll build the legal invoice. but in your ST summary, you can list the codes." One price and one ServiceTitan code per
+// UNIT TIER (system × tonnage × tier, + AFUE on a gas split) and per DESIGN FIX. It is kept on the DEVICE (fc_pb), never in a job, so every check on
+// this iPad prices off the same book; a pack carries a snapshot (S.pb) so the tech's iPad shows the office's prices. Blank until it is filled in.
+const PB_KEY='fc_pb';
+const PB_FIX=[['install:curb','Roof curb — new plenums through the roof'],['install:curb_old','Roof curb over the existing roof holes'],['rbr','New duct system, room by room'],
+  ['scope:hp','Convert from gas to heat pump'],['scope:cfg:cased','Cased coil + supply plenum'],['scope:cfg:plenum_coil','Plenum coil'],['scope:cfg:trunk','Extended supply plenum'],
+  ['scope:splen','New supply plenum'],['scope:ducts','New supply duct system — plenum, trunk and take-offs'],['scope:rdrop','New return drop'],['scope:grille','New return grille / filter rack'],
+  ['pscope:stand','New stand'],['pscope:elbow','New elbow / transition metal'],['pscope:trans','Transition box — over-under to side-by-side'],['pscope:jack','New roof jack'],['pscope:plen','New plenums under the jack'],
+  ['grille','Return grille / filter — resized'],['ret','Return duct — resized'],['sup','Supply trunk / duct — resized'],['takeoff','Supply take-offs — added or resized'],['pen','Roof holes opened up'],['elb','Openings at the roof — resized'],
+  ['addsup','Added supply run (each)'],['addret','Added return + filter grille (each)'],['insul','Attic insulation top-up'],['regs','Register faces — bar type / new faces'],['adj','Other / adjustment (the amount is typed per plan)']];
+const PB_FIX_LBL=Object.fromEntries(PB_FIX);
+// what a bigger item already includes, so nothing is charged twice on one plan
+const PB_INCL={rbr:['scope:ducts','scope:splen','sup','takeoff'],'scope:ducts':['sup','takeoff','scope:splen'],'scope:splen':['sup'],'scope:grille':['grille'],'scope:rdrop':['ret'],'install:curb':['pen','elb']};
+let PB={};
+function pbLoad(){ let dev=null; try{ dev=JSON.parse(store.get(PB_KEY)||'null') }catch(e){ dev=null } const snap=(S&&S.pb&&typeof S.pb==='object')?S.pb:null;
+  PB=(PACK?(snap||dev):(dev||snap))||{}; if(typeof PB!=='object'||Array.isArray(PB)) PB={} }
+function pbNum(v){ const m=String(v==null?'':v).replace(/[,$\s]/g,'').match(/-?\d+(\.\d+)?/); return m?parseFloat(m[0]):null }
+function pbGet(k){ const r=PB[k]; return (r&&typeof r==='object')?{price:pbNum(r.price),code:String(r.code||'').trim()}:{price:null,code:''} }
+function pbSet(k,f,v){ const r=Object.assign({},PB[k]||{}); let s=String(v==null?'':v).trim(); if(f==='price'){ const n=pbNum(s); s=n==null?'':String(n) } if(f==='code') s=s.toUpperCase(); if(s) r[f]=s; else delete r[f]; if(!r.price&&!r.code) delete PB[k]; else PB[k]=r;
+  store.set(PB_KEY,JSON.stringify(PB)); if(PACK){ S.pb=PB; save() } }
+const pbMoney=v=>v==null?'—':(v<0?'−':'')+'$'+Math.round(Math.abs(v)).toLocaleString();
+function pbUnitKey(star,sys,tons,afue){ sys=sys||S.sys; tons=tons||S.tons; const k='u:'+sys+':'+tons+':'+star; return sys==='split_gas'?k+':'+(afue||S.afue||'80'):k }
+function pbFixKey(it){ if(!it) return null; if(it.k==='install') return 'install:'+(S.fix.install==='curb_old'?'curb_old':'curb'); const c=String(it.cat||it.k||''); return (!c||c==='layout')?null:c }
+// a plan's price: every fix on its change list off the book (each added run its own line), less what a bigger item on the same plan already includes,
+// plus the adjustment typed on the card. Anything without a price is counted as a "?" so a total is never quietly short.
+function planPrice(p,X){ const ch=(X&&X.ch)||[]; const keys=ch.map(pbFixKey); const have=new Set(keys.filter(Boolean));
+  const covered=k=>Object.keys(PB_INCL).some(b=>b!==k&&have.has(b)&&PB_INCL[b].includes(k));
+  const seen={}; const lines=[];
+  ch.forEach((it,i)=>{ const k=keys[i]; if(!k) return; if(seen[k]&&k!=='addsup'&&k!=='addret') return; seen[k]=1;
+    const r=pbGet(k); const inc=covered(k); lines.push({k,label:it.t,price:inc?0:r.price,code:inc?'':r.code,inc,missing:!inc&&r.price==null}) });
+  const adj=pbNum(p&&p.adj); const adjR=pbGet('adj');
+  const sum=lines.reduce((s,l)=>s+(l.price||0),0)+(adj||0); const missing=lines.filter(l=>l.missing).length;
+  return {lines,adj,adjCode:adjR.code,total:sum,missing} }
+function optUnitLine(u){ const o=u.o||{}; return isPkg()?String(o.unit||(u.row&&u.row.unit)||''):[o.cond,o.furn,o.coil,o.ahu].filter(Boolean).join(' + ') }
+// ---- the book itself, in Settings ---------------------------------------------------------------------------------------------------
+let PB_TAB='units:'+'split_gas';
+const PB_SYS=[['split_gas','Split gas'],['split_hp','Split heat pump'],['pkg_gas','Package gas'],['pkg_hp','Package heat pump']];
+function pbCell(k){ const r=pbGet(k); return `<div class="pbcell"><input data-pb="${k}:price" value="${r.price==null?'':r.price}" placeholder="$ price" inputmode="decimal" aria-label="Price"><input class="code" data-pb="${k}:code" value="${tpEsc(r.code)}" placeholder="ST code" aria-label="ServiceTitan code"></div>` }
+function renderPriceBook(){ const tabs=$('#pbTabs'), body=$('#pbBody'); if(!tabs||!body) return;
+  const all=PB_SYS.map(([k,l])=>['units:'+k,l]).concat([['fixes','Design fixes']]);
+  tabs.innerHTML=all.map(([k,l])=>`<button class="chip sm ${PB_TAB===k?'on':''}" data-pbtab="${k}">${l}</button>`).join('');
+  tabs.querySelectorAll('[data-pbtab]').forEach(b=>b.onclick=()=>{ PB_TAB=b.dataset.pbtab; renderPriceBook() });
+  let h='';
+  if(PB_TAB==='fixes'){ h=`<table class="pbtbl"><thead><tr><th>Design fix</th><th>Price · ServiceTitan code</th></tr></thead><tbody>${PB_FIX.map(([k,l])=>`<tr><td class="lbl">${tpEsc(l)}</td><td>${pbCell(k)}</td></tr>`).join('')}</tbody></table>` }
+  else { const sys=PB_TAB.slice(6); const rows=LINEUP.filter(r=>r.type===sys); const tons=[...new Set(rows.map(r=>r.tons))].sort((a,b)=>tonNum(a)-tonNum(b)); const stars=[...new Set(rows.map(r=>r.star))].sort();
+    const afues=sys==='split_gas'?['80','90']:[null];
+    h=afues.map(af=>`${af?`<h3 style="margin:8px 0 4px">${af==='90'?'90%+':'80%'} AFUE furnace</h3>`:''}<div style="overflow-x:auto"><table class="pbtbl"><thead><tr><th>Tons</th>${stars.map(s=>`<th>${'★'.repeat(s)}</th>`).join('')}</tr></thead><tbody>${tons.map(tn=>`<tr><td class="lbl">${tn.replace('T',' ton')}</td>${stars.map(s=>`<td>${rows.some(r=>r.tons===tn&&r.star===s&&(!af||r.afue===af))?pbCell(pbUnitKey(s,sys,tn,af)):'<span class="note">—</span>'}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`).join('') }
+  body.innerHTML=h;
+  body.querySelectorAll('[data-pb]').forEach(inp=>{ const [k,f]=[inp.dataset.pb.slice(0,inp.dataset.pb.lastIndexOf(':')),inp.dataset.pb.slice(inp.dataset.pb.lastIndexOf(':')+1)];
+    inp.addEventListener('change',()=>{ pbSet(k,f,inp.value); if(f==='price'){ const v=pbNum(inp.value); inp.value=v==null?'':String(v) } }) }) }
+function openPriceBook(){ const d=$('#dlgPrice'); if(!d) return; if(S.sys) PB_TAB='units:'+S.sys; renderPriceBook(); try{ d.showModal() }catch(e){ d.setAttribute('open','') } }
+function wirePriceBook(){ const o=$('#pbOpen'), c=$('#pbClose'); if(o) o.onclick=()=>openPriceBook(); if(c) c.onclick=()=>{ try{ $('#dlgPrice').close() }catch(e){} if(cur===9){ try{ renderOptions() }catch(e){} } if(cur===6||cur===8){ try{ renderCompare(true) }catch(e){} } } }
+pbLoad();
 // ---- the page ------------------------------------------------------------------------------------------------------------------
 let OV={cam:null,list:[],raf:0};
 const oRing=(sc,cls)=>`<div class="oring ${cls}"><svg viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="52" class="bg"/><circle cx="60" cy="60" r="52" class="fg" stroke-dasharray="${(Math.max(0,Math.min(100,sc))/100*326.7).toFixed(1)} 326.7" transform="rotate(-90 60 60)"/></svg><b>${sc}</b></div>`;
@@ -4833,18 +4973,46 @@ function oList(items,none){ if(!items.length) return `<ul class="odo">${none}</u
   return `<ul class="odo">${items.slice(0,K).join('')}</ul><details class="odmore"><summary>+ ${items.length-K} more</summary><ul class="odo">${items.slice(K).join('')}</ul></details>` }
 function oBar(M,base){ const top=Math.max(M.design,M.delivered,1); const w=Math.round(Math.min(1,M.delivered/top)*100), nd=Math.round(Math.min(1,M.need2/top)*100);
   return `<div class="obar" title="delivered vs the ${CFM(M.need2)} CFM it needs"><i class="${airCls(M)}" style="width:${w}%"></i><em style="left:${nd}%"></em></div><div class="obarkey"><span>${CFM(M.delivered)} of ${CFM(M.need2)} CFM needed</span>${base!=null&&M.delivered>base?`<span class="up">+${CFM(M.delivered-base)}</span>`:''}</div>` }
+// v2.62 — 4 · OPTIONS IS THE CART. Stephen 2026-09-28: "regardless of which air conditioner a client chooses, designing it to 100 is obviously the best
+// way, and they'll see that … so those options there are really the list of fixes to the overall design. then after the client sees the design, I want
+// them to be able to select an AC unit, knowing there's additional cost built in from the design … the price overall at the top right keeps updating as
+// they choose their options on that tab … it becomes almost a shopping cart, after a design tool." The design cards carry the fixes, each priced off the
+// price book, and the adjustment typed on the card; the unit is picked under them — one card per tier for the tonnage the design was made for, re-graded
+// live (a design's score on a 1★ single-stage is not its score on a 5★ variable-speed); the total top right is design + unit; Approve locks both.
+function optPick(){ const id=S.planPick; if(id&&planById(id)) return id; const ap=planApproved(); return ap?ap.p.id:null }
+function optUnitRows(){ const byStar=rowsFor(); return Object.keys(byStar).map(Number).sort().map(star=>{ const row=byStar[star]; let o=null; try{ o=pick(star,row) }catch(e){} return {star,row,o,pb:pbGet(pbUnitKey(star)),fit:fitVerdict(o)} }) }
+function optCartHtml(E){ const pid=optPick(); const p=pid?planById(pid):null; const X=(p&&E)?E[p.id]:null; const pp=p?planPrice(p,X):null;
+  const u=pbGet(pbUnitKey(S.star)); const row=rowsFor()[S.star]; const ap=planApproved(); const apOn=!!(ap&&ap.same&&ap.p.id===pid);
+  const tot=(pp?pp.total:0)+(u.price||0); const miss=(pp?pp.missing:0)+(u.price==null?1:0);
+  return `<div class="ocart" id="optCart"><div class="cin">
+    <div class="ci"><small>Design</small><b>${p?pbMoney(pp.total)+(pp.missing?'<span class="miss"> + ?</span>':''):'—'}</b><span class="pn">${p?tpEsc(planName(p)):'pick a design below'}</span></div>
+    <span class="ceq">+</span>
+    <div class="ci"><small>Unit</small><b>${u.price!=null?pbMoney(u.price):'<span class="miss">price?</span>'}</b><span class="pn">${row?'★'.repeat(S.star)+' '+tpEsc(row.brand)+' · '+tonNum(S.tons)+' ton':'pick a unit'}</span></div>
+    <span class="ceq">=</span>
+    <div class="ci ctot"><small>Total</small><b>${pbMoney(tot)}${miss?'<span class="miss"> + ?</span>':''}</b></div>
+    ${apOn?'<div class="oappd">✓ Approved</div>':`<button class="btn oapprove" data-oapprove="${pid||''}"${p?'':' disabled style="opacity:.5"'}>${ap&&ap.p.id===pid?'Approve again':'Approve'}</button>`}
+  </div></div>` }
+function optUnitsHtml(){ const U=optUnitRows(); if(!U.length) return '';
+  const cards=U.map(u=>{ const on=S.star===u.star; const fit={ok:'Fits',warn:'Tight',bad:'May not fit',na:''}[u.fit]||'';
+    return `<div class="ucard ${on?'on':''}${u.fit==='bad'||u.fit==='warn'?' '+u.fit:''}" data-ustar="${u.star}">
+      ${fit?`<span class="status ${u.fit} ufit">${fit}</span>`:''}
+      <div class="ustars">${'★'.repeat(u.star)}</div><div class="ubrand">${tpEsc(u.row.brand)}</div><div class="usub">${tpEsc(tierSub(u.row,u.o))}</div><div class="umodel">${tpEsc(optUnitLine(u))}</div>
+      <div class="uprice">${u.pb.price!=null?pbMoney(u.pb.price):`<input data-uprice="${u.star}" placeholder="Add price" inputmode="decimal" aria-label="Price for the ${u.star} star unit">`}</div>
+      <button class="btn sm upick" data-upick="${u.star}">${on?'✓ This unit':'Pick this unit'}</button></div>` }).join('');
+  return `<div class="card ounits" id="optUnits"><h2>Pick your unit — ${tonNum(S.tons)} ton ${tpEsc((SYS_LABEL[S.sys]||'').toLowerCase())}<button class="olink" data-opb="1">Price book ›</button></h2><div class="ugrid">${cards}</div></div>` }
+function optPriceLine(l){ return `<em class="${l.missing?'q':''}">${l.inc?'included':(l.price==null?'price?':pbMoney(l.price))}</em>` }
 function renderOptions(){ const hero=$('#optHero'), body=$('#optBody'); if(!hero||!body) return;
   const o=curOpt(); const M0=o?flowModel(o,TODAY):null;
-  if(!o||!M0){ OV.list=[]; hero.innerHTML=`<div class="ohero"><div class="pk">Step 6 · Options</div><div class="pt">Nothing to compare yet</div><div class="ps">Put the job in on the first steps and design it on <b>5 · Plan</b> — then save the plans you want to show.</div></div>`; body.innerHTML=''; return }
+  if(!o||!M0){ OV.list=[]; hero.innerHTML=`<div class="ohero"><div class="pk">Step 4 · Options</div><div class="pt">Nothing to compare yet</div><div class="ps">Put the job in on the first steps and design it on <b>3 · Plan</b> — then save the plans you want to show.</div></div>`; body.innerHTML=''; return }
   const meta=tpMeta(); const sysName=(SYS_LABEL[S.sys]||'system').toLowerCase();
   const E={}; S.plans.forEach(p=>{ try{ E[p.id]=planEval(p) }catch(e){ console.error('plan',e); E[p.id]=null } });
   const {rows,rec}=planRows(E); const top=rec;
-  const ap=planApproved();
-  const base=M0.delivered, tonsN=M0.tons;
-  hero.innerHTML=`<div class="ohero"><div class="pk">Your options${meta.name?' · '+tpEsc(meta.name):''}</div>
+  const ap=planApproved(); const pid=optPick();
+  const base=M0.delivered;
+  hero.innerHTML=(rows.length?optCartHtml(E):'')+`<div class="ohero"><div class="pk">Your options${meta.name?' · '+tpEsc(meta.name):''}</div>
     <div class="pt">${rows.length>1?`${['','','Two','Three','Four'][rows.length]} ways to fix the air in this house`:(rows.length?'The plan for the air in this house':'Build the options, then show them side by side')}</div>
-    <div class="ps">A new ${tpEsc(sysName)} on the ducts as they are scores <b>${M0.score.total}</b> — ${M0.chokes.length?`${M0.chokes.length===1?'one spot chokes':M0.chokes.length+' spots choke'} the air, so it gets ${CFM(M0.delivered)} of the ${CFM(M0.need2)} CFM it needs`:'it gets the air it needs'}. ${rows.length?'Every option below starts from the same house; the difference is how much of it we open up.':'Design it on <b>5 · Plan</b> and tap <b>💾 Save plan</b> under the 3D — change the options and save again, up to four.'}</div>
-    ${ap?`<div class="oappr ${ap.same?'':'stale'}">${ap.same?'✓ Approved':'Approved'}: <b>${tpEsc(planName(ap.p))}</b> — ${ap.same?'the Summary, the ServiceTitan text and Send to tech use this plan.':'the design on the Plan tab has changed since. Approve it again to put it back, or save the change as a plan.'}</div>`:''}</div>`;
+    <div class="ps">A new ${tpEsc(sysName)} on the ducts as they are scores <b>${M0.score.total}</b> — ${M0.chokes.length?`${M0.chokes.length===1?'one spot chokes':M0.chokes.length+' spots choke'} the air, so it gets ${CFM(M0.delivered)} of the ${CFM(M0.need2)} CFM it needs`:'it gets the air it needs'}. ${rows.length?'Every option below starts from the same house; the difference is how much of it we open up. Pick the design, then pick the unit under it — the total at the top follows.':'Design it on <b>3 · Plan</b> and tap <b>💾 Save plan</b> under the 3D — change the options and save again, up to four.'}</div>
+    ${ap?`<div class="oappr ${ap.same?'':'stale'}">${ap.same?'✓ Approved':'Approved'}: <b>${tpEsc(planName(ap.p))}</b> — ${ap.same?'the Summary, the ServiceTitan text and Send to tech use this plan and this unit.':'the design or the unit has changed since. Approve it again to put it back, or save the change as a plan.'}</div>`:''}</div>`;
   // the cards: Today, then the plans best first
   const todayCard=`<article class="ocard today"><div class="orib"><span>Today</span></div>
     <div class="ohd"><div class="oname ro">Your system today</div><div class="osub">A new AC on the ducts as they are</div></div>
@@ -4854,27 +5022,30 @@ function renderOptions(){ const hero=$('#optHero'), body=$('#optBody'); if(!hero
     <ul class="odo">${M0.chokes.slice(0,5).map(c=>`<li class="no">${tpEsc(strip(c.name).replace(/ \(.*\)$/,''))}</li>`).join('')}${M0.chokes.length>5?`<li class="no more">+ ${M0.chokes.length-5} more</li>`:''}${M0.ins.known&&M0.ins.R<R_MIN?`<li class="no">Attic R-${fmt(M0.ins.R)} — under R-38</li>`:''}${!M0.chokes.length&&!(M0.ins.known&&M0.ins.R<R_MIN)?'<li>Nothing restricting the air</li>':''}</ul>
     ${M0.sp!=null?`<div class="oeq">Measured on the old system: <b>${M0.sp.toFixed(2)}"</b> static</div>`:''}
   </article>`;
-  const card=(p,i)=>{ const X=E[p.id], M=X.M, T=planTier(p,X); const isAp=ap&&ap.p.id===p.id; const apOn=isAp&&ap.same;
+  const card=(p,i)=>{ const X=E[p.id], M=X.M, T=planTier(p,X); const isAp=ap&&ap.p.id===p.id; const apOn=isAp&&ap.same; const picked=pid===p.id; const pp=planPrice(p,X);
     const left=M.chokes.map(c=>strip(c.name).replace(/ \(.*\)$/,''));
-    return `<article class="ocard ${T.cls}${apOn?' approved':''}" data-pid="${p.id}">
+    const items=pp.lines.map(l=>`<li>${tpEsc(l.label)}${optPriceLine(l)}</li>`).concat(left.map(n=>`<li class="no">Still choking: ${tpEsc(n)}</li>`));
+    return `<article class="ocard ${T.cls}${apOn?' approved':''}${picked?' picked':''}" data-pid="${p.id}">
       <div class="orib"><span>${T.rib} · ${T.name}</span></div>
       <div class="ohd">${top===p.id?'<div class="orec">★ Goettl recommends</div>':''}<input class="oname" data-oname="${p.id}" value="${tpEsc(planName(p))}" aria-label="Plan name" maxlength="40"><div class="osub">${T.sub}</div></div>
       <div class="viewer optv" id="ov${i}"><canvas role="img" aria-label="3D of ${tpEsc(planName(p))}"></canvas><div class="lbls"></div><button class="oexp" data-oexp="${i}" title="Look closer">&#10530;</button></div>
       <div class="oscore">${oRing(M.score.total,scoreCls(M.score.total))}<div class="ometa"><div><b>${CFM(M.delivered)}</b> CFM</div><div>${M.perTon} CFM/ton</div><div class="${M.chokes.length?'bad':'ok'}">${M.chokes.length?M.chokes.length+' chokepoint'+(M.chokes.length===1?'':'s')+' left':'every spot clear'}</div></div></div>
       ${oBar(M,base)}${optScoresHtml(M)}
-      <div class="oeq">${oStars(X.eq.stars)} <b>${tpEsc(X.eq.brand)}</b> · ${X.eq.tons} ton${X.eq.afue?' · '+X.eq.afue:''}<br><span class="om">${tpEsc(X.eq.unit)}</span></div>
       ${X.addS?`<div class="obal"><b>Not fully balanced.</b> ${tpEsc(addSupNote(M,true))}</div>`:''}
-      ${oList(X.ch.map(c=>`<li>${tpEsc(c.t)}</li>`).concat(left.map(n=>`<li class="no">Still choking: ${tpEsc(n)}</li>`)),'<li class="none">A new unit on the ducts as they are — nothing opened up</li>')}
+      ${oList(items,'<li class="none">A new unit on the ducts as they are — nothing opened up</li>')}
       <div class="ofoot">
-        <input class="oprice" data-oprice="${p.id}" value="${tpEsc(planPriceTxt(p))}" placeholder="Add price" inputmode="decimal" aria-label="Price for ${tpEsc(planName(p))}">
-        ${apOn?`<div class="oappd">✓ Approved — this is the plan on the Summary</div><button class="btn sm ghost" data-ogo="6">Go to the Summary ›</button>`:`<button class="btn oapprove" data-oapprove="${p.id}">${isAp?'Approve again':'Approve this plan'}</button>`}
+        <div class="oprice calc" data-oprice="${p.id}">${pbMoney(pp.total)}${pp.missing?`<span class="q">+ ${pp.missing} not priced</span>`:''}</div>
+        <label class="oadj">Adjust <input data-oadj="${p.id}" value="${tpEsc(p.adj||'')}" placeholder="± $" inputmode="decimal" aria-label="Adjustment for ${tpEsc(planName(p))}"></label>
+        <button class="btn ochoose${picked?'':' ghost'}" data-opick="${p.id}">${picked?'✓ Chosen design':'Choose this design'}</button>
+        ${apOn?`<div class="oappd">✓ Approved — this is the plan on the Summary</div><button class="btn sm ghost" data-ogo="6">Go to the Summary ›</button>`:''}
         <button class="btn sm ${top===p.id?'orecon':'ghost'} orecbtn" data-orec="${p.id}" title="${top===p.id?(S.planRec===p.id?'Tap to take the recommendation off':'Recommended automatically (it scores 100) — tap to take it off'):'Make this the plan Goettl recommends'}">${top===p.id?'★ Recommended':'☆ Recommend this plan'}</button>
         <div class="olinks"><button class="olink" data-oedit="${p.id}">✎ Edit on Plan</button><button class="olink del" data-odel="${p.id}" title="Delete this plan">Delete</button></div>
         <div class="olinks otiers"><span>Show as</span>${Object.values(PLAN_TIER).map(t=>`<button class="olink${T.k===t.k?' on':''}" data-otier="${p.id}:${t.k}" title="${p.tier===t.k?'Back to the automatic label':'Label it '+t.name}">${t.name.split(' ')[0]}</button>`).join('')}</div>
       </div></article>` };
-  const empty=rows.length<PLAN_MAX?`<article class="ocard add"><div class="oaddin"><div class="oplus">+</div><div class="oname ro">${rows.length?'Add another option':'Save your first plan'}</div><p class="osub">Design it on <b>5 · Plan</b>, then tap <b>💾 Save plan</b> under the 3D. Change the install, the ducts or the equipment and save again — up to ${PLAN_MAX}.</p><button class="btn sm" data-ogo="5">Go to 5 · Plan ›</button></div></article>`:'';
+  const empty=rows.length<PLAN_MAX?`<article class="ocard add"><div class="oaddin"><div class="oplus">+</div><div class="oname ro">${rows.length?'Add another option':'Save your first plan'}</div><p class="osub">Design it on <b>3 · Plan</b>, then tap <b>💾 Save plan</b> under the 3D. Change the install or the ducts and save again — up to ${PLAN_MAX}.</p><button class="btn sm" data-ogo="5">Go to 3 · Plan ›</button></div></article>`:'';
   body.innerHTML=`<div class="obleed"><div class="optgrid" style="--n:${1+rows.length+(empty?1:0)}">${todayCard}${rows.map(card).join('')}${empty}</div>
     <p class="ohint">Drag any 3D — they all turn together, so every option is seen from the same side. &#10530; opens one big.<br><b>System airflow</b> is the air the system gets against what it needs. <b>Wear &amp; tear</b> is the attic: at code (R-${R_CODE}) it is 100 — the system runs less and lasts longer. ☆ picks the plan Goettl recommends.</p></div>
+    ${rows.length?optUnitsHtml():''}
     ${rows.length?optTableHtml(rows,E,M0):''}`;
   // the 3Ds: one shared camera; Today and every plan built through the same renderer (each plan's design swapped in for its build)
   const cam=Object.assign({},OV.cam||shotCam()); OV.list=[];
@@ -4890,10 +5061,9 @@ function optTableHtml(rows,E,M0){ const cols=rows.map(p=>({p,X:E[p.id],T:planTie
   const catName=it=>CAT[it.cat]||it.t.replace(/ Ø.*$/,'').replace(/ R-.*$/,'');
   const cell=(c,cat)=>{ const hit=c.X.ch.filter(x=>x.cat===cat); return hit.length?`<td class="y" title="${tpEsc(hit.map(h=>h.t).join(' · '))}"><span class="ck">✓</span></td>`:'<td class="n">—</td>' };
   const sc=v=>`<span class="opill ${scoreCls(v)}">${v}</span>`;
-  const priced=cols.some(c=>planPriceNum(c.p)!=null||String(c.p.price||'').trim());
   const r=(k,t,f)=>`<tr><th>${k}</th><td class="t">${t}</td>${cols.map(f).join('')}</tr>`;
-  const recId=planRecId(rows,E);
-  return `<div class="card otable"><h2>Side by side</h2><div class="otscroll"><table class="otbl"><thead><tr><th></th><th class="t">Today</th>${cols.map(c=>`<th class="${c.T.cls}"><span class="oth">${recId===c.p.id?'★ ':''}${tpEsc(planName(c.p))}</span><small>${c.T.rib} · ${c.T.name}${recId===c.p.id?' · Goettl recommends':''}</small></th>`).join('')}</tr></thead><tbody>
+  const recId=planRecId(rows,E); const pid=optPick();
+  return `<div class="card otable"><h2>Side by side</h2><div class="otscroll"><table class="otbl"><thead><tr><th></th><th class="t">Today</th>${cols.map(c=>`<th class="${c.T.cls}"><span class="oth">${recId===c.p.id?'★ ':''}${tpEsc(planName(c.p))}</span><small>${c.T.rib} · ${c.T.name}${recId===c.p.id?' · Goettl recommends':''}${pid===c.p.id?' · chosen':''}</small></th>`).join('')}</tr></thead><tbody>
     ${r('Comfort score',sc(M0.score.total),c=>`<td>${sc(c.X.M.score.total)}</td>`)}
     ${r('System airflow',sc(optScores(M0).air),c=>`<td>${sc(optScores(c.X.M).air)}</td>`)}
     ${r('Wear &amp; tear',optScores(M0).wear==null?'—':sc(optScores(M0).wear),c=>{ const w=optScores(c.X.M).wear; return `<td>${w==null?'—':sc(w)}</td>` })}
@@ -4901,9 +5071,8 @@ function optTableHtml(rows,E,M0){ const cols=rows.map(p=>({p,X:E[p.id],T:planTie
     ${r('Per ton',`${M0.perTon}`,c=>`<td>${c.X.M.perTon}</td>`)}
     ${r('Chokepoints',`${M0.chokes.length}`,c=>`<td class="${c.X.M.chokes.length?'bad':'ok'}">${c.X.M.chokes.length}</td>`)}
     ${M0.ins.known?r('Attic',`R-${fmt(M0.ins.R)}`,c=>`<td>R-${fmt(c.X.M.ins.Rf)}</td>`):''}
-    ${r('Equipment','',c=>`<td>${oStars(c.X.eq.stars)}<br>${tpEsc(c.X.eq.brand)} ${c.X.eq.tons} ton</td>`)}
     ${cats.map(it=>r(tpEsc(catName(it)),'—',c=>cell(c,it.cat))).join('')}
-    ${priced?r('Price','',c=>`<td class="price">${tpEsc(planPriceTxt(c.p))||'—'}</td>`):''}
+    ${r('Design price','',c=>{ const pp=planPrice(c.p,c.X); return `<td class="price">${pbMoney(pp.total)}${pp.missing?' <small>+ ?</small>':''}</td>` })}
   </tbody></table></div></div>` }
 function wireLinked(V){ const c=V.cv; if(!c||c.dataset.wired) return; c.dataset.wired='1'; let dr=null, pn=null;
   const redraw=()=>{ if(OV.raf) return; OV.raf=requestAnimationFrame(()=>{ OV.raf=0; OV.list.forEach(W=>{ try{ drawInto(W) }catch(e){} }) }) };
@@ -4917,21 +5086,26 @@ function wireLinked(V){ const c=V.cv; if(!c||c.dataset.wired) return; c.dataset.
   c.addEventListener('touchmove',e=>{ if(e.touches.length===2&&pn){ const d=dist(e.touches); const k=d/pn; pn=d; all(v=>{ v.zoom=Math.max(.4,Math.min(3,v.zoom*k)) }) } },{passive:true});
   c.addEventListener('touchend',e=>{ pn=null; if(e.touches.length===0) dr=null; else if(e.touches.length===1) dr={x:e.touches[0].clientX,y:e.touches[0].clientY} });
   c.addEventListener('touchcancel',()=>{ pn=null; dr=null }) }
-function wireOptions(rows){ const body=$('#optBody'); if(!body) return;
+function wireOptions(rows){ const body=$('#optBody'), hero=$('#optHero'); if(!body) return;
   const rerender=()=>{ renderOptions(); try{ syncPackNav(cur) }catch(e){} };
-  body.querySelectorAll('[data-oapprove]').forEach(b=>b.onclick=()=>{ if(!planGuard(planById(b.dataset.oapprove))) return; const p=planUse(b.dataset.oapprove,true); if(!p) return; renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh(); rerender();
-    try{ flash('Approved — '+planName(p)+' is the plan on the Summary') }catch(e){} });
+  const both=sel=>[...(hero?hero.querySelectorAll(sel):[]),...body.querySelectorAll(sel)];
+  both('[data-oapprove]').forEach(b=>b.onclick=()=>{ const id=b.dataset.oapprove||optPick(); if(!id) return; if(!planGuard(planById(id))) return; const p=planUse(id,true); if(!p) return; renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh(); rerender();
+    try{ flash('Approved — '+planName(p)+' on the '+'★'.repeat(S.star)+' unit is the plan on the Summary') }catch(e){} });
+  body.querySelectorAll('[data-opick]').forEach(b=>b.onclick=()=>{ S.planPick=b.dataset.opick; save(); rerender() });
+  body.querySelectorAll('[data-upick]').forEach(b=>b.onclick=()=>{ const st=+b.dataset.upick; if(S.star!==st){ S.star=st; save(); try{ renderTiers() }catch(e){} try{ renderCompare() }catch(e){} if(typeof packStoryRefresh==='function') packStoryRefresh() } rerender() });
+  body.querySelectorAll('[data-uprice]').forEach(inp=>{ inp.addEventListener('change',()=>{ pbSet(pbUnitKey(+inp.dataset.uprice),'price',inp.value); rerender() }); inp.addEventListener('keydown',e=>{ if(e.key==='Enter') inp.blur() }); inp.addEventListener('click',e=>e.stopPropagation()) });
+  body.querySelectorAll('[data-opb]').forEach(b=>b.onclick=()=>openPriceBook());
   body.querySelectorAll('[data-orec]').forEach(b=>b.onclick=()=>{ const id=b.dataset.orec; const on=b.classList.contains('orecon'); S.planRec=on?'none':id; save(); rerender();
     try{ flash(on?'No plan is marked as recommended':'★ '+planName(planById(id))+' is the plan Goettl recommends') }catch(e){} });
   body.querySelectorAll('[data-oedit]').forEach(b=>b.onclick=()=>{ if(!planGuard(planById(b.dataset.oedit))) return; if(planUse(b.dataset.oedit,false)) go(5) });
   body.querySelectorAll('[data-odel]').forEach(b=>b.onclick=()=>{ const p=planById(b.dataset.odel); if(!p) return; if(!confirm('Delete '+planName(p)+'?')) return; planDelete(p.id); rerender() });
   body.querySelectorAll('[data-otier]').forEach(b=>b.onclick=()=>{ const [id,k]=b.dataset.otier.split(':'); const p=planById(id); if(!p) return; p.tier=(p.tier===k)?null:k; save(); rerender() });
-  body.querySelectorAll('[data-ogo]').forEach(b=>b.onclick=()=>go(+b.dataset.ogo));
+  both('[data-ogo]').forEach(b=>b.onclick=()=>go(+b.dataset.ogo));
   body.querySelectorAll('[data-oname]').forEach(inp=>{ inp.addEventListener('input',()=>{ const p=planById(inp.dataset.oname); if(!p) return; p.name=inp.value.slice(0,40); save() });
     inp.addEventListener('change',()=>{ const p=planById(inp.dataset.oname); if(p&&!String(p.name||'').trim()) p.name=''; renderPlanStripOnly(); });
     inp.addEventListener('keydown',e=>{ if(e.key==='Enter') inp.blur() }) });
-  body.querySelectorAll('[data-oprice]').forEach(inp=>{ inp.addEventListener('input',()=>{ const p=planById(inp.dataset.oprice); if(!p) return; p.price=inp.value.slice(0,24); save() });
-    inp.addEventListener('change',()=>{ const p=planById(inp.dataset.oprice); if(!p) return; inp.value=planPriceTxt(p); p.price=inp.value; save(); const t=body.querySelector('.otable'); if(t){ const E={}; rows.forEach(q=>{ E[q.id]=planEval(q) }); const M0=flowModel(curOpt(),TODAY); t.outerHTML=optTableHtml(rows.filter(q=>E[q.id]),E,M0) } });
+  body.querySelectorAll('[data-oadj]').forEach(inp=>{ inp.addEventListener('input',()=>{ const p=planById(inp.dataset.oadj); if(!p) return; p.adj=inp.value.slice(0,24); save() });
+    inp.addEventListener('change',()=>{ const p=planById(inp.dataset.oadj); if(!p) return; const v=pbNum(inp.value); p.adj=v==null?'':String(v); save(); rerender() });
     inp.addEventListener('keydown',e=>{ if(e.key==='Enter') inp.blur() }) });
   body.querySelectorAll('[data-oexp]').forEach(b=>b.onclick=e=>{ e.stopPropagation(); const k=b.dataset.oexp; optBig(k==='T'?null:rows[+k]) });
 }
@@ -4956,19 +5130,23 @@ async function fcOptionShots(){ const out={today:null,plans:{}}; if(!S.plans.len
 function fcOptionsStaticHtml(shots){ if(!S.plans.length) return ''; const o=curOpt(); if(!o) return ''; const M0=flowModel(o,TODAY); if(!M0) return '';
   const E={}; S.plans.forEach(p=>{ try{ E[p.id]=planEval(p) }catch(e){ E[p.id]=null } });
   const {rows,rec}=planRows(E); if(!rows.length) return '';
-  const ap=planApproved(); const top=rec; const base=M0.delivered;
+  const ap=planApproved(); const top=rec; const base=M0.delivered; const pid=optPick();
   const pic=(src,alt)=>src?`<img class="fcoshot" src="${src}" alt="${tpEsc(alt)}">`:'';
   const cards=`<article class="ocard today"><div class="orib"><span>Today</span></div><div class="ohd"><div class="oname ro">Your system today</div><div class="osub">A new AC on the ducts as they are</div></div>${pic(shots&&shots.today,'Your system today')}
       <div class="oscore">${oRing(M0.score.total,scoreCls(M0.score.total))}<div class="ometa"><div><b>${CFM(M0.delivered)}</b> CFM</div><div>${M0.perTon} CFM/ton</div><div class="bad">${M0.chokes.length} chokepoint${M0.chokes.length===1?'':'s'}</div></div></div>${oBar(M0,null)}${optScoresHtml(M0)}</article>`
-    +rows.map(p=>{ const X=E[p.id], M=X.M, T=planTier(p,X); const apOn=ap&&ap.p.id===p.id&&ap.same; const pr=planPriceTxt(p);
-      return `<article class="ocard ${T.cls}${apOn?' approved':''}"><div class="orib"><span>${T.rib} · ${T.name}</span></div>
+    +rows.map(p=>{ const X=E[p.id], M=X.M, T=planTier(p,X); const apOn=ap&&ap.p.id===p.id&&ap.same; const pp=planPrice(p,X);
+      return `<article class="ocard ${T.cls}${apOn?' approved':''}${pid===p.id?' picked':''}"><div class="orib"><span>${T.rib} · ${T.name}</span></div>
         <div class="ohd">${top===p.id?'<div class="orec">★ Goettl recommends</div>':''}<div class="oname ro">${tpEsc(planName(p))}</div><div class="osub">${T.sub}</div></div>${pic(shots&&shots.plans[p.id],planName(p))}
         <div class="oscore">${oRing(M.score.total,scoreCls(M.score.total))}<div class="ometa"><div><b>${CFM(M.delivered)}</b> CFM</div><div>${M.perTon} CFM/ton</div><div class="${M.chokes.length?'bad':'ok'}">${M.chokes.length?M.chokes.length+' left':'every spot clear'}</div></div></div>${oBar(M,base)}${optScoresHtml(M)}
-        <div class="oeq">${oStars(X.eq.stars)} <b>${tpEsc(X.eq.brand)}</b> · ${X.eq.tons} ton</div>${X.addS?`<div class="obal"><b>Not fully balanced.</b> ${tpEsc(addSupNote(M,true))}</div>`:''}
-        <ul class="odo">${X.ch.map(c=>`<li>${tpEsc(c.t)}</li>`).join('')||'<li class="none">A new unit on the ducts as they are</li>'}${M.chokes.map(c=>`<li class="no">Still choking: ${tpEsc(strip(c.name).replace(/ \(.*\)$/,''))}</li>`).join('')}</ul>
-        ${pr||apOn?`<div class="ofoot">${pr?`<div class="oprice ro">${tpEsc(pr)}</div>`:''}${apOn?'<div class="oappd">✓ Approved</div>':''}</div>`:''}</article>` }).join('');
+        ${X.addS?`<div class="obal"><b>Not fully balanced.</b> ${tpEsc(addSupNote(M,true))}</div>`:''}
+        <ul class="odo">${pp.lines.map(l=>`<li>${tpEsc(l.label)}${optPriceLine(l)}</li>`).join('')||'<li class="none">A new unit on the ducts as they are</li>'}${M.chokes.map(c=>`<li class="no">Still choking: ${tpEsc(strip(c.name).replace(/ \(.*\)$/,''))}</li>`).join('')}</ul>
+        <div class="ofoot"><div class="oprice ro">${pbMoney(pp.total)}${pp.missing?`<span class="q">+ ${pp.missing} not priced</span>`:''}</div>${pp.adj?`<div class="oadj">Adjustment ${pbMoney(pp.adj)}</div>`:''}${apOn?'<div class="oappd">✓ Approved</div>':(pid===p.id?'<div class="oappd">✓ Chosen</div>':'')}</div></article>` }).join('');
+  // the units, the picked one marked, and the total — the same cart, laid out for a page that runs no script
+  const U=optUnitRows(); const uHtml=U.length?`<div class="card ounits"><h2>The unit — ${tonNum(S.tons)} ton ${tpEsc((SYS_LABEL[S.sys]||'').toLowerCase())}</h2><div class="ugrid">${U.map(u=>`<div class="ucard ${S.star===u.star?'on':''}"><div class="ustars">${'★'.repeat(u.star)}</div><div class="ubrand">${tpEsc(u.row.brand)}</div><div class="usub">${tpEsc(tierSub(u.row,u.o))}</div><div class="umodel">${tpEsc(optUnitLine(u))}</div><div class="uprice">${u.pb.price!=null?pbMoney(u.pb.price):'<span class="note">price to be confirmed</span>'}</div>${S.star===u.star?'<div class="oappd">✓ This unit</div>':''}</div>`).join('')}</div></div>`:'';
+  const p=pid?planById(pid):null; const pp=p?planPrice(p,E[p.id]):null; const u=pbGet(pbUnitKey(S.star)); const row=rowsFor()[S.star];
+  const cart=p?`<div class="ocart"><div class="cin"><div class="ci"><small>Design</small><b>${pbMoney(pp.total)}${pp.missing?'<span class="miss"> + ?</span>':''}</b><span class="pn">${tpEsc(planName(p))}</span></div><span class="ceq">+</span><div class="ci"><small>Unit</small><b>${u.price!=null?pbMoney(u.price):'<span class="miss">?</span>'}</b><span class="pn">${row?'★'.repeat(S.star)+' '+tpEsc(row.brand):''}</span></div><span class="ceq">=</span><div class="ci ctot"><small>Total</small><b>${pbMoney(pp.total+(u.price||0))}${(pp.missing||u.price==null)?'<span class="miss"> + ?</span>':''}</b></div>${ap&&ap.same&&ap.p.id===pid?'<div class="oappd">✓ Approved</div>':''}</div></div>`:'';
   return `<div class="card" style="padding:12px"><h2 style="margin:2px 0 4px">Your options</h2><p class="help" style="margin:0 0 8px">Every option starts from the same house. Red is where the air still chokes; green is what we build new or open up. <b>System airflow</b> is the air the system gets against what it needs; <b>wear &amp; tear</b> is the attic — at code (R-${R_CODE}) it is 100, the system runs less and lasts longer.</p>
-    <div class="optgrid static" style="--n:${1+rows.length}">${cards}</div></div>${optTableHtml(rows,E,M0)}` }
+    ${cart}<div class="optgrid static" style="--n:${1+rows.length}">${cards}</div></div>${uHtml}${optTableHtml(rows,E,M0)}` }
 
 // ============================================================ v2.37 · Send to tech
 // Stephen 2026-09-17: "I need a way for the office service manager to build a design, and when it's
@@ -4992,6 +5170,7 @@ const FC_HASH='fc'; // the deep-link key the app reads on load (see the reader j
 function fcHandoffState(){
   let o; try{ o=JSON.parse(JSON.stringify(S)) }catch(e){ return S }
   if(o&&o.prop){ delete o.prop.aerialData; delete o.prop.candidates; delete o.prop.parcelRings; delete o.prop.buildingRings; }
+  try{ o.pb=JSON.parse(JSON.stringify(PB||{})) }catch(e){} // v2.62: the price book snapshot, so the tech's iPad prices the options the way the office did
   return o;
 }
 function fcEncode(json){ const bytes=new TextEncoder().encode(json); let bin=''; const CH=0x8000;
@@ -5174,7 +5353,7 @@ function tpPackHtml(o){
 function renderPackTabs(){
   const st=$('#packStory'), tk=$('#packTech'); if(!st&&!tk) return;
   const row=rowsFor()[S.star];
-  if(!row){ if(st) st.innerHTML='<div class="tp"><div class="card"><p class="help">Pick an option on step 3 first.</p></div></div>'; if(tk) tk.innerHTML=''; return }
+  if(!row){ if(st) st.innerHTML='<div class="tp"><div class="card"><p class="help">Pick a unit at the top of 3 · Plan first.</p></div></div>'; if(tk) tk.innerHTML=''; return }
   const o=pick(S.star,row);
   try{ if(st){ st.innerHTML=tpStoryHtml(o); wirePackStory(o) } }catch(e){ console.error('pack story',e) }
   try{ if(tk){ tk.innerHTML=tpPackHtml(o); wirePackTech(o) } }catch(e){ console.error('pack tech',e) }
@@ -5221,7 +5400,7 @@ async function fcAppSource(){
 // Everything the app rendered while it was running has to come back out, or the pack carries a stale
 // copy of every card — and, worse, the two 1.6 MB print stills inside #printReport.
 const FC_DOM_RESET=['#airCard','#recCard','#sumCard','#sumHero','#fitHero','#planHero','#printReport','#savedWrap',
-  '#planActions','#planReadout','#lbls','#duct2d','#packStory','#packTech','#cmpCard','#pkgCard','#fitShot','#supCfgNote','#tonsSrc','#tiers','#optHero','#optBody','#fcTop1'];
+  '#planActions','#planReadout','#lbls','#duct2d','#packStory','#packTech','#cmpCard','#pkgCard','#fitShot','#supCfgNote','#tonsSrc','#tiers','#optHero','#optBody','#fcTop1','#eqTiers','#pbTabs','#pbBody'];
 function fcDomSource(){
   const d=document.documentElement.cloneNode(true);
   FC_DOM_RESET.forEach(sel=>{ const e=d.querySelector(sel); if(e) e.innerHTML='' });
@@ -5757,8 +5936,16 @@ function summaryText(o){
   { const pl=(S.plans||[]); if(pl.length&&(curTab()===6||curTab()===8)){ const ap=planApproved(); // v2.47 — the options presented, and the one the customer approved (graded live — only where the text is read: the Summary and the Tech pack)
       if(ap) L.push(`APPROVED OPTION: ${planName(ap.p)}${ap.same?'':' — CHANGED SINCE IT WAS APPROVED (this summary is the design on the Plan tab)'}`); else L.push('OPTIONS PRESENTED — none approved yet (this summary is the design on the Plan tab)');
       let recP=null; try{ const E2={}; pl.forEach(p=>{ E2[p.id]=planEval(p) }); recP=planRecId(pl.filter(p=>E2[p.id]),E2) }catch(e){}
-      try{ pl.forEach(p=>{ const X=planEval(p); if(!X) return; const T=planTier(p,X); const pr=planPriceTxt(p);
-        L.push(`  ${planName(p)} · ${T.name} · score ${X.M.score.total} · ${CFM(X.M.delivered)} CFM (${X.M.perTon}/ton) · ${X.eq.brand} ${X.eq.tons} ton ${'★'.repeat(X.eq.stars)}${pr?' · '+pr:''}${ap&&ap.p.id===p.id?' · APPROVED':''}${recP===p.id?' · GOETTL RECOMMENDS':''} · airflow ${optScores(X.M).air} · wear & tear ${optScores(X.M).wear==null?'—':optScores(X.M).wear} — ${X.ch.map(c=>c.t).join('; ')||'new unit on the ducts as they are'}${X.addS?' · NOT FULLY BALANCED (one added supply run — customer picks where the extra air goes)':''}`) }) }catch(e){} } }
+      try{ pl.forEach(p=>{ const X=planEval(p); if(!X) return; const T=planTier(p,X); const pr=pbMoney(planPrice(p,X).total);
+        L.push(`  ${planName(p)} · ${T.name} · score ${X.M.score.total} · ${CFM(X.M.delivered)} CFM (${X.M.perTon}/ton) · ${X.eq.tons} ton${pr?' · design '+pr:''}${ap&&ap.p.id===p.id?' · APPROVED':''}${recP===p.id?' · GOETTL RECOMMENDS':''} · airflow ${optScores(X.M).air} · wear & tear ${optScores(X.M).wear==null?'—':optScores(X.M).wear} — ${X.ch.map(c=>c.t).join('; ')||'new unit on the ducts as they are'}${X.addS?' · NOT FULLY BALANCED (one added supply run — customer picks where the extra air goes)':''}`) }) }catch(e){}
+      // v2.62 — the pricing, with the ServiceTitan codes, for the design the customer chose (or approved) and the unit on the job
+      try{ const pid=optPick(); const p=pid?planById(pid):null; if(p){ const X=planEval(p); const pp=planPrice(p,X); const u=pbGet(pbUnitKey(S.star)); const row=rowsFor()[S.star];
+        L.push(`PRICING — ${planName(p)}${S.planApproved===p.id?(ap&&ap.same?' (APPROVED)':' (approved, then changed)'):' (chosen, not yet approved)'} · ServiceTitan codes in [brackets]:`);
+        pp.lines.forEach(l=>L.push(`  ${l.label}${l.code?' ['+l.code+']':''}: ${l.inc?'included':(l.price==null?'PRICE NOT SET':pbMoney(l.price))}`));
+        if(pp.adj) L.push(`  Adjustment${pp.adjCode?' ['+pp.adjCode+']':''}: ${pbMoney(pp.adj)}`);
+        L.push(`  Design total: ${pbMoney(pp.total)}${pp.missing?' + '+pp.missing+' item(s) not priced':''}`);
+        L.push(`  Unit: ${'★'.repeat(S.star)} ${row?row.brand:''} ${tonNum(S.tons)} ton — ${optUnitLine({o,row:row||{}})}${u.code?' ['+u.code+']':''}: ${u.price!=null?pbMoney(u.price):'PRICE NOT SET'}`);
+        L.push(`  TOTAL: ${pbMoney(pp.total+(u.price||0))}${(pp.missing||u.price==null)?' + the unpriced items':''}`) } }catch(e){} } }
   if(isPkg()){ const j=judgePkg(o.unit); const n=j.n; const A=j.A; const strip=s=>String(s).replace(/<[^>]+>/g,'');
     L.push(`New: ${o.unit} (${n.c.label}) ${fmt(n.l)} side to side × ${fmt(n.w)} front to back × ${fmt(n.h)} H`); if(j.o.l) L.push(`Existing: ${j.o.c?j.o.c.label+' ':''}${fmt(j.o.l)} × ${fmt(j.o.w)} × ${fmt(j.o.h)}`);
     L.push(`Setup: ${S.setup||'curb'} → ${j.manual?'MANUAL REVIEW':j.cls.toUpperCase()}`);
@@ -8621,7 +8808,7 @@ function rbrSizeFlag(){
     if(A.live && Math.abs(A.tons-rec)>0.01){
       const under=A.tons<rec;
       html=`<div class="banner ${under?'bad':'warn'}" style="margin:0 0 10px">Manual J says <b>${rec} ton</b> for ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()} — this option is <b>${tons1(A.tons)} ton</b>.`+
-        `<br><span style="font-weight:600;font-size:12.5px">${under?'Under the size the house asks for.':'Over the size the house asks for — check the build type before quoting it.'} Change it on step 3, or change the square footage / build type in <b>The home</b> on step 1.</span></div>`;
+        `<br><span style="font-weight:600;font-size:12.5px">${under?'Under the size the house asks for.':'Over the size the house asks for — check the build type before quoting it.'} Change it at the top of 3 · Plan, or change the square footage / build type in <b>The home</b> on step 1.</span></div>`;
     } else if(A.live){
       html=`<div class="banner ok" style="margin:0 0 10px">Matches the Manual J size — <b>${rec} ton</b> for ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()}.</div>`;
     }
@@ -8672,16 +8859,18 @@ function go(n){
   // tabs (the customer story and the tech pack) and are not part of it, so they are never gated by
   // it: a pack that arrived without its job used to be refused here and silently left the technician
   // looking at the bare tool with "Pick a system type first" in the footer.
+  if(n===3) n=5; // v2.62: panel 3 (Equipment) is gone — its chips live at the top of 3 · Plan
   const flow = n<=6||n===9; // v2.47: 6 · Options is panel 9 — part of the flow, never a pack-only tab
   if(flow&&n>1&&!S.sys){ flash('Pick a system type first'); return }
   if(flow&&n>1&&!isPkg()&&!S.orient){ flash('Where is the indoor unit?'); return }
   if(flow&&n>1&&isPkg()&&!S.setup){ flash('Pick the roof / duct setup'); return }
   if(flow&&n>2&&!isPkg()&&!S.room){ flash('How much room is there?'); return }
-  cur=n; $$('.panel').forEach(p=>p.classList.toggle('active',p.id==='p'+n)); $$('.step').forEach(s=>{const k=+s.dataset.go;s.classList.toggle('active',k===n);s.classList.toggle('done',stepOrd(k)<stepOrd(n))});
+  cur=n; $$('.panel').forEach(p=>p.classList.toggle('active',p.id==='p'+n)); { const on=n===4?stepOrd(5)+0.5:stepOrd(n); $$('.step').forEach(s=>{const k=+s.dataset.go;s.classList.toggle('active',k===n);s.classList.toggle('done',stepOrd(k)<on)}) }
+  fitTabSync(n); // v2.62 — Will it Fit is an optional tab: it shows in the strip only while it is open
   syncPackNav(n); // v2.39 — the pack's own three tabs (7 story · 5 the Plan tab itself · 8 tech pack)
   $('#prev').style.visibility=n===1?'hidden':'visible'; $('#next').textContent=n===6?'Start over':'Next ›';
   if(n>1){ autoAssume(); relabelStand(); refreshOld() }
-  if(n===3){buildTons();renderTiers()}
+  if(n===5||n===4){buildTons();renderTiers()} // v2.62: the strip on the Plan tab and the tier cards on Will it Fit
   if(n>3&&!S.tons){buildTons();renderTiers()} // jumped straight to an output tab — make sure there is a tonnage and a lineup behind it
   // v2.43 — the tonnage follows the load on EVERY output tab, not only when step 3 is open: measure the rooms on step 1
   // after the options were viewed and the Plan tab, the Summary and the pack all move to the size the load now asks for
@@ -8706,15 +8895,19 @@ function packOptTab(){ const nav=$('#packNav'); if(!nav) return; let t=$('#packO
   if(want&&!t){ t=document.createElement('div'); t.className='pstep'; t.id='packOptTab'; t.dataset.pgo='9'; t.innerHTML='<span class="t">Options</span>';
     const first=nav.querySelector('.pstep[data-pgo="7"]'); if(first&&first.nextSibling) nav.insertBefore(t,first.nextSibling); else nav.appendChild(t); t.onclick=()=>go(9) }
   else if(!want&&t) t.remove() }
+function fitTabSync(n){ const st=$('#stepFit'), nav=$('#steps'); if(!st||!nav) return; const on=n===4; st.classList.toggle('hidden',!on); nav.classList.toggle('fit',on) }
 function flash(t){ const f=$('#footNote'); f.textContent=t; f.style.color='var(--red)'; setTimeout(()=>{f.textContent='';f.style.color=''},2200) }
 // v2.47 — the tabs in the order they are shown: 5 Plan → 6 Options (panel 9) → 7 Summary (panel 6). Summary is still the last one.
-const STEP_ORDER=[1,2,3,4,5,9,6]; const stepOrd=n=>{ const i=STEP_ORDER.indexOf(n); return i<0?99:i };
-$('#next').onclick=()=>{ if(cur===6){ if(confirm('Start a new fit check? Inputs will be cleared.')){store.del(SKEY);location.reload()} return } const i=stepOrd(cur); go(i<STEP_ORDER.length-1?STEP_ORDER[i+1]:cur+1) };
-$('#prev').onclick=()=>{ const i=stepOrd(cur); go(i>0&&i<STEP_ORDER.length?STEP_ORDER[i-1]:Math.max(1,cur-1)) };
+// v2.62 — five steps: 1 Existing · 2 Space · 3 Plan (panel 5) · 4 Options (panel 9) · 5 Summary (panel 6). Panel 4 (Will it Fit) is optional, off the Plan tab; panel 3 is gone.
+const STEP_ORDER=[1,2,5,9,6]; const stepOrd=n=>{ const i=STEP_ORDER.indexOf(n); return i<0?99:i };
+$('#next').onclick=()=>{ if(cur===6){ if(confirm('Start a new fit check? Inputs will be cleared.')){store.del(SKEY);location.reload()} return } if(cur===4){ go(9); return } const i=stepOrd(cur); go(i<STEP_ORDER.length-1?STEP_ORDER[i+1]:cur+1) };
+$('#prev').onclick=()=>{ if(cur===4){ go(5); return } const i=stepOrd(cur); go(i>0&&i<STEP_ORDER.length?STEP_ORDER[i-1]:Math.max(1,cur-1)) };
 $$('.step').forEach(s=>s.onclick=()=>go(+s.dataset.go));
+{ const fb=$('#fitBack'); if(fb) fb.onclick=()=>go(5) }
+wirePriceBook();
 $('#btnReset').onclick=()=>{ if(confirm('Clear everything and start over?')){store.del(SKEY);location.reload()} };
 $('#btnSettings').onclick=()=>{$('#thr_cpt').value=S.thr.cpt;$('#thr_gr').value=S.thr.gr;$('#thr_retv').value=S.thr.retv;$('#thr_supv').value=S.thr.supv;$('#thr_opv').value=S.thr.opv;$('#thr_tight').value=S.thr.tight;$('#thr_acc').value=S.thr.acc;$('#thr_al1').value=S.thr.al1;$('#thr_al3').value=S.thr.al3;$('#thr_ovh').value=S.thr.ovh;$('#thr_sp').value=spLimit();$('#thr_spGoal').value=spGoal();$('#thr_cptFloor').value=cptFloor();$('#thr_damper').checked=dampersOn();$('#dlgSettings').showModal()};
-$('#dlgClose').onclick=()=>{S.thr.tight=parseFloat($('#thr_tight').value)||4;S.thr.acc=parseFloat($('#thr_acc').value)||2;S.thr.al1=parseFloat($('#thr_al1').value)||1;S.thr.al3=parseFloat($('#thr_al3').value)||3;const ov=parseFloat($('#thr_ovh').value);S.thr.ovh=isNaN(ov)?2:ov;const spv=parseFloat($('#thr_sp').value);S.thr.sp=isNaN(spv)?0.7:spv;{const g=parseFloat($('#thr_spGoal').value);S.thr.spGoal=g>0?g:0.5;const fl=parseFloat($('#thr_cptFloor').value);S.thr.cptFloor=fl>0?fl:390;S.thr.damper=!!$('#thr_damper').checked}S.thr.gr=parseFloat($('#thr_gr').value)||2;S.thr.retv=parseFloat($('#thr_retv').value)||900;S.thr.supv=parseFloat($('#thr_supv').value)||900;S.thr.opv=parseFloat($('#thr_opv').value)||900;S.thr.cpt=parseFloat($('#thr_cpt').value)||450;save();refreshOld();$('#thrTxt').textContent=S.thr.tight;$('#dlgSettings').close();if(cur===3)renderTiers();if(cur>3)renderCompare()};
+$('#dlgClose').onclick=()=>{S.thr.tight=parseFloat($('#thr_tight').value)||4;S.thr.acc=parseFloat($('#thr_acc').value)||2;S.thr.al1=parseFloat($('#thr_al1').value)||1;S.thr.al3=parseFloat($('#thr_al3').value)||3;const ov=parseFloat($('#thr_ovh').value);S.thr.ovh=isNaN(ov)?2:ov;const spv=parseFloat($('#thr_sp').value);S.thr.sp=isNaN(spv)?0.7:spv;{const g=parseFloat($('#thr_spGoal').value);S.thr.spGoal=g>0?g:0.5;const fl=parseFloat($('#thr_cptFloor').value);S.thr.cptFloor=fl>0?fl:390;S.thr.damper=!!$('#thr_damper').checked}S.thr.gr=parseFloat($('#thr_gr').value)||2;S.thr.retv=parseFloat($('#thr_retv').value)||900;S.thr.supv=parseFloat($('#thr_supv').value)||900;S.thr.opv=parseFloat($('#thr_opv').value)||900;S.thr.cpt=parseFloat($('#thr_cpt').value)||450;save();refreshOld();$('#thrTxt').textContent=S.thr.tight;$('#dlgSettings').close();if(cur>3){renderTiers();renderCompare()}};
 $('#thrTxt').textContent=S.thr.tight;
 applySys(); $('#prev').style.visibility='hidden';
 // ============================================================ v2.39 — BOOT A PACK
