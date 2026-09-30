@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-28 v2.62 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-30 v2.63 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -818,9 +818,29 @@ body.pack .tp .noapp{display:none}
 @media print{ .obleed{width:auto;left:auto;transform:none} .optgrid{grid-auto-flow:row;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));overflow:visible}
   .ocard{break-inside:avoid;box-shadow:none} .ocard .optv{height:170px} .ocard .olinks,.ocard .oapprove,.ocard .orecbtn,.ocard .oexp,.ocard.add,.ohint{display:none}
   .ocard input.oprice:placeholder-shown{display:none} }
+/* v2.63 — the installer plan: one drawing, the size on every duct, colour = size */
+.ipwrap{position:relative;overflow:hidden;touch-action:none;border:1px solid var(--line);border-radius:14px;background:#fff}
+.ipwrap svg.iplan{width:100%;height:auto;display:block;transform-origin:0 0}.ipwrap.zoomed{cursor:grab}
+.ipwrap .iphint{position:absolute;right:10px;bottom:8px;font-size:11px;color:var(--muted);background:rgba(255,255,255,.85);padding:3px 8px;border-radius:8px;pointer-events:none}
+.ipbleed{width:min(100vw - 16px,1380px);margin-left:calc(50% - min(50vw - 8px,690px))}@media(max-width:700px){.ipbleed{width:auto;margin-left:0}}
+.ipchip{display:inline-block;width:22px;height:10px;border-radius:5px;vertical-align:middle;margin-right:8px}
+.ippick-wrap{margin-top:10px;max-width:100%}.ipcols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px 22px}@media(max-width:640px){.ipcols{grid-template-columns:minmax(0,1fr)} .ippick .ipsz{white-space:normal}}table.dt.ippick{width:100%;max-width:100%;min-width:0;table-layout:auto}.ippick td{word-break:break-word}
+.ipgrp{break-inside:avoid;margin:0 0 10px}.ipgrp h3{font-size:12.5px;margin:0 0 4px;color:#3678A0;text-transform:uppercase;letter-spacing:.03em}
+.ippick td{padding:4px 6px}.ippick .ipsz{white-space:nowrap}.iph2{margin:6px 0 2px}.ipnote{font-size:12px;color:var(--muted);margin:0 0 8px}
+.ipprint .ipsheet svg{width:100%;height:auto;display:block}.ipprint .ipsheet.key svg.ipkey{max-width:900px}
+@media print{ .ipwrap{border:0;overflow:visible} .ipwrap svg.iplan{transform:none!important} .ipwrap .iphint{display:none} .ipprint .ipsheet{break-inside:avoid} .ipprint .ipsheet.plan:not(.first),.ipprint .ipsheet.key{page-break-before:always} .ipprint .ipsheet.port.first svg.iplan{max-height:8.8in} .ipprint .ipsheet.land.first svg.iplan{max-height:6.3in}
+  .ipprint .ipsheet.land{page:iplanL} .ipprint .ipsheet.land svg.iplan{max-height:7.2in} .ipprint .ipsheet.port{page:iplanP} .ipprint .ipsheet.port svg.iplan{max-height:9.7in} .ipprint .ipsheet.key svg.ipkey{max-height:3.6in}
+  @page iplanL{size:letter landscape;margin:9mm} @page iplanP{size:letter portrait;margin:9mm} }
+.gridwrap .tile.hatch{border:2px dashed #8a6a00;background:#fff8e1;z-index:2}.gridwrap .tile.hatch .tn{color:#8a6a00}.gridwrap .tile.hatch .tc{color:#8a6a00}
+/* v2.63 — the door: the tool asks once per device; a texted pack never does */
+#fcGate{position:fixed;inset:0;z-index:9999;background:#eef2f6;display:flex;align-items:center;justify-content:center;padding:20px}
+#fcGate.hidden{display:none}#fcGate .gbox{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 20px;width:min(360px,100%);box-shadow:0 8px 30px rgba(0,0,0,.08);text-align:center}
+#fcGate h2{margin:0 0 4px;color:var(--db)}#fcGate p{margin:0 0 14px;color:var(--muted);font-size:13px}#fcGate input{width:100%;font-size:20px;text-align:center;letter-spacing:.2em;padding:10px;border:2px solid var(--line);border-radius:12px;margin-bottom:10px;box-sizing:border-box}
+#fcGate .gerr{color:#CD1E1F;font-size:13px;font-weight:700;min-height:18px;margin:6px 0 0}body.gated>*:not(#fcGate){visibility:hidden}
 </style>
 </head>
 <body>
+<div id="fcGate" class="hidden"><div class="gbox"><h2>Fit Check</h2><p>Goettl Las Vegas &middot; replacement sizing</p><form id="fcGateForm"><input id="fcGateIn" type="password" autocomplete="off" autocapitalize="none" spellcheck="false" placeholder="password" aria-label="Password"><button class="btn" type="submit">Open</button></form><div class="gerr" id="fcGateErr"></div></div></div>
 <header><div class="hwrap">
   <div class="logo">Fit Check<small>Goettl Las Vegas · Replacement sizing</small></div>
   <div class="hspacer"></div>
@@ -915,7 +935,7 @@ body.pack .tp .noapp{display:none}
       <div class="msg" id="rbrTot"></div>
 
       <h3 id="rbrGridTitle">Arrange the rooms the way the house actually sits</h3>
-      <div class="row unitbar" id="rbrUnitBar"><span class="cap">Unit</span><button class="btn sm ghost" id="rbrUTurn" title="Turn the unit a quarter turn">&#8635; Turn 90&deg;</button><button class="btn sm ghost" id="rbrUFlip" title="Turn the unit end for end">&#8645; Flip 180&deg;</button></div>
+      <div class="row unitbar" id="rbrUnitBar"><span class="cap">Unit</span><button class="btn sm ghost" id="rbrUTurn" title="Turn the unit a quarter turn">&#8635; Turn 90&deg;</button><button class="btn sm ghost" id="rbrUFlip" title="Turn the unit end for end">&#8645; Flip 180&deg;</button><button class="btn sm ghost" id="rbrHatch" title="Mark the attic hatch — installers start there">&#9635; Attic hatch</button></div>
       <div class="gridwrap" id="rbrGrid"></div>
 
       <div id="rbrOut" class="hidden">
@@ -928,19 +948,11 @@ body.pack .tp .noapp{display:none}
         <h3>Every room</h3>
         <div class="tblwrap"><table class="dt" id="rbrRoomTbl"></table></div>
         <div class="msg" id="rbrDesignNote"></div>
-        <h3>The trunks off the plenum &mdash; the layout, run by run</h3>
-        <div class="tblwrap"><table class="dt" id="rbrTrunkTbl"></table></div>
-        <h3>Branch schedule &mdash; every B tag on the drawing, a damper on each</h3>
-        <div class="tblwrap"><table class="dt" id="rbrBranchTbl"></table></div>
-        <h3>Can &amp; grille schedule &mdash; every numbered tag</h3>
-        <div class="tblwrap"><table class="dt" id="rbrCanTbl"></table></div>
-        <h3>Duct design &mdash; plan view</h3>
+        <h3>Installer plan</h3>
         <div id="rbrPlanBox"></div>
-        <h3>Material list</h3>
-        <div class="tblwrap"><table class="dt" id="rbrMatTbl"></table></div>
-        <div class="msg" id="rbrMatMsg"></div>
+        <div id="rbrPickBox"></div>
         <div class="row" style="margin-top:12px">
-          <button class="btn" id="rbrExport">Export duct design &amp; material list</button>
+          <button class="btn" id="rbrExport">Print the installer plan &amp; pick list</button>
         </div>
       </div>
       </div>
@@ -1288,7 +1300,7 @@ body.pack .tp .noapp{display:none}
     </div>
   </div>
   <div class="card" style="padding:10px">
-    <div class="mvchips hidden" id="ductView" style="margin:0 0 8px"><button data-dv="3d" class="on">3D system</button><button data-dv="2d">2D duct design</button></div>
+    <div class="mvchips hidden" id="ductView" style="margin:0 0 8px"><button data-dv="3d" class="on">3D system</button><button data-dv="2d">Installer plan</button></div>
     <div id="duct2d" class="hidden"></div>
     <div class="viewer" id="viewer" style="height:min(62vh,560px)">
       <canvas id="c3d"></canvas>
@@ -1324,6 +1336,7 @@ body.pack .tp .noapp{display:none}
 <section class="panel" id="p6">
   <div id="sumHero"></div>
   <div class="card hidden" id="sumCard"></div>
+  <div class="card hidden" id="sumPlanCard"><details class="fold" id="sumPlanFold"><summary><span class="car">&#9656;</span>Installer plan &amp; pick list<span class="fs">the size on every duct &middot; what to load on the truck</span></summary><div class="fb" id="sumPlanBox"></div></details></div>
   <div class="card">
     <h2>Design summary for the job</h2>
     <p class="help">Everything above in plain text — paste it into the ServiceTitan job or estimate notes.</p>
@@ -1941,6 +1954,28 @@ $$('#fcStatic').forEach(e=>{ try{ e.remove() }catch(_){} }); try{ document.body.
 // Design to 100 / curb buttons and the real Manual D engine — there is no second copy of any of it to
 // drift from this one. Everything below is inert unless that boot block is present.
 const PACK=(function(){ try{ const p=window.FC_PACK; return (p&&typeof p==='object')?p:null }catch(e){ return null } })();
+// ============================================================ v2.63 — THE DOOR (Stephen 2026-09-30: "add a password to the tool" — the word is his, three letters, never written here)
+// A door on the TOOL only — the live URL and the installed app ask once per device and remember it; a texted pack (the
+// customer's presentation, the tech pack) never asks, so a customer or a tech opening a design file is never stopped. It
+// is a door, not a safe: the page is what it is. The word is kept only as a SHA-256 (salted), never in clear, and the
+// answer is remembered through `store` (best effort — where storage throws, Safari on file://, it simply asks again).
+const FC_GATE_H='f4d8c96843465309d25042ba12dd4d50c7b01719a0399347af479b95d6db0cb0', FC_GATE_K='fc_gate';
+function fcSha256(str){ const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  const H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19]; const b=new TextEncoder().encode(str); const L=b.length; const n=((L+9+63)>>6)<<6; const m=new Uint8Array(n); m.set(b); m[L]=0x80; const dv=new DataView(m.buffer); dv.setUint32(n-4,(L*8)>>>0); dv.setUint32(n-8,Math.floor(L*8/4294967296));
+  const w=new Uint32Array(64); const R=(x,k)=>(x>>>k)|(x<<(32-k));
+  for(let i=0;i<n;i+=64){ for(let j=0;j<16;j++) w[j]=dv.getUint32(i+j*4); for(let j=16;j<64;j++){ const s0=R(w[j-15],7)^R(w[j-15],18)^(w[j-15]>>>3), s1=R(w[j-2],17)^R(w[j-2],19)^(w[j-2]>>>10); w[j]=(w[j-16]+s0+w[j-7]+s1)>>>0 }
+    let [a,b_,c,d,e,f,g,h]=H; for(let j=0;j<64;j++){ const S1=R(e,6)^R(e,11)^R(e,25), ch=(e&f)^(~e&g), t1=(h+S1+ch+K[j]+w[j])>>>0, S0=R(a,2)^R(a,13)^R(a,22), mj=(a&b_)^(a&c)^(b_&c), t2=(S0+mj)>>>0; h=g; g=f; f=e; e=(d+t1)>>>0; d=c; c=b_; b_=a; a=(t1+t2)>>>0 }
+    H[0]=(H[0]+a)>>>0; H[1]=(H[1]+b_)>>>0; H[2]=(H[2]+c)>>>0; H[3]=(H[3]+d)>>>0; H[4]=(H[4]+e)>>>0; H[5]=(H[5]+f)>>>0; H[6]=(H[6]+g)>>>0; H[7]=(H[7]+h)>>>0 }
+  return H.map(x=>('00000000'+x.toString(16)).slice(-8)).join('') }
+let FC_GATE_MEM=false;
+function fcGateOpen(){ if(PACK) return true; if(FC_GATE_MEM) return true; try{ return store.get(FC_GATE_K)===FC_GATE_H }catch(e){ return false } }
+function fcGateInit(){ const g=$('#fcGate'); if(!g) return; if(fcGateOpen()){ g.classList.add('hidden'); document.body.classList.remove('gated'); return }
+  g.classList.remove('hidden'); document.body.classList.add('gated'); const inp=$('#fcGateIn'), err=$('#fcGateErr');
+  $('#fcGateForm').addEventListener('submit',e=>{ e.preventDefault(); const v=String(inp.value||'').trim().toLowerCase();
+    if(v&&fcSha256('fitcheck:'+v)===FC_GATE_H){ FC_GATE_MEM=true; store.set(FC_GATE_K,FC_GATE_H); g.classList.add('hidden'); document.body.classList.remove('gated'); err.textContent='' }
+    else { err.textContent='That is not it.'; inp.value=''; inp.focus() } });
+  setTimeout(()=>{ try{ inp.focus() }catch(e){} },50) }
+try{ fcGateInit() }catch(e){ console.error('gate',e) }
 const packOn=()=>!!PACK;
 // Each pack keeps its OWN saved check. Two packs opened from the same Files folder share one file://
 // origin, so a single key would have the second job silently overwrite the first — and a pack must never
@@ -4476,7 +4511,7 @@ function exportPdf(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M)
     <table class="ptbl"><thead><tr><th>Component</th><th>Today</th><th class="num">Passes (CFM)</th><th></th><th>Proposed</th><th class="num">Passes (CFM)</th><th></th></tr></thead><tbody>${compRows}</tbody></table>
     ${M.md?`<h2>ACCA Manual D — Friction Rate Worksheet</h2>${mdWorksheetHtml(M).replace(/<details class="adv mdws"><summary>[^]*?<\/summary>/,'<div class="mdws">').replace(/<\/details>\s*$/,'</div>')}`:''}
     <p class="pfoot">Every squeeze point is graded against <b>ACCA Manual D (3rd ed.) Table 3-1</b> velocity limits at the design airflow, recommended / maximum fpm, rigid or flexible duct: supply trunk ${MD_TAB31.sup.metal.join('/')} rigid · ${MD_TAB31.sup.flex.join('/')} flex; supply branches ${MD_TAB31.br.metal.join('/')} rigid · ${MD_TAB31.br.flex.join('/')} flex; return trunk ${MD_TAB31.ret.metal.join('/')}; filter grille face ${MD_TAB31.face.filt} fpm recommended (graded a chokepoint above ${MD_FACE_MAX}); the roof-line openings as metal. A spot over its maximum caps the airflow at what it passes. Proposed sizes follow Manual D's Friction Rate Worksheet: the manufacturer's blower table at the ${spGoal().toFixed(2)}" design static, less the device pressure drops (filter and coil from manufacturer data; register, grille and damper at Manual D's 0.03" defaults), over the total effective length of the longest supply and return paths (the actual duct runs plus Manual D Appendix 3 fitting equivalent lengths — a fitting's equivalent length is the straight duct that would cost the same pressure as its turn, not the fitting's size), gives the friction rate; each section is the smallest standard size that holds it — Manual D duct equation for galvanized, ASHRAE roughness for flex pulled tight — and stays inside Table 3-1. The airflow quoted is the same blower table read at the ${spLimit().toFixed(2)}" limit. Duct runs and fittings not taped are assumed from the tonnage and marked. Final numbers are verified at start-up. Comfort score: airflow 85 (full at ${cptFloor()} CFM/ton) · insulation 15. Las Vegas minimum attic insulation R-38; 2021 IECC (Clark County) new-construction R-49.</p>`;
-  let box=$('#printReport'); if(!box){ box=document.createElement('div'); box.id='printReport'; document.body.appendChild(box) } box.innerHTML=html+rbrExportBlock();
+  let box=$('#printReport'); if(!box){ box=document.createElement('div'); box.id='printReport'; document.body.appendChild(box) } box.innerHTML=html+rbrExportBlock(); try{ box.querySelectorAll('.ipwrap').forEach(rbrPlanZoomWire) }catch(e){}
   const done=()=>{ document.body.classList.remove('printing'); const pb=$('#printReport .pbar'); if(pb) pb.remove() };
   // v2.24: on an iPhone / iPad running Fit Check from the home screen there is no print dialog — the report opens as a full-screen
   // presentation the customer can read on the iPad, with Share (AirDrop / Messages / Mail the text) and a way back. Saving a PDF
@@ -4749,7 +4784,7 @@ function renderSumCard(o){
   const el=$('#sumCard'), hero=$('#sumHero'); if(!el) return;
   const M=flowModel(o,S.fix), M0=flowModel(o,TODAY);
   if(!M||!M0){ el.classList.add('hidden'); el.innerHTML=''; if(hero) hero.innerHTML=''; return }
-  el.classList.remove('hidden');
+  el.classList.remove('hidden'); try{ rbrSumPlanSync() }catch(e){}   /* v2.63 */
   const sc=M.score.total, sc0=M0.score.total, gain=sc-sc0;
   const P=issuePairs(o); const solved=P.filter(x=>x.fixed).length; const allDone=P.length&&solved===P.length;
   // v2.24 CLIENT MODE — the customer is looking at this page. The 38 is not "the old unit": it is what THIS new unit scores on
@@ -5367,6 +5402,7 @@ function wirePackTech(o){
     if(String(app).split('#')[0].split('?')[0]===fcAppUrl()){ location.hash=h.slice(1); location.reload(); return }
     location.href=app+h };
   const pr=$('#tpPrint'); if(pr) pr.onclick=()=>window.print();
+  try{ $$('#packTech .ipwrap').forEach(rbrPlanZoomWire) }catch(e){}   /* v2.63 */
   const sd=$('#tpSend'); if(sd) sd.onclick=()=>sendToTech(false,'#tpSend');
   const cp=$('#tpCopy'); if(cp) cp.onclick=()=>{ const el=$('#tpSt'); if(!el) return; const txt=el.textContent;
     try{ navigator.clipboard.writeText(txt); cp.textContent='Copied ✓'; setTimeout(()=>{cp.textContent='Copy this text'},1600) }
@@ -5400,7 +5436,7 @@ async function fcAppSource(){
 // Everything the app rendered while it was running has to come back out, or the pack carries a stale
 // copy of every card — and, worse, the two 1.6 MB print stills inside #printReport.
 const FC_DOM_RESET=['#airCard','#recCard','#sumCard','#sumHero','#fitHero','#planHero','#printReport','#savedWrap',
-  '#planActions','#planReadout','#lbls','#duct2d','#packStory','#packTech','#cmpCard','#pkgCard','#fitShot','#supCfgNote','#tonsSrc','#tiers','#optHero','#optBody','#fcTop1','#eqTiers','#pbTabs','#pbBody'];
+  '#planActions','#planReadout','#lbls','#duct2d','#rbrPlanBox','#rbrPickBox','#sumPlanBox','#packStory','#packTech','#cmpCard','#pkgCard','#fitShot','#supCfgNote','#tonsSrc','#tiers','#optHero','#optBody','#fcTop1','#eqTiers','#pbTabs','#pbBody'];
 function fcDomSource(){
   const d=document.documentElement.cloneNode(true);
   FC_DOM_RESET.forEach(sel=>{ const e=d.querySelector(sel); if(e) e.innerHTML='' });
@@ -5491,6 +5527,7 @@ function fcStaticHtml(o,shots,optShots){
     </tbody></table>
     <p class="tpfoot">${tpEsc([meta.name,meta.sm].filter(Boolean).join(' · '))}${meta.name||meta.sm?' · ':''}${new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})} · Goettl Air Conditioning &amp; Plumbing · Las Vegas</p>
   </div>
+  ${(()=>{ try{ return (S.rbrNew&&S.rooms&&S.rooms.length)?`<div class="card"><h2>The duct plan the crew builds from</h2><div class="ipwrap">${rbrInstallPlanSvg(14,{side:false,strip:false})}</div><div class="ipwrap">${ipKeySvg()}</div>${rbrPickListHtml()}</div>`:'' }catch(e){ console.error('static plan',e); return '' } })()}
   <p class="fctech">Goettl technicians: to walk through the options or change this design, open this file in Fit Check on your iPad — Summary → <b>Open a design file</b>. In a desktop browser it opens as the working design.</p>
 </div></div>
 `;
@@ -6008,7 +6045,7 @@ function summaryText(o){
       S.rooms.forEach(r=>L.push(r.nr?`  ${r.n}: ${r.sf} sf · no register (${r.kind==='hall'?'hall':'closet'}) · ${CFM(r.need)} CFM of load spread over the rooms around it`:`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.ld} load · ${CFM(r.cfm)} CFM · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)}${r.flag?' — PAST '+RBR_PUSH_MAX+' FPM, NEEDS A CALL':r.overOk?' — pushed past '+RBR_PUSH_MAX+' fpm by choice':''} · ${rbrDuctTxt(r).replace(/<br>/g,' / ').replace(/<[^>]+>/g,'')}`));
       if(S.rbrNew){ L.push(`NEW DUCT SYSTEM — REDOING THE ROOM-BY-ROOM DUCTS to ensure adequate flow to each room.`);
         const Nn=RM.net; L.push(`  LAYOUT: ${dnLayTxt()}`); L.push(`  Trunks: ${rbrTrunksTxt()}`);
-        if(Nn) L.push(`  Runs: ${Nn.edges.filter(e=>e.k==='trunk'||e.k==='boxfeed'||e.k==='direct').map(e=>e.tag+' Ø'+e.d+'" '+CFM(e.q)+' CFM '+Math.round(e.len)+' ft').join(' · ')}`);
+        if(Nn) L.push(`  Runs: ${Nn.edges.filter(e=>e.k==='trunk'||e.k==='boxfeed'||e.k==='direct').map(e=>'Ø'+e.d+'" '+CFM(e.q)+' CFM '+Math.round(e.len)+' ft').join(' · ')}`);   /* v2.63: sizes only — no tags anywhere */
         L.push(`  ${RM.taps} branches (balancing damper each) · ${RM.tysTot} TY splits${Nn&&dnBoxCount(Nn)?' · '+dnBoxCount(Nn)+' junction box'+(dnBoxCount(Nn)>1?'es':''):''} · ${RM.vents} vents — ${rbrVentWords()}`);
         const m=RM.mat; const li=(t,o,u)=>{ const k=Object.keys(o||{}); if(k.length) L.push(`  ${t}: ${k.map(x=>(u==='ft'?'Ø'+x+'" '+Math.round(o[x])+' ft':x+' ×'+o[x])).join(' · ')}`) };
         li('Flex R-8',m.flex,'ft'); li('Plenum collars',m.coll,'ea'); li('TYs',m.ty,'ea'); li('Junction boxes',m.box,'ea'); li('Dampers',m.damp,'ea'); li('Cans',m.can,'ea'); li('Grilles',m.gr,'ea'); }
@@ -6078,7 +6115,7 @@ function rbrRoundNote(raw){ const s=rbrSold(raw);
 const RBR_GW=50, RBR_GD=48;
 S.home=S.home||{}; if(S.home.sf==null) S.home.sf=''; S.home.build=S.home.build||null;
 S.rooms=Array.isArray(S.rooms)?S.rooms:[];
-S.unitPos=S.unitPos||{x:23,y:18}; if(S.vstep==null) S.vstep=0; S.vstep=Math.max(-8,Math.min(20,+S.vstep||0)); S.rbrOpen=!!S.rbrOpen; S.rbrNew=!!S.rbrNew; S.rbrSeq=S.rbrSeq||0;
+S.unitPos=S.unitPos||{x:23,y:18}; if(S.hatch&&typeof S.hatch!=='object') S.hatch=null; if(S.vstep==null) S.vstep=0; S.vstep=Math.max(-8,Math.min(20,+S.vstep||0)); S.rbrOpen=!!S.rbrOpen; S.rbrNew=!!S.rbrNew; S.rbrSeq=S.rbrSeq||0;
 S.plan=(S.plan&&S.plan.walls)?S.plan:null; S.rbrHand=!!S.rbrHand; // v2.54 — the floor-plan scan, and whether the hand-laid grid was opened instead
 S.rooms.forEach(r=>{ if(!r.id) r.id='r'+(S.rbrSeq++); if(!(r.w>0)) rbrShape(r); r.d=r.sf/r.w });
 /* ============================================================================
@@ -7953,174 +7990,255 @@ function dnPaint(faces,fast){ const rot=dnCamRot(); const cache=new Map();
 // ==== DN END
 
 /* ---------- 2D shop drawing ---------- */
-function rbrPlanSvg(S_){
-  const SC=S_||18, rooms=S.rooms; if(!rooms.length) return '';
+/* ============================================================================
+   v2.63 — THE INSTALLER PLAN (Stephen 2026-09-29/30: "ONE set of plans that anyone can read at a glance. If a duct runs, it
+   says its size right on it. If there is a TY, it says its size right at it. No tags, no lookup tables, no engineer shorthand.")
+   One drawing off RM.net — the same network the 3D, the worksheet and the pick list read. Every piece of duct carries its
+   size and cut length in a white pill; every TY its inlet × leg × leg; every register its room, can and grille and its CFM;
+   the colour of a line IS its size (one fixed palette on every job — the crew grabs the 8" bag and follows every line of
+   that colour); the house is ghosted so the ducts pop; the unit and plenum are dark with a close-up of the collars; four
+   pictures replace the seven written notes; the pick list is grouped by the same colours. No tags, no schedules.
+   Replaces the tagged shop drawing (rbrPlanSvg) everywhere it appeared: the Plan tab's 2D, Room by room, the Tech pack,
+   the Summary, the customer PDF and the pack's no-script presentation. The Manual D, the routing and the 3D are untouched.
+   ========================================================================== */
+const IP_COL={4:'#e8720c',5:'#1e9e4a',6:'#7b3fbf',7:'#d39a00',8:'#0e8f8f',9:'#c2308f',10:'#6b8e23',12:'#8b1e5a',14:'#333333',16:'#a0522d',18:'#1b5e20',20:'#3f2a7a'};
+const IP_RET='#1f5fbf', IP_KEEP='#8a939c', IP_INK='#0b2340', IP_DARK='#003963', IP_GHOST='#b9c2ca', IP_ROOM='#f6f8fa', IP_NAME='#a3aeb9';
+const IP_MINFS=10.5;   /* the smallest text on the sheet — about 9 pt once a 1,000 px sheet lands on a landscape page */
+function ipCol(d){ return IP_COL[d]||'#555b62' }
+function ipIn(d){ return d+'″' }
+function ipFt(L){ const f=Math.ceil(L-0.05); return f+' ft' }
+/* the register's words: room · can · grille, and what happens to an existing one */
+function ipRegWords(r,g){ const q=g.g||{kind:'new',w:r.can,h:r.can,face:r.faceK}; const face=(REG_FACE[q.face]||REG_FACE.stamped).short.replace(' face','');
+  const sz=q.w+'\u00d7'+q.h; let t, t2='';
+  if(q.kind==='keep'){ t=sz+' keep' } else if(q.kind==='bar'){ t=sz+' keep \u00b7 bar grille' } else if(q.kind==='enl'){ t=sz+' can \u00b7 '+sz+' '+face; t2='was '+q.from.w+'\u00d7'+q.from.h } else t=sz+' can \u00b7 '+sz+' '+face;
+  if(q.push) t2=(t2?t2+' \u00b7 ':'')+'push '+q.fpm+' fpm'; if(q.newBoot) t2=(t2?t2+' \u00b7 ':'')+'new boot'; if(q.asm) t2=(t2?t2+' \u00b7 ':'')+'confirm'; return {t,t2} }
+function ipRetSize(){ try{ const AM=flowModel(curOpt(),S.fix); const c=AM&&AM.comps.find(x=>x.slot==='ret'); return c?String(c.size):'' }catch(e){ return '' } }
+function ipSizesUsed(N){ const set=new Set(); if(N) N.edges.forEach(e=>{ if(e.d) set.add(e.d) }); return [...set].sort((a,b)=>a-b) }
+/* the plan proper — one SVG. SC = px per foot; o.print draws for paper (no interactive hooks) */
+function rbrInstallPlanSvg(SC,o){
+  o=o||{}; SC=SC||18; const rooms=S.rooms; if(!rooms.length) return ''; const N=RM.net; const f1=v=>(+v).toFixed(1);
   let bx1=1e9,by1=1e9,bx2=-1e9,by2=-1e9;
   rooms.forEach(r=>{ bx1=Math.min(bx1,r.x); by1=Math.min(by1,r.y); bx2=Math.max(bx2,r.x+r.w); by2=Math.max(by2,r.y+r.d) });
-  if(S.plan){ const pd=S.plan.pad||0; bx1=Math.min(bx1,pd); by1=Math.min(by1,pd); bx2=Math.max(bx2,pd+S.plan.w); by2=Math.max(by2,pd+S.plan.d) }   // v2.54 — the sheet is the whole scan (v2.60: the house, not the grid round it)
-  { const rp=S.retPos; if(rp){ bx1=Math.min(bx1,rp.x+0.5); by1=Math.min(by1,rp.y+0.5); bx2=Math.max(bx2,rp.x+3.5); by2=Math.max(by2,rp.y+3.5) } }   // v2.60: a return placed past the rooms stays on the sheet
-  bx1=Math.min(bx1,S.unitPos.x)-1.5; by1=Math.min(by1,S.unitPos.y)-1.5;
-  bx2=Math.max(bx2,S.unitPos.x+6)+1.5; by2=Math.max(by2,S.unitPos.y+6+((RM.down&&RM.down.length)?(RM.down.length*22+10)/SC:0))+1.5;
-  const ML=48,MT=74,MR=48,MB=221, PW=(bx2-bx1)*SC, PH=(by2-by1)*SC, W=PW+ML+MR, H=PH+MT+MB;
-  const p=(x,y)=>[ML+(x-bx1)*SC, MT+(y-by1)*SC];
-  const placed=[]; let s='';
-  const T=(x,y,str,o)=>{ o=o||{}; const fs=o.s||9.5, tw=String(str).replace(/&[a-z]+;/g,'x').length*fs*0.56, th=fs*1.12;
-    let cands=o.c||[[0,0]];
-    if(o.side==='x'){ const q=tw/2+11; cands=[[q,0],[-q,0],[q,-20],[-q,-20],[q,20],[-q,20],[q,-40],[-q,40]] }
-    if(o.side==='y'){ cands=[[0,0],[0,th+16],[0,-th-16],[tw/2+14,0],[-tw/2-14,0],[0,th+34],[0,-th-34]] }
-    let pos=null;
-    for(let i=0;i<cands.length&&!pos;i++){ const X=x+cands[i][0], Y=y+cands[i][1];
-      const b={x1:X-tw/2-5,x2:X+tw/2+5,y1:Y-th-3,y2:Y+6};
-      if(!placed.some(q=>!(b.x2<q.x1||b.x1>q.x2||b.y2<q.y1||b.y1>q.y2))){ placed.push(b); pos=[X,Y] } }
-    if(!pos){ const X0=x+cands[0][0], Y0=y+cands[0][1];
-      placed.push({x1:X0-tw/2-5,x2:X0+tw/2+5,y1:Y0-th-3,y2:Y0+6}); pos=[X0,Y0] }
-    return `<text x="${pos[0].toFixed(1)}" y="${pos[1].toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="${o.w||800}" fill="${o.f||'#0b2340'}" stroke="#fff" stroke-width="3.2" paint-order="stroke">${str}</text>` };
-  const pl=(x,y,str,o)=>{ o=o||{}; return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" text-anchor="${o.a||'start'}" font-size="${o.s||9.5}" font-weight="${o.w||700}" fill="${o.f||'#5b6b7c'}">${str}</text>` };
-  const badge=(x,y,t,fill)=>{ const wd=String(t).length*6.4+11;
-    return `<rect x="${(x-wd/2).toFixed(1)}" y="${(y-8).toFixed(1)}" width="${wd.toFixed(1)}" height="16" rx="8" fill="${fill}"/><text x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="800" fill="#fff">${t}</text>` };
+  if(S.plan){ const pd=S.plan.pad||0; bx1=Math.min(bx1,pd); by1=Math.min(by1,pd); bx2=Math.max(bx2,pd+S.plan.w); by2=Math.max(by2,pd+S.plan.d) }
+  { const rp=S.retPos; if(rp){ bx1=Math.min(bx1,rp.x+0.5); by1=Math.min(by1,rp.y+0.5); bx2=Math.max(bx2,rp.x+3.5); by2=Math.max(by2,rp.y+3.5) } }
+  { const h=S.hatch; if(h&&h.set){ bx1=Math.min(bx1,h.x); by1=Math.min(by1,h.y); bx2=Math.max(bx2,h.x+3); by2=Math.max(by2,h.y+3) } }
+  bx1=Math.min(bx1,S.unitPos.x)-1.5; by1=Math.min(by1,S.unitPos.y)-1.5; bx2=Math.max(bx2,S.unitPos.x+6)+1.5; by2=Math.max(by2,S.unitPos.y+6)+1.5;
+  if(N&&N.edges) N.edges.forEach(e=>{ (e.segs||[]).forEach(g=>{ const ps=g.t==='L'?[g.p0,g.p1]:[[g.c[0]-g.r,g.c[1]-g.r],[g.c[0]+g.r,g.c[1]+g.r]]; ps.forEach(q=>{ bx1=Math.min(bx1,q[0]-1); by1=Math.min(by1,q[1]-1); bx2=Math.max(bx2,q[0]+1); by2=Math.max(by2,q[1]+1) }) }) });
+  const side=o.side!==false, strip=o.strip!==false; const SBW=side?236:0, ML=30, MT=46, MR=30, MB=strip?130:30, PW=(bx2-bx1)*SC, PH=Math.max((by2-by1)*SC,330), W=PW+ML+MR+SBW, H=PH+MT+MB;
+  const p=(x,y)=>[ML+(x-bx1)*SC, MT+(y-by1)*SC]; const P2=q=>p(q[0],q[1]);
+  const placed=[], ductBoxes=[]; let s='', tops='';   /* tops = labels, drawn after every line so nothing covers them */
+  const hit=(b,list)=>list.some(q=>!(b.x2<q.x1||b.x1>q.x2||b.y2<q.y1||b.y1>q.y2));
+  const tw=(str,fs)=>String(str).replace(/&[a-z#0-9]+;/g,'x').length*fs*0.56;
+  const esc=rbrEsc;
+  /* a white pill of one or two lines, placed on the first candidate spot that touches nothing; own = boxes this label may sit on (its own duct) */
+  const plain=str=>String(str).replace(/<[^>]+>/g,'');
+  const pill=(x,y,lines,opt)=>{ opt=opt||{}; const fsA=opt.s||12, fsB=opt.s2||IP_MINFS; const wA=opt.w0||tw(plain(lines[0]),fsA), wB=lines[1]?tw(plain(lines[1]),fsB):0;
+    const w=Math.max(wA,wB)+16, h=(lines[1]?fsA+fsB+9:fsA+8); const cands=opt.c||[[0,0]]; let pos=null, leader=false;
+    const hard=placed.filter(b=>b.k!=='room').concat(ductBoxes.filter(b=>!(opt.own&&b.e===opt.own))), soft=placed.filter(b=>b.k==='room');
+    const inSheet=b=>!(b.x1<2||b.x2>W-SBW-2||b.y1<MT-4||b.y2>MT+PH+MB-(strip?104:4));
+    const box=(X,Y)=>({x1:X-w/2+1,x2:X+w/2-1,y1:Y-h/2+1,y2:Y+h/2-1});
+    const tryC=(want)=>{ for(let i=0;i<cands.length;i++){ const X=x+cands[i][0], Y=y+cands[i][1]; const b=box(X,Y); if(!inSheet(b)||hit(b,hard)) continue; if(want.soft&&hit(b,soft)) continue; if(want.room&&opt.room&&!fcPtIn(opt.room,...unp(X,Y))) continue; return {pos:[X,Y],i} } return null };
+    let got=(opt.room?tryC({soft:true,room:true}):null)||tryC({soft:true})||tryC({});
+    if(got){ pos=got.pos; leader=got.i>0&&Math.hypot(cands[got.i][0],cands[got.i][1])>h*0.9+14 }
+    if(!pos){ /* nowhere clean: spiral out until it is, then a thin leader back to the spot */
+      for(let R=h+12;R<=Math.max(W,H)&&!pos;R+=12) for(let a=0;a<360&&!pos;a+=(R>160?10:20)){ const X=x+R*Math.cos(a*Math.PI/180), Y=y+R*Math.sin(a*Math.PI/180); const b=box(X,Y); if(!inSheet(b)||hit(b,hard)) continue; pos=[X,Y]; leader=true }
+      if(!pos){ pos=[Math.max(w/2+4,Math.min(W-SBW-w/2-4,x+cands[0][0])),Math.max(MT+h/2,Math.min(MT+PH-h/2,y+cands[0][1]))] } }
+    placed.push({x1:pos[0]-w/2+3,x2:pos[0]+w/2-3,y1:pos[1]-h/2+2,y2:pos[1]+h/2-2,k:opt.k||'lbl',own:opt.own||null,leader});
+    let g=''; if(leader) g+=`<line x1="${f1(x)}" y1="${f1(y)}" x2="${f1(pos[0])}" y2="${f1(pos[1])}" stroke="${opt.stroke||IP_INK}" stroke-width="1.1" opacity=".75"/>`;
+    g+=`<rect x="${f1(pos[0]-w/2)}" y="${f1(pos[1]-h/2)}" width="${f1(w)}" height="${f1(h)}" rx="${f1(h/2)}" fill="#fff" stroke="${opt.stroke||IP_INK}" stroke-width="${opt.sw||1.6}"/>`;
+    if(lines[1]){ g+=`<text x="${f1(pos[0])}" y="${f1(pos[1]-h/2+fsA+1)}" text-anchor="middle" font-size="${fsA}" font-weight="800" fill="${opt.f||IP_INK}">${lines[0]}</text><text x="${f1(pos[0])}" y="${f1(pos[1]+h/2-4)}" text-anchor="middle" font-size="${fsB}" font-weight="700" fill="${opt.f2||'#5b6b7c'}">${lines[1]}</text>` }
+    else g+=`<text x="${f1(pos[0])}" y="${f1(pos[1]+fsA*0.36)}" text-anchor="middle" font-size="${fsA}" font-weight="800" fill="${opt.f||IP_INK}">${lines[0]}</text>`;
+    tops+=g; return pos };
+  const unp=(X,Y)=>[bx1+(X-ML)/SC, by1+(Y-MT)/SC];
+  const pathD=segs=>{ let d=''; segs.forEach((g,i)=>{ if(g.t==='L'){ const a=P2(g.p0), b=P2(g.p1); d+=(i?'L':'M')+f1(a[0])+' '+f1(a[1])+' L'+f1(b[0])+' '+f1(b[1]) }
+      else { const st=[g.c[0]+g.r*Math.cos(g.a0),g.c[1]+g.r*Math.sin(g.a0)], en=dnArcEnd(g); const a=P2(st), b=P2(en); d+=(i?'L':'M')+f1(a[0])+' '+f1(a[1])+` A${f1(g.r*SC)} ${f1(g.r*SC)} 0 ${Math.abs(g.da)>Math.PI?1:0} ${g.da>0?1:0} `+f1(b[0])+' '+f1(b[1]) } }); return d };
+  const wd=d=>Math.max(3.5,d*SC/12);
 
-  s+=`<svg class="plansvg" viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" role="img" aria-label="Supply duct shop drawing, plan view">`;
-  s+=`<rect x="0" y="0" width="${W}" height="${H}" fill="#fff"/><rect x="8" y="8" width="${W-16}" height="${H-16}" fill="none" stroke="#003963" stroke-width="2"/>`;
-  s+=`<line x1="8" y1="58" x2="${W-8}" y2="58" stroke="#003963" stroke-width="2"/>`;
-  s+=pl(20,28,'GOETTL AIR CONDITIONING &amp; PLUMBING · LAS VEGAS',{s:10,w:800,f:'#3678A0'});
-  s+=pl(20,46,'SUPPLY DUCT PLAN — ACCA MANUAL D',{s:16,w:800,f:'#003963'});
-  // v2.34: the title block is two columns — a label column that is clipped to its width and a value column
-  // right-aligned to the border, so a long unit name can never run into the CFM beside it.
-  const clipT=(t,n)=>{ t=String(t); return t.length>n ? t.slice(0,n-1).replace(/[ ·(—-]+$/,'')+'…' : t };
-  [[rbrEsc(clipT(RM.A.name,24)), CFM(RM.A.Qd)+' CFM @ '+RM.A.esp.toFixed(2)+'"'],
-   ['FRICTION RATE', RM.A.fr.toFixed(3)+'" / 100 ft'],
-   ['DUCT', 'ROUND FLEX R-8 · METAL TYs'],
-   ['VENTS', RM.vents+' · '+rbrVentWords(true)],['LAYOUT', RM.net?dnName(RM.net.lay).toUpperCase():'—']].forEach((row,i)=>{
-    s+=pl(W-250,22+i*11,row[0],{s:8,w:800,f:'#8a97a4'}); s+=pl(W-20,22+i*11,row[1],{s:8.5,w:800,f:'#0b2340',a:'end'}); });
-
-  const fa=p(bx1+1.5,by1+1.5);
-  if(!S.plan) s+=`<rect x="${fa[0]}" y="${fa[1]}" width="${(bx2-bx1-3)*SC}" height="${(by2-by1-3)*SC}" rx="3" fill="#f4f7fa" stroke="#c7d3de" stroke-width="1.5" stroke-dasharray="7 5"/>`;
-  for(let g=Math.ceil(bx1/2)*2; g<=bx2; g+=2){ const a=p(g,by1), b=p(g,by2); s+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="#eef3f8" stroke-width="1"/>` }
-  for(let g=Math.ceil(by1/2)*2; g<=by2; g+=2){ const a=p(bx1,g), b=p(bx2,g); s+=`<line x1="${a[0].toFixed(1)}" y1="${a[1].toFixed(1)}" x2="${b[0].toFixed(1)}" y2="${b[1].toFixed(1)}" stroke="#eef3f8" stroke-width="1"/>` }
-
-  // v2.54 — on a scanned plan the rooms are their real polygons under the real walls, doors and windows; a hand-laid room is still its tile
-  if(S.plan) s+=fcPlanPaths(p,{wallSw:Math.max(2.5,SC*0.28),roomStroke:'#7a95a3',roomSw:0.8});
-  rooms.filter(r=>!r.poly).forEach(r=>{ const a=p(r.x,r.y);
-    s+=`<rect x="${a[0].toFixed(1)}" y="${a[1].toFixed(1)}" width="${(r.w*SC).toFixed(1)}" height="${(r.d*SC).toFixed(1)}" rx="3" fill="${r.ld==='high'?'#fdf4ea':r.ld==='low'?'#f4f5f6':'#f0f8f8'}" stroke="#5b7f8f" stroke-width="2"/>` });
-  rooms.forEach(r=>{ const a=p(r.x,r.y);
-    const t1=String(r.n).toUpperCase(), t2=r.nr?r.sf+' SF · NO VENT':CFM(r.cfm)+' CFM · '+r.nReg+' VENT'+(r.nReg>1?'S':''),
-          t3=r.sf+' SF · '+rbrFtin(r.w)+' × '+rbrFtin(r.d)+' · '+rbrFtin(r.h)+' CLG';
-    if(r.poly&&(r.sf<70||r.nr)){ const c=p(rbrCx(r),rbrCy(r)); s+=T(c[0],c[1]+3,rbrEsc(t1),{s:r.sf<40?7.5:8.5,f:r.nr?'#6b6260':'#0a5c5c',c:[[0,0],[0,-12],[0,12]]}); return } // a closet or hall: the name alone, centred
-    const wd=Math.max(t1.length*6.9,t2.length*5.1,t3.length*4.7)+14;
-    let px_=a[0]+4, py_=a[1]+4;
-    if(r.poly){ // the plate sits inside the polygon: the bbox corner when that is inside it, else centred on the room
-      const inside=fcPtIn(r.poly,r.x+(wd/SC)*0.5+0.3,r.y+(46/SC)*0.5+0.3)&&fcPtIn(r.poly,r.x+0.3,r.y+0.3);
-      if(!inside){ const c=p(rbrCx(r),rbrCy(r)); px_=c[0]-wd/2; py_=c[1]-21 } }
-    s+=`<rect x="${px_.toFixed(1)}" y="${py_.toFixed(1)}" width="${wd.toFixed(1)}" height="42" rx="4" fill="#fff" stroke="#5b7f8f" stroke-width="1"/>`;
-    placed.push({x1:px_,x2:px_+wd,y1:py_,y2:py_+42});
-    s+=pl(px_+5,py_+14,rbrEsc(t1),{s:11,w:800,f:'#0a5c5c'});
-    s+=pl(px_+5,py_+26,t2,{s:8.5,w:800,f:'#0b2340'});
-    s+=pl(px_+5,py_+37,t3,{s:8,w:700,f:'#5b6b7c'}); });
-
-  const u=p(S.unitPos.x,S.unitPos.y);
-  // v2.59 — the equipment at its real size (the plenum, the cabinet behind it, a curb's return drop): the runs go round what is drawn, so the sheet draws
-  // exactly what they go round — not a 6 ft block they seem to run through. A kept roof drop (no plenum in the attic) keeps the tile.
-  let EQB=null; { const N0=RM.net; const PKQ=(N0&&N0.pl&&(N0.pl.kind==='drop'||N0.pl.kind==='pk'))?rbrEqParts():null;
-    if(PKQ){ const U0=N0.U; let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;   /* v2.61 — a package: the unit on the roof (dashed) and its supply and return drops at their size, where they really are */
+  s+=`<svg class="iplan" viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" role="img" aria-label="Installer plan — supply ducts, every size on the duct" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">`;
+  s+=`<rect x="0" y="0" width="${W}" height="${H}" fill="#fff"/>`;
+  /* the title strip: who, what, the unit and its air */
+  s+=`<text x="${ML}" y="19" font-size="11" font-weight="800" fill="#3678A0">GOETTL AIR CONDITIONING &amp; PLUMBING · LAS VEGAS</text><text x="${ML}" y="37" font-size="17" font-weight="800" fill="${IP_DARK}">SUPPLY DUCT PLAN</text>`;
+  s+=`<text x="${W-MR}" y="19" text-anchor="end" font-size="11" font-weight="800" fill="#5b6b7c">${esc(RM.A.name)}</text><text x="${W-MR}" y="37" text-anchor="end" font-size="13" font-weight="800" fill="${IP_INK}">${CFM(RM.A.Qd)} CFM · ${RM.vents} registers · ${N?esc(dnName(N.lay)):''}</text>`;
+  s+=`<line x1="${ML}" y1="${MT-4}" x2="${W-MR}" y2="${MT-4}" stroke="${IP_DARK}" stroke-width="1.5"/>`;
+  /* 1 · the house, ghosted */
+  if(S.plan) s+=fcPlanPaths(p,{wallSw:Math.max(2,SC*0.2),wall:IP_GHOST,win:'#d5e6f2',door:'#fff',doorLine:'#cfd6dd',roomStroke:'#d3dae1',roomSw:0.8,fill:r=>r.nr?'#eef1f4':IP_ROOM});
+  rooms.filter(r=>!r.poly).forEach(r=>{ const a=p(r.x,r.y); s+=`<rect x="${f1(a[0])}" y="${f1(a[1])}" width="${f1(r.w*SC)}" height="${f1(r.d*SC)}" rx="3" fill="${r.nr?'#eef1f4':IP_ROOM}" stroke="${IP_GHOST}" stroke-width="1.5"/>` });
+  rooms.forEach(r=>{ const c=p(rbrCx(r),rbrCy(r)); const t=esc(String(r.n).toUpperCase()); const fs=r.sf<45?IP_MINFS:12; const w=tw(t,fs)+6;
+    const cands=[[0,0],[0,-16],[0,16],[0,-32],[0,32]]; let pos=null; for(const c_ of cands){ const b={x1:c[0]+c_[0]-w/2,x2:c[0]+c_[0]+w/2,y1:c[1]+c_[1]-fs,y2:c[1]+c_[1]+4}; if(!hit(b,placed)){ pos=[c[0]+c_[0],c[1]+c_[1]]; placed.push(Object.assign(b,{k:'room'})); break } }
+    if(!pos) pos=c; s+=`<text x="${f1(pos[0])}" y="${f1(pos[1]+fs*0.36)}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${IP_NAME}" letter-spacing=".04em">${t}</text>` });
+  /* 2 · the unit and the plenum, dark. Read off the same keep-out rectangles the runs route round */
+  let EQB=null, plenRect=null, unitRect=null; const eqLbl=[];
+  if(N){ const PKQ=(N.pl&&(N.pl.kind==='drop'||N.pl.kind==='pk'))?rbrEqParts():null;
+    if(PKQ){ const U0=N.U; let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
       PKQ.parts.forEach(R=>{ const a=p(U0[0]+R.x0,U0[1]+R.y0), b=p(U0[0]+R.x1,U0[1]+R.y1); const x=Math.min(a[0],b[0]), y=Math.min(a[1],b[1]), w=Math.abs(b[0]-a[0]), h=Math.abs(b[1]-a[1]); x0=Math.min(x0,x); y0=Math.min(y0,y); x1=Math.max(x1,x+w); y1=Math.max(y1,y+h);
-        if(R.k==='roof') s+=`<rect class="pkroof" x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="rgba(54,120,160,.08)" stroke="#3678A0" stroke-width="1.3" stroke-dasharray="5 3"/>`;
-        else { s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="${R.k==='rpl'?'#6c4fd0':'#003963'}" stroke="${R.k==='rpl'?'#4a3496':'#9fc3dd'}" stroke-width="1.2"/>`; placed.push({x1:x,x2:x+w,y1:y,y2:y+h}) } });
-      EQB={x0,y0,x1,y1}; const lx=x1+6, ly=(y0+y1)/2; const tl=(y,tx,sz,f)=>`<text x="${lx.toFixed(1)}" y="${y.toFixed(1)}" font-size="${sz}" font-weight="800" fill="${f}" stroke="#fff" stroke-width="3" paint-order="stroke">${tx}</text>`;
-      s+=tl(ly-9,N0.pl.kind==='pk'?'SUPPLY PLENUM · CURB':'SUPPLY · RETURN DROPS',9,'#003963')+tl(ly+2,'UNIT ON THE ROOF — DASHED',7.5,'#3678A0')+tl(ly+13,CFM(RM.A.Qd)+' CFM',9,'#8a6a00'); placed.push({x1:lx,x2:lx+130,y1:ly-19,y2:ly+16}) }
-    const EQ=(!PKQ&&N0&&N0.pl&&N0.pl.kind!=='drop')?dnObs(N0,{pl:N0.pl,U:N0.U,r:N0.r||0}).filter(R=>!R.soft):null;
-    if(EQ&&EQ.length){ let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
+        if(R.k==='roof') s+=`<rect class="pkroof" x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="2" fill="rgba(0,57,99,.06)" stroke="${IP_DARK}" stroke-width="1.3" stroke-dasharray="5 3"/>`;
+        else { const ret=R.k==='rpl'; s+=`<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="2" fill="${ret?IP_RET:IP_DARK}" stroke="#fff" stroke-width="1"/>`; placed.push({x1:x,x2:x+w,y1:y,y2:y+h,k:'eq'}); eqLbl.push([x+w/2,y+h/2,ret?'RETURN':'PLENUM',w,h]); if(!ret) plenRect={x,y,w,h} } });
+      EQB={x0,y0,x1,y1}; eqLbl.push([(x0+x1)/2,y0-10,N.pl.kind==='pk'?'UNIT ON THE ROOF · NEW CURB':'UNIT ON THE ROOF · DROPS',0,0,'roof']) }
+    else if(N.pl&&N.pl.kind!=='drop'){ const EQ=dnObs(N,{pl:N.pl,U:N.U,r:N.r||0}).filter(R=>!R.soft); if(EQ.length){ let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
       EQ.forEach(R=>{ const a=p(R.x0,R.y0), b=p(R.x1,R.y1); const x=Math.min(a[0],b[0]), y=Math.min(a[1],b[1]), w=Math.abs(b[0]-a[0]), h=Math.abs(b[1]-a[1]); x0=Math.min(x0,x); y0=Math.min(y0,y); x1=Math.max(x1,x+w); y1=Math.max(y1,y+h);
-        if(R.k==='unit') s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="#003963" stroke="#9fc3dd" stroke-width="1.2"/>`;
-        else if(R.k==='ret') s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="2" fill="#6c4fd0" stroke="#4a3496" stroke-width="1.2"/>`;
-        else if(R.k==='plen'&&N0.pl.kind!=='h') s+=`<rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" fill="#003963"/>`;
-        placed.push({x1:x,x2:x+w,y1:y,y2:y+h}) });
-      EQB={x0,y0,x1,y1}; const pk=isPkg(); const UR=EQ.find(R=>R.k==='unit');
-      if(UR){ const a=p(UR.x0,UR.y0), b=p(UR.x1,UR.y1); const cx=(a[0]+b[0])/2, cy=(a[1]+b[1])/2, w=Math.abs(b[0]-a[0]), h=Math.abs(b[1]-a[1]); const vert=h>w; const rot=vert?` transform="rotate(-90 ${cx.toFixed(1)} ${cy.toFixed(1)})"`:'';
-        const sz=Math.max(6.5,Math.min(9.5,(vert?w:h)*0.28)); s+=`<text x="${cx.toFixed(1)}" y="${(cy-sz*0.15).toFixed(1)}" text-anchor="middle" font-size="${sz.toFixed(1)}" font-weight="800" fill="#fff"${rot}>${rbrOpt()&&rbrOpt().ahu&&!rbrOpt().furn?'AIR HANDLER · COIL':'FURNACE · COIL'}</text><text x="${cx.toFixed(1)}" y="${(cy+sz*1.05).toFixed(1)}" text-anchor="middle" font-size="${(sz*0.9).toFixed(1)}" font-weight="800" fill="#ffd166"${rot}>${CFM(RM.A.Qd)} CFM</text>` }
-      else { const lx=x1+6, ly=(y0+y1)/2; const tl=(y,t,sz,f)=>`<text x="${lx.toFixed(1)}" y="${y.toFixed(1)}" font-size="${sz}" font-weight="800" fill="${f}" stroke="#fff" stroke-width="3" paint-order="stroke">${t}</text>`;
-        s+=tl(ly-3,pk?'SUPPLY PLENUM · CURB':'SUPPLY RISER',9,'#003963')+tl(ly+9,CFM(RM.A.Qd)+' CFM',9,'#8a6a00'); placed.push({x1:lx,x2:lx+110,y1:ly-13,y2:ly+12}) } } }
-  if(!EQB){
-  s+=`<rect x="${u[0].toFixed(1)}" y="${u[1].toFixed(1)}" width="${6*SC}" height="${6*SC}" rx="4" fill="#003963"/>`;
-  s+=`<text x="${(u[0]+3*SC).toFixed(1)}" y="${(u[1]+1.25*SC).toFixed(1)}" text-anchor="middle" font-size="11.5" font-weight="800" fill="#fff">PLENUM</text>`;
-  s+=`<text x="${(u[0]+3*SC).toFixed(1)}" y="${(u[1]+2.1*SC).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#9fc3dd">DROP FROM UNIT</text>`;
-  s+=`<text x="${(u[0]+3*SC).toFixed(1)}" y="${(u[1]+4.9*SC).toFixed(1)}" text-anchor="middle" font-size="10" font-weight="800" fill="#ffd166">${CFM(RM.A.Qd)} CFM</text>`;
-  placed.push({x1:u[0],x2:u[0]+6*SC,y1:u[1],y2:u[1]+6*SC}); }
-  const EQc=EQB?[(EQB.x0+EQB.x1)/2,EQB.y1]:[u[0]+3*SC,u[1]+6*SC];   /* under the equipment: the layout name, then any duct down */
-  { const rp=S.retPos; if(rp){ const q=p(rp.x,rp.y); const cG=(typeof comp==='function')?comp('grille'):null; // v2.55 — the return filter grille, where the RETURN tile sits
-    // v2.60: the grille(s) at their real size round the tile's middle (Stephen 2026-09-28: "it's taking up too much space, it's not to scale") — the design grille once it is replaced
-    { const B=rbrGrilleBoxes(), gap=0.5, W=B.reduce((a,g)=>a+g.w,0)+gap*(B.length-1), H=Math.max(...B.map(g=>g.h)); const c=p(rp.x+2,rp.y+2); let gx=c[0]-W*SC/2;
-      B.forEach(g=>{ s+=`<rect x="${gx.toFixed(1)}" y="${(c[1]-g.h*SC/2).toFixed(1)}" width="${(g.w*SC).toFixed(1)}" height="${(g.h*SC).toFixed(1)}" rx="1.5" fill="#6c4fd0" stroke="#4a3496" stroke-width="1"/>`; gx+=(g.w+gap)*SC });
-      const lx=c[0]+W*SC/2+5, tl=(y,t,sz,f)=>`<text x="${lx.toFixed(1)}" y="${y.toFixed(1)}" font-size="${sz}" font-weight="800" fill="${f}" stroke="#fff" stroke-width="3" paint-order="stroke">${t}</text>`;
-      s+=tl(c[1]-5,'RETURN',9.5,'#4a3496')+tl(c[1]+5,rbrEsc(rbrGrilleSize(B)),7.5,'#6c4fd0')+tl(c[1]+14,rp.set?'placed':'assumed',7.5,'#6c4fd0'); placed.push({x1:c[0]-W*SC/2,x2:lx+90,y1:c[1]-H*SC/2-10,y2:c[1]+H*SC/2+10}) }
-    placed.push({x1:q[0],x2:q[0]+4*SC,y1:q[1],y2:q[1]+4*SC}) } }
-  // v2.46 — the duct down to each lower floor: a tagged riser symbol under the plenum
-  (RM.down||[]).forEach((x,i)=>{ const dx=EQc[0], dy=EQc[1]+(EQB?20:8)+i*22;
-    s+=`<rect x="${(dx-3*SC).toFixed(1)}" y="${dy.toFixed(1)}" width="${6*SC}" height="18" rx="3" fill="#fff" stroke="#003963" stroke-width="2" stroke-dasharray="5 3"/>`;
-    s+=`<text x="${dx.toFixed(1)}" y="${(dy+12.5).toFixed(1)}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#003963">${x.tag} ▼ ${rdTxt(x).replace(/ × /,'×')} DOWN · FLOOR ${x.fl+1} · ${CFM(x.cfm)} CFM${x.short>0?' (SHORT '+CFM(x.short)+')':''}</text>`;
-    placed.push({x1:dx-3*SC,x2:dx+3*SC,y1:dy,y2:dy+18}); });
+        const ret=R.k==='ret'; s+=`<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="2" fill="${ret?IP_RET:IP_DARK}" stroke="#fff" stroke-width="1"/>`; placed.push({x1:x,x2:x+w,y1:y,y2:y+h,k:'eq'});
+        if(R.k==='unit'){ unitRect={x,y,w,h}; eqLbl.push([x+w/2,y+h/2,'UNIT',w,h]) } else if(R.k==='plen'){ plenRect={x,y,w,h}; eqLbl.push([x+w/2,y+h/2,'PLENUM',w,h]) } else if(ret) eqLbl.push([x+w/2,y+h/2,'RETURN',w,h]) });
+      EQB={x0,y0,x1,y1} } }
+    if(N.pl&&N.pl.kind==='h'&&!plenRect){ const pw=(N.pl.W||20)/12, ph=(N.pl.L||24)/12; const a=p(N.U[0]-pw/2,N.U[1]-ph/2); s+=`<rect x="${f1(a[0])}" y="${f1(a[1])}" width="${f1(pw*SC)}" height="${f1(ph*SC)}" fill="${IP_DARK}"/>`; plenRect={x:a[0],y:a[1],w:pw*SC,h:ph*SC}; eqLbl.push([a[0]+pw*SC/2,a[1]+ph*SC/2,'PLENUM',pw*SC,ph*SC]) } }
+  if(!EQB){ const u=p(S.unitPos.x,S.unitPos.y); s+=`<rect x="${f1(u[0])}" y="${f1(u[1])}" width="${6*SC}" height="${6*SC}" rx="4" fill="${IP_DARK}"/>`; placed.push({x1:u[0],x2:u[0]+6*SC,y1:u[1],y2:u[1]+6*SC,k:'eq'}); eqLbl.push([u[0]+3*SC,u[1]+3*SC,'UNIT · PLENUM',6*SC,6*SC]); EQB={x0:u[0],y0:u[1],x1:u[0]+6*SC,y1:u[1]+6*SC} }
+  /* 3 · the return: the grille at its size, the run to it in blue */
+  { const rp=S.retPos; if(rp){ const B=rbrGrilleBoxes(), gap=0.5, Wg=B.reduce((a,g)=>a+g.w,0)+gap*(B.length-1), Hg=Math.max(...B.map(g=>g.h)); const c=p(rp.x+2,rp.y+2); let gx=c[0]-Wg*SC/2;
+      let RP=null; try{ RP=N?dnRetPath({pl:N.pl,U:N.U,r:N.r||0}):null }catch(e){ RP=null }
+      const rs=ipRetSize(); const rd=parseInt((rs.match(/\d+/)||['16'])[0],10)||16;
+      if(RP&&RP.pts&&RP.pts.length>1){ const pts=RP.pts.map(P2); const d='M'+pts.map(q=>f1(q[0])+' '+f1(q[1])).join(' L'); s+=`<path d="${d}" fill="none" stroke="${IP_RET}" stroke-width="${f1(wd(rd))}" stroke-linecap="round" stroke-linejoin="round"/>`;
+        for(let i=1;i<pts.length;i++){ const a=pts[i-1], b=pts[i]; const n=Math.max(2,Math.ceil(Math.hypot(b[0]-a[0],b[1]-a[1])/14)); for(let k=0;k<=n;k++){ const q=[a[0]+(b[0]-a[0])*k/n,a[1]+(b[1]-a[1])*k/n]; ductBoxes.push({x1:q[0]-wd(rd)/2,x2:q[0]+wd(rd)/2,y1:q[1]-wd(rd)/2,y2:q[1]+wd(rd)/2,e:'ret'}) } }
+        let bi=0, bl=0; for(let i=1;i<pts.length;i++){ const L=Math.hypot(pts[i][0]-pts[i-1][0],pts[i][1]-pts[i-1][1]); if(L>bl){ bl=L; bi=i } } const m=[(pts[bi][0]+pts[bi-1][0])/2,(pts[bi][1]+pts[bi-1][1])/2];
+        const dx=pts[bi][0]-pts[bi-1][0], dy=pts[bi][1]-pts[bi-1][1]; const nn=[-dy/bl,dx/bl]; const off=wd(rd)/2+12;
+        pill(m[0],m[1],['RETURN '+ipIn(rd)],{s:12,c:[[0,0],[nn[0]*off,nn[1]*off],[-nn[0]*off,-nn[1]*off],[nn[0]*off*2,nn[1]*off*2],[-nn[0]*off*2,-nn[1]*off*2]],stroke:IP_RET,f:IP_RET,own:'ret'}) }
+      B.forEach(g=>{ s+=`<rect x="${f1(gx)}" y="${f1(c[1]-g.h*SC/2)}" width="${f1(g.w*SC)}" height="${f1(g.h*SC)}" rx="1.5" fill="${IP_RET}" stroke="#fff" stroke-width="1"/>`; gx+=(g.w+gap)*SC });
+      placed.push({x1:c[0]-Wg*SC/2-2,x2:c[0]+Wg*SC/2+2,y1:c[1]-Hg*SC/2-2,y2:c[1]+Hg*SC/2+2,k:'ret'});
+      const gh=Hg*SC/2; pill(c[0],c[1],['RETURN GRILLE '+esc(rbrGrilleSize(B))+(rp.set?'':' · spot assumed')],{s:IP_MINFS,c:[[0,gh+14],[0,-gh-14],[Wg*SC/2+70,0],[-Wg*SC/2-70,0],[0,gh+32],[0,-gh-32]],stroke:IP_RET,f:IP_RET}) } }
+  /* 4 · the ducts: every piece in the colour of its size, fat by its size. Kept duct grey and dashed */
+  const edges=N?N.edges.filter(e=>e.segs&&e.segs.length):[];
+  edges.forEach(e=>{ const col=e.keep?IP_KEEP:ipCol(e.d); s+=`<path d="${pathD(e.segs)}" fill="none" stroke="#fff" stroke-width="${f1(wd(e.d)+2.5)}" stroke-linecap="round" stroke-linejoin="round"/>` });
+  edges.forEach(e=>{ const col=e.keep?IP_KEEP:ipCol(e.d); s+=`<path d="${pathD(e.segs)}" fill="none" stroke="${col}" stroke-width="${f1(wd(e.d))}" stroke-linecap="round" stroke-linejoin="round"${e.keep?' stroke-dasharray="9 6"':''}/>`;
+    dnObsPts(e.segs).forEach(q=>{ const c=P2(q); const r=wd(e.d)/2; ductBoxes.push({x1:c[0]-r,x2:c[0]+r,y1:c[1]-r,y2:c[1]+r,e:e.id}) }) });
+  /* 5 · the TYs: a round metal fitting where the air splits (the inlet in, the two legs out along the runs), never a box */
+  const tyGl=[]; if(N){ Object.values(N.nodes).forEach(nd=>{ if(nd.t!=='ty') return; const c=P2([nd.x,nd.y]); const inE=N.edges.find(x=>x.id===nd.inE); const outs=(nd.outE||[]).map(id=>N.edges.find(x=>x.id===id)).filter(Boolean);
+      const dirIn=inE&&inE.segs&&inE.segs.length?(()=>{ const pts=dnRoutePts(inE.segs,10); const a=pts[pts.length-2]||pts[0], b=pts[pts.length-1]; return dv.unit(dv.sub(b,a)) })():[0,1];
+      const R=Math.max(5,(nd.inD||10)*SC/24);
+      s+=`<line x1="${f1(c[0]-dirIn[0]*R*1.7)}" y1="${f1(c[1]-dirIn[1]*R*1.7)}" x2="${f1(c[0])}" y2="${f1(c[1])}" stroke="#7d848c" stroke-width="${f1(R*2)}" stroke-linecap="butt"/>`;
+      outs.forEach(oe=>{ if(!oe.segs||!oe.segs.length) return; const pts=dnRoutePts(oe.segs,10); const dirO=dv.unit(dv.sub(pts[1]||pts[0],pts[0])); const r=Math.max(4,(oe.d||8)*SC/24); s+=`<line x1="${f1(c[0])}" y1="${f1(c[1])}" x2="${f1(c[0]+dirO[0]*R*1.9)}" y2="${f1(c[1]+dirO[1]*R*1.9)}" stroke="#7d848c" stroke-width="${f1(r*2)}" stroke-linecap="round"/>` });
+      s+=`<circle cx="${f1(c[0])}" cy="${f1(c[1])}" r="${f1(R)}" fill="#a7adb4" stroke="#4a5058" stroke-width="1.6"/>`;
+      placed.push({x1:c[0]-R*1.9,x2:c[0]+R*1.9,y1:c[1]-R*1.9,y2:c[1]+R*1.9,k:'ty'}); tyGl.push({c,R,nd,dirIn}) }) }
+  /* 6 · the registers at their size; kept ones dashed */
+  const regs=[]; rooms.forEach(r=>{ (r.taps||[]).forEach(tp=>{ tp.regs.forEach(g=>{ const q=g.g||{kind:'new',w:r.can,h:r.can}; const rp=p(g.x,g.y!=null?g.y:rbrCy(r)); const hw=Math.max(5,q.w*SC/24), hh=Math.max(5,q.h*SC/24); const ex=q.kind==='keep'||q.kind==='bar';
+      s+=`<rect x="${f1(rp[0]-hw)}" y="${f1(rp[1]-hh)}" width="${f1(hw*2)}" height="${f1(hh*2)}" fill="#fff" stroke="${ex?IP_KEEP:IP_INK}" stroke-width="2"${ex?' stroke-dasharray="4 3"':''}/>`;
+      [-1/3,0,1/3].forEach(k=>{ s+=`<line x1="${f1(rp[0]-hw+2)}" y1="${f1(rp[1]+hh*k*2)}" x2="${f1(rp[0]+hw-2)}" y2="${f1(rp[1]+hh*k*2)}" stroke="${ex?'#c9ced4':'#9fb6c9'}" stroke-width="1"/>` });
+      placed.push({x1:rp[0]-hw-1,x2:rp[0]+hw+1,y1:rp[1]-hh-1,y2:rp[1]+hh+1,k:'reg'}); regs.push({r,g,rp,hw,hh}) }) }) });
+  /* 8 · the attic hatch — START HERE, when the SM has placed it */
+  if(S.hatch&&S.hatch.set){ const q=p(S.hatch.x,S.hatch.y); const w=3*SC; s+=`<rect x="${f1(q[0])}" y="${f1(q[1])}" width="${f1(w)}" height="${f1(w)}" rx="4" fill="#fff8e1" stroke="#8a6a00" stroke-width="2.2" stroke-dasharray="6 4"/>`;
+    placed.push({x1:q[0],x2:q[0]+w,y1:q[1],y2:q[1]+w,k:'hatch'}); pill(q[0]+w/2,q[1]+w/2,['START HERE','attic hatch'],{s:12,s2:IP_MINFS,c:[[0,0],[0,w/2+18],[0,-w/2-18]],stroke:'#8a6a00',f:'#8a6a00'}) }
+  /* 7 · the labels — pieces first (the fattest first, they have the least room), then TYs, then registers, then the plenum collars */
+  const mid=segs=>{ let best=null; segs.forEach(g=>{ if(g.t!=='L') return; const L=dv.dist(g.p0,g.p1); if(!best||L>best.L) best={L,m:[(g.p0[0]+g.p1[0])/2,(g.p0[1]+g.p1[1])/2],u:dv.unit(dv.sub(g.p1,g.p0))} });
+    if(!best){ const pts=dnRoutePts(segs,10); const a=pts[Math.floor(pts.length/2)-1]||pts[0], b=pts[Math.floor(pts.length/2)]||pts[pts.length-1]; best={L:0,m:[(a[0]+b[0])/2,(a[1]+b[1])/2],u:dv.unit(dv.sub(b,a))} } return best };
+  regs.forEach(({r,g,rp,hw,hh})=>{ const cfm=(g.q!=null?g.q:r.perReg); const wds=ipRegWords(r,g); const l1=esc(r.n)+' \u00b7 '+esc(wds.t), l2=CFM(cfm)+' CFM'+(wds.t2?' \u00b7 '+esc(wds.t2):''); const hw2=tw(l1,12)/2+12;
+    pill(rp[0],rp[1],[l1,l2],{s:12,s2:IP_MINFS,room:r.poly,c:[[0,hh+24],[0,-hh-24],[hw+hw2,0],[-hw-hw2,0],[hw+hw2*0.7,hh+24],[-hw-hw2*0.7,hh+24],[hw+hw2*0.7,-hh-24],[-hw-hw2*0.7,-hh-24],[0,hh+48],[0,-hh-48],[hw+hw2,hh+48],[-hw-hw2,hh+48],[hw+hw2,-hh-48],[-hw-hw2,-hh-48]],stroke:'#8fa3b5',sw:1.4}) });
+  tyGl.forEach(t=>{ const {c,R,nd,dirIn}=t; const n=[-dirIn[1],dirIn[0]]; const off=R+16; const cands=[[n[0]*off,n[1]*off],[-n[0]*off,-n[1]*off],[-dirIn[0]*off*1.3,-dirIn[1]*off*1.3]];
+    for(let a=30;a<360;a+=45){ const r=a*Math.PI/180; cands.push([Math.cos(r)*off*1.2,Math.sin(r)*off*1.2]) } for(let a=0;a<360;a+=45){ const r=a*Math.PI/180; cands.push([Math.cos(r)*off*2.1,Math.sin(r)*off*2.1]) }
+    pill(c[0],c[1],['TY '+String(nd.name).replace(/x/g,'×')],{s:12,c:cands,stroke:'#4a5058',f:'#2b3036'}) });
+  const along=(segs,k)=>{ const pts=dnRoutePts(segs,10); let L=0; const ls=[0]; for(let i=1;i<pts.length;i++){ L+=dv.dist(pts[i],pts[i-1]); ls.push(L) } const h=L*k; for(let i=1;i<pts.length;i++) if(ls[i]>=h){ const t=(h-ls[i-1])/Math.max(1e-6,ls[i]-ls[i-1]); return dv.add(pts[i-1],dv.mul(dv.sub(pts[i],pts[i-1]),t)) } return pts[pts.length-1] };
+  edges.slice().sort((a,b)=>a.len-b.len).forEach(e=>{ const M=mid(e.segs); const m=P2(M.m); const toCan=N.nodes[e.b].t==='can'; const L=(e.len||0)+(toCan?1.5:0);
+    /* on the run itself first (its middle, then along it), then right beside it at each of those spots; a short piece ends up beside its neighbours */
+    const spots=[0.5,0.38,0.62,0.26,0.74,0.14,0.86].map(k=>{ const pts=dnRoutePts(e.segs,10); const q=along(e.segs,k); let u=M.u; for(let i=1;i<pts.length;i++){ if(dv.dist(pts[i],q)<0.6){ u=dv.unit(dv.sub(pts[i],pts[i-1])); break } } return {q:P2(q),n:[-u[1],u[0]]} });
+    const off=wd(e.d)/2+(14+IP_MINFS+8)/2+2; const cands=[]; spots.forEach(sp=>cands.push([sp.q[0]-m[0],sp.q[1]-m[1]])); spots.forEach(sp=>{ cands.push([sp.q[0]-m[0]+sp.n[0]*off,sp.q[1]-m[1]+sp.n[1]*off],[sp.q[0]-m[0]-sp.n[0]*off,sp.q[1]-m[1]-sp.n[1]*off]) }); spots.slice(0,3).forEach(sp=>{ cands.push([sp.q[0]-m[0]+sp.n[0]*off*2,sp.q[1]-m[1]+sp.n[1]*off*2],[sp.q[0]-m[0]-sp.n[0]*off*2,sp.q[1]-m[1]-sp.n[1]*off*2]) });
+    pill(m[0],m[1],[(e.keep?'keep · ':'')+ipIn(e.d)+'<tspan font-size="'+IP_MINFS+'" font-weight="700" fill="#5b6b7c"> · '+ipFt(L)+'</tspan>'],{s:14,c:cands,w0:tw((e.keep?'keep · ':'')+ipIn(e.d),14)+tw(' · '+ipFt(L),IP_MINFS),stroke:e.keep?IP_KEEP:ipCol(e.d),sw:2,own:e.id,k:'duct'}) });
+  /* the collars on the plenum: a ring in the run's colour, the size inside it when it fits — every collar is named in the close-up */
+  if(N&&N.collars&&N.pl&&N.pl.kind!=='drop'){ N.edges.filter(e=>e.root).forEach(e=>{ const c=N.collars[e.id]; if(!c) return; const q=P2(c.p); const r=Math.max(4,e.d*SC/24);
+      tops+=`<circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="${f1(r)}" fill="${ipCol(e.d)}" stroke="#fff" stroke-width="2"/>`; if(r>=8) tops+=`<text x="${f1(q[0])}" y="${f1(q[1]+3)}" text-anchor="middle" font-size="${Math.min(10,r*1.05).toFixed(1)}" font-weight="800" fill="#fff">${e.d}</text>` }) }
+  eqLbl.forEach(([x,y,t,w,h,k])=>{ if(k==='roof'){ tops+=`<text x="${f1(x)}" y="${f1(y)}" text-anchor="middle" font-size="${IP_MINFS}" font-weight="800" fill="${IP_DARK}" stroke="#fff" stroke-width="3" paint-order="stroke">${t}</text>`; return }
+    const vert=h>w*1.3; const fs=Math.max(IP_MINFS,Math.min(13,(vert?w:h)*0.34)); const fits=(vert?h:w)>=tw(t,fs)+6&&Math.min(w,h)>=34; if(fits) tops+=`<text x="${f1(x)}" y="${f1(y+fs*0.36)}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="#fff"${vert?` transform="rotate(-90 ${f1(x)} ${f1(y)})"`:''}>${t}</text>`;
+    else pill(x,y,[t],{s:IP_MINFS,c:[[0,h/2+12],[0,-h/2-12],[w/2+34,0],[-w/2-34,0]],stroke:IP_DARK}) });
+  /* a duct down to a lower floor: kept existing (dashed grey) or the size it needs */
+  (RM.down||[]).forEach((x,i)=>{ const cx=(EQB.x0+EQB.x1)/2, y0=EQB.y1+8+i*30; const d=x.d; const need=(x.short>0&&x.spec&&x.spec.d>x.d)?x.spec.d:null;   /* the duct down is the one in the house — kept and capped; what it would need is said, never drawn as new */
+    s+=`<line x1="${f1(cx)}" y1="${f1(y0)}" x2="${f1(cx)}" y2="${f1(y0+26)}" stroke="${IP_KEEP}" stroke-width="${f1(wd(d))}" stroke-linecap="round" stroke-dasharray="7 5"/>`;
+    pill(cx,y0+26,['keep \u00b7 '+ipIn(d)+' down to floor '+(x.fl+1),CFM(x.cfm)+' CFM'+(x.short>0?' \u00b7 '+CFM(x.short)+' short'+(need?' \u00b7 needs '+ipIn(need):''):'')],{s:11.5,s2:IP_MINFS,c:[[0,22],[0,40],[60,0],[-60,0]],stroke:IP_KEEP}) });
+  s+=tops; try{ window.IP_LAST={unit:unitRect,plen:plenRect,pills:placed.filter(b=>b.k==='lbl'||b.k==='duct'),placed:placed.slice(),ducts:ductBoxes.slice(),edges:edges.length,tys:tyGl.length,regs:regs.length,used:ipSizesUsed(N),leaders:(tops.match(/opacity="\.75"/g)||[]).length} }catch(e){}
+  /* 9 · the sidebar: the legend (only the sizes on this job) and the plenum close-up */
+  if(side){ const sx=W-SBW+10, sw=SBW-24; let sy=MT+2;
+  s+=`<text x="${sx}" y="${sy+10}" font-size="11" font-weight="800" fill="#3678A0">COLOR = SIZE · this job</text>`; sy+=20;
+  const used=ipSizesUsed(N); const cw=Math.floor(sw/2);
+  used.forEach((d,i)=>{ const col=i%2, row=Math.floor(i/2); const x=sx+col*cw, y=sy+row*24+10; s+=`<line x1="${x}" y1="${y}" x2="${x+34}" y2="${y}" stroke="${ipCol(d)}" stroke-width="${f1(Math.min(14,wd(d)))}" stroke-linecap="round"/><text x="${x+42}" y="${y+5}" font-size="14" font-weight="800" fill="${IP_INK}">${ipIn(d)}</text>` });
+  sy+=Math.ceil(used.length/2)*24+6;
+  s+=`<line x1="${sx}" y1="${sy+10}" x2="${sx+34}" y2="${sy+10}" stroke="${IP_RET}" stroke-width="12" stroke-linecap="round"/><text x="${sx+42}" y="${sy+15}" font-size="12" font-weight="800" fill="${IP_RET}">RETURN</text>`;
+  if(edges.some(e=>e.keep)||(RM.down||[]).length||regs.some(q=>q.g.g&&(q.g.g.kind==='keep'||q.g.g.kind==='bar'))) s+=`<line x1="${sx+cw}" y1="${sy+10}" x2="${sx+cw+34}" y2="${sy+10}" stroke="${IP_KEEP}" stroke-width="8" stroke-dasharray="8 5" stroke-linecap="round"/><text x="${sx+cw+42}" y="${sy+15}" font-size="12" font-weight="800" fill="#5b6b7c">KEEP</text>`;
+  sy+=34;
+  s+=ipPlenumCloseup(N,sx,sy,sw,MT+PH-sy) }
+  /* 10 · the picture strip along the bottom */
+  if(strip) s+=ipPictoStrip(ML,MT+PH+MB-100,W-ML-MR);
+  s+='</svg>'; return s }
+/* the plenum from above: every collar in order along it, sized and coloured; the last 12" kept clear on a supply plenum (never on a plenum coil) */
+function ipPlenumCloseup(N,sx,sy,sw,maxH){ if(!N||!N.pl) return ''; const pl=N.pl, f1=v=>(+v).toFixed(1); let s='';
+  s+=`<text x="${sx}" y="${sy+10}" font-size="11" font-weight="800" fill="#3678A0">THE PLENUM \u00b7 collars from above</text>`; sy+=16;
+  if(pl.kind==='drop'){ s+=`<text x="${sx}" y="${sy+16}" font-size="${IP_MINFS}" font-weight="700" fill="#5b6b7c">The roof drop splits at one TY \u2014 see it on the plan.</text>`; return s }
+  const roots=N.edges.filter(e=>e.root&&N.collars&&N.collars[e.id]).map(e=>({e,c:N.collars[e.id]}));
+  const along=pl.kind==='v'?Math.max(pl.H||20,20):(pl.kind==='pk'?(pl.L||22):(pl.L||24)); const across=pl.kind==='v'?(pl.W||20):(pl.kind==='pk'?(pl.W||12):(pl.W||20));
+  const even=(pl.faces||[]).some(f=>f.even); const coilEnd=pl.kind==='h';
+  const room=Math.max(120,(maxH||520)-70); const sc=Math.min(room/along,66/Math.min(across,16),8); const PW=Math.max(22,Math.min(across*sc,86)), PL=along*sc;
+  const x0=sx+sw/2-PW/2, yTop=sy+18, yBot=yTop+PL;   /* the unit at the bottom, the plenum running up from it, the end cap at the top */
+  const yOf=sIn=>yBot-sIn*sc;
+  s+=`<rect x="${f1(x0)}" y="${f1(yTop)}" width="${f1(PW)}" height="${f1(PL)}" fill="${IP_DARK}" stroke="#fff" stroke-width="1"/>`;
+  if(coilEnd){ s+=`<rect x="${f1(x0-4)}" y="${f1(yBot)}" width="${f1(PW+8)}" height="16" fill="#4d6a86"/><text x="${f1(x0+PW/2)}" y="${f1(yBot+12)}" text-anchor="middle" font-size="8.5" font-weight="800" fill="#fff">UNIT \u00b7 COIL</text>` }
+  s+=`<defs><pattern id="ipHatch" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="6" stroke="#ffd166" stroke-width="2"/></pattern></defs>`;
+  if(coilEnd&&!even&&(pl.tail||0)>0){ const th=Math.min(PL*0.45,(pl.tail||12)*sc); s+=`<rect x="${f1(x0)}" y="${f1(yTop)}" width="${f1(PW)}" height="${f1(th)}" fill="url(#ipHatch)"/><text x="${f1(x0+PW/2)}" y="${f1(yTop-5)}" text-anchor="middle" font-size="${IP_MINFS}" font-weight="800" fill="#8a6a00">last ${pl.tail||12}\u2033 keep clear</text>` }
+  else if(even) s+=`<text x="${f1(x0+PW/2)}" y="${f1(yTop-5)}" text-anchor="middle" font-size="${IP_MINFS}" font-weight="800" fill="#5b6b7c">plenum coil \u00b7 spaced evenly</text>`;
+  else if(pl.kind==='v') s+=`<text x="${f1(x0+PW/2)}" y="${f1(yTop-5)}" text-anchor="middle" font-size="${IP_MINFS}" font-weight="800" fill="#5b6b7c">riser \u00b7 top is the cap</text>`;
+  const wordOf={L:'left',R:'right',T:'top',B:'under',N:'end',S:'end'};
+  roots.sort((a,b)=>(a.c.s||0)-(b.c.s||0)).forEach(({e,c})=>{ const k=c.face||'L'; const r=Math.max(5,Math.min(11,e.d*sc/2)); let cx, cy=yOf(c.s||0), tx, anchor;
+    if(k==='L'){ cx=x0; tx=x0-r-6; anchor='end' } else if(k==='R'){ cx=x0+PW; tx=x0+PW+r+6; anchor='start' } else if(k==='N'||k==='S'){ cx=x0+PW/2; cy=k==='N'?yTop:yBot; tx=x0+PW+r+6; anchor='start' } else { cx=x0+PW/2; tx=x0+PW+r+6+(k==='B'?0:0); anchor='start' }
+    if(k==='T'||k==='B'){ tx=x0+PW+8; anchor='start' }
+    s+=`<circle cx="${f1(cx)}" cy="${f1(cy)}" r="${f1(r)}" fill="${ipCol(e.d)}" stroke="#fff" stroke-width="1.5"/>`;
+    s+=`<text x="${f1(tx)}" y="${f1(cy+4)}" text-anchor="${anchor}" font-size="12" font-weight="800" fill="${ipCol(e.d)}">${ipIn(e.d)}<tspan font-size="9" font-weight="700" fill="#5b6b7c"> ${wordOf[k]||k}</tspan></text>` });
+  s+=`<text x="${f1(sx+sw/2)}" y="${f1(yBot+32)}" text-anchor="middle" font-size="${IP_MINFS}" font-weight="700" fill="#5b6b7c">${roots.length} collar${roots.length===1?'':'s'} \u00b7 ${pl.kind==='v'?'upright riser':(pl.kind==='pk'?'curb opening':(pl.L+'\u2033 plenum'))} \u00b7 2\u2033 apart</text>`;
+  return s }
+/* four pictures in place of the seven written notes */
+function ipPictoStrip(x0,y0,w){ const f1=v=>(+v).toFixed(1); const cw=w/4; let s=`<line x1="${x0}" y1="${f1(y0-6)}" x2="${x0+w}" y2="${f1(y0-6)}" stroke="#dfe5eb" stroke-width="1"/>`;
+  const items=[
+    ['Pull flex tight — no slack', (x,y)=>`<path d="M${x+6} ${y+22} q 8 -12 16 0 t 16 0 t 16 0" fill="none" stroke="#c9ced4" stroke-width="7" stroke-linecap="round"/><line x1="${x+6}" y1="${y+44}" x2="${x+62}" y2="${y+44}" stroke="${IP_COL[8]}" stroke-width="7" stroke-linecap="round"/><path d="M${x+0} ${y+44} l 8 -5 v 10 z M${x+68} ${y+44} l -8 -5 v 10 z" fill="${IP_INK}"/><text x="${x+40}" y="${y+18}" font-size="11" font-weight="800" fill="#CD1E1F">✗</text><text x="${x+70}" y="${y+48}" font-size="11" font-weight="800" fill="#1e9e4a">✓</text>`],
+    ['Strap every 4 ft max — strap 1½″ wide or wider', (x,y)=>`<line x1="${x}" y1="${y+8}" x2="${x+80}" y2="${y+8}" stroke="#8a939c" stroke-width="3"/><line x1="${x+4}" y1="${y+40}" x2="${x+76}" y2="${y+40}" stroke="${IP_COL[8]}" stroke-width="8" stroke-linecap="round"/>${[14,40,66].map(k=>`<path d="M${x+k-5} ${y+8} v 26 h 10 v -26" fill="none" stroke="${IP_INK}" stroke-width="2.4"/>`).join('')}<path d="M${x+14} ${y+52} h 26 m 0 0 l -5 -3 v 6 z M${x+14} ${y+52} l 5 -3 v 6 z" fill="${IP_INK}" stroke="${IP_INK}" stroke-width="1.2"/><text x="${x+27}" y="${y+64}" text-anchor="middle" font-size="${IP_MINFS}" font-weight="800" fill="${IP_INK}">4 ft</text>`],
+    ['No sharp bends — never tighter than the duct is wide', (x,y)=>`<path d="M${x+2} ${y+46} h 22 a 22 22 0 0 0 22 -22 v -16" fill="none" stroke="${IP_COL[8]}" stroke-width="8" stroke-linecap="round"/><text x="${x+52}" y="${y+50}" font-size="12" font-weight="800" fill="#1e9e4a">✓</text><path d="M${x+66} ${y+46} h 18 l 4 -38" fill="none" stroke="#c9ced4" stroke-width="8" stroke-linecap="round" stroke-linejoin="miter"/><text x="${x+90}" y="${y+50}" font-size="12" font-weight="800" fill="#CD1E1F">✗</text>`],
+    ['Cut to length — never coil or loop the extra', (x,y)=>`<line x1="${x}" y1="${y+40}" x2="${x+44}" y2="${y+40}" stroke="${IP_COL[8]}" stroke-width="8" stroke-linecap="round"/><path d="M${x+40} ${y+20} l 8 14 l 8 -14 M${x+44} ${y+34} l -4 10 M${x+52} ${y+34} l 4 10" fill="none" stroke="${IP_INK}" stroke-width="2.2" stroke-linecap="round"/><path d="M${x+68} ${y+40} c 0 -18 26 -18 26 0 c 0 16 -22 16 -24 0" fill="none" stroke="#c9ced4" stroke-width="7" stroke-linecap="round"/><text x="${x+96}" y="${y+48}" font-size="12" font-weight="800" fill="#CD1E1F">✗</text>`]];
+  items.forEach((it,i)=>{ const x=x0+i*cw+4, y=y0+4; s+=it[1](x,y); s+=`<text x="${f1(x+112)}" y="${f1(y+26)}" font-size="${IP_MINFS}" font-weight="800" fill="${IP_INK}">${ipWrap(it[0],Math.max(10,Math.floor((cw-118)/5.9)),f1(x+112))}</text>` });
+  return s }
+function ipWrap(t,n,x){ const words=t.split(' '); const lines=[]; let cur=''; words.forEach(w=>{ if((cur+' '+w).trim().length>n&&cur){ lines.push(cur); cur=w } else cur=(cur+' '+w).trim() }); if(cur) lines.push(cur); return lines.map((l,i)=>`<tspan x="${x}" dy="${i?13:0}">${l}</tspan>`).join('') }
+/* the pick list: what to load on the truck, grouped by the same colours as the plan */
+function rbrPickListHtml(){ const m=RM.mat||{}; const N=RM.net; if(!m.flex) return ''; let h='';
+  const chip=(col,dash)=>`<span class="ipchip" style="background:${dash?'transparent':col};border:2px ${dash?'dashed':'solid'} ${col}"></span>`;
+  const runs={}; if(N) N.edges.forEach(e=>{ runs[e.d]=(runs[e.d]||0)+1 });
+  const sizes=Object.keys(m.flex).map(Number).sort((a,b)=>a-b);
+  h+=`<div class="ipgrp"><h3>Flex duct — R-8 round, pulled tight</h3><table class="dt ippick"><tbody>`;
+  sizes.forEach(d=>{ const ft=Math.ceil(m.flex[d]); h+=`<tr><td class="ipsz">${chip(ipCol(d))}<b>${ipIn(d)}</b></td><td class="num"><b>${ft} ft</b></td><td>${runs[d]||0} run${runs[d]===1?'':'s'} · ${Math.ceil(ft/25)} × 25 ft ${Math.ceil(ft/25)===1?'box':'boxes'}</td></tr>` });
+  h+=`</tbody></table></div>`;
+  const grp=(title,obj,fmt,note)=>{ const ks=Object.keys(obj||{}); if(!ks.length) return; ks.sort((a,b)=>(parseFloat(b)||0)-(parseFloat(a)||0)); h+=`<div class="ipgrp"><h3>${title}</h3><table class="dt ippick"><tbody>`; ks.forEach(k=>{ h+=`<tr><td class="ipsz">${fmt(k)}</td><td class="num"><b>${obj[k]}</b></td><td>${note?note(k):''}</td></tr>` }); h+=`</tbody></table></div>` };
+  grp('Round metal TYs — in × out × out',m.ty,k=>{ const d=parseInt(k,10); return chip(ipCol(d))+'<b>TY '+String(k).replace(/x/g,'×')+'</b>' },k=>{ const q=String(k).split(/x/); return 'inlet '+ipIn(q[0])+' · legs '+ipIn(q[1])+' + '+ipIn(q[2]) });
+  grp('Plenum collars — one per run off the plenum',m.coll,k=>chip(ipCol(+k))+'<b>'+ipIn(k)+' collar</b>',()=>'with a balancing damper');
+  grp('Balancing dampers — one on every branch',m.damp,k=>chip(ipCol(+k))+'<b>'+ipIn(k)+'</b>',()=>'in the leg to the can');
+  grp('Junction boxes (Remote Box)',m.box,k=>'<b>'+k+'</b>');
+  grp('Square cans',m.can,k=>'<b>'+k+' can</b>',()=>'Goettl square can');
+  grp('Grilles — new and enlarged faces',m.gr,k=>'<b>'+k+'</b>');
+  grp('Bar-type swaps — same cutout, no drywall',m.swap,k=>'<b>'+k+' bar</b>');
+  grp('Existing registers — reuse, no drywall (the flex lands on the boot there)',m.reuse,k=>chip(IP_KEEP,true)+'<b>'+k+'</b>');
+  grp('New boots behind kept faces',m.boot,k=>'<b>'+k+'</b>');
+  return `<div class="ippick-wrap"><h2 class="iph2">Pick list — load the truck</h2><p class="ipnote">About <b>${rbrMatTotalFt()} ft</b> of flex in all, measured off the ${S.plan?'floor plan':'grid'}. Not listed: mastic, UL-181 tape, hanger strap, R-8 sleeve.</p><div class="ipcols">${h}</div></div>` }
+/* the plan on a screen: pinch to zoom, drag to pan, double-tap to reset (the page itself stays put on the iPad) */
+function rbrPlanZoomWire(host){ if(!host||host.dataset.zoom) return; host.dataset.zoom='1'; const svg=host.querySelector('svg.iplan'); if(!svg) return;
+  let sc=1, tx=0, ty=0; const pts=new Map(); let last=null, pinch0=null, tapAt=0;
+  const apply=()=>{ svg.style.transform=`translate(${tx}px,${ty}px) scale(${sc})`; host.classList.toggle('zoomed',sc>1.02) };
+  const reset=()=>{ sc=1; tx=0; ty=0; apply() };
+  host.addEventListener('pointerdown',e=>{ if(e.button!==0&&e.pointerType==='mouse') return; pts.set(e.pointerId,[e.clientX,e.clientY]); try{ host.setPointerCapture(e.pointerId) }catch(_){}
+    if(pts.size===1){ last=[e.clientX,e.clientY]; const t=Date.now(); if(t-tapAt<320){ reset(); tapAt=0 } else tapAt=t }
+    if(pts.size===2){ const a=[...pts.values()]; pinch0={d:Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]),sc,cx:(a[0][0]+a[1][0])/2,cy:(a[0][1]+a[1][1])/2,tx,ty} } });
+  host.addEventListener('pointermove',e=>{ if(!pts.has(e.pointerId)) return; pts.set(e.pointerId,[e.clientX,e.clientY]);
+    if(pts.size===2&&pinch0){ const a=[...pts.values()]; const d=Math.hypot(a[0][0]-a[1][0],a[0][1]-a[1][1]); const k=Math.max(1,Math.min(6,pinch0.sc*d/Math.max(1,pinch0.d))); const r=host.getBoundingClientRect(); const cx=(a[0][0]+a[1][0])/2-r.left, cy=(a[0][1]+a[1][1])/2-r.top;
+      const px=(pinch0.cx-r.left-pinch0.tx)/pinch0.sc, py=(pinch0.cy-r.top-pinch0.ty)/pinch0.sc; sc=k; tx=cx-px*sc; ty=cy-py*sc; apply(); e.preventDefault() }
+    else if(pts.size===1&&last&&sc>1.02){ tx+=e.clientX-last[0]; ty+=e.clientY-last[1]; last=[e.clientX,e.clientY]; apply(); e.preventDefault() } },{passive:false});
+  const up=e=>{ pts.delete(e.pointerId); if(pts.size<2) pinch0=null; if(!pts.size) last=null }; host.addEventListener('pointerup',up); host.addEventListener('pointercancel',up);
+  host.addEventListener('wheel',e=>{ if(!e.ctrlKey&&!e.metaKey) return; e.preventDefault(); const r=host.getBoundingClientRect(); const cx=e.clientX-r.left, cy=e.clientY-r.top; const k=Math.max(1,Math.min(6,sc*(e.deltaY<0?1.12:0.89))); const px=(cx-tx)/sc, py=(cy-ty)/sc; sc=k; tx=cx-px*sc; ty=cy-py*sc; apply() },{passive:false});
+  host.addEventListener('dblclick',e=>{ e.preventDefault(); reset() }) }
+/* the key on its own (print page 2, or a narrow screen): the legend, the plenum close-up and the four pictures */
+function ipKeySvg(){ const N=RM.net, f1=v=>(+v).toFixed(1); const W=1040, used=ipSizesUsed(N); const rows=Math.ceil(used.length/3); const H=Math.max(300,60+rows*26+40)+110; let s='';
+  s+=`<svg class="iplan ipkey" viewBox="0 0 ${W} ${H}" role="img" aria-label="Plan key — colour by size, the plenum collars, the four rules" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif"><rect x="0" y="0" width="${W}" height="${H}" fill="#fff"/>`;
+  s+=`<text x="14" y="20" font-size="11" font-weight="800" fill="#3678A0">COLOR = SIZE · this job</text>`;
+  used.forEach((d,i)=>{ const col=i%3, row=Math.floor(i/3); const x=14+col*120, y=42+row*26; s+=`<line x1="${x}" y1="${y}" x2="${x+38}" y2="${y}" stroke="${ipCol(d)}" stroke-width="${f1(Math.min(14,Math.max(3.5,d*16/12)))}" stroke-linecap="round"/><text x="${x+46}" y="${y+5}" font-size="14" font-weight="800" fill="${IP_INK}">${ipIn(d)}</text>` });
+  const ly=42+rows*26+8; s+=`<line x1="14" y1="${ly}" x2="52" y2="${ly}" stroke="${IP_RET}" stroke-width="12" stroke-linecap="round"/><text x="60" y="${ly+5}" font-size="12" font-weight="800" fill="${IP_RET}">RETURN</text><line x1="134" y1="${ly}" x2="172" y2="${ly}" stroke="${IP_KEEP}" stroke-width="8" stroke-dasharray="8 5" stroke-linecap="round"/><text x="180" y="${ly+5}" font-size="12" font-weight="800" fill="#5b6b7c">KEEP — existing, stays</text>`;
+  s+=ipPlenumCloseup(N,480,8,300,H-130);
+  s+=ipPictoStrip(14,H-96,W-28);
+  s+='</svg>'; return s }
+/* the sheet for paper: a scale that lands the smallest text at about 9 pt on a letter page (portrait for a tall house, landscape for a wide one) */
+function ipPrintSC(){ const rooms=S.rooms; if(!rooms.length) return 12; let bx1=1e9,by1=1e9,bx2=-1e9,by2=-1e9;
+  rooms.forEach(r=>{ bx1=Math.min(bx1,r.x); by1=Math.min(by1,r.y); bx2=Math.max(bx2,r.x+r.w); by2=Math.max(by2,r.y+r.d) });
+  if(S.plan){ const pd=S.plan.pad||0; bx1=Math.min(bx1,pd); by1=Math.min(by1,pd); bx2=Math.max(bx2,pd+S.plan.w); by2=Math.max(by2,pd+S.plan.d) }
+  bx1=Math.min(bx1,S.unitPos.x)-1.5; by1=Math.min(by1,S.unitPos.y)-1.5; bx2=Math.max(bx2,S.unitPos.x+6)+1.5; by2=Math.max(by2,S.unitPos.y+6)+1.5;
+  const fw=bx2-bx1, fd=by2-by1; const land=fw>fd*1.15; const pw=land?1000:750, ph=land?690:930;   /* the printable letter page in px at 96 dpi, 9 mm margins, less the title */
+  const sc=Math.min((pw-28)/fw,(ph-60)/fd)/1.05; return {SC:Math.max(7,Math.min(16,sc)),land} }
+function rbrInstallPlanPrintHtml(o){ o=o||{}; if(!(S.rooms&&S.rooms.length&&RM&&RM.net)) return ''; const P=ipPrintSC();   /* the room design exists once there are rooms — step 1 prints it before New duct system is ticked */
+  return `<div class="ipprint"><div class="ipsheet plan ${P.land?'land':'port'}${o.first?' first':''}"><div class="ipwrap">${rbrInstallPlanSvg(P.SC,{side:false,strip:false,print:true})}<div class="iphint">pinch · drag · double-tap resets</div></div></div><div class="ipsheet key">${ipKeySvg()}${rbrPickListHtml()}</div></div>` }
 
-  // v2.57 — THE LAYOUT, as the crew builds it (Wye Tree · Stepped Trunk · Remote Box): the collars on the plenum (drawn at true size inside the unit
-  // tile), every run on its real route at its real bend radius, a round metal TY wherever the air splits (inlet × leg × leg), the junction box on a
-  // Remote Box layout, and a balancing damper on every branch. The 2D, the 3D, the schedules and the material list all read this one network.
-  const N=RM.net;
-  if(N){ const pl=N.pl, U=N.U; const f1=v=>v.toFixed(1); const P2=pt=>p(pt[0],pt[1]);
-    if(pl.kind!=='drop'){ const pw=(pl.W||20)/12, ph=(pl.kind==='h'?(pl.L||24):(pl.H||20))/12; const a=p(U[0]-pw/2,U[1]-ph/2); s+=`<rect x="${f1(a[0])}" y="${f1(a[1])}" width="${f1(pw*SC)}" height="${f1(ph*SC)}" fill="#1d5a86" stroke="#9fc3dd" stroke-width="1.2"/>` }
-    const pathD=segs=>{ let d=''; segs.forEach((g,i)=>{ if(g.t==='L'){ const a=P2(g.p0), b=P2(g.p1); d+=(i?'L':'M')+f1(a[0])+' '+f1(a[1])+' L'+f1(b[0])+' '+f1(b[1]) }
-        else { const st=[g.c[0]+g.r*Math.cos(g.a0),g.c[1]+g.r*Math.sin(g.a0)], en=dnArcEnd(g); const a=P2(st), b=P2(en); d+=(i?'L':'M')+f1(a[0])+' '+f1(a[1])+` A${f1(g.r*SC)} ${f1(g.r*SC)} 0 ${Math.abs(g.da)>Math.PI?1:0} ${g.da>0?1:0} `+f1(b[0])+' '+f1(b[1]) } }); return d };
-    const trk=e=>e.k==='trunk'||e.k==='boxfeed'; const wd=e=>Math.max(2.4,e.d*SC/12);
-    N.edges.forEach(e=>{ if(!e.segs||!e.segs.length) return; s+=`<path d="${pathD(e.segs)}" fill="none" stroke="${trk(e)?'#003963':'#0f8b8b'}" stroke-width="${f1(wd(e)+(trk(e)?3:0))}" stroke-linecap="round" stroke-linejoin="round"${trk(e)?'':' opacity=".55"'}/>` });
-    N.edges.forEach(e=>{ if(!e.segs||!e.segs.length) return; s+=`<path d="${pathD(e.segs)}" fill="none" stroke="${trk(e)?'#ffd166':'#0a5c5c'}" stroke-width="${f1(trk(e)?wd(e):1.6)}" stroke-linecap="round" stroke-linejoin="round"/>`;
-      dnRoutePts(e.segs,20).forEach(q=>{ const c=P2(q); placed.push({x1:c[0]-wd(e)/2-2,x2:c[0]+wd(e)/2+2,y1:c[1]-wd(e)/2-2,y2:c[1]+wd(e)/2+2}) }) });
-    Object.values(N.nodes).forEach(nd=>{ const c=P2([nd.x,nd.y]);
-      if(nd.t==='ty'){ s+=`<rect x="${f1(c[0]-6)}" y="${f1(c[1]-6)}" width="12" height="12" rx="2" fill="#ff8fa3" stroke="#a8214a" stroke-width="1.6"/>`; placed.push({x1:c[0]-7,x2:c[0]+7,y1:c[1]-7,y2:c[1]+7}) }
-      if(nd.t==='box'){ const ax=nd.ax||[1,0], pp=dv.perp(ax); const hl=(nd.len||2)/2, hw=(nd.w||1)/2; const cs=[[-hl,-hw],[hl,-hw],[hl,hw],[-hl,hw]].map(([u,v])=>P2([nd.x+ax[0]*u+pp[0]*v,nd.y+ax[1]*u+pp[1]*v]));
-        s+=`<polygon points="${cs.map(q=>f1(q[0])+','+f1(q[1])).join(' ')}" fill="#e7ecf1" stroke="#003963" stroke-width="2"/>`; cs.forEach(q=>placed.push({x1:q[0]-3,x2:q[0]+3,y1:q[1]-3,y2:q[1]+3})) } });
-    // the collars on the plenum and a balancing damper on every branch (a run that ends at a can)
-    const damper=(q,dir)=>{ const n=[-dir[1],dir[0]]; return `<circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="5.5" fill="#fff" stroke="#CD1E1F" stroke-width="2"/><line x1="${f1(q[0]-n[0]*4-dir[0]*2)}" y1="${f1(q[1]-n[1]*4-dir[1]*2)}" x2="${f1(q[0]+n[0]*4+dir[0]*2)}" y2="${f1(q[1]+n[1]*4+dir[1]*2)}" stroke="#CD1E1F" stroke-width="2"/>` };
-    N.edges.filter(e=>e.root).forEach(e=>{ const c=N.collars&&N.collars[e.id]; if(!c) return; const q=P2(c.p); s+=`<circle cx="${f1(q[0])}" cy="${f1(q[1])}" r="${f1(Math.max(4,e.d*SC/24))}" fill="#fff" stroke="#003963" stroke-width="2"/>` });
-    N.edges.filter(e=>N.nodes[e.b].t==='can'&&e.segs&&e.segs.length).forEach(e=>{ const pts=dnRoutePts(e.segs,10); let acc=0, at=pts[0], dir=[1,0]; for(let i=1;i<pts.length;i++){ const l=dv.dist(pts[i],pts[i-1]); dir=dv.unit(dv.sub(pts[i],pts[i-1])); if(acc+l>=Math.min(0.9,Math.max(0.3,e.len*0.3))){ const k=(Math.min(0.9,Math.max(0.3,e.len*0.3))-acc)/l; at=dv.add(pts[i-1],dv.mul(dv.sub(pts[i],pts[i-1]),k)); break } acc+=l; at=pts[i] }
-      const q=P2(at); s+=damper(q,dir); placed.push({x1:q[0]-6,x2:q[0]+6,y1:q[1]-6,y2:q[1]+6}) });
-    s+=`<text x="${f1(EQc[0])}" y="${f1(EQc[1]+13)}" text-anchor="middle" font-size="9" font-weight="800" fill="#003963" stroke="#fff" stroke-width="3" paint-order="stroke">${rbrEsc(dnName(N.lay).toUpperCase())}</text>`; }
-  rooms.forEach(r=>{ r.taps.forEach(tp=>{
-    tp.regs.forEach(g=>{ const q=g.g||{kind:'new',w:r.can,h:r.can}; const rp=p(g.x,g.y!=null?g.y:rbrCy(r)), half=Math.max(5,Math.max(q.w,q.h)*SC/24), ex=q.kind==='keep'||q.kind==='bar';
-      // v2.46 — a kept face is drawn dashed at its own size (it stays where it is); a new or enlarged can is the solid square
-      s+=`<rect x="${(rp[0]-Math.max(5,q.w*SC/24)).toFixed(1)}" y="${(rp[1]-Math.max(5,q.h*SC/24)).toFixed(1)}" width="${(Math.max(5,q.w*SC/24)*2).toFixed(1)}" height="${(Math.max(5,q.h*SC/24)*2).toFixed(1)}" fill="${ex?'#fffbea':'#fff'}" stroke="${ex?'#a35300':'#003963'}" stroke-width="2"${ex?' stroke-dasharray="4 3"':''}/>`;
-      s+=`<line x1="${(rp[0]-half).toFixed(1)}" y1="${(rp[1]-half/3).toFixed(1)}" x2="${(rp[0]+half).toFixed(1)}" y2="${(rp[1]-half/3).toFixed(1)}" stroke="#9fb6c9" stroke-width="1"/>`;
-      s+=`<line x1="${(rp[0]-half).toFixed(1)}" y1="${(rp[1]+half/3).toFixed(1)}" x2="${(rp[0]+half).toFixed(1)}" y2="${(rp[1]+half/3).toFixed(1)}" stroke="#9fb6c9" stroke-width="1"/>`;
-      g.px=rp; g.half=half; }); }) });
-  if(N){ const mid=segs=>{ const pts=dnRoutePts(segs,10); let L=0; const ls=[0]; for(let i=1;i<pts.length;i++){ L+=dv.dist(pts[i],pts[i-1]); ls.push(L) } const h=L/2; for(let i=1;i<pts.length;i++) if(ls[i]>=h){ const k=(h-ls[i-1])/Math.max(1e-6,ls[i]-ls[i-1]); return dv.add(pts[i-1],dv.mul(dv.sub(pts[i],pts[i-1]),k)) } return pts[0] };
-    N.edges.filter(e=>(e.k==='trunk'||e.k==='boxfeed'||e.k==='direct')&&e.segs&&e.segs.length&&e.len>1.2).forEach(e=>{ const m=p(...mid(e.segs)); s+=T(m[0],m[1]-Math.max(2.4,e.d*SC/12)/2-8,`${e.tag}  Ø${e.d}"  ${CFM(e.q)} CFM`,{s:9.5,f:e.k==='direct'?'#0a5c5c':'#8a6a00',side:'y'}) });
-    Object.values(N.nodes).forEach(nd=>{ const c=p(nd.x,nd.y); if(nd.t==='ty') s+=T(c[0],c[1]-12,'TY '+nd.name,{s:9,f:'#a8214a',side:'y'}); if(nd.t==='box') s+=T(c[0],c[1]-(nd.w||1)*SC/2-10,`BOX ${nd.wIn}×${nd.lIn}`,{s:9,f:'#003963',side:'y'}) });
-    N.edges.filter(e=>N.nodes[e.b].t==='can'&&e.segs&&e.segs.length&&e.len>2.5).forEach(e=>{ const m=p(...mid(e.segs)); s+=T(m[0],m[1],`${e.tag} Ø${e.d}"`,{s:8.5,f:'#0a5c5c',side:'x'}) }); }
-  rooms.forEach(r=>{ r.taps.forEach(tp=>{
-    tp.regs.forEach(g=>{ if(!g.px) return; const q=g.g||{kind:'new',w:r.can,h:r.can}; const lbl=(q.kind==='keep'?q.w+'×'+q.h+' EXIST · KEEP':q.kind==='bar'?q.w+'×'+q.h+' EXIST · BAR TYPE':q.kind==='enl'?q.w+'×'+q.h+' CAN · ENLARGE':q.w+'×'+q.h+(q.added?' CAN · ADDED':' CAN'))+(q.push?' · PUSH '+q.fpm+' FPM':'')+(q.asm?' · ASSUMED':'')+(q.newBoot?' · NEW BOOT':'')+' · Ø'+r.leg.d+'" · '+CFM(r.perReg)+' CFM', hw=lbl.length*9*0.56/2+12;
-      s+=badge(g.px[0],g.px[1]-g.half-11,g.tag,'#003963');
-      placed.push({x1:g.px[0]-14,x2:g.px[0]+14,y1:g.px[1]-g.half-20,y2:g.px[1]-g.half-2});
-      s+=T(g.px[0],g.px[1]+g.half+12,lbl,{s:9,f:'#003963',c:[[0,0],[0,-2*g.half-26],[0,22],[hw+g.half,0],[-hw-g.half,0],[0,40]]}); }); }) });
-  const ly=MT+PH+52;
-  s+=`<line x1="8" y1="${ly-10}" x2="${W-8}" y2="${ly-10}" stroke="#003963" stroke-width="1.5"/>`;
-  s+=pl(20,ly+4,'LEGEND',{s:9,w:800,f:'#3678A0'});
-  [['trunk','Trunk — size noted, drawn to scale'],['branch','Branch / leg — flex R-8, pulled tight'],
-   ['collar','Balancing damper — one on every branch'],['ty','Round metal TY — inlet × leg × leg'],
-   ['can','Square can + grille — numbered tag above it'],['keep','Existing register kept in place (dashed)'],['red','Junction box (Remote Box) / plenum collar']].forEach((it,i)=>{
-    const x=20,y=ly+20+i*15;
-    if(it[0]==='trunk') s+=`<line x1="${x}" y1="${y}" x2="${x+22}" y2="${y}" stroke="#003963" stroke-width="9"/><line x1="${x}" y1="${y}" x2="${x+22}" y2="${y}" stroke="#ffd166" stroke-width="6"/>`;
-    if(it[0]==='branch') s+=`<line x1="${x}" y1="${y}" x2="${x+22}" y2="${y}" stroke="#0f8b8b" stroke-width="6" opacity=".55"/><line x1="${x}" y1="${y}" x2="${x+22}" y2="${y}" stroke="#0a5c5c" stroke-width="1.6"/>`;
-    if(it[0]==='collar') s+=`<circle cx="${x+11}" cy="${y}" r="5.5" fill="#fff" stroke="#CD1E1F" stroke-width="2"/><line x1="${x+7.4}" y1="${y+3.6}" x2="${x+14.6}" y2="${y-3.6}" stroke="#CD1E1F" stroke-width="2"/>`;
-    if(it[0]==='ty') s+=`<rect x="${x+5}" y="${y-6}" width="12" height="12" rx="2" fill="#ff8fa3" stroke="#a8214a" stroke-width="1.6"/>`;
-    if(it[0]==='can') s+=`<rect x="${x+3}" y="${y-7}" width="14" height="14" fill="#fff" stroke="#003963" stroke-width="2"/>`;
-    if(it[0]==='keep') s+=`<rect x="${x+3}" y="${y-7}" width="14" height="14" fill="#fffbea" stroke="#a35300" stroke-width="2" stroke-dasharray="4 3"/>`;
-    if(it[0]==='red') s+=`<rect x="${x+1}" y="${y-5}" width="12" height="10" fill="#e7ecf1" stroke="#003963" stroke-width="1.6"/><circle cx="${x+19}" cy="${y}" r="4" fill="#fff" stroke="#003963" stroke-width="2"/>`;
-    s+=pl(x+30,y+3.5,it[1],{s:9,w:700,f:'#0b2340'}); });
-  const sbx=20, sby=ly+143;
-  s+=`<rect x="${sbx}" y="${sby-6}" width="${5*SC}" height="6" fill="#003963"/><rect x="${sbx+5*SC}" y="${sby-6}" width="${5*SC}" height="6" fill="#fff" stroke="#003963" stroke-width="1"/>`;
-  s+=pl(sbx,sby+11,'0',{s:8,w:700})+pl(sbx+5*SC,sby+11,"5'",{a:'middle',s:8,w:700})+pl(sbx+10*SC,sby+11,"10'",{a:'middle',s:8,w:700});
-  s+=pl(sbx+10*SC+14,sby,'GRID = 2 ft',{s:8.5,w:800,f:'#8a97a4'});
-  const nx=Math.min(W*0.42,360);
-  s+=pl(nx,ly+4,'GENERAL NOTES — ALL WORK',{s:9,w:800,f:'#3678A0'});
-  RBR_NOTES.forEach((n,i)=>{ s+=pl(nx,ly+20+i*15,(i+1)+'.',{s:9,w:800,f:'#CD1E1F'}); s+=pl(nx+16,ly+20+i*15,n,{s:9,w:600,f:'#0b2340'}) });
-  s+='</svg>'; return s;
-}
 const RBR_NOTES=[
  'Flex is installed PULLED TIGHT — 15% compression doubles the friction, 30% quadruples it; the design assumes it fully stretched.',
  'Balancing damper on every branch, accessible from the attic. Set at start-up, not at the grille.',
@@ -8149,7 +8267,7 @@ function rbrRegCol(r){ const grp={},ord=[]; (r.regs||[]).forEach(g=>{ const k=rb
 // v2.57 — the room's way from the plenum on the chosen layout: its trunk, the TYs it passes, the run to its can(s)
 function rbrDuctTxt(r){ if(r.nr) return '<span class="note">no register — its load lands on the rooms around it</span>'; const N=RM&&RM.net; const ps=(r.paths||[]);
   if(!N||!ps.length) return r.nReg===1?'Ø'+r.leg.d+'" → can':r.nReg+' × Ø'+r.leg.d+'" → cans';
-  const one=p=>{ const es=p.edges.map(id=>N.edges.find(e=>e.id===id)); const out=[]; es.forEach((e,i)=>{ if(i===0) out.push(e.k==='direct'?`direct Ø${e.d}"`:`trunk ${e.tag} Ø${e.d}"`); const b=N.nodes[e.b]; if(b.t==='ty') out.push('TY '+b.name); if(b.t==='box') out.push('box '+b.tag); if(b.t==='can') out.push(`Ø${e.d}" → can ${p.tag}`) }); return out.join(' → ') };
+  const one=p=>{ const es=p.edges.map(id=>N.edges.find(e=>e.id===id)); const out=[]; es.forEach((e,i)=>{ if(i===0) out.push(e.k==='direct'?`direct Ø${e.d}"`:`Ø${e.d}" trunk`); const b=N.nodes[e.b]; if(b.t==='ty') out.push('TY '+String(b.name).replace(/x/g,'×')); if(b.t==='box') out.push(`box ${b.wIn}×${b.lIn}`); if(b.t==='can') out.push(`Ø${e.d}" → can`) }); return out.join(' → ') };   /* v2.63: the way in sizes, never tags */
   const uniq=[...new Set(ps.map(one))]; return uniq.slice(0,2).join('<br>')+(uniq.length>2?`<br><span class="note">+ ${uniq.length-2} more</span>`:'') }
 function rbrTrunkTbl(){ const N=RM&&RM.net; let t='<thead><tr><th>Tag</th><th>Run</th><th class="num">Length</th><th class="num">Carries</th><th>Size</th><th class="num">Velocity</th></tr></thead><tbody>';
   if(N){ const nm=nd=>nd.t==='ty'?'TY '+nd.tag+' '+nd.name:(nd.t==='box'?'junction box '+nd.tag+' '+nd.wIn+'×'+nd.lIn:(nd.t==='can'?'can '+nd.reg.tag+' · '+rbrEsc(nd.reg.room):'plenum'));
@@ -8385,7 +8503,7 @@ function rbrGrid(){
   G.style.setProperty('--cell',(px*2)+'px'); G.style.height=(F.d*px)+'px'; G.innerHTML='';
   G.classList.toggle('plan',!!S.plan);
   if(S.plan){ rbrPlanGrid(G,px); S.rooms.filter(r=>r.fl===fcTop()&&!r.poly).forEach(r=>{ const t=mkTile(G,px,r.ld==='high'?'hi':(r.ld==='low'?'lo':''),r.x,r.y,r.w,r.d,r.n,CFM(r.cfm)+' CFM · '+r.nReg+'v'); t.dataset.id=r.id; rbrDrag(t,r,px) });
-    rbrUnitTile(G,px); rbrRetTile(G,px); rbrVentDots(G,px); return }   // v2.54 — the real house; only the drop moves · v2.55: and the return grille
+    rbrUnitTile(G,px); rbrRetTile(G,px); rbrHatchTile(G,px); rbrVentDots(G,px); return }   // v2.54 — the real house; only the drop moves · v2.55: and the return grille
   // the traced envelope, scaled to this floor's square footage — the boundary the rooms sit in
   if(F.poly){
     // v2.46 — the aerial, faint, under the rooms: the traced box maps onto the outline's box (same shape, so one scale fits both axes),
@@ -8409,7 +8527,7 @@ function rbrGrid(){
     t.dataset.id=r.id; rbrDrag(t,r,px);
     const h=document.createElement('div'); h.className='rs'; h.textContent='⇔'; h.title='Stretch — same sq ft, new shape';
     t.appendChild(h); rbrResize(h,t,r,px); });
-  rbrUnitTile(G,px); rbrRetTile(G,px); rbrVentDots(G,px);
+  rbrUnitTile(G,px); rbrRetTile(G,px); rbrHatchTile(G,px); rbrVentDots(G,px);
 }
 // v2.58 — THE VENTS ON THE GRID. Each register is a small square where the design has it (assumed: 2 ft off the outside wall, by the glass).
 // Drag one to where it really is — it stays there (r.vp, feet from the room's corner) and the layout routes to it; double-tap puts it back to assumed.
@@ -8435,6 +8553,12 @@ function rbrVentDrag(el,r,j,px){ let last=0;
 function rbrGrilleBoxes(){ let sp=null; try{ sp=fixSpec(S.fix&&S.fix.grille)||fixSpec(grilleBase()) }catch(e){} let b=null; try{ b=specBoxes(sp,20,20) }catch(e){}
   if(!b||!b.length) b=[{w:20,h:20}]; return b.map(q=>({w:(+q.w||20)/12,h:(+q.h||20)/12,add:!!q.add})) }
 function rbrGrilleSize(B){ const t=B.map(g=>fmt(g.w*12)+'×'+fmt(g.h*12)); const one=t.every(x=>x===t[0]); return one&&t.length>1?t.length+' × '+t[0]:t.join(' + ') }
+// v2.63 — THE ATTIC HATCH (Stephen 2026-09-30): an optional marker the SM drags onto the plan the way the unit is placed. When it is
+// placed the installer plan reads START HERE there, because installers orient from the hatch; when it is not, nothing shows anywhere.
+function rbrHatchTile(G,px){ const h=S.hatch; if(!(h&&h.set)) return; const t=mkTile(G,px,'hatch',h.x,h.y,3,3,'HATCH','start here'); t.title='Attic hatch — drag it to where it is'; rbrDrag(t,h,px,3) }
+function rbrHatchSync(){ const b=$('#rbrHatch'); if(b) b.innerHTML=(S.hatch&&S.hatch.set)?'&#9635; Remove the hatch':'&#9635; Attic hatch' }
+function rbrHatchToggle(){ if(S.hatch&&S.hatch.set){ S.hatch.set=false } else { const F=fcField(); const u=S.unitPos||{x:23,y:18}; S.hatch={x:Math.max(0,Math.min(Math.floor(F.w-3),u.x+8)),y:Math.max(0,Math.min(Math.floor(F.d-3),u.y)),set:true} }
+  save(); rbrHatchSync(); rbrGrid(); rbrModel(); rbrOut(); rbrSync() }
 function rbrRetTile(G,px){ if(!S.retPos) return; fcRetInside(); const B=rbrGrilleBoxes(), gap=0.5, m=0.3;
   const W=B.reduce((a,g)=>a+g.w,0)+gap*(B.length-1), H=Math.max(...B.map(g=>g.h)), w=W+2*m, d=H+2*m, ox=2-w/2, oy=2-d/2;
   const t=mkTile(G,px,'ret sc',S.retPos.x+ox,S.retPos.y+oy,w,d,'RETURN',S.retPos.set?'filter grille':'assumed');
@@ -8532,12 +8656,7 @@ function rbrOut(){
   $('#rbrVentSub').innerHTML=`sizes a vent only on a room set to <b>Add vent</b> · <b>${RM.vents} vent${RM.vents===1?'':'s'}</b> in the house — ${rbrVentWords()}${S.vstep!==0?` · <span class="status ${S.vstep>0?'warn':'na'}">${S.vstep>0?'+':''}${S.vstep} step${Math.abs(S.vstep)===1?'':'s'}</span>`:''}`;
   $('#rbrVentDn').disabled=S.vstep<=-8; $('#rbrVentUp').disabled=S.vstep>=RBR_VSTEP_MAX||rbrCap()>=RBR_VENT_MAX;
   $('#rbrRoomTbl').innerHTML=rbrRoomTbl();
-  $('#rbrTrunkTbl').innerHTML=rbrTrunkTbl();
-  $('#rbrBranchTbl').innerHTML=rbrBranchTbl();
-  $('#rbrCanTbl').innerHTML=rbrCanTbl();
-  $('#rbrMatTbl').innerHTML=rbrMatTbl();
-  $('#rbrMatMsg').innerHTML=`About <b>${rbrMatTotalFt()} ft</b> of duct in total, measured off the ${S.plan?'floor plan':'arranged grid'}. Consumables not listed: mastic, UL-181 tape, hanger strap every 4 ft, R-8 sleeve repair. <span class="asm">${S.plan?'measured':'grid-derived'}</span>`;
-  $('#rbrPlanBox').innerHTML=rbrPlanSvg(20);
+  rbrPlanInto($('#rbrPlanBox'),16); $('#rbrPickBox').innerHTML=rbrPickListHtml();   /* v2.63: the installer plan and the pick list — no tagged schedules */
   if(RM.hall&&RM.hall.sf>0){
     const t=$('#rbrTot');
     if(t) t.innerHTML=(t.innerHTML||'')+(S.plan
@@ -8547,15 +8666,17 @@ function rbrOut(){
   $('#rbrDesignNote').innerHTML=`Take-off, TY and leg sizes are the smallest standard round that holds the worksheet friction rate of <b>${A.fr.toFixed(3)}"/100 ft</b> and stays inside Manual D Table 3-1 for flex. New cans and grilles are <b>square only</b> — 8×8, 9×9, 10×10, 12×12, 14×14 — sized to ${RBR_FACE} fpm face through the free area of the face (stamped ${Math.round(REG_FACE.stamped.free*100)}% · bar type ${Math.round(REG_FACE.bar.free*100)}%) and to take the leg. A room's own vents are kept. When one cannot pass its share at ${RBR_FACE} fpm it is pushed (bar type on the same cutout where that helps) up to <b>${RBR_PUSH_MAX} fpm</b>; past that the room goes red and waits for the SM's call — push anyway, enlarge the vent and the duct feeding it, or add a vent. Nothing is enlarged or added on its own; an added vent is sized to the <b>${RM.cap} CFM</b> allowance. A TY divides two ways.${RM.keepN+RM.barN+RM.enlN?` This house: <b>${RM.keepN} kept</b> · <b>${RM.barN} → bar type</b> · <b>${RM.enlN} enlarged</b> · <b>${RM.newN} new</b>${RM.bootN?` · ${RM.bootN} new boot${RM.bootN>1?'s':''} (the leg outgrew the collar)`:''}.`:''}`;
 }
 // keep the Plan tab, the worksheet and the 3D in step with a room change
-function rbrSync(){ if(typeof renderCompare==='function' && cur>3){ try{ renderCompare() }catch(e){} } rbrPlan2D() }
+function rbrSync(){ if(typeof renderCompare==='function' && cur>3){ try{ renderCompare() }catch(e){} } rbrPlan2D(); try{ rbrSumPlanSync() }catch(e){} }
 function rbrPlan2D(){ const box=$('#duct2d'); if(!box) return;
   // v2.34: the 2D view on the Plan tab is the drawing AND the two schedules an installer reads off it —
   // take-off sizes and can sizes — so the sheet on screen is the sheet that gets built.
   if(!(S.rbrNew&&S.rooms.length)){ box.innerHTML=''; return }
-  box.innerHTML = rbrPlanSvg(18)
-    + `<h4 class="sub">Branch schedule</h4><div class="tblwrap"><table class="dt">${rbrBranchTbl()}</table></div>`
-    + `<h4 class="sub">Can &amp; grille schedule</h4><div class="tblwrap"><table class="dt">${rbrCanTbl()}</table></div>`
-    + `<p class="note" style="margin:8px 0 0">The full room schedule, trunk schedule and material list are in <b>The home ▸ Room by Room</b> on step 1, and they print on the export.</p>` }
+  rbrPlanInto(box,16,true); box.insertAdjacentHTML('beforeend',rbrPickListHtml()) }   /* v2.63: the installer plan (pinch to zoom) and the pick list */
+// v2.63 — the plan on a screen: the sheet in a zoomable frame, full width on a wide screen
+function rbrPlanInto(host,SC,bleed){ if(!host) return; host.innerHTML=`<div class="ipwrap${bleed?' ipbleed':''}">${rbrInstallPlanSvg(SC||16,{})}<div class="iphint">pinch · drag · double-tap resets</div></div>`; rbrPlanZoomWire(host.querySelector('.ipwrap')) }
+// v2.63 — the Summary's fold: rendered when it is opened, cleared when the design changes
+function rbrSumPlanSync(){ const card=$('#sumPlanCard'), fold=$('#sumPlanFold'), box=$('#sumPlanBox'); if(!card||!fold||!box) return; const on=!!(S.rbrNew&&S.rooms.length);
+  card.classList.toggle('hidden',!on); if(!on){ box.innerHTML=''; return } if(fold.open){ rbrPlanInto(box,16); box.insertAdjacentHTML('beforeend',rbrPickListHtml()) } else box.innerHTML='' }
 
 /* ============================================================================
    v2.54 — THE FLOOR PLAN (Stephen 2026-09-26). Room by room starts with a scan of the area THIS system
@@ -8618,6 +8739,7 @@ function fcPlanXform(kind){ const P=S.plan; if(!P) return; const pd=P.pad||0, W=
     /* the equipment stays whole on the turned grid (it points the same way whatever the house does) */ const F=fcField(); let e=[-3,-3,3,3]; try{ const Q=rbrEqParts(); if(Q){ e=[1e9,1e9,-1e9,-1e9]; Q.parts.forEach(q=>{ e[0]=Math.min(e[0],q.x0); e[1]=Math.min(e[1],q.y0); e[2]=Math.max(e[2],q.x1); e[3]=Math.max(e[3],q.y1) }) } }catch(err){}
     U.x=Math.max(Math.ceil(-e[0]-3),Math.min(Math.floor(F.w-e[2]-3),U.x)); U.y=Math.max(Math.ceil(-e[1]-3),Math.min(Math.floor(F.d-e[3]-3),U.y)) }
   const R=S.retPos; if(R){ const c=f(R.x+2,R.y+2); R.x=Math.round(c[0]-2); R.y=Math.round(c[1]-2) }
+  const Hh=S.hatch; if(Hh&&Hh.set){ const c=f(Hh.x+1.5,Hh.y+1.5); Hh.x=Math.round(c[0]-1.5); Hh.y=Math.round(c[1]-1.5) }   /* v2.63: the hatch marker turns with the house */
   if(S.auto) S.auto.rbr=false; fcApplyRuns(); save() }
 // v2.61 — turn the unit a quarter (or half) turn about its own middle, to sit the way the one in the attic does. It stays whole on the grid; an
 // assumed return moves round behind it, a placed one stays where the SM put it; the layout, the sheet and the 3D all read the turn.
@@ -8664,6 +8786,7 @@ function rbrScanWire(){
   const h=$('#rbrHand'); if(h) h.addEventListener('click',()=>{ S.rbrHand=true; if(!S.rooms.length){ rbrSeed(fcTop()); if(fcHasShape()) fcPack() } save(); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) });
   const x=$('#rbrScanX'); if(x) x.addEventListener('click',()=>{ fcPlanClear(); rbrRender(); rbrSync() });
   [['#rbrUTurn',90],['#rbrUFlip',180]].forEach(([id,dg])=>{ const b=$(id); if(b&&!b.dataset.wired){ b.dataset.wired='1'; b.addEventListener('click',()=>fcUnitTurn(dg)) } });   // v2.61
+  { const b=$('#rbrHatch'); if(b&&!b.dataset.wired){ b.dataset.wired='1'; b.addEventListener('click',rbrHatchToggle) } rbrHatchSync() }   // v2.63
   [['#rbrTurn','turn'],['#rbrMir','mir']].forEach(([id,k])=>{ const b=$(id); if(b) b.addEventListener('click',()=>{ fcPlanXform(k); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) }) });   // v2.60
   // drag a file onto the panel
   ['#rbrPanel','#fcTop1'].forEach(sel=>{ const pn=$(sel); if(pn&&!pn.dataset.drop){ pn.dataset.drop='1'; pn.addEventListener('dragover',e=>{ e.preventDefault() }); pn.addEventListener('drop',e=>{ const file=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(!file||!/\.(dxf|json)$/i.test(file.name)) return; e.preventDefault(); const fr=new FileReader(); fr.onload=()=>{ if(fcPlanLoad(String(fr.result||''),file.name)){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } }; fr.readAsText(file) }) } })
@@ -8771,18 +8894,12 @@ function rbrExport(){
   // first, before any PDF has been made, so it has to create it too instead of assuming it is there.
   let box=$('#printReport'); if(!box){ box=document.createElement('div'); box.id='printReport'; document.body.appendChild(box) }
   box.innerHTML=
-   `<div class="pbar noprint"><button class="btn sm" id="rbrBack">← Back to the tool</button><button class="btn sm ghost" id="rbrPrint">Print / Save as PDF</button><span class="note">If the print dialog did not open, use your browser's Print — only this sheet prints.</span></div>`+
-   `<div class="ph"><div><div class="pbrand">Goettl Air Conditioning &amp; Plumbing · Las Vegas</div><h1>Supply Duct Design</h1>`+
-     `<div class="psub">${CFM(rbrHomeSf()||RM.roomSf)} sq ft · ${RM.B.n} · ${S.rooms.length} rooms · ${RM.vents} vents</div></div>`+
+   `<div class="pbar noprint"><button class="btn sm" id="rbrBack">← Back to the tool</button><button class="btn sm ghost" id="rbrPrint">Print / Save as PDF</button><span class="note">If the print dialog did not open, use your browser's Print — the plan is page 1, the key and the pick list page 2.</span></div>`+
+   `<div class="ph"><div><div class="pbrand">Goettl Air Conditioning &amp; Plumbing · Las Vegas</div><h1>Installer plan</h1>`+
+     `<div class="psub">${CFM(rbrHomeSf()||RM.roomSf)} sq ft · ${RM.B.n} · ${S.rooms.length} rooms · ${RM.vents} registers · ${rbrEsc(A.name)} · ${CFM(A.Qd)} CFM</div></div>`+
      `<div class="pdate">${d.toLocaleDateString()}<br><span>Customer: ______________________</span></div></div>`+
-   `<p class="pmd plead">${rbrEsc(A.name)} · ${CFM(A.Qd)} CFM at ${A.esp.toFixed(2)}" · ${CFM(A.Qp)} CFM at the ${spLimit().toFixed(2)}" limit · friction rate ${A.fr.toFixed(3)}"/100 ft · Manual J ${RM.recT||'—'} ton · ${RM.vents} vents — ${rbrVentWords()}.${(RM.down||[]).map(x=>` Floor ${x.fl+1}: ${x.n>1?x.n+' × ':''}Ø${x.d}" down carrying ${CFM(x.cfm)} CFM${x.short>0?` (${CFM(x.short)} short — needs Ø${x.spec.d}")`:''}.`).join('')}${RM.keepN+RM.barN?` ${RM.keepN+RM.barN} existing registers kept in place.`:''}</p>`+
-   rbrPlanSvg(17)+
-   `<h2>Room schedule</h2><table class="ptbl">${rbrRoomTbl()}</table>`+
-   `<h2>Trunk schedule — ${rbrEsc(dnLayTxt())}</h2><table class="ptbl">${rbrTrunkTbl()}</table>`+
-   `<div class="pbreak"></div><h2>Branch schedule</h2><table class="ptbl">${rbrBranchTbl()}</table>`+
-   `<h2>Can &amp; grille schedule</h2><table class="ptbl">${rbrCanTbl()}</table>`+
-   `<h2>Material list</h2><table class="ptbl">${rbrMatTbl()}</table>`+
-   `<div class="pfoot">Sizes are the smallest standard round that holds the friction rate above and stays inside ACCA Manual D Table 3-1 (flex 600 fpm recommended / 700 max; rigid 700 / 900). Flex must be installed pulled tight. Cans and grilles are square Goettl sizes sized to ${RBR_FACE} fpm face velocity across ${Math.round(rbrFree()*100)}% free area (${REG_FACE[regNew()].name}). TYs are called out inlet × outlet × outlet.<br>${RBR_NOTES.map((n,i)=>(i+1)+'. '+n).join('<br>')}</div>`;
+   rbrInstallPlanPrintHtml({first:true});
+  box.querySelectorAll('.ipwrap').forEach(rbrPlanZoomWire);
   document.body.classList.add('printing');
   $('#rbrBack').onclick=()=>{ document.body.classList.remove('printing'); window.scrollTo(0,0) };
   $('#rbrPrint').onclick=()=>{ try{ window.print() }catch(e){} };
@@ -8842,16 +8959,11 @@ function rbrExportBlock(){
    `<p class="pnote">The supply is being redesigned room by room so every room gets the air it needs. `+
    `${rbrEsc(A.name)} · ${CFM(A.Qd)} CFM at ${A.esp.toFixed(2)}" · friction rate ${A.fr.toFixed(3)}"/100 ft · `+
    `${RM.vents} vents — ${rbrVentWords()} · Manual J ${RM.recT||'—'} ton on ${CFM(rbrHomeSf()||RM.roomSf)} sq ft.</p>`+
-   rbrPlanSvg(15)+
-   `<h2>Room schedule</h2><table class="ptbl dt">${rbrRoomTbl()}</table>`+
-   `<h2>Trunk schedule — ${rbrEsc(dnLayTxt())}</h2><table class="ptbl dt">${rbrTrunkTbl()}</table>`+
-   `<h2>Branch schedule</h2><table class="ptbl dt">${rbrBranchTbl()}</table>`+
-   `<h2>Can &amp; grille schedule</h2><table class="ptbl dt">${rbrCanTbl()}</table>`+
-   `<h2>Material list</h2><table class="ptbl dt">${rbrMatTbl()}</table>`+
-   `<p class="pfoot">Cans and grilles are square Goettl sizes sized to ${RBR_FACE} fpm face velocity across ${Math.round(rbrFree()*100)}% free area (${REG_FACE[regNew()].name}). TYs are called out inlet × outlet × outlet.<br>${RBR_NOTES.map((n,i)=>(i+1)+'. '+n).join('<br>')}</p>`;
+   rbrInstallPlanPrintHtml();
 }
 
 try{ rbrWire(); rbrWireDuctView(); rbrRender(); rbrSizeFlag(); }catch(e){ console.error('rbr init',e) }
+try{ const f=$('#sumPlanFold'); if(f) f.addEventListener('toggle',()=>{ try{ rbrSumPlanSync() }catch(e){} }) }catch(e){}   /* v2.63 */
 // ============================================================ navigation
 let cur=1;
 function go(n){
