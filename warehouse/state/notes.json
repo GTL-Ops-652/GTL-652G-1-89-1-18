@@ -593,5 +593,19 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-09-24"
+ },
+ "fleet|anom|2026-09-28|578161": {
+  "note": "truck replenishment after inventory count",
+  "ts": 1790694849038,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-29"
+ },
+ "fleet|anom|2026-09-28|113923": {
+  "note": "truck replenishment",
+  "ts": 1790694896479,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-29"
  }
 }
