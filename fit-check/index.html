@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-30 v2.63 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-09-30 v2.64 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -832,6 +832,9 @@ body.pack .tp .noapp{display:none}
   .ipprint .ipsheet.land{page:iplanL} .ipprint .ipsheet.land svg.iplan{max-height:7.2in} .ipprint .ipsheet.port{page:iplanP} .ipprint .ipsheet.port svg.iplan{max-height:9.7in} .ipprint .ipsheet.key svg.ipkey{max-height:3.6in}
   @page iplanL{size:letter landscape;margin:9mm} @page iplanP{size:letter portrait;margin:9mm} }
 .gridwrap .tile.hatch{border:2px dashed #8a6a00;background:#fff8e1;z-index:2}.gridwrap .tile.hatch .tn{color:#8a6a00}.gridwrap .tile.hatch .tc{color:#8a6a00}
+/* v2.64 — the scan's registers, north and loads: the Scan chip on a room row, the north rose, the scan facts on the strip */
+.rrow .chip.sm.scan{border-color:#0a5c5c;color:#0a5c5c}.rrow .chip.sm.scan.on{background:#0a5c5c;color:#fff}
+.scanbar .sb2 .scn{color:#0a5c5c;font-weight:700}.gridwrap .fcnorth text{font-weight:800}
 /* v2.63 — the door: the tool asks once per device; a texted pack never does */
 #fcGate{position:fixed;inset:0;z-index:9999;background:#eef2f6;display:flex;align-items:center;justify-content:center;padding:20px}
 #fcGate.hidden{display:none}#fcGate .gbox{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 20px;width:min(360px,100%);box-shadow:0 8px 30px rgba(0,0,0,.08);text-align:center}
@@ -1637,7 +1640,8 @@ window.FCProp={lookupAddress,lookupCandidate,bounds,ringAreaSqFt,RELAY};
 })();
 </script>
 <script>
-// fcdxf.js — v2.54 floor-plan import (v2.60: + Apple RoomPlan JSON, and a RoomPlan DXF read the right way up). Reads a DXF (3D Snap / RoomPlan, magicplan, AutoCAD) into
+// fcdxf.js — v2.54 floor-plan import (v2.60: + Apple RoomPlan JSON, and a RoomPlan DXF read the right way up; v2.64: + the `goettl` block a Goettl Room Scan export
+// carries — north, the registers on the ceiling, the typed room names and the room loads — so Room by room is pre-filled instead of typed). Reads a DXF (3D Snap / RoomPlan, magicplan, AutoCAD) into
 // walls, doors, windows, furniture and the enclosed rooms, all in FEET on the plan's own axes.
 // No dependencies. Written to be inlined into template.html (classic script) — the last line hangs
 // the entry point on window when a window exists, and on module.exports under node.
@@ -1846,6 +1850,15 @@ function finishPlan(o){
     if(o.walls3){ let hmin=Infinity; o.walls3.forEach(W=>{ const m=[(W.s[0]+W.s[2])/2,(W.s[1]+W.s[3])/2]; if(ptPolyDist(r.poly,m)>0.2) return; if(Math.hypot(W.s[2]-W.s[0],W.s[3]-W.s[1])<0.6) return; if(W.h>1.5) hmin=Math.min(hmin,W.h) });
       if(isFinite(hmin)) out.h=+(hmin*M2FT).toFixed(1) }
     return out });
+  // v2.64 — the Goettl Room Scan block: its rooms (typed name, ceiling, load) land on the room polygon their centre is in; every register on the room it sits in.
+  if(o.goettl){ const G=o.goettl; const used=new Set();
+    rooms.forEach(r=>{ const hits=Object.values(G.rooms).filter(g=>g.c&&pointIn(r.poly,g.c)&&!used.has(g.id)); const g=hits.sort((a,b)=>(b.sf||0)-(a.sf||0))[0]||null;
+      if(g){ used.add(g.id); r.g=g; if(g.name&&!/^room\s*\d*$/i.test(g.name.trim())){ r.name=g.name.trim(); r.named=true; r.kind=rpKind(r.name,r.kind) } if(g.h>=6&&g.h<=30) r.h=+g.h.toFixed(1); if(g.ns) r.ns=true }
+      r.regs=G.regs.filter(q=>pointIn(r.poly,[q.x,q.y])) });
+    // a register the wall graph put in no room (a hall closed differently) goes to the nearest room; one in a room the app's rooms missed still counts
+    G.regs.filter(q=>!rooms.some(r=>r.regs.includes(q))).forEach(q=>{ let best=null; rooms.forEach(r=>{ const dd=Math.hypot(r.c[0]-q.x,r.c[1]-q.y); if(!best||dd<best.d) best={d:dd,r} }); if(best&&best.d<30) best.r.regs.push(q) });
+    // a room the app named that the wall graph did not find a centre for: match by its registers' room id
+    rooms.forEach(r=>{ if(r.g||!r.regs.length) return; const id=r.regs[0].roomId; const g=id&&G.rooms[id]; if(g&&!used.has(g.id)){ used.add(g.id); r.g=g; if(g.name&&!/^room\s*\d*$/i.test(g.name.trim())){ r.name=g.name.trim(); r.named=true; r.kind=rpKind(r.name,r.kind) } if(g.h>=6&&g.h<=30) r.h=+g.h.toFixed(1); if(g.ns) r.ns=true } }) }
   // number duplicates
   const seen={}; rooms.sort((a,b)=>(a.c[1]-b.c[1])||(a.c[0]-b.c[0])); rooms.forEach(r=>{ seen[r.name]=(seen[r.name]||0)+1 }); const idx={}; rooms.forEach(r=>{ if(seen[r.name]>1){ idx[r.name]=(idx[r.name]||0)+1; r.name+=' '+idx[r.name] } });
   let X1=0,Y1=0; segs.forEach(s=>{ X1=Math.max(X1,s[0],s[2]); Y1=Math.max(Y1,s[1],s[3]) });
@@ -1899,10 +1912,57 @@ function planFromRoomPlanR(d,A,R){ const {doorsR,winsR,opensR,objsR,secs,WB,stor
   const furn=objsR.map(o=>{ const b=rpBox(o); if(!b) return null; const cat=rpCat(o); const k=RP_KIND[cat.toLowerCase()]||kindOf(cat); const c=sh(R(b.c)); const u=Ru(b.u);
     return {kind:k,name:cat,x:c[0],y:c[1],w:b.len,h:b.dep,rot:Math.atan2(u[1],u[0])*180/Math.PI,c} }).filter(Boolean);
   const sections=secs.filter(s=>Array.isArray(s.center)).map(s=>({label:s.label,c:sh(R([s.center[0],s.center[2]]))}));
-  const P=finishPlan({segs,doors,wins,furn,sections,walls3});
+  const G=rpGoettl(d,R,sh);   // v2.64 — the Goettl Room Scan block, when the file is one
+  const P=finishPlan({segs,doors,wins,furn,sections,walls3,goettl:G});
   if(!P.ok) return P;
-  return Object.assign(P,{units:6, scale:1, src:'json', stories:stories.length, story:top});
+  return Object.assign(P,{units:6, scale:1, src:'json', stories:stories.length, story:top, north:G?G.north:null, goettl:G?G.summary:null});
 }
+// ---------- 6. v2.64 — the `goettl` block of a Goettl Room Scan export (format 'goettl-roomscan'). Same frame as every RoomPlan transform in the file:
+// metres, y up, the top view (x, z) — so the same rotation R and shift the walls took puts every register and the north vector on the plan.
+// north      → an angle on the page: 0 = up the page (−y), clockwise. The app's worldAngleDeg is this same angle before the house was squared to the page.
+// registers  → type (supply | return), the spot (plan feet), the nominal size the app settled on (typed > a plausible scan pick > the measured face snapped
+//              to the Goettl catalog), the measured face, the long-axis direction, the branch duct and run length when the app filled them.
+// rooms      → typed name, ceiling height, served flag, exterior walls (facing, glass), and the room's Manual J load (loads.rooms / summary.rooms).
+// summary    → the app's load calc for the whole served area: Manual J BTUh and tons, the sq-ft rule, the recommended size and system CFM, the home block.
+const RP_REG_SQ=[4,6,8,9,10,12,14], RP_REG_L=[10,12,14], RP_REG_S=[4,6,8];
+const RP_GRILLES=[[12,12],[14,14],[16,16],[16,25],[20,20],[20,25],[20,30],[20,40],[20,50]];
+function rpSize(s){ const m=/^\s*(\d+(?:\.\d+)?)\s*[x×X*]\s*(\d+(?:\.\d+)?)\s*$/.exec(String(s||'')); if(!m) return null; const a=Math.round(+m[1]), b=Math.round(+m[2]); if(!(a>0&&b>0)) return null; return [Math.max(a,b),Math.min(a,b)] }
+// the measured faceplate is always a little bigger than the register it frames — snap DOWN to the catalog size it must be
+function rpSnap(meas,type){ if(!meas) return null; const [l,s]=meas;
+  if(type==='return'){ let best=null; RP_GRILLES.forEach(([a,b])=>{ const L=Math.max(a,b), S=Math.min(a,b); if(L<=l+0.5&&S<=s+0.5&&(!best||L*S>best[0]*best[1])) best=[L,S] }); return best||[Math.max(12,Math.floor(l/2)*2),Math.max(12,Math.floor(s/2)*2)] }
+  const below=(v,list)=>{ let o=list[0]; list.forEach(x=>{ if(x<=v+0.5) o=x }); return o };
+  if(Math.abs(l-s)<=2){ const q=below(Math.min(l,s),RP_REG_SQ); return [q,q] }
+  return [below(l,RP_REG_L),below(s,RP_REG_S)] }
+function rpKind(name,fallback){ const n=String(name||''); if(/master|bed/i.test(n)) return 'bed'; if(/living|family|great|den\b/i.test(n)) return 'living'; if(/kitchen/i.test(n)) return 'kitchen';
+  if(/bath|shower|toilet|powder|wc\b/i.test(n)) return 'bath'; if(/laundry|utility/i.test(n)) return 'laundry'; if(/closet|wic|pantry/i.test(n)) return 'closet'; if(/hall|entry|foyer|corridor/i.test(n)) return 'hall';
+  if(/dining|nook/i.test(n)) return 'dining'; if(/office|study/i.test(n)) return 'office'; if(/garage/i.test(n)) return 'room'; return fallback||'room' }
+function rpGoettl(d,R,sh){ const g=d&&d.goettl; if(!g||typeof g!=='object') return null; if(g.format&&!/goettl/i.test(String(g.format))) return null;
+  const toFt=p=>{ const q=sh(R([p[0],p[1]])); return [q[0]*M2FT,q[1]*M2FT] };
+  let north=null; const n=g.north; if(n&&n.set!==false&&Array.isArray(n.vectorXZ)&&n.vectorXZ.length===2){ const v=R([+n.vectorXZ[0],+n.vectorXZ[1]]); const L=Math.hypot(v[0],v[1]);
+    if(L>1e-6){ const deg=(Math.atan2(v[0]/L,-v[1]/L)*180/Math.PI+360)%360; north={deg:+deg.toFixed(1),acc:+n.meanAccuracyDeg>0?+n.meanAccuracyDeg:null,src:n.source||null} } }
+  const rooms={}; const mk=(id,name)=>rooms[id]||(rooms[id]={id,name:name||'',c:null,h:null,sf:null,ns:false,served:1,ext:[],ceilAbove:null,mj:null});
+  (Array.isArray(g.rooms)?g.rooms:[]).forEach(r=>{ if(!r||!r.id) return; const o=mk(r.id,r.name); if(Array.isArray(r.center)&&r.center.length>=2) o.c=toFt([+r.center[0],+r.center[1]]);
+    if(+r.ceilingHeightFt>0) o.h=+r.ceilingHeightFt; if(+r.floorAreaFt2>0) o.sf=+r.floorAreaFt2; o.ns=!!r.notServed; if(r.servedFraction!=null) o.served=+r.servedFraction; o.ceilAbove=r.ceilingAbove||null;
+    o.ext=(Array.isArray(r.exteriorWalls)?r.exteriorWalls:[]).map(w=>({facing:w.facing||'',az:isFinite(+w.facingAzimuthDeg)?+w.facingAzimuthDeg:null,win:+w.windowAreaFt2||0,w:+w.widthFt||0})) });
+  const L=g.loads||{}, sum=g.summary||{};
+  (Array.isArray(L.rooms)?L.rooms:[]).forEach(x=>{ if(!x||!x.roomId) return; const o=mk(x.roomId,x.room); o.mj={cfm:+x.cfm||0,cfmSf:+x.cfmBySqFt||0,cool:+x.coolingSensibleBtuh||0,heat:+x.heatingBtuh||0,wall:x.wallType||'',win:x.windowType||''} });
+  (Array.isArray(sum.rooms)?sum.rooms:[]).forEach(x=>{ if(!x||!x.roomId) return; const o=mk(x.roomId,x.name); if(!o.mj&&x.cfm!=null) o.mj={cfm:+x.cfm||0,cfmSf:+x.cfmBySqFt||0,cool:+x.coolingSensibleBtuh||0,heat:+x.heatingBtuh||0,wall:'',win:''};
+    if(o.h==null&&+x.ceilingHeightFt>0) o.h=+x.ceilingHeightFt; if(o.sf==null&&+x.floorAreaFt2>0) o.sf=+x.floorAreaFt2; if(x.notServed) o.ns=true });
+  const regs=(Array.isArray(g.registers)?g.registers:[]).map(q=>{ if(!q||!Array.isArray(q.position)||q.position.length<3) return null; const p=toFt([+q.position[0],+q.position[2]]); const f=q.face||{}; const type=/return/i.test(q.type||'')?'return':'supply';
+    const meas=(+f.longIn>0&&+f.shortIn>0)?[Math.round(+f.longIn),Math.round(+f.shortIn)]:null; let nom=rpSize(q.nominalSize); const src=q.nominalSizeSource||null; let nomAsm=false;
+    if(nom&&meas&&src!=='manual'){ const an=nom[0]*nom[1], am=meas[0]*meas[1]; if(an>am*2.2||an<am/2.2) nom=null }   // a scan-picked nominal nowhere near the face it measured is a mis-pick
+    if(!nom&&meas){ nom=rpSnap(meas,type); nomAsm=true }
+    let ax=null; if(Array.isArray(f.longAxisXZ)&&f.longAxisXZ.length===2){ const v=R([+f.longAxisXZ[0],+f.longAxisXZ[1]]); if(Math.hypot(v[0],v[1])>1e-6) ax=+(Math.atan2(v[1],v[0])*180/Math.PI).toFixed(1) }
+    return {type,x:+p[0].toFixed(2),y:+p[1].toFixed(2),nom,nomAsm,meas,nomSrc:src,duct:+q.ductDiameterIn>0?+q.ductDiameterIn:null,ductType:q.ductType||null,run:+q.runLengthFt>0?+q.runLengthFt:null,roomId:q.roomId||null,room:q.room||'',ax,id:q.id||null} }).filter(Boolean);
+  const H=g.home||{}, ins=H.atticInsulation||null, NS=g.notServed||{};
+  const hasMj=(L.complete!==false)&&((+L.coolingTotalBtuh>0)||(+sum.systemCFM>0)||(+L.recommendedTons>0));
+  const summary={app:g.app||'Goettl Room Scan',fmt:g.formatVersion||null,at:g.exportedAt||null,job:g.job&&typeof g.job==='object'?{customer:g.job.customer||'',address:g.job.address||'',st:g.job.stJobNumber||''}:null,
+    mj:hasMj?{cool:+L.coolingTotalBtuh||+sum.coolingTotalBtuh||0,sens:+L.coolingSensibleBtuh||0,lat:+L.latentBtuh||0,heat:+L.heatingBtuh||+sum.heatingBtuh||0,mjT:+L.manualJTons||+sum.envelopeTons||0,sfT:+L.sqFtRuleTons||+sum.sqFtRuleTons||0,
+      recT:+L.recommendedTons||+sum.recommendedTons||0,cfm:+L.systemCFM||+sum.systemCFM||0,roomCfm:+sum.totalRoomCFM||0,basis:L.sizingBasis||sum.sizingBasis||'',note:L.sizingNote||sum.sizingNote||'',why:sum.sqFtRuleWhy||'',build:L.buildType||sum.buildType||'',
+      method:L.method||'',served:+sum.servedAreaFt2||+NS.servedAreaFt2||0,notServed:+NS.notServedAreaFt2||0}:null,
+    home:{loc:H.location||'',zip:H.zip||'',year:+H.yearBuilt>0?+H.yearBuilt:null,age:H.ageBand||'',attic:ins?{where:ins.location||'',floorType:ins.floorType||'',mat:ins.blownMaterial||ins.batts||ins.roofDeck||'',depth:+ins.depthIn>0?+ins.depthIn:null}:null},
+    nReg:regs.length,nSup:regs.filter(q=>q.type==='supply').length,nRet:regs.filter(q=>q.type==='return').length,nRoom:Object.keys(rooms).length,north:north};
+  return {north,rooms,regs,summary} }
 // the one entry point the app calls: JSON or DXF by what the file IS, not what it is called
 function planFromFile(text){ const t=String(text||'').replace(/^\uFEFF/,'').trim();
   if(t[0]==='{'){ let d; try{ d=JSON.parse(t) }catch(e){ return {ok:false, why:'That file is not valid JSON.'} } return planFromRoomPlan(d) }
@@ -1913,7 +1973,7 @@ function ptPolyDist(P,pt){ let m=Infinity; for(let i=0;i<P.length;i++){ m=Math.m
 function outlineOf(rooms){ const pts=[]; rooms.forEach(r=>pts.push(...r.poly)); if(!pts.length) return []; return hull(pts) }
 function hull(P){ const pts=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]); const cross=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]); const lo=[]; for(const p of pts){ while(lo.length>=2&&cross(lo[lo.length-2],lo[lo.length-1],p)<=0) lo.pop(); lo.push(p) } const up=[]; for(let i=pts.length-1;i>=0;i--){ const p=pts[i]; while(up.length>=2&&cross(up[up.length-2],up[up.length-1],p)<=0) up.pop(); up.push(p) } up.pop(); lo.pop(); return lo.concat(up) }
 
-const api={parseDxf,planFromDxf,planFromRoomPlan,planFromFile,dxfYDown,polyArea,polyCent,pointIn,bbox};
+const api={parseDxf,planFromDxf,planFromRoomPlan,planFromFile,dxfYDown,polyArea,polyCent,pointIn,bbox,rpSize,rpSnap,rpKind};
 if(typeof module!=='undefined'&&module.exports) module.exports=api; else if(typeof window!=='undefined') window.FCDxf=api;
 })();
 
@@ -3453,6 +3513,10 @@ function houseSlabs(SX,SZ,yP,o){ const ins=o.ins||null, k=insTint(ins); const RE
     scene.push({quad:pts,color:mix(r.nr?[150,160,170,0.22]:(r.ld==='high'?[255,190,120,0.26]:[120,175,225,0.26])),stroke,ceil:true,tint:+k.toFixed(3),x:Math.min(...xs),y:yP,z:Math.min(...zs),dx:Math.max(...xs)-Math.min(...xs),dy:0.1,dz:Math.max(...zs)-Math.min(...zs),nofit:true,duct:true});
     { const c=M3(rbrCx(r),rbrCy(r)); scene.push({marker:true,label:rbrEsc(r.n)+((r.nr||!o.cfm)?'':' · '+CFM(r.cfm)+' CFM'),cls:'plan',x:c[0],y:yP,z:c[2],dx:0,dy:0,dz:0,nofit:true,duct:true}) } });
   if(S.plan&&S.plan.walls){ const lines=(sceneLines||[]).slice(); S.plan.walls.forEach(w=>lines.push([M3(w[0],w[1]),M3(w[2],w[3]),2.2])); sceneLines=lines }
+  if(S.plan&&S.plan.north&&S.plan.north.deg!=null&&isFinite(nx)){ const pd=S.plan.pad||0, a=S.plan.north.deg*Math.PI/180, ux=Math.sin(a), uy=-Math.cos(a), cx=pd+S.plan.w+3, cy=pd+2.5, L=3;   /* v2.64: north off the house's corner */
+    const q=[[cx+ux*L,cy+uy*L],[cx-uy*0.9,cy+ux*0.9],[cx-ux*L*0.7,cy-uy*L*0.7],[cx+uy*0.9,cy-ux*0.9]].map(p=>M3(p[0],p[1])); const xs=q.map(p=>p[0]), zs=q.map(p=>p[2]);
+    scene.push({quad:q,color:'rgba(11,35,64,.78)',stroke:'rgba(255,255,255,.6)',ceil:true,x:Math.min(...xs),y:yP,z:Math.min(...zs),dx:Math.max(...xs)-Math.min(...xs),dy:0.1,dz:Math.max(...zs)-Math.min(...zs),nofit:true,duct:true});
+    const tp=M3(cx+ux*(L+1.2),cy+uy*(L+1.2)); scene.push({marker:true,label:'N',cls:'plan',x:tp[0],y:yP,z:tp[2],dx:0,dy:0,dz:0,nofit:true,duct:true}) }
   if(o.ux!=null&&isFinite(nx)){ const Rf=ins&&ins.known?(ins.Rf!=null?ins.Rf:ins.R):null; const cls=Rf==null?'':(Rf<19?'bad':(Rf<R_MIN?'warn':'ok')); /* the same grades as the attic tile */ const ax=Math.max(nx,Math.min(xx,SX(o.uy+4))), az=Math.max(nz,Math.min(xz,SZ(o.ux-4)));   // the note sits on the house, a few feet off the unit
     scene.push({marker:true,label:insHouseLbl(ins),cls,insNote:true,x:ax,y:yP,z:az,dx:0,dy:0,dz:0,nofit:true}) }
   return k }
@@ -6042,7 +6106,7 @@ function summaryText(o){
       L.push(`ROOM BY ROOM: ${S.rooms.length} rooms · ${CFM(RM.roomSf)} sq ft measured · rooms want ${CFM(RM.needTot)} CFM · unit delivers ${CFM(RM.A.Qd)} (${Math.round(RM.pct*100)}%)`);
       L.push(`  CROSS-CHECK: ${CFM(RM.needTot)} CFM ÷ ${RM.cpt} CFM/ton (${RM.cptSrc}) = ${(RM.needTot/RM.cpt).toFixed(2)} → ${RM.loadT} ton${(function(){ const oo=curOpt(); return oo&&oo.upsize?' · divides by the Matchup Guide default indoor — the airflow upsize never shrinks the condenser':'' })()}`);
       if(S.plan) L.push(`  FLOOR PLAN: ${S.plan.name} · ${CFM(S.plan.sf)} sq ft served by this system${S.plan.prevSf?' (record '+CFM(S.plan.prevSf)+' sq ft — the rest is on another system)':''} · rooms named off the scan`);
-      S.rooms.forEach(r=>L.push(r.nr?`  ${r.n}: ${r.sf} sf · no register (${r.kind==='hall'?'hall':'closet'}) · ${CFM(r.need)} CFM of load spread over the rooms around it`:`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.ld} load · ${CFM(r.cfm)} CFM · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)}${r.flag?' — PAST '+RBR_PUSH_MAX+' FPM, NEEDS A CALL':r.overOk?' — pushed past '+RBR_PUSH_MAX+' fpm by choice':''} · ${rbrDuctTxt(r).replace(/<br>/g,' / ').replace(/<[^>]+>/g,'')}`));
+      S.rooms.forEach(r=>L.push(r.nr?`  ${r.n}: ${r.sf} sf · no register (${r.kind==='hall'?'hall':'closet'}) · ${CFM(r.need)} CFM of load spread over the rooms around it`:`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.needSrc==='scan'?'Manual J '+CFM(r.mj.cool)+' BTUh (scan)':r.ld+' load'} · ${CFM(r.cfm)} CFM · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)}${r.flag?' — PAST '+RBR_PUSH_MAX+' FPM, NEEDS A CALL':r.overOk?' — pushed past '+RBR_PUSH_MAX+' fpm by choice':''} · ${rbrDuctTxt(r).replace(/<br>/g,' / ').replace(/<[^>]+>/g,'')}`));
       if(S.rbrNew){ L.push(`NEW DUCT SYSTEM — REDOING THE ROOM-BY-ROOM DUCTS to ensure adequate flow to each room.`);
         const Nn=RM.net; L.push(`  LAYOUT: ${dnLayTxt()}`); L.push(`  Trunks: ${rbrTrunksTxt()}`);
         if(Nn) L.push(`  Runs: ${Nn.edges.filter(e=>e.k==='trunk'||e.k==='boxfeed'||e.k==='direct').map(e=>'Ø'+e.d+'" '+CFM(e.q)+' CFM '+Math.round(e.len)+' ft').join(' · ')}`);   /* v2.63: sizes only — no tags anywhere */
@@ -6254,7 +6318,7 @@ function fcHall(){
   const z={sf:0,need:0,allow:0,clamped:0};
   if(!fcHasShape()) return z;
   const B=rbrBuild()||RBR_BUILD.standard;
-  if(S.plan){ S.rooms.filter(r=>r.nr).forEach(r=>{ z.sf+=r.sf; z.need+=(r.need!=null?r.need:r.sf*B.base) }); return z } // v2.54 — the scan measured the halls and closets: they are the residual, no wall allowance on top
+  if(S.plan){ S.rooms.filter(r=>r.nr&&!r.ns).forEach(r=>{ z.sf+=r.sf; z.need+=(r.need!=null?r.need:r.sf*B.base) }); return z }   /* v2.64: a room another system serves is not hall */ // v2.54 — the scan measured the halls and closets: they are the residual, no wall allowance on top
   S.home.floors.forEach((f,i)=>{
     if(i!==fcTop()||!fcOutline(i)) return;          // v2.46: only the rooms' floor has a hallway; a lower floor is one duct down
     const cap=parseFloat(f.sf); if(!(cap>0)) return;
@@ -6774,7 +6838,9 @@ function rbrModel1(){
   S.rooms.forEach(r=>{ if(!r.poly) r.d=r.sf/r.w;   // v2.54: a scanned room keeps its measured shape
     r.hf=r.h<=10?1:Math.min(1.6,1+0.10*(r.h-10));
     r.lf=r.ld==='high'?1.25:(r.ld==='low'?0.85:1);
-    r.need=r.sf*B.base*r.hf*r.lf; });
+    if(r.ld==='scan'&&r.mj&&r.mj.cfm>0){ r.hf=1; r.lf=1; r.need=r.mj.cfm; r.needSrc='scan' }   // v2.64: the scan app's Manual J for this room (its CFM at the app's system CFM — the shares are what matter)
+    else { if(r.ld==='scan') r.ld='avg'; r.need=r.sf*B.base*r.hf*r.lf; r.needSrc=null }
+    if(r.ns) r.need=0; });
   // v2.54 — a hall or closet off the scan carries load and no register: it is the residual, so it leaves the room list here
   S.rooms.filter(r=>r.nr).forEach(r=>{ r.cfm=0; r.nReg=0; r.nTap=0; r.perReg=0; r.perTap=0; r.leg=mdSizeRound(1,A.fr,'flex','br'); r.branch=r.leg; r.can=8; r.regs=[]; r.face=0; r.faceK=rbrFaceOf(r); r.keepN=r.barN=r.enlN=r.newN=r.bootN=r.pushN=0; r.over=r.overOk=r.flag=r.needMore=false; r.tys=0; r.tyName=''; r.run=0; r.legFt=0; r.taps=[] });
   const rooms=S.rooms.filter(r=>!r.nr);
@@ -6818,11 +6884,17 @@ function rbrModel1(){
   rooms.forEach(r=>{
     const face=rbrFaceOf(r), exT=rbrVsz(r), vnT=r.vn>0?Math.max(1,r.vn|0):0;
     const vn=vnT||rbrAsmVentN(r), mode=RBR_VM[r.vm]?r.vm:'push', lockSt=r.vf==='stamped';
-    r.faceK=face; r.vAsm=!vnT; r.vSzAsm=!exT; r.vmode=mode; r.vHave=vn;
+    // v2.64 — the scan's registers: each one at its own size (a typed Vent size still overrides them all), the branch duct it has today riding along
+    const exL=(!exT&&r.vsz&&r.vsz.length)?r.vsz:null, exAny=!!exT||!!exL;
+    r.faceK=face; r.vAsm=!vnT; r.vSzAsm=!exAny; r.vmode=mode; r.vHave=vn;
     const per0=r.cfm/vn;
-    const ex=exT||(()=>{ const l0=mdSizeRound(Math.max(per0,1),A.fr,'flex','br'); const c=rbrCanForF(per0,l0.d,face); return {w:c,h:c} })();   // assumed: the Goettl square that carries its share
-    const capF=rbrFaceCap(ex.w,ex.h,face), capBest=(lockSt||face==='bar')?capF:rbrFaceCap(ex.w,ex.h,'bar');
-    r.needMore=!!exT&&capBest<per0-0.5;             // even bar type on the same holes cannot pass the share at 500 fpm — the room has to push, or change
+    const exA=(()=>{ const l0=mdSizeRound(Math.max(per0,1),A.fr,'flex','br'); const c=rbrCanForF(per0,l0.d,face); return {w:c,h:c} })();   // assumed: the Goettl square that carries its share
+    const exAt=k=>(exL&&exL[k]&&exL[k].w>0)?{w:exL[k].w,h:exL[k].h,asm:!!exL[k].asm,scan:true}:(exT?{w:exT.w,h:exT.h,asm:false}:{w:exA.w,h:exA.h,asm:true});
+    const ex=exAt(0);
+    const capOf=(e,f)=>rbrFaceCap(e.w,e.h,f);
+    let capFs=0, capBs=0; for(let k=0;k<vn;k++){ const e=exAt(k); capFs+=capOf(e,face); capBs+=(lockSt||face==='bar')?capOf(e,face):capOf(e,'bar') }
+    const capF=capFs/vn, capBest=capBs/vn;   // the room's faces together, per vent
+    r.needMore=exAny&&capBs<r.cfm-0.5;             // even bar type on the same holes cannot pass the share at 500 fpm — the room has to push, or change
     r.vCap0=capF; r.vPer0=per0;
     let n=vn; if(mode==='add'&&r.needMore){ n=Math.max(vn+1,Math.ceil(r.cfm/cap)); while(n<vn+8&&r.cfm/n>capBest+0.5) n++ }   // ADD: only on the SM's tap — enough that the vents that are there pass at 500
     r.nReg=n;
@@ -6832,13 +6904,14 @@ function rbrModel1(){
     r.branch=r.nReg===r.nTap?r.leg:mdSizeRound(Math.max(r.perTap,1),A.fr,'flex','br');
     r.can=rbrCanForF(r.perReg,r.leg.d,face);         // what a new or an enlarged can would be
     r.regs=[];
-    let kind='keep', kf=face;
-    if(capF>=r.perReg-0.5) kind='keep';
-    else if(face!=='bar'&&!lockSt&&capBest>=r.perReg-0.5){ kind='bar'; kf='bar' }
-    else if(mode==='enl') kind='enl';
-    else if(face!=='bar'&&!lockSt){ kind='bar'; kf='bar' }   // PUSH on a stamped face: bar type on the same hole takes the edge off the noise
-    const boot=rbrBoot(ex.w,ex.h);
-    for(let k=0;k<vn;k++) r.regs.push(kind==='enl'?{kind,w:r.can,h:r.can,face,from:{w:ex.w,h:ex.h}}:{kind,w:ex.w,h:ex.h,face:kf,boot,newBoot:!!exT&&r.leg.d>boot+1e-9,asm:!exT,asmN:!vnT});
+    for(let k=0;k<vn;k++){ const e=exAt(k); const cF=capOf(e,face), cB=(lockSt||face==='bar')?cF:capOf(e,'bar');
+      let kind='keep', kf=face;
+      if(cF>=r.perReg-0.5) kind='keep';
+      else if(face!=='bar'&&!lockSt&&cB>=r.perReg-0.5){ kind='bar'; kf='bar' }
+      else if(mode==='enl') kind='enl';
+      else if(face!=='bar'&&!lockSt){ kind='bar'; kf='bar' }   // PUSH on a stamped face: bar type on the same hole takes the edge off the noise
+      const boot=rbrBoot(e.w,e.h), ductD=(r.vd&&r.vd[k]>0)?r.vd[k]:null;
+      r.regs.push(kind==='enl'?{kind,w:r.can,h:r.can,face,from:{w:e.w,h:e.h},ductD,scan:!!e.scan}:{kind,w:e.w,h:e.h,face:kf,boot,newBoot:exAny&&r.leg.d>boot+1e-9&&!ductD,asm:!exAny||!!e.asm,asmN:!vnT,ductD,scan:!!e.scan}) }
     for(let k=r.regs.length;k<r.nReg;k++) r.regs.push({kind:'new',w:r.can,h:r.can,face,added:true});
     r.regs.forEach(g=>{ g.fpm=Math.round(r.perReg/(g.w*g.h*REG_FACE[g.face].free/144)); g.push=(g.kind==='keep'||g.kind==='bar')&&g.fpm>RBR_FACE+0.5; g.over=g.push&&g.fpm>RBR_PUSH_MAX+0.5 });
     r.face=Math.max(...r.regs.map(g=>g.fpm));
@@ -6933,7 +7006,7 @@ function rbrWallSpots(r,n){ const E=rbrOuterEdges(r); let W=E.filter(e=>e.ext);
   return pts.slice(0,n) }
 function rbrMaterials(){ const can={},gr={},swap={},boot={},reuse={}; const bump=(o,k,v)=>o[k]=(o[k]||0)+v;
   // v2.57 — the ducts, TYs, boxes, collars and dampers come off the layout network; the faces are the room design's (kept · bar type · enlarged · new)
-  const N=RM&&RM.net; const d=N?dnMaterials(N):{flex:{},ty:{},box:{},coll:{},damp:{}};
+  const N=RM&&RM.net; const d=N?dnMaterials(N):{flex:{},ty:{},box:{},coll:{},damp:{},keep:{}};
   const coll=Object.assign({},d.coll);
   (RM.down||[]).forEach(x=>{ bump(coll,x.d,x.n); bump(d.flex,x.d,(x.rise+6)*x.n); (x.add||[]).forEach(a=>{ bump(coll,a.d,1); bump(d.flex,a.d,x.rise+6) }) });   // v2.46 — the duct down to each lower floor: a collar off the plenum and the drop itself
   S.rooms.forEach(r=>{ (r.regs||[]).forEach(g=>{
@@ -6941,7 +7014,7 @@ function rbrMaterials(){ const can={},gr={},swap={},boot={},reuse={}; const bump
       else if(g.kind==='bar') bump(swap,g.w+'×'+g.h,1);
       if(g.kind==='keep'||g.kind==='bar') bump(reuse,g.w+'×'+g.h+(g.asm?' (assumed — confirm)':''),1);   // v2.58 — the vents the house has, reused
       if(g.newBoot) bump(boot,g.w+'×'+g.h+' boot · Ø'+r.leg.d+'" collar',1) }) });
-  return {flex:d.flex,trunk:{},ty:d.ty,box:d.box,can,gr,coll,damp:d.damp,swap,boot,reuse,tcoll:{}};
+  return {flex:d.flex,trunk:{},ty:d.ty,box:d.box,can,gr,coll,damp:d.damp,swap,boot,reuse,tcoll:{},keep:d.keep||{}};
 }
 
 // ==== DN BEGIN — v2.57 THE DUCT LAYOUT PICKER ============================================================================================
@@ -7043,7 +7116,8 @@ function dnFaceNeed(ds){ return ds.reduce((s,d)=>s+d,0)+DN_EDGE_IN*Math.max(0,ds
 // ---------------------------------------------------------------- the registers the network ends on
 // every register of every room, at its real spot on the plan, with the air it takes and the leg the room design sized for it
 function dnRegsFromRooms(){ const out=[]; (S.rooms||[]).forEach(r=>{ if(r.nr||!r.nReg) return; (r.taps||[]).forEach(tp=>(tp.regs||[]).forEach(g=>{
-  out.push({id:'g'+g.tag,tag:g.tag,rid:r.id||r.n,room:r.n,x:g.x,y:g.y!=null?g.y:rbrCy(r),q:r.perReg,d:(r.leg&&r.leg.d)||8,can:r.can||9,g:g.g||null,pin:!!(g.placed||(g.g&&g.g.kind!=='new')),placed:!!g.placed,small:(r.sf||0)<=80||/bath|closet|wic|laundry|pantry|powder/i.test(r.n||'')}) })) });
+  out.push({id:'g'+g.tag,tag:g.tag,rid:r.id||r.n,room:r.n,x:g.x,y:g.y!=null?g.y:rbrCy(r),q:r.perReg,d:(r.leg&&r.leg.d)||8,can:r.can||9,g:g.g||null,pin:!!(g.placed||(g.g&&g.g.kind!=='new')),placed:!!g.placed,small:(r.sf||0)<=80||/bath|closet|wic|laundry|pantry|powder/i.test(r.n||''),
+    dEx:(g.g&&g.g.ductD>0&&(g.g.kind==='keep'||g.g.kind==='bar'))?g.g.ductD:null}) })) });   /* v2.64: the branch duct the register has today (a kept face only) — the layout keeps it when it carries the air */
   return out }
 // ---------------------------------------------------------------- AUTO: where the unit sits (Stephen's geometry rule — easy to say to a client)
 const DN_DIR=['east','south-east','south','south-west','west','north-west','north','north-east'];
@@ -7577,8 +7651,10 @@ function dnRepair(N,ctx){ const tys=()=>Object.values(N.nodes).filter(n=>n.t==='
 // ---------------------------------------------------------------- SIZE: every edge by what it carries (smallest that covers it; one size up for a long or bendy run)
 function dnSize(N,ctx){ const fr=ctx.fr; const q={}; const load=nid=>{ const nd=N.nodes[nid]; if(nd.t==='can') return q[nid]=nd.reg.q; return q[nid]=(nd.outE||[]).reduce((s,id)=>s+load(N.edges.find(x=>x.id===id).b),0) };
   load(N.root);
-  N.edges.forEach(e=>{ const b=N.nodes[e.b]; e.q=q[e.b]; const toCan=b.t==='can'; const key=(e.k==='trunk'||e.k==='boxfeed')?'sup':'br';
-    let d=dnD(e.q,fr,key,e.len||0,e.bends||0); if(toCan){ d=Math.max(d,b.reg.d) } if(e.root&&e.k!=='direct'){ d=Math.max(d,DN_TRUNK_MIN) } e.d=Math.min(d,MD_MAX_D) });
+  N.edges.forEach(e=>{ const b=N.nodes[e.b]; e.q=q[e.b]; const toCan=b.t==='can'; const key=(e.k==='trunk'||e.k==='boxfeed')?'sup':'br'; e.keep=false;
+    let d=dnD(e.q,fr,key,e.len||0,e.bends||0);
+    if(toCan){ const ex=b.reg.dEx; if(ex>0&&d<=ex+1e-9){ d=ex; e.keep=true; e.exD=ex } else { d=Math.max(d,b.reg.d) } }   /* v2.64: the branch the register has today stays when the size the design wants is no bigger than it */
+    if(e.root&&e.k!=='direct'){ d=Math.max(d,DN_TRUNK_MIN) } e.d=Math.min(d,MD_MAX_D) });
   // a TY never grows the air's duct: its inlet is at least its biggest leg (bump the inlet up the tree)
   const fixUp=nid=>{ const nd=N.nodes[nid]; (nd.outE||[]).forEach(id=>fixUp(N.edges.find(x=>x.id===id).b)); if(nd.t==='ty'||nd.t==='box'){ const inE=N.edges.find(x=>x.id===nd.inE); const mx=Math.max(...(nd.outE||[]).map(id=>N.edges.find(x=>x.id===id).d)); if(inE&&inE.d<mx) inE.d=Math.min(MD_MAX_D,mx) } };
   fixUp(N.root);
@@ -7657,10 +7733,11 @@ function dnTag(N){ let t=0, dd=0, y=0, x=0, b=0; const L='ABCDEFGHJK';
   Object.values(N.nodes).forEach(nd=>{ if(nd.t==='ty') nd.tag='Y'+(++y); if(nd.t==='box') nd.tag='X'+(++x) });
   N.edges.forEach(e=>{ if(!e.tag) e.tag='B'+(++b) }) }
 // ---------------------------------------------------------------- materials off the network
-function dnMaterials(N){ const flex={}, ty={}, box={}, coll={}, damp={}, bump=(o,k,v)=>o[k]=(o[k]||0)+v;
-  N.edges.forEach(e=>{ const L=(e.len||0)+(N.nodes[e.b].t==='can'?1.5:0); bump(flex,e.d,L); if(e.root) bump(coll,e.d,1); if(N.nodes[e.b].t==='can') bump(damp,e.d,1) });
+function dnMaterials(N){ const flex={}, ty={}, box={}, coll={}, damp={}, keep={}, bump=(o,k,v)=>o[k]=(o[k]||0)+v;
+  N.edges.forEach(e=>{ const L=(e.len||0)+(N.nodes[e.b].t==='can'?1.5:0); if(e.keep){ keep[e.d]=keep[e.d]||{ft:0,n:0}; keep[e.d].ft+=L; keep[e.d].n++; return }   /* v2.64: an existing branch kept in place */
+    bump(flex,e.d,L); if(e.root) bump(coll,e.d,1); if(N.nodes[e.b].t==='can') bump(damp,e.d,1) });
   Object.values(N.nodes).forEach(n=>{ if(n.t==='ty') bump(ty,n.name,1); if(n.t==='box') bump(box,`${n.wIn}×${n.lIn}×${n.hIn}" insulated · Ø${n.inD}" inlet`,1) });
-  return {flex,ty,box,coll,damp} }
+  return {flex,ty,box,coll,damp,keep} }
 // ---------------------------------------------------------------- the room design's hook: build the chosen layout, the other two for their chips
 function dnLayoutKey(){ return DN_LAY[S.layout]?S.layout:'auto' }
 // what the network was laid out against — the plenum it comes off and the equipment; a 3D drawn after one of these changed rebuilds the room design first
@@ -8011,7 +8088,9 @@ function ipFt(L){ const f=Math.ceil(L-0.05); return f+' ft' }
 function ipRegWords(r,g){ const q=g.g||{kind:'new',w:r.can,h:r.can,face:r.faceK}; const face=(REG_FACE[q.face]||REG_FACE.stamped).short.replace(' face','');
   const sz=q.w+'\u00d7'+q.h; let t, t2='';
   if(q.kind==='keep'){ t=sz+' keep' } else if(q.kind==='bar'){ t=sz+' keep \u00b7 bar grille' } else if(q.kind==='enl'){ t=sz+' can \u00b7 '+sz+' '+face; t2='was '+q.from.w+'\u00d7'+q.from.h } else t=sz+' can \u00b7 '+sz+' '+face;
-  if(q.push) t2=(t2?t2+' \u00b7 ':'')+'push '+q.fpm+' fpm'; if(q.newBoot) t2=(t2?t2+' \u00b7 ':'')+'new boot'; if(q.asm) t2=(t2?t2+' \u00b7 ':'')+'confirm'; return {t,t2} }
+  if(q.push) t2=(t2?t2+' \u00b7 ':'')+'push '+q.fpm+' fpm'; if(q.newBoot) t2=(t2?t2+' \u00b7 ':'')+'new boot';
+  if(q.ductD>0) t2=(t2?t2+' \u00b7 ':'')+(g.kept?'\u00d8'+q.ductD+'\u2033 duct kept':'was \u00d8'+q.ductD+'\u2033');   /* v2.64: the branch the scan found behind it */
+  if(q.asm) t2=(t2?t2+' \u00b7 ':'')+'confirm'; return {t,t2} }
 function ipRetSize(){ try{ const AM=flowModel(curOpt(),S.fix); const c=AM&&AM.comps.find(x=>x.slot==='ret'); return c?String(c.size):'' }catch(e){ return '' } }
 function ipSizesUsed(N){ const set=new Set(); if(N) N.edges.forEach(e=>{ if(e.d) set.add(e.d) }); return [...set].sort((a,b)=>a-b) }
 /* the plan proper — one SVG. SC = px per foot; o.print draws for paper (no interactive hooks) */
@@ -8057,7 +8136,8 @@ function rbrInstallPlanSvg(SC,o){
   s+=`<svg class="iplan" viewBox="0 0 ${W.toFixed(0)} ${H.toFixed(0)}" role="img" aria-label="Installer plan — supply ducts, every size on the duct" font-family="-apple-system,'Segoe UI',Helvetica,Arial,sans-serif">`;
   s+=`<rect x="0" y="0" width="${W}" height="${H}" fill="#fff"/>`;
   /* the title strip: who, what, the unit and its air */
-  s+=`<text x="${ML}" y="19" font-size="11" font-weight="800" fill="#3678A0">GOETTL AIR CONDITIONING &amp; PLUMBING · LAS VEGAS</text><text x="${ML}" y="37" font-size="17" font-weight="800" fill="${IP_DARK}">SUPPLY DUCT PLAN</text>`;
+  const nx=(S.plan&&S.plan.north&&S.plan.north.deg!=null)?42:0; if(nx) s+=fcNorthSvg(ML+17,25,17,S.plan.north.deg,{fs:12,ink:IP_DARK});   /* v2.64: north, off the scan, leads the title strip */
+  s+=`<text x="${ML+nx}" y="19" font-size="11" font-weight="800" fill="#3678A0">GOETTL AIR CONDITIONING &amp; PLUMBING · LAS VEGAS</text><text x="${ML+nx}" y="37" font-size="17" font-weight="800" fill="${IP_DARK}">SUPPLY DUCT PLAN</text>`;
   s+=`<text x="${W-MR}" y="19" text-anchor="end" font-size="11" font-weight="800" fill="#5b6b7c">${esc(RM.A.name)}</text><text x="${W-MR}" y="37" text-anchor="end" font-size="13" font-weight="800" fill="${IP_INK}">${CFM(RM.A.Qd)} CFM · ${RM.vents} registers · ${N?esc(dnName(N.lay)):''}</text>`;
   s+=`<line x1="${ML}" y1="${MT-4}" x2="${W-MR}" y2="${MT-4}" stroke="${IP_DARK}" stroke-width="1.5"/>`;
   /* 1 · the house, ghosted */
@@ -8107,7 +8187,8 @@ function rbrInstallPlanSvg(SC,o){
       s+=`<circle cx="${f1(c[0])}" cy="${f1(c[1])}" r="${f1(R)}" fill="#a7adb4" stroke="#4a5058" stroke-width="1.6"/>`;
       placed.push({x1:c[0]-R*1.9,x2:c[0]+R*1.9,y1:c[1]-R*1.9,y2:c[1]+R*1.9,k:'ty'}); tyGl.push({c,R,nd,dirIn}) }) }
   /* 6 · the registers at their size; kept ones dashed */
-  const regs=[]; rooms.forEach(r=>{ (r.taps||[]).forEach(tp=>{ tp.regs.forEach(g=>{ const q=g.g||{kind:'new',w:r.can,h:r.can}; const rp=p(g.x,g.y!=null?g.y:rbrCy(r)); const hw=Math.max(5,q.w*SC/24), hh=Math.max(5,q.h*SC/24); const ex=q.kind==='keep'||q.kind==='bar';
+  const keptTags=new Set(); if(N) N.edges.forEach(e=>{ const bn=N.nodes[e.b]; if(e.keep&&bn&&bn.t==='can'&&bn.reg) keptTags.add(bn.reg.tag) });   /* v2.64 */
+  const regs=[]; rooms.forEach(r=>{ (r.taps||[]).forEach(tp=>{ tp.regs.forEach(g=>{ g.kept=keptTags.has(g.tag); const q=g.g||{kind:'new',w:r.can,h:r.can}; const rp=p(g.x,g.y!=null?g.y:rbrCy(r)); const hw=Math.max(5,q.w*SC/24), hh=Math.max(5,q.h*SC/24); const ex=q.kind==='keep'||q.kind==='bar';
       s+=`<rect x="${f1(rp[0]-hw)}" y="${f1(rp[1]-hh)}" width="${f1(hw*2)}" height="${f1(hh*2)}" fill="#fff" stroke="${ex?IP_KEEP:IP_INK}" stroke-width="2"${ex?' stroke-dasharray="4 3"':''}/>`;
       [-1/3,0,1/3].forEach(k=>{ s+=`<line x1="${f1(rp[0]-hw+2)}" y1="${f1(rp[1]+hh*k*2)}" x2="${f1(rp[0]+hw-2)}" y2="${f1(rp[1]+hh*k*2)}" stroke="${ex?'#c9ced4':'#9fb6c9'}" stroke-width="1"/>` });
       placed.push({x1:rp[0]-hw-1,x2:rp[0]+hw+1,y1:rp[1]-hh-1,y2:rp[1]+hh+1,k:'reg'}); regs.push({r,g,rp,hw,hh}) }) }) });
@@ -8194,6 +8275,8 @@ function rbrPickListHtml(){ const m=RM.mat||{}; const N=RM.net; if(!m.flex) retu
   h+=`<div class="ipgrp"><h3>Flex duct — R-8 round, pulled tight</h3><table class="dt ippick"><tbody>`;
   sizes.forEach(d=>{ const ft=Math.ceil(m.flex[d]); h+=`<tr><td class="ipsz">${chip(ipCol(d))}<b>${ipIn(d)}</b></td><td class="num"><b>${ft} ft</b></td><td>${runs[d]||0} run${runs[d]===1?'':'s'} · ${Math.ceil(ft/25)} × 25 ft ${Math.ceil(ft/25)===1?'box':'boxes'}</td></tr>` });
   h+=`</tbody></table></div>`;
+  { const K=m.keep||{}; const ks=Object.keys(K).map(Number).sort((a,b)=>a-b); if(ks.length){ h+=`<div class="ipgrp"><h3>Existing branch duct — kept in place (off the scan)</h3><table class="dt ippick"><tbody>`;
+    ks.forEach(d=>{ h+=`<tr><td class="ipsz">${chip(IP_KEEP,true)}<b>${ipIn(d)}</b></td><td class="num"><b>${K[d].n} run${K[d].n===1?'':'s'}</b></td><td>about ${Math.ceil(K[d].ft)} ft stays — the new TY leg lands on it, no flex to buy</td></tr>` }); h+=`</tbody></table></div>` } }   /* v2.64 */
   const grp=(title,obj,fmt,note)=>{ const ks=Object.keys(obj||{}); if(!ks.length) return; ks.sort((a,b)=>(parseFloat(b)||0)-(parseFloat(a)||0)); h+=`<div class="ipgrp"><h3>${title}</h3><table class="dt ippick"><tbody>`; ks.forEach(k=>{ h+=`<tr><td class="ipsz">${fmt(k)}</td><td class="num"><b>${obj[k]}</b></td><td>${note?note(k):''}</td></tr>` }); h+=`</tbody></table></div>` };
   grp('Round metal TYs — in × out × out',m.ty,k=>{ const d=parseInt(k,10); return chip(ipCol(d))+'<b>TY '+String(k).replace(/x/g,'×')+'</b>' },k=>{ const q=String(k).split(/x/); return 'inlet '+ipIn(q[0])+' · legs '+ipIn(q[1])+' + '+ipIn(q[2]) });
   grp('Plenum collars — one per run off the plenum',m.coll,k=>chip(ipCol(+k))+'<b>'+ipIn(k)+' collar</b>',()=>'with a balancing damper');
@@ -8254,7 +8337,7 @@ function rbrRoomTbl(){
   let h='<thead><tr><th>Room</th><th class="num">Sq ft</th><th class="num">Ceiling</th><th>Load</th><th class="num">Needs</th><th class="num">Design CFM</th><th>Take-off &rarr; TY &rarr; leg</th><th>Can &amp; grille</th></tr></thead><tbody>';
   S.rooms.forEach(r=>{ h+=`<tr><td><b>${rbrEsc(r.n)}</b><br><span class="note">${rbrFt(r.w)} × ${rbrFt(r.d)} ft</span></td>`+
     `<td class="num">${r.sf}</td><td class="num">${r.h} ft${r.hf>1?' <span class="asm">×'+r.hf.toFixed(2)+'</span>':''}</td>`+
-    `<td>${r.ld==='high'?'<span class="status warn">High</span>':r.ld==='low'?'<span class="status na">Low</span>':'Average'}</td>`+
+    `<td>${r.needSrc==='scan'?'<span class="status ok">Manual J</span><br><span class="note">'+CFM(r.mj.cool)+' BTUh · scan</span>':r.ld==='high'?'<span class="status warn">High</span>':r.ld==='low'?'<span class="status na">Low</span>':'Average'}</td>`+
     `<td class="num">${CFM(r.need)}</td><td class="num"><b>${CFM(r.cfm)}</b></td>`+
     `<td>${rbrDuctTxt(r)}</td><td>${r.nr?'—':rbrRegCol(r)+'<br><span class="note">'+CFM(r.perReg)+' CFM each · '+r.face+' fpm</span>'}</td></tr>` });
   (RM.down||[]).forEach(x=>{ h+=`<tr><td><b>Floor ${x.fl+1}</b><br><span class="note">one duct down</span></td><td class="num">${CFM(Math.round(x.sf))}</td><td class="num">—</td><td>Average</td><td class="num">${CFM(x.need)}</td><td class="num"><b>${CFM(x.cfm)}</b></td><td>${x.n>1?x.n+' × ':''}Ø${x.d}" ${x.mat} down${x.entered?'':' <span class="asm">assumed</span>'}${x.short>0?`<br><span class="note" style="color:var(--bad)">${CFM(x.short)} CFM short — goes upstairs · needs ${x.spec.n>1?x.spec.n+' × ':''}Ø${x.spec.d}"</span>`:''}</td><td>existing registers downstairs</td></tr>` });
@@ -8429,6 +8512,7 @@ function rbrMJ(){
   el.innerHTML='<div class="env" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:10px">'+
     rbrTile('Conditioned area',CFM(sf)+' sq ft',B.n,'')+
     rbrTile('Manual J size',rec+' ton',CFM(sf)+' ÷ '+B.sf+' = '+(sf/B.sf).toFixed(2)+' — '+rbrRoundNote(sf/B.sf),'ok')+
+    rbrScanTiles()+   /* v2.64: the scan app's load calc, when the file carried one */
     (RM.loadT?rbrTile('Measured cross-check',RM.loadT+' ton',
         CFM(RM.needTot)+' CFM ÷ '+RM.cpt+' CFM/ton ('+rbrEsc(RM.cptSrc)+') = '+(RM.needTot/RM.cpt).toFixed(2)+' — '+rbrRoundNote(RM.needTot/RM.cpt)+(RM.loadT>rec?' — bigger unit, or attic to R-38':''),RM.loadT>rec?'warn':'')
              :rbrTile('Measured cross-check','—','appears once the rooms are entered',''))+
@@ -8452,6 +8536,15 @@ function rbrMJ(){
       (A.live&&!fits?`<br><br><b style="color:var(--bad)">The ${tons1(A.tons)}-ton being quoted is under what the house asks for.</b> It delivers ${Math.round(RM.pct*100)}% of the air the rooms need — the duct design still balances, but every room is short by the same share.`:'')+
     '</div>';
 }
+// v2.64 — the Goettl Room Scan app's own load calc, when the upload carried it: its Manual J, the sq-ft rule it applied, the size it recommends and the system CFM
+function rbrScanTiles(){ const G=S.plan&&S.plan.g, m=G&&G.mj; if(!m) return ''; const tons=v=>v>0?(Math.round(v*100)/100)+' ton':'—';
+  return rbrTile('Scan · Manual J',tons(m.mjT),CFM(m.cool)+' BTUh cooling'+(m.sens?' ('+CFM(m.sens)+' sensible'+(m.lat?' + '+CFM(m.lat)+' latent':'')+')':'')+(m.heat?' · '+CFM(m.heat)+' BTUh heating':''),'ok')+
+    rbrTile('Scan · sq-ft rule',tons(m.sfT),rbrEsc(m.why||m.basis||''),'')+
+    rbrTile('Scan · recommends',(m.recT>0?m.recT+' ton':'—')+(m.cfm?' · '+CFM(m.cfm)+' CFM':''),rbrEsc(m.note||'')+(m.roomCfm?' · rooms '+CFM(m.roomCfm)+' CFM':''),'ok') }
+function rbrScanFacts(){ const G=S.plan&&S.plan.g; if(!G) return ''; const b=[]; if(G.nSup||G.nRet) b.push(`<span class="scn">${G.nSup} ${G.nSup===1?'supply':'supplies'}${G.nRet?' + '+G.nRet+' return'+(G.nRet===1?'':'s'):''} off the scan</span>`);
+  if(S.plan.north&&S.plan.north.deg!=null) b.push(`north ${Math.round(S.plan.north.deg)}°${S.plan.north.acc?' ±'+Math.round(S.plan.north.acc)+'°':''}`); if(G.mj&&G.mj.recT>0) b.push(`scan load calc: ${G.mj.recT} ton · ${CFM(G.mj.cfm)} CFM`);
+  if(G.home&&G.home.attic&&G.home.attic.depth) b.push(`attic ${G.home.attic.depth}" ${rbrEsc(String(G.home.attic.mat||'').toLowerCase())}`.trim()); if(G.home&&G.home.year) b.push(`built ${G.home.year}`);
+  return b.length?' · '+b.join(' · '):'' }
 function rbrVentSum(r){ if(r.nr) return ''; if(r.vAsm&&r.vSzAsm) return ' (assumed)'; const b=[];   // v2.58: assumed vents say so; pushed ones say how hard
   if(r.keepN&&!r.pushN) b.push(r.keepN+' kept'); if(r.barN&&!r.pushN) b.push(r.barN+' → bar type'); if(r.pushN) b.push(r.pushN+' pushed to '+r.face+' fpm'+(r.barN?' (bar type)':'')); if(r.enlN) b.push(r.enlN+' enlarged to '+r.can+'×'+r.can); if(r.newN) b.push(r.newN+' added');
   if(r.vSzAsm) b.push('size assumed'); return b.length?' ('+b.join(', ')+')':'' }
@@ -8466,7 +8559,8 @@ function rbrVmChips(r,attr){ attr=attr||'data-vm'; const m=r.vmode||'push'; cons
   return `<span class="vmrow"><span class="status ${st}">${why}</span> `+[['push','Push FPM'],['enl','Enlarge vent'],['add','Add vent']].map(([k,l])=>`<button class="chip sm${m===k?' on':''}" ${attr}="${k}" data-vmid="${r.id}" title="${k==='push'?'Keep the vents the house has and push more air through them (more fpm, a little more noise). Tap it again past '+RBR_PUSH_MAX+' fpm to accept it':k==='enl'?'Cut a bigger can and run a bigger duct to it — same number of vents':'Add another vent to this room — a new hole in the ceiling, and the duct design changes'}">${l}</button>`).join('')+`</span>` }
 function rbrSetVm(id,vm){ const r=S.rooms.find(x=>x.id===id); if(!r||!RBR_VM[vm]) return; if(vm==='push'){ if(r.over&&(r.vmode||'push')==='push') r.vm='push'; else delete r.vm } else r.vm=vm; save() }   // Push is the default; tapped again on a room past 700 fpm it is the SM's approval, and the red clears
 function rbrRowOut(row,r){ const o=row.querySelector('.out'); if(!o) return;
-  o.innerHTML=`<b>${CFM(r.cfm)}</b> CFM<span>${rbrFt(r.w)} × ${rbrFt(r.d)} ft · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)} · ${r.hf>1?'×'+r.hf.toFixed(2)+' ceiling ':''}${r.lf!==1?'×'+r.lf.toFixed(2)+' load ':''}needs ${CFM(r.need)}</span>` }
+  o.innerHTML=`<b>${CFM(r.cfm)}</b> CFM<span>${rbrFt(r.w)} × ${rbrFt(r.d)} ft · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)} · ${r.hf>1?'×'+r.hf.toFixed(2)+' ceiling ':''}${r.lf!==1?'×'+r.lf.toFixed(2)+' load ':''}needs ${CFM(r.need)}${rbrMjWords(r)}</span>` }
+function rbrMjWords(r){ return (r.needSrc==='scan'&&r.mj)?' · Manual J '+CFM(r.mj.cool)+' BTUh (scan)':'' }   /* v2.64 */
 function rbrRoomRows(){
   const L=$('#rbrList'); L.innerHTML='';
   S.rooms.forEach(r=>{ const d=document.createElement('div'); d.className='rrow'; d.dataset.id=r.id;
@@ -8474,16 +8568,17 @@ function rbrRoomRows(){
       `<div class="f-sf"><span class="cap">Sq ft${r.plan?' <span class="asm">measured</span>':''}</span><input data-k="sf" type="number" inputmode="numeric" min="10" value="${r.sf}" aria-label="Square feet"${r.plan?' readonly':''}></div>`+
       `<div class="f-ht"><span class="cap">Ceiling ft</span><input data-k="h" type="number" inputmode="decimal" min="7" value="${r.h}" aria-label="Ceiling height"></div>`+
       `<div class="f-ld"><span class="cap">Load</span><div class="chips">`+
+        (r.mj?`<button class="chip sm scan${r.ld==='scan'?' on':''}" data-ld="scan" title="The scan app's Manual J for this room: ${CFM(r.mj.cool)} BTUh sensible · ${CFM(r.mj.cfm)} CFM">Scan</button>`:'')+   /* v2.64 */
         ['low','avg','high'].map(v=>`<button class="chip sm${r.ld===v?' on':''}" data-ld="${v}">${v==='avg'?'Average':v==='low'?'Low':'High'}</button>`).join('')+`</div></div>`+
       // v2.46 — the vents the room has today: how many, what size, and the face (house default unless this room is flipped)
-      `<div class="f-vn"><span class="cap">Vents today</span><input data-k="vn" type="number" inputmode="numeric" min="0" max="12" value="${r.vn||''}" placeholder="0" aria-label="Vents in the room today"></div>`+
-      `<div class="f-vs"><span class="cap">Vent size</span><input data-k="vs" type="text" inputmode="numeric" value="${rbrEsc(r.vs||'')}" placeholder="10x10" aria-label="Vent size today"></div>`+
+      `<div class="f-vn"><span class="cap">Vents today${r.vScan?' <span class="asm">scan</span>':''}</span><input data-k="vn" type="number" inputmode="numeric" min="0" max="12" value="${r.vn||''}" placeholder="0" aria-label="Vents in the room today"></div>`+
+      `<div class="f-vs"><span class="cap">Vent size${r.vScan?' <span class="asm">'+(r.vszAsm?'scan · confirm':'scan')+'</span>':''}</span><input data-k="vs" type="text" inputmode="numeric" value="${rbrEsc(r.vs||'')}" placeholder="${r.vScan&&r.vsz&&!r.vs?rbrEsc(r.vsz.map(s=>s?s.w+'x'+s.h:'?').join(' · ')):'10x10'}" aria-label="Vent size today"></div>`+
       `<div class="f-vf"><span class="cap">Face${r.vf?'':' <span class="asm">house</span>'}</span><div class="chips">`+
         ['stamped','bar'].map(v=>`<button class="chip sm${rbrFaceOf(r)===v?' on':''}" data-vf="${v}">${v==='bar'?'Bar type':'Stamped'}</button>`).join('')+`</div></div>`+
       (!r.nr&&r.needMore?`<div class="f-vm"><span class="cap">Needs more air</span>${rbrVmChips(r)}</div>`:'')+
       (r.plan?`<div class="f-nr"><span class="cap">Register</span><div class="chips"><button class="chip sm${r.nr?'':' on'}" data-nr="0">Yes</button><button class="chip sm${r.nr?' on':''}" data-nr="1">No</button></div></div>`:'')+
-      (r.nr?`<div class="out"><b>no vent</b><span>${rbrFt(r.w)} × ${rbrFt(r.d)} ft · ${r.kind==='hall'?'hall':'closet'} — its ${CFM(r.need)} CFM of load lands on the rooms around it</span></div>`:
-      `<div class="out"><b>${CFM(r.cfm)}</b> CFM<span>${rbrFt(r.w)} × ${rbrFt(r.d)} ft · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)} · ${r.hf>1?'×'+r.hf.toFixed(2)+' ceiling ':''}${r.lf!==1?'×'+r.lf.toFixed(2)+' load ':''}needs ${CFM(r.need)}</span></div>`)+
+      (r.nr?`<div class="out"><b>no vent</b><span>${rbrFt(r.w)} × ${rbrFt(r.d)} ft · ${r.ns?'on another system — no load here':(r.nrScan?'no register in the scan':(r.kind==='hall'?'hall':'closet'))+' — its '+CFM(r.need)+' CFM of load lands on the rooms around it'}</span></div>`:
+      `<div class="out"><b>${CFM(r.cfm)}</b> CFM<span>${rbrFt(r.w)} × ${rbrFt(r.d)} ft · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)} · ${r.hf>1?'×'+r.hf.toFixed(2)+' ceiling ':''}${r.lf!==1?'×'+r.lf.toFixed(2)+' load ':''}needs ${CFM(r.need)}${rbrMjWords(r)}</span></div>`)+
       `<button class="del" data-del="1" aria-label="Remove ${rbrEsc(r.n)}">×</button>`;
     L.appendChild(d); });
   // the house-wide face today, and what the rooms' vents add up to
@@ -8702,25 +8797,47 @@ function fcPlanLoad(text,name){
 function fcPlanApply(P,name){
   const top=fcTop(), r2=v=>+(+v).toFixed(2);
   const prev=rbrHomeSf(); fcPlanPadIn(P,FC_PLAN_PAD);   // v2.60: the house in the middle of the grid
+  const G=P.goettl||null, hasReg=!!(G&&G.nReg>0);   // v2.64 — a Goettl Room Scan export: the registers are measured, so every room's vents are
   S.plan={name:name||'floor plan',w:r2(P.w),d:r2(P.d),sf:Math.round(P.totalSf),units:P.units,scale:P.scale,
     walls:P.walls.map(s=>s.map(r2)),doors:P.doors.map(o=>({x:r2(o.x),y:r2(o.y),w:r2(o.w),rot:Math.round(o.rot)})),
     windows:P.windows.map(o=>({x:r2(o.x),y:r2(o.y),w:r2(o.w),rot:Math.round(o.rot)})),
     outline:P.outline.map(p=>[r2(p[0]),r2(p[1])]),furn:P.furniture.map(f=>({k:f.kind,x:r2(f.c[0]),y:r2(f.c[1])})),
-    prevSf:(prev&&Math.abs(prev-P.totalSf)>P.totalSf*0.1)?Math.round(prev):null,at:Date.now(),pad:FC_PLAN_PAD,src:P.src||'dxf'};
-  S.rooms=[]; S.blocks=[]; S.rbrHand=false;
+    prevSf:(prev&&Math.abs(prev-P.totalSf)>P.totalSf*0.1)?Math.round(prev):null,at:Date.now(),pad:FC_PLAN_PAD,src:P.src||'dxf',
+    north:(P.north&&P.north.deg!=null)?{deg:+(+P.north.deg).toFixed(1),acc:P.north.acc||null}:null,g:G};
+  S.rooms=[]; S.blocks=[]; S.rbrHand=false; const rets=[];
   P.rooms.forEach(r=>{ const bb=window.FCDxf.bbox(r.poly); const wins=P.windows.filter(w=>{ const m=fcWinMid(w); return fcSegNear(r.poly,m[0],m[1],0.6) });
-    const winFt=wins.reduce((s,w)=>s+w.w,0), perim=2*(bb.w+bb.d); const nr=(r.kind==='hall'||r.kind==='closet');
+    const sup=(r.regs||[]).filter(q=>q.type==='supply'); (r.regs||[]).filter(q=>q.type==='return').forEach(q=>rets.push(q));
+    const winFt=wins.reduce((s,w)=>s+w.w,0), perim=2*(bb.w+bb.d); const nr=hasReg?(!sup.length||!!r.ns):(r.kind==='hall'||r.kind==='closet');   // v2.64: the scan counted the vents — a room with none has none
     const ld= r.kind==='kitchen'?'high':(r.kind==='bath'||r.kind==='laundry'||nr)?'low':((wins.length>=2&&winFt>0.18*perim)?'high':'avg');
-    S.rooms.push({id:'r'+(S.rbrSeq++),n:r.name,sf:Math.max(1,Math.round(r.sf)),h:(r.h>=6&&r.h<=30)?Math.round(r.h*10)/10:10,ld,x:r2(bb.x0),y:r2(bb.y0),w:r2(Math.max(1,bb.w)),d:r2(Math.max(1,bb.d)),fl:top,
-      poly:r.poly.map(p=>[r2(p[0]),r2(p[1])]),cx:r2(r.c[0]),cy:r2(r.c[1]),kind:r.kind,nr,win:wins.length,plan:true}) });
+    const room={id:'r'+(S.rbrSeq++),n:r.name,sf:Math.max(1,Math.round(r.sf)),h:(r.h>=6&&r.h<=30)?Math.round(r.h*10)/10:10,ld,x:r2(bb.x0),y:r2(bb.y0),w:r2(Math.max(1,bb.w)),d:r2(Math.max(1,bb.d)),fl:top,
+      poly:r.poly.map(p=>[r2(p[0]),r2(p[1])]),cx:r2(r.c[0]),cy:r2(r.c[1]),kind:r.kind,nr,win:wins.length,plan:true};
+    if(r.g&&r.g.mj&&r.g.mj.cfm>0){ room.mj=Object.assign({},r.g.mj); room.ld='scan' }   // the app's Manual J for this room — the Scan chip; Low / Average / High still override it
+    if(r.ns){ room.ns=true; room.nr=true }   // not served by this system: no load, no register
+    if(r.g&&r.g.ext&&r.g.ext.length) room.ext=r.g.ext.map(w=>({f:w.facing,az:w.az,win:+w.win.toFixed(1),w:+w.w.toFixed(1)}));
+    if(hasReg) room.nrScan=true;
+    if(sup.length){ room.vn=sup.length; room.vScan=true;   // the vents the scan found: how many, each one's size, where it is (pinned), what feeds it
+      const szs=sup.map(q=>q.nom?{w:q.nom[0],h:q.nom[1],asm:!!q.nomAsm,meas:q.meas}:null);
+      room.vsz=szs; const one=szs.every(s=>s&&szs[0]&&s.w===szs[0].w&&s.h===szs[0].h);
+      room.vs=(one&&szs[0])?szs[0].w+'x'+szs[0].h:''; room.vszAsm=szs.some(s=>!s||s.asm);
+      room.vp=sup.map(q=>({dx:r2(q.x-bb.x0),dy:r2(q.y-bb.y0)})); room.vd=sup.map(q=>q.duct||null); room.vRun=sup.map(q=>q.run||null) }
+    S.rooms.push(room) });
   // the scan IS the served area — the Manual J runs on it, the traced aerial shape (if any) steps aside
   fcPlanSetSf(Math.round(P.totalSf)); S.home.floors[top].shape=null; S.home.floors[top].tpts=null;
   const c=window.FCDxf.polyCent(P.outline); S.unitPos.x=Math.round(c[0]-3); S.unitPos.y=Math.round(c[1]-3); fcUnitInside(); fcRetReset();
+  // v2.64 — the return grille where the scan found it, at its size (the first one is the tile; the count and size fill the Existing tab, badged assumed)
+  if(rets.length){ const q=rets[0]; S.retPos.x=r2(q.x-2); S.retPos.y=r2(q.y-2); S.retPos.set=true; S.retPos.scan=true; fcRetInside();
+    S.plan.rets=rets.map(q=>({x:q.x,y:q.y,w:q.nom?q.nom[0]:null,h:q.nom?q.nom[1]:null,asm:!!q.nomAsm}));
+    try{ const nm=q.nom?q.nom[0]+'x'+q.nom[1]:null; if(nm) setAuto('ex_gr',nm); setAuto('ex_gr_n',String(rets.length)); if(typeof refreshOld==='function') refreshOld() }catch(e){} }
+  // v2.64 — the home facts off the scan: how the house is built, what is in the attic (assumed until touched)
+  if(G){ const mj=G.mj; if(mj&&mj.build&&!S.home.build){ S.home.build=/pre.?1980|old/i.test(mj.build)?'pre1980':(/high/i.test(mj.build)?'hieff':'standard'); try{ rbrSyncSeg() }catch(e){} }
+    const at=G.home&&G.home.attic; if(at&&at.depth>0){ try{ setAuto('in_depth',String(at.depth)); const m=String(at.mat||at.floorType||'').toLowerCase(); const ty=/cellulose/.test(m)?'cellulose':/batt/.test(m)?'batts':/spray|foam/.test(m)?'spray':/fiber|blown/.test(m)?'blown_fg':null;
+      const sel=$('#in_type'); if(ty&&sel&&(sel.value==='unknown'||isAuto('in_type'))){ sel.value=ty; S.f.in_type=ty; S.auto.in_type=true } }catch(e){} }   /* the type is a select whose default is 'unknown' — only that, or an earlier scan's pick, gives way */
+    const J=G.job; if(J&&J.address){ try{ const a=$('#fcAddr'); if(a&&!String(a.value||'').trim()){ a.value=J.address; S.prop=S.prop||{}; S.prop.query=J.address } }catch(e){} } }
   S.auto=S.auto||{}; S.auto.rbr=false; S.rbrOpen=true;
   fcApplyRuns(); save(); }
 // v2.60: move a fresh import in from the grid's corner (feet) — walls, openings, furniture, rooms, outline
 function fcPlanPadIn(P,pd){ const m=p=>[p[0]+pd,p[1]+pd]; P.walls=P.walls.map(w=>[w[0]+pd,w[1]+pd,w[2]+pd,w[3]+pd]); P.doors.forEach(o=>{ o.x+=pd; o.y+=pd }); P.windows.forEach(o=>{ o.x+=pd; o.y+=pd });
-  P.furniture.forEach(f=>{ f.x+=pd; f.y+=pd; f.c=m(f.c) }); P.outline=P.outline.map(m); P.rooms.forEach(r=>{ r.poly=r.poly.map(m); r.c=m(r.c) }) }
+  P.furniture.forEach(f=>{ f.x+=pd; f.y+=pd; f.c=m(f.c) }); P.outline=P.outline.map(m); P.rooms.forEach(r=>{ r.poly=r.poly.map(m); r.c=m(r.c); (r.regs||[]).forEach(q=>{ if(q._pad) return; q._pad=true; q.x=+(q.x+pd).toFixed(2); q.y=+(q.y+pd).toFixed(2) }) }) }   /* v2.64: the scan's registers too (once — one may sit in two lists) */
 // v2.60  TURN 90° / MIRROR on the plan strip: no scanner app keeps north or the street side the same way round, so the SM turns the plan to match the
 // house. The house turns about the middle of its own box, inside the same margin; the rooms, their placed vents, the unit and the return go with it.
 function fcPlanXform(kind){ const P=S.plan; if(!P) return; const pd=P.pad||0, W=P.w, D=P.d, r2=v=>+(+v).toFixed(2), turn=kind==='turn';
@@ -8731,6 +8848,8 @@ function fcPlanXform(kind){ const P=S.plan; if(!P) return; const pd=P.pad||0, W=
   P.furn=(P.furn||[]).map(o=>{ const q=f(o.x,o.y); return Object.assign({},o,{x:r2(q[0]),y:r2(q[1])}) });
   P.outline=(P.outline||[]).map(mp); if(!turn) P.outline.reverse();
   if(turn){ P.w=D; P.d=W } P.orient=((P.orient||0)+(turn?1:0))%4; if(!turn) P.mir=!P.mir;
+  if(P.north&&P.north.deg!=null) P.north.deg=+((turn?(P.north.deg+90):(360-P.north.deg))%360).toFixed(1);   /* v2.64: north goes round with the house */
+  if(P.rets) P.rets=P.rets.map(o=>{ const q=f(o.x,o.y); return Object.assign({},o,{x:r2(q[0]),y:r2(q[1])}) });
   (S.rooms||[]).forEach(r=>{ if(!r.poly) return; const abs=(r.vp||[]).map(v=>v?[r.x+v.dx,r.y+v.dy]:null);
     r.poly=r.poly.map(mp); if(!turn) r.poly.reverse(); const c=f(r.cx,r.cy); r.cx=r2(c[0]); r.cy=r2(c[1]);
     const bb=window.FCDxf.bbox(r.poly); r.x=r2(bb.x0); r.y=r2(bb.y0); r.w=r2(Math.max(1,bb.w)); r.d=r2(Math.max(1,bb.d));
@@ -8757,6 +8876,13 @@ function fcInside(r,x,y){ if(!r.poly) return [x,y]; const P=r.poly; if(fcPtIn(P,
   for(let k=1;k<=6;k++){ for(const [dx,dy] of [[0,k],[0,-k],[k,0],[-k,0],[k,k],[-k,k],[k,-k],[-k,-k]]){ if(fcPtIn(P,x+dx*0.7,y+dy*0.7)) return [+(x+dx*0.7).toFixed(2),+(y+dy*0.7).toFixed(2)] } }
   let best=null; for(let gy=r.y+0.5;gy<r.y+r.d;gy+=1) for(let gx=r.x+0.5;gx<r.x+r.w;gx+=1){ if(!fcPtIn(P,gx,gy)) continue; const dd=Math.hypot(gx-x,gy-y); if(!best||dd<best.d) best={d:dd,p:[+gx.toFixed(2),+gy.toFixed(2)]} } // an L-shaped room: the nearest square foot that IS inside it
   if(best) return best.p; return [r.cx!=null?r.cx:x, r.cy!=null?r.cy:y] }
+// v2.64 — NORTH (Stephen 2026-09-30: the scan app "gives north"). The rose: a dark arrow for north, a grey tail, N at the tip. deg = clockwise from up the page.
+function fcNorthSvg(cx,cy,r,deg,o){ o=o||{}; const a=(+deg||0)*Math.PI/180, sx=Math.sin(a), sy=-Math.cos(a), px=-sy, py=sx, f=v=>(+v).toFixed(1), ink=o.ink||'#0b2340', fs=Math.max(9,Math.min(o.fs||11,r*0.8));
+  /* everything stays inside the circle: the arrow to 0.55 r, the N at 0.82 r on its line */
+  const tip=[cx+sx*r*0.55,cy+sy*r*0.55], tail=[cx-sx*r*0.7,cy-sy*r*0.7], l=[cx+px*r*0.28,cy+py*r*0.28], rr=[cx-px*r*0.28,cy-py*r*0.28], lb=[cx+sx*r*0.8,cy+sy*r*0.8];
+  return `<g class="fcnorth" data-deg="${f(deg)}"><circle cx="${f(cx)}" cy="${f(cy)}" r="${f(r)}" fill="#fff" fill-opacity=".92" stroke="${ink}" stroke-opacity=".4" stroke-width="1.2"/>`+
+    `<polygon points="${f(cx)},${f(cy)} ${f(l[0])},${f(l[1])} ${f(tail[0])},${f(tail[1])} ${f(rr[0])},${f(rr[1])}" fill="#9aa7b4"/><polygon points="${f(tip[0])},${f(tip[1])} ${f(l[0])},${f(l[1])} ${f(cx)},${f(cy)} ${f(rr[0])},${f(rr[1])}" fill="${ink}"/>`+
+    `<text x="${f(lb[0])}" y="${f(lb[1]+fs*0.36)}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${ink}" stroke="#fff" stroke-width="3" paint-order="stroke">N</text></g>` }
 // ---------- drawing the plan: one path builder for the grid and the shop drawing (map: feet → [X,Y])
 function fcPlanPaths(map,o){ const P=S.plan; if(!P) return ''; o=o||{}; let s='';
   const pt=(x,y)=>{ const q=map(x,y); return q[0].toFixed(1)+' '+q[1].toFixed(1) };
@@ -8770,14 +8896,14 @@ function fcPlanPaths(map,o){ const P=S.plan; if(!P) return ''; o=o||{}; let s=''
 // the scan strip at the top of Room by room, and the upload block
 function rbrScanHtml(){ const P=S.plan;
   if(P){ const n=S.rooms.length, nr=S.rooms.filter(r=>r.nr).length;
-    return `<div class="scanbar on"><div class="sb1"><b>${rbrEsc(P.name)}</b><span class="asm">measured</span></div><div class="sb2">${n} rooms${nr?' ('+nr+' hall / closet, no register)':''} · <b>${CFM(P.sf)} sq ft</b> served by this system${P.prevSf?` · the record says ${CFM(P.prevSf)} sq ft — the rest is on another system`:''}</div><div class="sb3"><button class="btn sm ghost" id="rbrTurn" title="Turn the plan a quarter turn">Turn 90°</button><button class="btn sm ghost" id="rbrMir" title="Mirror the plan left to right">Mirror</button><label class="btn sm ghost" for="rbrDxf">Replace</label><button class="btn sm ghost" id="rbrScanX">Remove</button></div></div>` }
+    return `<div class="scanbar on"><div class="sb1"><b>${rbrEsc(P.name)}</b><span class="asm">${P.g?rbrEsc(P.g.app||'Goettl Room Scan'):'measured'}</span></div><div class="sb2">${n} rooms${nr?' ('+nr+(P.g&&P.g.nReg?' with no register':' hall / closet, no register')+')':''} · <b>${CFM(P.sf)} sq ft</b> served by this system${P.prevSf?` · the record says ${CFM(P.prevSf)} sq ft — the rest is on another system`:''}${rbrScanFacts()}</div><div class="sb3"><button class="btn sm ghost" id="rbrTurn" title="Turn the plan a quarter turn">Turn 90°</button><button class="btn sm ghost" id="rbrMir" title="Mirror the plan left to right">Mirror</button><label class="btn sm ghost" for="rbrDxf">Replace</label><button class="btn sm ghost" id="rbrScanX">Remove</button></div></div>` }
   const hand=!!S.rbrHand;
-  return `<div class="scanbox${hand?' mini':''}"><div class="scanico">&#9636;</div><div class="scantxt"><b>${hand?'Upload a floor plan instead':'Upload the floor plan of the area this system serves'}</b>${hand?'':'<span>3D Snap &#9656; Export &#9656; JSON (best) or DXF. Scan only what this unit cools &mdash; the upstairs on a two-storey, or the part of the house on this system.</span>'}</div><label class="btn sm" for="rbrDxf">Choose the scan</label></div>`+
+  return `<div class="scanbox${hand?' mini':''}"><div class="scanico">&#9636;</div><div class="scantxt"><b>${hand?'Upload a floor plan instead':'Upload the floor plan of the area this system serves'}</b>${hand?'':'<span>Goettl Room Scan &#9656; Export (registers, north and the load calc come with it), or 3D Snap &#9656; Export &#9656; JSON or DXF. Scan only what this unit cools &mdash; the upstairs on a two-storey, or the part of the house on this system.</span>'}</div><label class="btn sm" for="rbrDxf">Choose the scan</label></div>`+
     (hand?'':`<div class="row" style="margin-top:8px"><button class="btn sm ghost" id="rbrHand">No scan? Lay the rooms out by hand &#9656;</button></div>`) }
 // v2.59 (Stephen 2026-09-27: "since we are going to use the file upload for room by room designs, thats the preferred sizing method, add that upload button to
 // the front screen, right at the top of the home … either upload the file, give me the address, or manually type in the Sq Ft, in that order")
 function fcTopUpHtml(){ const P=S.plan;
-  if(P){ const n=S.rooms.length; return `<div class="scanbar on top"><div class="sb1"><b>${rbrEsc(P.name)}</b><span class="asm">floor plan</span></div><div class="sb2">${n} rooms · <b>${CFM(P.sf)} sq ft</b> served by this system</div><div class="sb3"><label class="btn sm ghost" for="rbrDxf">Replace</label></div></div>` }
+  if(P){ const n=S.rooms.length; return `<div class="scanbar on top"><div class="sb1"><b>${rbrEsc(P.name)}</b><span class="asm">${P.g?rbrEsc(P.g.app||'Goettl Room Scan'):'floor plan'}</span></div><div class="sb2">${n} rooms · <b>${CFM(P.sf)} sq ft</b> served by this system${rbrScanFacts()}</div><div class="sb3"><label class="btn sm ghost" for="rbrDxf">Replace</label></div></div>` }
   return `<div class="scanbox top" id="fcUpTop"><div class="scanico">&#9636;</div><div class="scantxt"><b>1 · Upload the floor plan</b><span>No plan? 2 · look up the address · 3 · or type the sq ft — in that order.</span></div><label class="btn sm" for="rbrDxf">Choose the scan</label></div>` }
 function rbrScanWire(){
   const f=$('#rbrDxf'); if(f&&!f.dataset.wired){ f.dataset.wired='1'; f.addEventListener('change',()=>{ const file=f.files&&f.files[0]; if(!file) return; fcScanStat('Reading '+rbrEsc(file.name)+'…');
@@ -8795,6 +8921,7 @@ function rbrScanWire(){
 function rbrPlanGrid(G,px){ const P=S.plan, F=fcField();
   const sv=document.createElementNS('http://www.w3.org/2000/svg','svg'); sv.setAttribute('class','fcplan'); sv.setAttribute('width',(F.w*px).toFixed(0)); sv.setAttribute('height',(F.d*px).toFixed(0));
   const map=(x,y)=>[x*px,y*px]; let s=fcPlanPaths(map,{wallSw:Math.max(2,px*0.45)});
+  if(P.north&&P.north.deg!=null){ const R=Math.max(16,Math.min(30,px*2.6)); s+=fcNorthSvg(F.w*px-R*1.4,R*1.4,R,P.north.deg,{fs:Math.max(10,Math.min(16,R*0.6))}) }   /* v2.64: north in the margin */
   S.rooms.filter(r=>r.poly).forEach(r=>{ const c=map(r.cx,r.cy); const fs=Math.max(8,Math.min(12,px*1.6)); const small=r.sf<70;
     s+=`<text x="${c[0].toFixed(1)}" y="${(c[1]-(small?0:fs*0.35)).toFixed(1)}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${r.nr?'#6b6260':'#0a5c5c'}" stroke="#fff" stroke-width="3" paint-order="stroke">${rbrEsc(r.n)}</text>`;
     if(!small) s+=`<text x="${c[0].toFixed(1)}" y="${(c[1]+fs*0.9).toFixed(1)}" text-anchor="middle" font-size="${(fs*0.85).toFixed(1)}" font-weight="700" fill="#0b2340" stroke="#fff" stroke-width="3" paint-order="stroke">${r.nr?r.sf+' sf · no vent':CFM(r.cfm)+' CFM · '+r.nReg+'v'}</text>` });
