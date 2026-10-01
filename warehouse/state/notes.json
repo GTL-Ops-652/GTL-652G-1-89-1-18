@@ -607,5 +607,26 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-09-29"
+ },
+ "adj|2026-09-17|3269|LAS-177287-EMT-H_111 Owen Thomas": {
+  "note": "truck inventory count",
+  "ts": 1790798423003,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-30"
+ },
+ "adj|2026-09-29|3288|Vegas Plumbing Warehouse": {
+  "note": "EOM count adjustment",
+  "ts": 1790819619132,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-01"
+ },
+ "adj|2026-09-29|3289|Plumbing Equipment": {
+  "note": "EOM count adjustment",
+  "ts": 1790819628904,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-01"
  }
 }
