@@ -6,6 +6,15 @@
    "filed": "2026-09-01",
    "url": "../closes/2026-08/",
    "xlsx": "../closes/2026-08/Goettl LV Warehouse and Fleet 2026-08-01 to 2026-08-31 - Accounting.xlsx"
+  },
+  {
+   "month": "2026-09",
+   "asof": "2026-09-30",
+   "filed": "2026-10-01",
+   "url": "../closes/2026-09/",
+   "xlsx": "../closes/2026-09/Goettl LV Warehouse and Fleet 2026-09-01 to 2026-09-30 - Accounting.xlsx",
+   "answered": 86.65370323684465,
+   "branch_total": 873563.25
   }
  ]
 }
