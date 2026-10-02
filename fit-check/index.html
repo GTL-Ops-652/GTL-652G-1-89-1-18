@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-09-30 v2.64 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-10-01 v2.65 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -41,7 +41,7 @@ header{background:var(--db);color:#fff;padding:calc(10px + env(safe-area-inset-t
 .step.done{color:var(--ink)}
 .step{min-width:0}.step .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 /* v2.62 — five numbered steps; Will it Fit is an optional tab that appears while it is open */
-.steps{grid-template-columns:repeat(5,1fr)}.steps.fit{grid-template-columns:repeat(6,1fr)}
+.steps{grid-template-columns:repeat(5,1fr)}.steps.fit,.steps.rooms{grid-template-columns:repeat(6,1fr)}.steps.rooms.fit{grid-template-columns:repeat(7,1fr)}   /* v2.65: Rooms is an optional tab too */
 .step.opt{border-style:dashed}.step.opt .n{background:#fff4dc;color:#8a5a00;font-size:11px}.step.opt.active .n{background:var(--db);color:#fff}
 .eqstrip{padding:10px 12px;margin:0 0 12px}
 .eqstrip .eqrow{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center}
@@ -227,11 +227,33 @@ dialog::backdrop{background:rgba(0,4,38,.5)}
 dialog .in{padding:18px}
 .hidden{display:none!important}
 /* v2.34 room by room */
-.rbrbtn{width:100%;display:flex;align-items:center;gap:12px;background:#e2f3f3;border:2px dashed #0f8b8b;color:#0a5c5c;border-radius:14px;padding:13px 14px;cursor:pointer;text-align:left;font-weight:800;font-size:15px;margin-top:14px}
-.rbrbtn .car{font-size:13px;transition:transform .15s;flex:none}
-.rbrbtn[aria-expanded="true"] .car{transform:rotate(90deg)}
-.rbrbtn .sub{display:block;font-weight:600;font-size:12px;color:#3c7b7b;margin-top:2px}
-.rbrbtn .cnt{margin-left:auto;background:#0f8b8b;color:#fff;border-radius:999px;padding:3px 11px;font-size:12px;flex:none}
+/* v2.65 — Room by room is a SWITCH at the top of the tool (under the step strip); on, it has its own tab */
+.rbrbar{max-width:960px;margin:0 auto;padding:8px 12px 0;display:flex;align-items:center;gap:10px}
+.rbrbtn{display:inline-flex;align-items:center;gap:9px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px 12px 5px 6px;cursor:pointer;font-weight:700;font-size:13px;color:var(--muted);margin:0;text-align:left}
+.rbrbtn .sw{width:34px;height:20px;border-radius:999px;background:#cfd8e2;position:relative;flex:none;transition:background .15s}
+.rbrbtn .sw i{position:absolute;top:2px;left:2px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:left .15s}
+.rbrbtn[aria-checked="true"]{border-color:#0f8b8b;color:#0a5c5c;background:#f3fbfb}.rbrbtn[aria-checked="true"] .sw{background:#0f8b8b}.rbrbtn[aria-checked="true"] .sw i{left:16px}
+.rbrbtn .cnt{background:#eef1f4;color:var(--muted);border-radius:999px;padding:2px 9px;font-size:11.5px;font-weight:700;flex:none}
+.rbrbtn[aria-checked="true"] .cnt{background:#0f8b8b;color:#fff}
+body.pack:not(.full) #rbrBar{display:none!important}
+/* the upload leads the home: one hero box; the address and the sq ft are folded options under it */
+.scanbox.top{margin:2px 0 10px;padding:16px 18px;border-width:2px;border-color:var(--db);background:linear-gradient(135deg,#eaf2f9,#f7fafc)}
+.scanbox.top .scanico{font-size:32px}.scanbox.top .scantxt b{font-size:16px}
+details.fold.opt{border-width:1.5px;margin-top:8px}details.fold.opt>summary{padding:9px 12px;font-size:13.5px;background:#fff}details.fold.opt[open]>summary{background:#f6f9fc}
+details.fold.opt>summary .car{width:20px;height:20px;background:#eef1f4;color:var(--db);font-size:10px}
+details.fold.opt .fb{padding:0 12px 12px}details.fold.need>summary .fs{color:#a35300;font-weight:700}
+/* the size band: three sizes that feed the call, then the call itself in bold */
+.sizeband{margin-top:14px}.sizeband .env{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 8px}
+.sizeband .dim{padding:12px 10px;border:1px solid var(--line)}.sizeband .dim .val{font-size:24px;line-height:1.1}.sizeband .dim .lbl{letter-spacing:.5px}.sizeband .dim .sub{margin-top:4px;line-height:1.3}
+.rechero{display:flex;align-items:center;gap:18px;flex-wrap:wrap;background:var(--db);color:#fff;border-radius:16px;padding:14px 18px;box-shadow:0 2px 8px rgba(0,57,99,.18)}
+.rechero .rk{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.9px;opacity:.78}
+.rechero .rv{font-family:var(--serif);font-size:40px;font-weight:900;line-height:1;white-space:nowrap}
+.rechero .rw{flex:1 1 220px;min-width:0;font-size:13.5px;line-height:1.45;font-weight:600}
+.rechero .rw b{color:#ffd77a}.rechero .rq{display:block;font-size:12px;opacity:.82;margin-top:4px;font-weight:600}.rechero .rq.bad{opacity:1;color:#ffb4b4}
+.rechero.bad{background:#8f1d1d}
+details.why{margin-top:8px}details.why>summary{cursor:pointer;font-size:12.5px;font-weight:700;color:var(--mb);list-style:none;padding:4px 2px;user-select:none}details.why>summary::-webkit-details-marker{display:none}
+details.why>summary::before{content:'\25B8';display:inline-block;margin-right:6px;transition:transform .15s}details.why[open]>summary::before{transform:rotate(90deg)}
+@media (max-width:640px){ .rbrbar{padding:6px 6px 0} .rbrbtn{font-size:12.5px} .scanbox.top{flex-wrap:wrap;padding:14px;gap:10px 12px} .scanbox.top .scantxt{flex:1 1 200px} .scanbox.top label.btn{flex:1 1 100%;text-align:center;white-space:nowrap} .sizeband .dim{padding:9px 6px} .sizeband .dim .val{font-size:17px} .sizeband .dim .sub{font-size:10.5px} .rechero{padding:12px 14px;gap:12px} .rechero .rv{font-size:32px} }
 .rlist{display:grid;gap:8px;margin-top:12px}
 .rrow{display:grid;grid-template-columns:minmax(130px,1.5fr) 78px 78px auto 64px 86px auto 1fr 30px;gap:8px;align-items:center;background:#fafcfc;border:1.5px solid var(--line);border-radius:12px;padding:8px 10px}
 .rrow input{border:1.5px solid var(--line);border-radius:9px;padding:8px 9px;background:#fff;width:100%;font-size:16px}
@@ -389,7 +411,7 @@ dialog .in{max-height:calc(100vh - 48px);overflow:auto}
   header{padding:calc(6px + env(safe-area-inset-top)) 12px 6px}
   .logo{font-size:18px}.logo small{display:none}
   .iconbtn{padding:6px 9px}
-  .steps{grid-template-columns:repeat(5,1fr);gap:3px;padding:8px 6px 0}.steps.fit{grid-template-columns:repeat(6,1fr)}.step span.t{display:none}.step{justify-content:center;padding:6px}
+  .steps{grid-template-columns:repeat(5,1fr);gap:3px;padding:8px 6px 0}.steps.fit,.steps.rooms{grid-template-columns:repeat(6,1fr)}.steps.rooms.fit{grid-template-columns:repeat(7,1fr)}.step span.t{display:none}.step{justify-content:center;padding:6px}
   main{padding:8px 8px 96px}
   .card{padding:12px;border-radius:14px;margin:8px 0}
   h2{font-size:18px}
@@ -860,12 +882,15 @@ body.pack .tp .noapp{display:none}
 
 <nav class="steps" id="steps">
   <div class="step active" data-go="1"><span class="n">1</span><span class="t">Existing</span></div>
+  <div class="step opt hidden" data-go="10" id="stepRooms"><span class="n">&#8962;</span><span class="t">Rooms</span></div>
   <div class="step" data-go="2"><span class="n">2</span><span class="t">Space</span></div>
   <div class="step" data-go="5"><span class="n">3</span><span class="t">Plan</span></div>
   <div class="step" data-go="9"><span class="n">4</span><span class="t">Options</span></div>
   <div class="step" data-go="6"><span class="n">5</span><span class="t">Summary</span></div>
   <div class="step opt hidden" data-go="4" id="stepFit"><span class="n">&#10530;</span><span class="t">Will it Fit</span></div>
 </nav>
+<!-- v2.65 — Room by room is a switch at the top of the tool. On, the Rooms tab (panel 10) carries the rooms, the grid, the installer plan and the pick list. -->
+<div class="rbrbar" id="rbrBar"><button class="rbrbtn" id="rbrBtn" role="switch" aria-checked="false" aria-expanded="false" aria-controls="rbrPanel"><span class="sw"><i></i></span><span>Room by room</span><span class="cnt" id="rbrCnt">not used</span></button></div>
 
 <!-- v2.39 — the tech pack's tabs. Hidden in the app; the boot block shows them. "3D Design" is data-pgo="5":
      the Plan tab itself, so the tech designs on the same viewer and the same buttons the SM did. -->
@@ -883,19 +908,25 @@ body.pack .tp .noapp{display:none}
   <div class="card" id="homeCard">
     <h2>The home</h2>
     <div id="fcTop1"></div>
-    <div class="sect stat"><div class="sh"><span class="sn"></span><span class="st">Size, build &amp; attic</span><span class="sd">Sets the tonnage, and the way out of it</span></div><div class="sb">
+    <div class="msg" id="fcUpStat" style="display:none;margin:0 0 10px"></div>
+    <!-- v2.65 — the two other ways in, folded: they are options, not the path -->
+    <details class="fold opt" id="fcFold"><summary><span class="car">&#9656;</span><span>Look up the address</span><span class="fs" id="fcFoldSum">Square footage, year built and the aerial off the county record</span><span class="fe">Tap to enter</span></summary><div class="fb">
       <div class="fcrow">
-        <div class="field" style="flex:2;min-width:220px"><label>Address <small>optional</small></label><input id="fcAddr" type="text" inputmode="text" autocomplete="off" placeholder="5482 N Jones Blvd"></div>
+        <div class="field" style="flex:2;min-width:220px"><label>Address</label><input id="fcAddr" type="text" inputmode="text" autocomplete="off" placeholder="5482 N Jones Blvd"></div>
         <div class="field" style="max-width:120px"><label>&nbsp;</label><button class="btn sm" id="fcGo" style="width:100%">Look up</button></div>
-        <div class="field" style="max-width:150px"><label>Storeys</label><select id="fcStorey"><option value="1">1 storey</option><option value="2">2 storeys</option><option value="3">3 storeys</option></select></div>
       </div>
       <div class="msg" id="fcStat" style="display:none;margin-top:8px"></div>
       <div id="fcBox"></div>
-      <div id="fcFloors"></div>
+    </div></details>
+    <details class="fold opt" id="sfFold"><summary><span class="car">&#9656;</span><span>Type the square footage</span><span class="fs" id="sfFoldSum">Not entered</span><span class="fe">Tap to enter</span></summary><div class="fb">
       <div class="row">
         <div class="field req" style="max-width:240px"><label>Total conditioned sq ft</label><input id="homeSf" type="number" inputmode="numeric" min="300" step="25" placeholder="1450"></div>
+        <div class="field" style="max-width:150px"><label>Storeys</label><select id="fcStorey"><option value="1">1 storey</option><option value="2">2 storeys</option><option value="3">3 storeys</option></select></div>
       </div>
-      <h4 class="sub">How is the house built?</h4>
+      <div id="fcFloors"></div>
+    </div></details>
+    <div class="sect stat"><div class="sh"><span class="sn"></span><span class="st">Build &amp; attic</span><span class="sd">Sets the size, and the way out of it</span></div><div class="sb">
+      <h4 class="sub" style="margin-top:0">How is the house built?</h4>
       <div class="seg" id="buildSeg">
         <button data-v="standard"><b>Standard build</b><span>1980&ndash;2015 tract home, R&#8209;30 to R&#8209;38 attic &middot; 400 sq ft / ton</span></button>
         <button data-v="pre1980"><b>Old &mdash; pre&#8209;1980</b><span>Thin attic, single pane, leaky duct &middot; half&#8209;ton up, or bring the attic up</span></button>
@@ -908,58 +939,9 @@ body.pack .tp .noapp{display:none}
         <div class="field opt"><label>Or R-value if known <small>optional</small></label><input type="number" inputmode="decimal" id="in_r" placeholder="R-19"></div>
       </div>
       <div class="msg" id="insulRead" style="margin-top:10px"></div>
-
-      <div id="mjOut"></div>
     </div></div>
 
-    <button class="rbrbtn" id="rbrBtn" aria-expanded="false" aria-controls="rbrPanel">
-      <span class="car">&#9656;</span>
-      <span>Room by room<span class="sub">Upload the floor plan of the area this system serves and the duct is designed to every register.</span></span>
-      <span class="cnt" id="rbrCnt">not used</span>
-    </button>
-
-    <div id="rbrPanel" class="hidden">
-      <input type="file" id="rbrDxf" style="display:none">
-      <div id="rbrScan"></div>
-      <div class="msg" id="rbrScanStat" style="display:none;margin-top:8px"></div>
-      <div id="rbrBody">
-      <div class="row" style="margin-top:10px;gap:10px;align-items:center">
-        <span class="cap" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)">Register faces today</span>
-        <div class="chips" id="rbrFaceSeg"><button class="chip sm" data-v="stamped">Stamped</button><button class="chip sm" data-v="bar">Bar type</button></div>
-      </div>
-      <div id="rbrStorey" class="msg" style="display:none"></div>
-      <div class="rlist" id="rbrList"></div>
-      <div class="row" style="margin-top:10px;gap:8px" id="rbrTools">
-        <button class="btn sm ghost" id="rbrAdd">+ Add room</button>
-        <button class="btn sm ghost" id="rbrArr">Auto-arrange grid</button>
-        <button class="btn sm ghost" id="rbrClr">Clear all rooms</button>
-        <button class="btn sm ghost" id="fcAddUnc">+ Garage / patio</button>
-      </div>
-      <div class="msg" id="rbrTot"></div>
-
-      <h3 id="rbrGridTitle">Arrange the rooms the way the house actually sits</h3>
-      <div class="row unitbar" id="rbrUnitBar"><span class="cap">Unit</span><button class="btn sm ghost" id="rbrUTurn" title="Turn the unit a quarter turn">&#8635; Turn 90&deg;</button><button class="btn sm ghost" id="rbrUFlip" title="Turn the unit end for end">&#8645; Flip 180&deg;</button><button class="btn sm ghost" id="rbrHatch" title="Mark the attic hatch — installers start there">&#9635; Attic hatch</button></div>
-      <div class="gridwrap" id="rbrGrid"></div>
-
-      <div id="rbrOut" class="hidden">
-        <div class="ventbar" style="margin-top:16px">
-          <div><div class="vlab">CFM per added vent</div><div class="vval" id="rbrVentVal">150</div><div class="vsub" id="rbrVentSub"></div></div>
-          <div class="stepper"><button id="rbrVentDn" aria-label="Lower the CFM per vent by 5 percent">&minus;</button><button id="rbrVentUp" aria-label="Raise the CFM per vent by 5 percent">+</button></div>
-          <button class="btn sm ghost" id="rbrVentRst">Reset to 150</button>
-        </div>
-        <div id="rbrBanner"></div>
-        <h3>Every room</h3>
-        <div class="tblwrap"><table class="dt" id="rbrRoomTbl"></table></div>
-        <div class="msg" id="rbrDesignNote"></div>
-        <h3>Installer plan</h3>
-        <div id="rbrPlanBox"></div>
-        <div id="rbrPickBox"></div>
-        <div class="row" style="margin-top:12px">
-          <button class="btn" id="rbrExport">Print the installer plan &amp; pick list</button>
-        </div>
-      </div>
-      </div>
-    </div>
+    <div id="mjOut"></div>
   </div>
 
   <div class="card">
@@ -1143,6 +1125,55 @@ body.pack .tp .noapp{display:none}
   </div>
 
   </section>
+
+<!-- ============ ROOM BY ROOM (v2.65 — its own tab, panel 10; in the strip while the switch at the top is on) ============ -->
+<section class="panel" id="p10">
+  <div class="card" id="roomsCard">
+    <h2>Room by room</h2>
+    <div id="rbrPanel" class="hidden">
+      <input type="file" id="rbrDxf" style="display:none">
+      <div id="rbrScan"></div>
+      <div class="msg" id="rbrScanStat" style="display:none;margin-top:8px"></div>
+      <div id="rbrBody">
+      <div class="row" style="margin-top:10px;gap:10px;align-items:center">
+        <span class="cap" style="font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.4px;color:var(--muted)">Register faces today</span>
+        <div class="chips" id="rbrFaceSeg"><button class="chip sm" data-v="stamped">Stamped</button><button class="chip sm" data-v="bar">Bar type</button></div>
+      </div>
+      <div id="rbrStorey" class="msg" style="display:none"></div>
+      <div class="rlist" id="rbrList"></div>
+      <div class="row" style="margin-top:10px;gap:8px" id="rbrTools">
+        <button class="btn sm ghost" id="rbrAdd">+ Add room</button>
+        <button class="btn sm ghost" id="rbrArr">Auto-arrange grid</button>
+        <button class="btn sm ghost" id="rbrClr">Clear all rooms</button>
+        <button class="btn sm ghost" id="fcAddUnc">+ Garage / patio</button>
+      </div>
+      <div class="msg" id="rbrTot"></div>
+
+      <h3 id="rbrGridTitle">Arrange the rooms the way the house actually sits</h3>
+      <div class="row unitbar" id="rbrUnitBar"><span class="cap">Unit</span><button class="btn sm ghost" id="rbrUTurn" title="Turn the unit a quarter turn">&#8635; Turn 90&deg;</button><button class="btn sm ghost" id="rbrUFlip" title="Turn the unit end for end">&#8645; Flip 180&deg;</button><button class="btn sm ghost" id="rbrHatch" title="Mark the attic hatch — installers start there">&#9635; Attic hatch</button></div>
+      <div class="gridwrap" id="rbrGrid"></div>
+
+      <div id="rbrOut" class="hidden">
+        <div class="ventbar" style="margin-top:16px">
+          <div><div class="vlab">CFM per added vent</div><div class="vval" id="rbrVentVal">150</div><div class="vsub" id="rbrVentSub"></div></div>
+          <div class="stepper"><button id="rbrVentDn" aria-label="Lower the CFM per vent by 5 percent">&minus;</button><button id="rbrVentUp" aria-label="Raise the CFM per vent by 5 percent">+</button></div>
+          <button class="btn sm ghost" id="rbrVentRst">Reset to 150</button>
+        </div>
+        <div id="rbrBanner"></div>
+        <h3>Every room</h3>
+        <div class="tblwrap"><table class="dt" id="rbrRoomTbl"></table></div>
+        <div class="msg" id="rbrDesignNote"></div>
+        <h3>Installer plan</h3>
+        <div id="rbrPlanBox"></div>
+        <div id="rbrPickBox"></div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn" id="rbrExport">Print the installer plan &amp; pick list</button>
+        </div>
+      </div>
+      </div>
+    </div>
+  </div>
+</section>
 
 <!-- ============ STEP 2 ============ -->
 <section class="panel" id="p2">
@@ -2941,15 +2972,17 @@ function loadTons(){ try{
   const c=rbrSizeCall();
   if(c){ // the house asks for a size above the square footage (measured rooms, or the pre-1980 rule) — as the house sits today that IS the size;
          // the attic only takes it back down once it is at R-38 and it closes the gap, which is a Fix-insulation decision on the Plan tab
-    if(c.already) return {tons:c.askT,why:(c.why==='rooms'?'measured rooms':'pre-1980 build')+` · attic already R-${fmt(c.R)}`};
-    return {tons:c.askT,why:(c.why==='rooms'?'measured rooms':'pre-1980 build')+(c.known?` · attic R-${fmt(c.R)} under R-38 as it sits`:' · attic not entered')} }
-  const x=rbrStretchInfo(); const ld=x&&x.measured?'measured rooms':'Manual J';
+    const cw=c.why==='scan'?`Manual J ${RM.mjRaw.toFixed(2)} ton off the room scan`:c.why==='rooms'?'measured rooms':'pre-1980 build';
+    if(c.already) return {tons:c.askT,why:cw+` · attic already R-${fmt(c.R)}`};
+    return {tons:c.askT,why:cw+(c.known?` · attic R-${fmt(c.R)} under R-38 as it sits`:' · attic not entered')} }
+  const x=rbrStretchInfo(); const ld=x&&x.scan?'Manual J':(x&&x.measured?'measured rooms':'rule of thumb');   /* v2.65: sq ft ÷ 400 is the rule of thumb; the Manual J is the room scan's */
   if(x){ if(x.ok) return {tons:x.size,why:`${ld} ${x.raw.toFixed(2)} ton, held at ${x.size} · attic R-${fmt(x.R)} carries the stretch`};
     if(!x.known) return {tons:x.size,why:`${ld} ${x.raw.toFixed(2)} ton, held at ${x.size} — a stretch; needs the attic at R-38`};
     if(x.next) return {tons:x.next,why:`${ld} ${x.raw.toFixed(2)} ton · attic R-${fmt(x.R)} under R-38 cannot carry the ${x.size} stretch`};
     return {tons:x.size,why:`${ld} ${x.raw.toFixed(2)} ton`} }
+  if(rooms&&RM.mjRaw!=null) return {tons:RM.loadT,why:`Manual J — ${CFM(RM.mjBtu)} BTUh = ${RM.mjRaw.toFixed(2)} ton off the room scan`};   /* v2.65: the scan sizes the AC */
   if(rooms) return {tons:RM.loadT,why:`measured rooms — ${CFM(RM.needTot)} CFM ÷ ${RM.cpt} CFM/ton`};
-  return {tons:rec,why:`Manual J — ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()}`};
+  return {tons:rec,why:`rule of thumb — ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()}`};
 }catch(e){ return null } }
 // the chip the load would pick for this system — null when the SM has tapped a chip on this check, or there is no load yet
 function tonsAutoPick(L){ if(S.tonsAuto===false||!S.sys) return null; L=L||loadTons(); if(!L) return null;
@@ -2987,7 +3020,7 @@ function rowsFor(){
 //     job into one that does not fit is skipped.
 //   · The SM's own chip taps always win (S.sel); "Use the default cabinet" puts the row default back; the cross-check divides by the default.
 const UP_TRIG_GAP=20, UP_TOL=5, UP_MIN_GAIN=10; const UPS_CACHE=new Map(); const CAB_IDX={A:0,B:1,C:2,D:3};
-const UPSIZE_WHY='The condenser stays at the Manual J size — it is never upsized. In Las Vegas the load is almost all sensible heat (dry air), so the most cooling a given condenser can deliver comes from moving more air across the evaporator — 400 up to 450 CFM per ton. A bigger furnace, air handler or coil cabinet is how the air gets there, and it is always acceptable.';
+const UPSIZE_WHY='The condenser stays at the recommended size — it is never upsized. In Las Vegas the load is almost all sensible heat (dry air), so the most cooling a given condenser can deliver comes from moving more air across the evaporator — 400 up to 450 CFM per ton. A bigger furnace, air handler or coil cabinet is how the air gets there, and it is always acceptable.';
 function indoorTons(m){ if(!m) return null; let r=m.match(/^G[RD]9S\d\d\d\d\d(\d)/); if(r) return +r[1];          // Goodman furnace GR9S80 080 4 CN → 4-ton blower
   r=m.match(/^AMST(\d\d)/); if(r) return +r[1]/12;                                                                  // Goodman air handler
   r=m.match(/^(?:ML|EL|SL)\d{3}[UD][HF]\d{3}[A-Z]{0,2}V?(\d\d)[A-D]/); if(r) return +r[1]/12;                        // Lennox furnace …V36A · XV48C · E36AK
@@ -5500,7 +5533,7 @@ async function fcAppSource(){
 // Everything the app rendered while it was running has to come back out, or the pack carries a stale
 // copy of every card — and, worse, the two 1.6 MB print stills inside #printReport.
 const FC_DOM_RESET=['#airCard','#recCard','#sumCard','#sumHero','#fitHero','#planHero','#printReport','#savedWrap',
-  '#planActions','#planReadout','#lbls','#duct2d','#rbrPlanBox','#rbrPickBox','#sumPlanBox','#packStory','#packTech','#cmpCard','#pkgCard','#fitShot','#supCfgNote','#tonsSrc','#tiers','#optHero','#optBody','#fcTop1','#eqTiers','#pbTabs','#pbBody'];
+  '#planActions','#planReadout','#lbls','#duct2d','#rbrPlanBox','#rbrPickBox','#sumPlanBox','#packStory','#packTech','#cmpCard','#pkgCard','#fitShot','#supCfgNote','#tonsSrc','#tiers','#optHero','#optBody','#fcTop1','#fcUpStat','#eqTiers','#pbTabs','#pbBody'];
 function fcDomSource(){
   const d=document.documentElement.cloneNode(true);
   FC_DOM_RESET.forEach(sel=>{ const e=d.querySelector(sel); if(e) e.innerHTML='' });
@@ -6061,7 +6094,7 @@ function summaryText(o){
     if(o.furn) L.push(`Furnace: ${o.furn} ${fmt(E[o.furn].h)}×${fmt(E[o.furn].w)}×${fmt(E[o.furn].d)}`); if(o.coil){const c=E[o.coil];L.push(`Coil: ${o.coil} ${c.type==='coil_h'?`${fmt(c.h)}×${fmt(c.w)}×${fmt(c.l)}`:`${fmt(c.h)}×${fmt(c.w)}×${fmt(c.d)}`}`)} if(o.ahu) L.push(`Air handler: ${o.ahu} ${fmt(E[o.ahu].h)}×${fmt(E[o.ahu].w)}×${fmt(E[o.ahu].d)}`); L.push(`Condenser: ${o.cond}`);
     ev.dims.forEach((d,i)=>L.push(`${d.lbl}: new ${fmt(d.v)}" · old ${fmt(old?[old.a,old.b,old.c][i]:null)}" · space ${sp[i]!=null?fmt(sp[i])+'"':'n/a'} → ${d.j.cls.toUpperCase()} (${d.j.txt})`));
     if(ev.acc.cls!=='na') ev.acc.all.forEach(a=>L.push(`Access: ${a.piece} ${a.txt}`)); L.push(`Overall: ${ev.overall.cls.toUpperCase()}${o.isDefault||o.upsize?'':' · NON-DEFAULT MATCHUP — confirm AHRI'}`);
-    if(o.upsize) L.push(`INDOOR SIZED UP FOR AIRFLOW: ${o.upsize.fromTxt} → ${o.upsize.toTxt} (${o.upsize.m0.perTonD} → ${o.upsize.m1.perTonD} CFM/ton at ${o.upsize.m1.espD.toFixed(2)}"; Matchup Guide alternate) — condenser unchanged, sized off the Manual J`);
+    if(o.upsize) L.push(`INDOOR SIZED UP FOR AIRFLOW: ${o.upsize.fromTxt} → ${o.upsize.toTxt} (${o.upsize.m0.perTonD} → ${o.upsize.m1.perTonD} CFM/ton at ${o.upsize.m1.espD.toFixed(2)}"; Matchup Guide alternate) — condenser unchanged, sized off the recommendation`);
     L.push(`Supply layout: today ${SUPCFG[supOld()].toLowerCase()}${supOld()==='trunk'?' ('+fmt(trunkFtOld())+' ft)':''} → proposed ${SUPCFG[supNew()].toLowerCase()}${supNew()==='trunk'?' ('+fmt(trunkFtNew())+' ft)':''}`);
     L.push(`Return plenum before the furnace: ${fmt(retPlenLen())}"`);
     if(supNew()!=='trunk') L.push(`Supply plenum: ${fmt(splenOld())}" today → ${fmt(splenNew())}" proposed${supNew()==='plenum_coil'?' · plenum coil — take-offs spaced evenly end to end':` · take-offs toward the beginning, last ${TKTAIL}" left clear`}`);
@@ -6087,7 +6120,7 @@ function summaryText(o){
   { const P=issuePairs(o); if(P.length){ L.push(''); L.push('WHAT WAS WRONG → HOW THIS DESIGN FIXES IT');
       P.forEach(x=>L.push(`- ${strip(x.t)} (${strip(x.was)}): ${strip(x.wasWhy)} ${x.fixed?'FIXED → '+strip(x.now)+' — '+strip(x.nowWhy):'STILL OPEN — '+strip(x.nowWhy)}`)) } }
   { const B=rbrBuild(), sfh=rbrHomeSf(), rec=rbrRecTons();
-    if(sfh&&B){ L.push(''); L.push(`THE HOME: ${CFM(sfh)} sq ft · ${B.n} · Manual J ${rec} ton (${B.sf} sq ft/ton)${RM&&RM.loadT?` · measured room load ${CFM(RM.needTot)} CFM = ${RM.loadT} ton`:''}`);
+    if(sfh&&B){ L.push(''); L.push(`THE HOME: ${CFM(sfh)} sq ft · ${B.n} · rule of thumb ${rec} ton (${B.sf} sq ft/ton)${RM&&RM.loadT?(RM.mjRaw!=null?` · room scan Manual J ${CFM(RM.mjBtu)} BTUh = ${RM.loadT} ton`:` · measured room load ${CFM(RM.needTot)} CFM = ${RM.loadT} ton`):''}`);
       { const ai=insulState(); if(ai.known) L.push(`  Attic: R-${fmt(ai.R)}${ai.src&&ai.src!=='entered'?' ('+ai.src+')':''}`); }
       // v2.35 — the size question always goes out with both answers on it
       { const c=rbrSizeCall(); if(c){
@@ -6103,8 +6136,9 @@ function summaryText(o){
         L.push(`    A stretch only holds on an insulated house. ${!x.known?'Attic not taken — confirm R-38 or better before quoting the '+x.size+' ton.':(x.ok?'Attic R-'+fmt(x.R)+' — at or over R-38, the envelope carries it.':(x.closes?'Attic R-'+fmt(x.R)+' — UNDER R-38: bring it to R-38 with this unit, or put in the '+x.next+' ton.':'Attic R-'+fmt(x.R)+' — R-38 does not close it; put in the '+x.next+' ton.'))}`) } }
     }
     if(S.rooms.length&&RM){ rbrModel();
-      L.push(`ROOM BY ROOM: ${S.rooms.length} rooms · ${CFM(RM.roomSf)} sq ft measured · rooms want ${CFM(RM.needTot)} CFM · unit delivers ${CFM(RM.A.Qd)} (${Math.round(RM.pct*100)}%)`);
-      L.push(`  CROSS-CHECK: ${CFM(RM.needTot)} CFM ÷ ${RM.cpt} CFM/ton (${RM.cptSrc}) = ${(RM.needTot/RM.cpt).toFixed(2)} → ${RM.loadT} ton${(function(){ const oo=curOpt(); return oo&&oo.upsize?' · divides by the Matchup Guide default indoor — the airflow upsize never shrinks the condenser':'' })()}`);
+      L.push(`ROOM BY ROOM: ${S.rooms.length} rooms · ${CFM(RM.roomSf)} sq ft measured · rooms want ${CFM(RM.needTot)} CFM · ducts designed to ${CFM(RM.A.Qd)}${RM.design?` (${RM.design.tons} ton × ${RM.design.cpt}${RM.design.short?' — what the blower can do':''})`:''} (${Math.round(RM.pct*100)}%)`);   /* v2.65: 430 is always */
+      if(RM.design&&RM.mjRaw!=null) L.push(`  MANUAL J (room scan): ${CFM(RM.mjBtu)} BTUh = ${RM.mjRaw.toFixed(2)} ton → ${RM.loadT} ton · DESIGN CFM: ${RM.design.tons} ton × ${RM.design.cpt} = ${CFM(RM.design.target)}${RM.design.chart!=null?` · ${RM.design.name} moves ${CFM(RM.design.chart)} at 0.50" (${RM.design.chartCpt}/ton)${RM.design.short?' — designed to what it can do':''}`:''}`);   /* v2.65 */
+      else L.push(`  CROSS-CHECK: ${CFM(RM.needTot)} CFM ÷ ${RM.cpt} CFM/ton (${RM.cptSrc}) = ${(RM.needTot/RM.cpt).toFixed(2)} → ${RM.loadT} ton${(function(){ const oo=curOpt(); return oo&&oo.upsize?' · divides by the Matchup Guide default indoor — the airflow upsize never shrinks the condenser':'' })()}`);
       if(S.plan) L.push(`  FLOOR PLAN: ${S.plan.name} · ${CFM(S.plan.sf)} sq ft served by this system${S.plan.prevSf?' (record '+CFM(S.plan.prevSf)+' sq ft — the rest is on another system)':''} · rooms named off the scan`);
       S.rooms.forEach(r=>L.push(r.nr?`  ${r.n}: ${r.sf} sf · no register (${r.kind==='hall'?'hall':'closet'}) · ${CFM(r.need)} CFM of load spread over the rooms around it`:`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.needSrc==='scan'?'Manual J '+CFM(r.mj.cool)+' BTUh (scan)':r.ld+' load'} · ${CFM(r.cfm)} CFM · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)}${r.flag?' — PAST '+RBR_PUSH_MAX+' FPM, NEEDS A CALL':r.overOk?' — pushed past '+RBR_PUSH_MAX+' fpm by choice':''} · ${rbrDuctTxt(r).replace(/<br>/g,' / ').replace(/<[^>]+>/g,'')}`));
       if(S.rbrNew){ L.push(`NEW DUCT SYSTEM — REDOING THE ROOM-BY-ROOM DUCTS to ensure adequate flow to each room.`);
@@ -6138,7 +6172,8 @@ $('#copySum').onclick=()=>{navigator.clipboard.writeText($('#summary').value).th
                added vents only on the SM's tap, sized to the cap (150, ±5% on the stepper); a TY splits two ways
      cans      SQUARE ONLY 8×8 · 9×9 · 10×10 · 12×12 · 14×14
    ══════════════════════════════════════════════════════════════════════════════ */
-const RBR_VENT_BASE=150, RBR_CPT=400, RBR_FACE=500, RBR_FREE=0.75; // RBR_FREE = the stamped-face basis; rbrFree() follows the design's register face (v2.44)
+const RBR_VENT_BASE=150, RBR_CPT=400, RBR_FACE=500, RBR_FREE=0.75;
+const RBR_DESIGN_CPT=430;   // v2.65 — with a room-scan Manual J the ducts are designed to tons × 430 CFM, or to what the blower can do if that is less (Stephen 2026-10-01) // RBR_FREE = the stamped-face basis; rbrFree() follows the design's register face (v2.44)
 function rbrFree(){ return REG_FACE[regNew()].free }
 const RBR_TONS=[2,2.5,3,3.5,4,5];
 const RBR_CANS=[[8,7,167],[9,8,211],[10,9,260],[12,11,375],[14,13,510]]; // size, biggest neck, max CFM at 500 fpm on 75% free area (stamped) — rbrCans() re-rates them for the register face in the design
@@ -6627,7 +6662,7 @@ function fcFloorsHtml(){
     <div class="row">${F.map((f,i)=>
       `<div class="field" style="max-width:170px"><label>Floor ${i+1}${i===fcTop()?' <small>room by room</small>':''}</label>
         <input class="fcfl" data-i="${i}" type="number" inputmode="numeric" min="50" step="25" value="${f.sf||''}" placeholder="1200"></div>`).join('')}
-      <div class="field"><label>&nbsp;</label><div class="note" style="padding:8px 0"><b>${CFM(Math.round(fcSum()))} sq ft</b> total — that is the cap the Manual&nbsp;J runs off.</div></div>
+      <div class="field"><label>&nbsp;</label><div class="note" style="padding:8px 0"><b>${CFM(Math.round(fcSum()))} sq ft</b> total — that is the cap the rule of thumb runs off.</div></div>
     </div>
     ${F.map((f,i)=>i<fcTop()?downRow(f,i):'').join('')}`;
 }
@@ -6784,7 +6819,7 @@ function rbrAir(){
   const o=rbrOpt();
   if(o){ try{ const M=flowModel(o,S.fix); if(M&&M.md) return {tons:M.tons,Qd:M.md.Qd,Qp:M.md.Qp,fr:M.md.frUse,esp:M.md.espD,name:M.md.B.name,live:true,asp:M.md.asp,telRet:M.md.tel.ret.total,frRaw:M.md.fr} }catch(e){} }
   const t=rbrRecTons()||3;
-  return {tons:t,Qd:Math.round(t*440),Qp:Math.round(t*415),fr:0.06,esp:spGoal(),name:t+'-ton (Manual J size — no unit picked yet)',live:false};
+  return {tons:t,Qd:Math.round(t*440),Qp:Math.round(t*415),fr:0.06,esp:spGoal(),name:t+'-ton (rule of thumb size — no unit picked yet)',live:false};
 }
 // v2.44 — the cross-check divides by the Matchup Guide DEFAULT indoor for the condenser being quoted (Stephen 2026-09-20: the condenser is
 // sized off the Manual J; an indoor sized up for airflow must never shrink it). Still the selected system type, brand and tier.
@@ -6835,6 +6870,12 @@ function rbrModel(){ let out=null, used=DN_TEL?DN_TEL.total:null;
   return out }
 function rbrModel1(){
   const B=rbrBuild()||RBR_BUILD.standard, A=rbrAir(), cap=rbrCap(), top=fcTop();
+  // v2.65 — a Goettl Room Scan with a load calc: the AC is sized to ITS Manual J (through the same stretch window), and the design air is tons × 430 CFM —
+  // the unit's blower chart caps it ("if a blower can't do it, do whatever it can do"). Without that upload nothing below changes (the old way).
+  const MJG=S.plan&&S.plan.g&&S.plan.g.mj, MJ=(MJG&&MJG.mjT>0)?MJG:null;
+  if(S.rooms.length){ const tD=A.live?A.tons:(MJ?rbrSold(MJ.mjT):(rbrRecTons()||3)), target=Math.round(tD*RBR_DESIGN_CPT), chart=A.live?Math.round(A.Qd):null;   /* v2.65: 430 is always — every room-by-room job */
+    A.design={tons:tD,target,chart,Qd:chart!=null?Math.min(target,chart):target,cpt:RBR_DESIGN_CPT,short:chart!=null&&chart<target-0.5,name:A.name,chartCpt:chart!=null&&tD>0?Math.round(chart/tD):null};
+    A.Qd=A.design.Qd }
   S.rooms.forEach(r=>{ if(!r.poly) r.d=r.sf/r.w;   // v2.54: a scanned room keeps its measured shape
     r.hf=r.h<=10?1:Math.min(1.6,1+0.10*(r.h-10));
     r.lf=r.ld==='high'?1.25:(r.ld==='low'?0.85:1);
@@ -6868,7 +6909,7 @@ function rbrModel1(){
   const downCfm=down.reduce((s,x)=>s+x.cfm,0);
   const Qup=Math.max(0,Math.round(A.Qd)-downCfm);
   const A0=rbrAirBase(); const cpt=rbrCpt(A0), cptSrc=rbrCptSrc(A0); // the unit's own CFM/ton, off its own blower table — v2.44: the Matchup Guide DEFAULT indoor for this condenser, so an indoor sized up for airflow never shrinks the tonnage
-  const loadT=rooms.length?rbrSold(needTot/cpt):null;
+  const loadT=rooms.length?(MJ?rbrSold(MJ.mjT):rbrSold(needTot/cpt)):null;   // v2.65: the scan's Manual J sizes the AC; the measured cross-check otherwise
   // distribute what reaches the rooms' floor — largest remainder so the rooms total it exactly
   const kr=needRooms>0?Qup/needRooms:0, raw=rooms.map(r=>r.need*kr), out=raw.map(v=>Math.floor(v));
   let left=Qup-out.reduce((s,v)=>s+v,0);
@@ -6925,7 +6966,7 @@ function rbrModel1(){
   // Wye Tree · Stepped Trunk · Remote Box (Auto by where the unit sits). The network (dnAll) replaces v2.56's balanced trunks and 4-ft TY rule.
   const ux=S.unitPos.x+3, uy=S.unitPos.y+3;
   rooms.forEach(r=>{ r.trunk=null; r.ty=uy; r.run=0; r.legFt=0; r.tys=0 });
-  RM={B,A,cap,tmat:'flex',segs:[],needTot,needRooms,needUp,needDown,hall,roomSf,loadT,cpt,cptSrc,ux,uy,
+  RM={B,A,cap,tmat:'flex',segs:[],needTot,needRooms,needUp,needDown,hall,roomSf,loadT,cpt,cptSrc,ux,uy, mjRaw:MJ?MJ.mjT:null, mjBtu:MJ?MJ.cool:null, design:A.design||null,   /* v2.65 */
       down,downCfm,Qup,spill:Math.max(0,Math.round(Qup-needUp*ratio)),ratio,
       recT:rbrRecTons(), homeSf:rbrHomeSf(),
       pct:needTot>0?A.Qd/needTot:1,
@@ -8409,7 +8450,7 @@ function rbrRender(){
   rbrMJ(); rbrRoomRows(); rbrGrid(); rbrOut();
   if(clampNote) fcStat(clampNote,'warn');
   $('#rbrCnt').textContent = S.rooms.length ? S.rooms.length+(S.rooms.length>1?' rooms':' room')+(S.plan?' · scanned':'') : 'not used';
-  $('#rbrBtn').setAttribute('aria-expanded', S.rbrOpen?'true':'false');
+  roomsTabSync();   /* v2.65: the switch at the top and the Rooms tab in the strip */
   $('#rbrPanel').classList.toggle('hidden',!S.rbrOpen);
   $('#rbrOut').classList.toggle('hidden',!S.rooms.length);
   // v2.54 — the scan block leads; the rooms, the grid and the design only once there is a plan or the hand grid was opened
@@ -8420,6 +8461,19 @@ function rbrRender(){
   ['rbrArr','fcAddUnc'].forEach(id=>{ const el=$('#'+id); if(el) el.classList.toggle('hidden',!!S.plan) });
 }
 function rbrTile(l,v,s,cls){ return `<div class="dim ${cls||''}"><div class="lbl">${l}</div><div class="val">${v}</div><div class="sub">${s}</div></div>` }
+// v2.65 — the switch at the top of the tool and the Rooms tab in the step strip follow S.rbrOpen
+function roomsTabSync(){ const on=!!S.rbrOpen; const st=$('#stepRooms'), nav=$('#steps'); if(st) st.classList.toggle('hidden',!on); if(nav) nav.classList.toggle('rooms',on);
+  const b=$('#rbrBtn'); if(b){ b.setAttribute('aria-checked',on?'true':'false'); b.setAttribute('aria-expanded',on?'true':'false') } }
+// v2.65 — the two folded ways in carry their state on the fold itself, so a closed fold still says what it holds
+function fcFoldSums(){ const P=S.prop;
+  const a=$('#fcFoldSum'); if(a){ const fl=P&&Array.isArray(P.floorSqFt)&&P.floorSqFt.length?P.floorSqFt:null; const rec=!!(P&&(P.apn||P.address||P.yearBuilt||P.conditionedSqFt||fl));
+    a.textContent= rec ? [P.address, fl?fl.map(v=>CFM(Math.round(v))).join(' + ')+' sq ft':(P.conditionedSqFt?CFM(P.conditionedSqFt)+' sq ft':''), P.yearBuilt?'built '+P.yearBuilt:'', fcAerial()?'aerial':''].filter(Boolean).join(' · ')+' · Clark County'
+                     : (P&&P.query ? P.query+' · not looked up yet' : 'Square footage, year built and the aerial off the county record') }   /* a scan can fill the address without a lookup — say so */
+  const s=$('#sfFoldSum'), d=$('#sfFold'); if(s){ const F=S.home.floors, sf=rbrHomeSf(), multi=F.length>1, src=fcSrc('sf');
+    const txt= S.plan ? CFM(S.plan.sf)+' sq ft served — off the scan'+(S.plan.prevSf?' · the record says '+CFM(S.plan.prevSf)+' sq ft':'')
+             : sf ? (multi?F.map(f=>CFM(Math.round(parseFloat(f.sf)||0))).join(' + ')+' = ':'')+CFM(sf)+' sq ft'+(multi?' · '+F.length+' storeys':'')+(src?' · '+src:'')
+             : 'Needed when there is no scan and no address';
+    s.textContent=txt; if(d) d.classList.toggle('need',!S.plan&&!sf) } }
 // v2.35 — when the house asks for more than the square footage alone said, there are always TWO answers:
 // the larger unit, or the Manual J size with the attic brought up so the load comes down to meet it.
 // Ceiling conduction scales with 1/R, and the ceiling is roughly a third of a Las Vegas cooling load
@@ -8437,23 +8491,26 @@ function rbrSizeCall(){
   const pre=S.home.build==='pre1980';
   // the size the house asks for: the measured rooms when they have been taken, else the build-type rule
   const bigger=RBR_TONS.find(t=>t>rec)||null;
-  const askT=(RM&&RM.loadT&&RM.loadT>rec)?RM.loadT:(pre?bigger:null);
+  const scan=!!(RM&&RM.mjRaw!=null&&S.rooms&&S.rooms.length);   /* v2.65: the room scan's Manual J */
+  const askT=(RM&&RM.loadT&&RM.loadT>rec)?RM.loadT:(pre&&!scan?bigger:null);
   if(!askT||askT<=rec) return null;
   const target=R_MIN; // at least R-38 — Stephen 2026-09-15
   const cut=rbrInsCut(R,target);
   // does the top-up actually close the gap? compare the load after the cut against what `rec` carries
   const cpt=rbrCpt();
-  const loadNow=(RM&&RM.needTot)?RM.needTot:rec*cpt*(askT/rec);
+  const loadNow=scan?RM.mjRaw*cpt:((RM&&RM.needTot)?RM.needTot:rec*cpt*(askT/rec));
   const capRec=rec*cpt;
   const closes=R!=null && cut>0 && loadNow*(1-cut)<=capRec+1e-6;
-  return {rec, askT, why:(RM&&RM.loadT&&RM.loadT>rec)?'rooms':'build', R, known:i.known,
+  return {rec, askT, why:(RM&&RM.loadT&&RM.loadT>rec)?(scan?'scan':'rooms'):'build', R, known:i.known,
           target, cut, closes, already:R!=null&&R>=target, loadNow, capRec,
           cpt, cutT:Math.round(loadNow*(1-cut)/cpt*100)/100};
 }
 // The sentence the SM reads out. Never "the cross-check wants a bigger size" on its own.
 function rbrSizeCallHtml(c,short){
   if(!c) return '';
-  const src=c.why==='rooms'
+  const src=c.why==='scan'
+    ? `The room scan's Manual J comes to <b>${CFM(RM.mjBtu)} BTUh</b> (${RM.mjRaw.toFixed(2)} ton) &mdash; that is a <b>${c.askT} ton</b> house, a size above the ${c.rec} ton the rule of thumb gives.`
+    : c.why==='rooms'
     ? `The rooms you measured come to <b>${CFM(RM.needTot)} CFM</b> of load &mdash; that is a <b>${c.askT} ton</b> house, a size above the ${c.rec} ton the square footage alone gives.`
     : `A pre-1980 house carries more load than its square footage suggests &mdash; that is a <b>${c.askT} ton</b> house on the rule, against the <b>${c.rec} ton</b> the square footage gives.`;
   if(!c.known) return `${src} <b>Two ways to land it: put in the ${c.askT} ton, or keep the ${c.rec} ton and bring the attic to at least R-38.</b> Put the attic depth in above and the tool will tell you which one this house needs.`;
@@ -8463,14 +8520,16 @@ function rbrSizeCallHtml(c,short){
   const head=`${src} <b>Pick one:</b>`;
   const two=`<br>&nbsp;&nbsp;<b>1 &mdash; Put in the ${c.askT} ton.</b>`+
     `<br>&nbsp;&nbsp;<b>2 &mdash; Keep the ${c.rec} ton and bring the attic from R-${fmt(c.R)} up to at least R-38.</b> That takes about <b>${Math.round(c.cut*100)}%</b> off the load`+
-    (c.why==='rooms'?` &mdash; ${CFM(RM.needTot)} CFM becomes ${CFM(after)}, a <b>${sold(after/cpt)} ton</b> house${sold(after/cpt)<c.rec?`, comfortably inside the ${c.rec} ton`:''}.`:`, which is what the half-ton up is covering.`);
+    (c.why==='rooms'?` &mdash; ${CFM(RM.needTot)} CFM becomes ${CFM(after)}, a <b>${sold(after/cpt)} ton</b> house${sold(after/cpt)<c.rec?`, comfortably inside the ${c.rec} ton`:''}.`
+     :c.why==='scan'?` &mdash; ${RM.mjRaw.toFixed(2)} ton becomes ${(after/cpt).toFixed(2)}, a <b>${sold(after/cpt)} ton</b> house${sold(after/cpt)<c.rec?`, comfortably inside the ${c.rec} ton`:''}.`
+     :`, which is what the half-ton up is covering.`);
   if(c.closes) return short?head+two:head+two+
     `<br><span style="font-weight:600">Both land the house. The attic is the cheaper one and it keeps paying every month after &mdash; the unit only has to be bigger if the insulation stays as it is.</span>`;
   const cut49=rbrInsCut(c.R,R_CODE), after49=Math.round(c.loadNow*(1-cut49));
   const closes49=sold(after49/cpt)<=c.rec;
   return short?head+two:head+two+
-    `<br><span style="font-weight:600;color:#a35300">R-38 helps but does not get all the way there. R-49 &mdash; today's code &mdash; takes about ${Math.round(cut49*100)}% off`+(c.why==='rooms'?` (${CFM(after49)} CFM, ${sold(after49/cpt)} ton)`:'')+`, `+
-    (c.why!=='rooms'?`still short of the half ton.`:(closes49?`which does land it on the ${c.rec} ton.`:`which still leaves it a size big.`))+
+    `<br><span style="font-weight:600;color:#a35300">R-38 helps but does not get all the way there. R-49 &mdash; today's code &mdash; takes about ${Math.round(cut49*100)}% off`+(c.why==='rooms'?` (${CFM(after49)} CFM, ${sold(after49/cpt)} ton)`:c.why==='scan'?` (${(after49/cpt).toFixed(2)} ton → ${sold(after49/cpt)})`:'')+`, `+
+    (c.why==='build'?`still short of the half ton.`:(closes49?`which does land it on the ${c.rec} ton.`:`which still leaves it a size big.`))+
     ` If the attic is staying as it is, put in the ${c.askT} ton.</span>`;
 }
 
@@ -8480,14 +8539,14 @@ function rbrStretchInfo(){
   const B=rbrBuild(), sf=rbrHomeSf(), rec=rbrRecTons();
   if(!B||!sf||!rec) return null;
   if(rbrSizeCall()) return null;                       // the two-answer size call owns the message
-  const measured=!!(S.rooms.length && RM && RM.needTot);
-  const raw=measured ? RM.needTot/rbrCpt() : sf/B.sf;  // the load actually driving the call
+  const measured=!!(S.rooms.length && RM && RM.needTot), scan=!!(measured && RM.mjRaw!=null);
+  const raw=scan ? RM.mjRaw : measured ? RM.needTot/rbrCpt() : sf/B.sf;  // the load actually driving the call — v2.65: the room scan's Manual J when it carried one
   const size=rbrSold(raw);
   if(size<rec) return null;                            // the sq-ft size already covers the rooms
   if(!(raw>size+1e-9)) return null;                    // lands on or under the size — no stretch
   const next=RBR_TONS.find(t=>t>size)||null;
   const i=insulState(), R=i.known?i.R:null, target=R_MIN, cut=rbrInsCut(R,target);
-  return {raw, size, next, measured, over:raw-size, pct:raw/size-1, stretch:rbrStretchFor(size),
+  return {raw, size, next, measured, scan, over:raw-size, pct:raw/size-1, stretch:rbrStretchFor(size),
           R, known:i.known, target, cut, ok:R!=null&&R>=target,
           closes:R!=null&&cut>0&&raw*(1-cut)<=size+1e-9};
 }
@@ -8500,32 +8559,37 @@ function rbrStretchHtml(x,short){
   if(!x.known) return `${head} Put the attic depth in above and the tool will say whether this house carries it.`;
   if(x.ok) return `${head} The attic is <b>R-${fmt(x.R)}</b>, at or over the R-38 minimum &mdash; <b>the envelope carries it, the ${x.size} ton is the unit</b>.`;
   if(x.closes) return `${head} The attic is <b>R-${fmt(x.R)}</b>, <b>under the R-38 minimum</b>. Bring it to at least R-38 with this unit &mdash; that takes about ${Math.round(x.cut*100)}% off the load`+
-    (x.measured?` (${CFM(RM.needTot)} CFM becomes ${CFM(Math.round(RM.needTot*(1-x.cut)))})`:'')+
+    (x.measured&&!x.scan?` (${CFM(RM.needTot)} CFM becomes ${CFM(Math.round(RM.needTot*(1-x.cut)))})`:x.scan?` (${x.raw.toFixed(2)} ton becomes ${(x.raw*(1-x.cut)).toFixed(2)})`:'')+
     `, which lands it comfortably. <b>Leave the attic as it is and the honest call is the ${x.next} ton.</b>`;
   return `${head} The attic is <b>R-${fmt(x.R)}</b> and R-38 does not take enough off to land it &mdash; <b>put in the ${x.next} ton</b>.`;
 }
 function rbrMJ(){
   const el=$('#mjOut'), B=rbrBuild(), sf=rbrHomeSf(), rec=rbrRecTons();
-  if(!B||!sf){ el.innerHTML='<div class="msg" style="margin-top:10px">Put in the conditioned square footage and how the house is built and the Manual J size lands here.</div>'; return }
+  try{ fcFoldSums() }catch(e){}   /* v2.65 */
+  if(!B||!sf){ el.innerHTML='<div class="msg" style="margin-top:10px">Put in the conditioned square footage (the scan, the address, or typed) and how the house is built — the size lands here.</div>'; return }
   const A=rbrAir(), fits=!A.live||A.tons>=(RM.loadT||rec)-0.01;
-  const call=rbrSizeCall(), str=rbrStretchInfo();
-  el.innerHTML='<div class="env" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-top:10px">'+
-    rbrTile('Conditioned area',CFM(sf)+' sq ft',B.n,'')+
-    rbrTile('Manual J size',rec+' ton',CFM(sf)+' ÷ '+B.sf+' = '+(sf/B.sf).toFixed(2)+' — '+rbrRoundNote(sf/B.sf),'ok')+
-    rbrScanTiles()+   /* v2.64: the scan app's load calc, when the file carried one */
-    (RM.loadT?rbrTile('Measured cross-check',RM.loadT+' ton',
-        CFM(RM.needTot)+' CFM ÷ '+RM.cpt+' CFM/ton ('+rbrEsc(RM.cptSrc)+') = '+(RM.needTot/RM.cpt).toFixed(2)+' — '+rbrRoundNote(RM.needTot/RM.cpt)+(RM.loadT>rec?' — bigger unit, or attic to R-38':''),RM.loadT>rec?'warn':'')
-             :rbrTile('Measured cross-check','—','appears once the rooms are entered',''))+
-    (str?rbrTile('Stretch call',str.size+' ton held',
-        str.raw.toFixed(2)+' ton load · '+(!str.known?'attic depth?':(str.ok?'attic R-'+fmt(str.R)+', it carries it':'needs the attic at R-38')),
-        str.ok?'ok':'warn'):'')+
-    (call?rbrTile('The way out',
-        !call.known?'Attic depth?':(call.already?call.askT+' ton':(call.closes?'Attic to R-38':call.askT+' ton')),
-        !call.known?'tells us which one':(call.already?'attic already R-'+fmt(call.R):(call.closes?'or the '+call.askT+' ton':'R-38 alone is short')),
-        !call.known?'':(call.already?'warn':(call.closes?'ok':'warn'))):'')+
-    (A.live?rbrTile('Unit being quoted',tons1(A.tons)+' ton',A.name,fits?'ok':'bad'):'')+
-    '</div>'+
-    '<div class="msg">'+B.note+
+  const call=rbrSizeCall(), str=rbrStretchInfo(), L=loadTons();
+  const G=S.plan&&S.plan.g, mj=G&&G.mj, mjT=mj&&mj.mjT>0?Math.round(mj.mjT*100)/100:null;
+  // v2.65 (Stephen 2026-10-01: "Rule of thumb size, Manual J size, Manual D CFM needs and in bold, the recommendation") — three sizes that feed the call, then the call
+  const tiles=
+    rbrTile('Rule of thumb',rec+' ton',CFM(sf)+' sq ft ÷ '+B.sf+' = '+(sf/B.sf).toFixed(2)+' — '+rbrRoundNote(sf/B.sf)+' · '+rbrEsc(B.n),'')+
+    (mjT ? rbrTile('Manual J',mjT+' ton',CFM(mj.cool)+' BTUh cooling'+(mj.sens?' ('+CFM(mj.sens)+' sensible'+(mj.lat?' + '+CFM(mj.lat)+' latent':'')+')':'')+(mj.heat?' · '+CFM(mj.heat)+' BTUh heating':'')+' · off the room scan','ok')
+         : rbrTile('Manual J','—','the Goettl Room Scan upload carries the room-by-room load calc',''))+
+    (RM.design&&RM.loadT ? rbrTile('Manual D · CFM needed',CFM(RM.design.Qd)+' CFM',RM.design.tons+' ton × '+RM.design.cpt+' CFM/ton = '+CFM(RM.design.target)+(RM.design.chart==null?' — the ducts are designed to push it · no unit picked yet':RM.design.short?' · '+rbrEsc(RM.design.name)+' moves '+CFM(RM.design.chart)+' at 0.50″ ('+RM.design.chartCpt+'/ton) — the ducts are designed to what it can do':' — the ducts are designed to push it · '+rbrEsc(RM.design.name)+' moves '+CFM(RM.design.chart)+' at 0.50″ ('+RM.design.chartCpt+'/ton)')+
+        (RM.mjRaw==null?' · rooms ask '+CFM(RM.needTot)+' CFM ÷ '+RM.cpt+' CFM/ton ('+rbrEsc(RM.cptSrc)+') = '+(RM.needTot/RM.cpt).toFixed(2)+' — '+rbrRoundNote(RM.needTot/RM.cpt):'')+(RM.loadT>rec?' — bigger unit, or attic to R-38':''),RM.design.short?'warn':(RM.loadT>rec?'warn':''))
+     : L ? rbrTile('Manual D · CFM needed',CFM(Math.round(L.tons*RBR_DESIGN_CPT))+' CFM',L.tons+' ton × '+RBR_DESIGN_CPT+' CFM/ton — the air the ducts are designed to push','')
+              : rbrTile('Manual D · CFM needed','—','appears once the size is in',''));
+  // the way out, in one line, when the house asks for more than the square footage gave (the full two-answer script is under Why this size)
+  let alt='';
+  if(!call&&str&&!str.ok&&str.closes&&str.next) alt=` — <b>or the ${str.size} ton with the attic brought to R-38</b>`;   /* a stretch the attic can carry once it is topped up */
+  if(call){ if(!call.known) alt=` — <b>or keep the ${call.rec} ton and bring the attic to at least R-38</b>; put the attic depth in above and the tool picks`;
+    else if(call.already) alt='';
+    else if(call.closes) alt=` — <b>or keep the ${call.rec} ton and bring the attic to R-38</b>, the cheaper one`;
+    else { const c49=rbrInsCut(call.R,R_CODE), a49=Math.round(call.loadNow*(1-c49)); alt=` — R-38 alone is short; R-49 ${rbrSold(a49/(call.cpt||rbrCpt()))<=call.rec?'lands the '+call.rec+' ton':'still leaves it a size big'}` } }
+  const quoted= A.live ? `<span class="rq${fits?'':' bad'}">Quoting ${tons1(A.tons)} ton · ${rbrEsc(A.name)}${fits?'':' — <b>under what the house asks for</b>'}</span>` : '';
+  const app= mj&&mj.recT>0 ? `<span class="rq">Room Scan app: ${mj.recT} ton · ${CFM(mj.cfm)} CFM${mj.roomCfm?' (rooms '+CFM(mj.roomCfm)+' CFM)':''}</span>` : '';
+  const hero= L ? `<div class="rechero${A.live&&!fits?' bad':''}"><div><div class="rk">Recommendation</div><div class="rv">${L.tons} ton</div></div><div class="rw">${rbrEsc(L.why)}${alt}${quoted}${app}</div></div>` : '';
+  const why='<div class="msg" style="margin-top:0">'+B.note+
       // v2.35: when the house asks for more than the square footage gave, the answer is never just
       // "the cross-check wants a bigger size" — it is the bigger unit OR the attic, and the attic depth
       // entered above is what decides which one this house actually needs.
@@ -8535,12 +8599,8 @@ function rbrMJ(){
       (str?`<br><br>${rbrStretchHtml(str)}`:'')+
       (A.live&&!fits?`<br><br><b style="color:var(--bad)">The ${tons1(A.tons)}-ton being quoted is under what the house asks for.</b> It delivers ${Math.round(RM.pct*100)}% of the air the rooms need — the duct design still balances, but every room is short by the same share.`:'')+
     '</div>';
+  el.innerHTML='<div class="sizeband"><div class="env">'+tiles+'</div>'+hero+'<details class="why"><summary>Why this size</summary>'+why+'</details></div>';
 }
-// v2.64 — the Goettl Room Scan app's own load calc, when the upload carried it: its Manual J, the sq-ft rule it applied, the size it recommends and the system CFM
-function rbrScanTiles(){ const G=S.plan&&S.plan.g, m=G&&G.mj; if(!m) return ''; const tons=v=>v>0?(Math.round(v*100)/100)+' ton':'—';
-  return rbrTile('Scan · Manual J',tons(m.mjT),CFM(m.cool)+' BTUh cooling'+(m.sens?' ('+CFM(m.sens)+' sensible'+(m.lat?' + '+CFM(m.lat)+' latent':'')+')':'')+(m.heat?' · '+CFM(m.heat)+' BTUh heating':''),'ok')+
-    rbrTile('Scan · sq-ft rule',tons(m.sfT),rbrEsc(m.why||m.basis||''),'')+
-    rbrTile('Scan · recommends',(m.recT>0?m.recT+' ton':'—')+(m.cfm?' · '+CFM(m.cfm)+' CFM':''),rbrEsc(m.note||'')+(m.roomCfm?' · rooms '+CFM(m.roomCfm)+' CFM':''),'ok') }
 function rbrScanFacts(){ const G=S.plan&&S.plan.g; if(!G) return ''; const b=[]; if(G.nSup||G.nRet) b.push(`<span class="scn">${G.nSup} ${G.nSup===1?'supply':'supplies'}${G.nRet?' + '+G.nRet+' return'+(G.nRet===1?'':'s'):''} off the scan</span>`);
   if(S.plan.north&&S.plan.north.deg!=null) b.push(`north ${Math.round(S.plan.north.deg)}°${S.plan.north.acc?' ±'+Math.round(S.plan.north.acc)+'°':''}`); if(G.mj&&G.mj.recT>0) b.push(`scan load calc: ${G.mj.recT} ton · ${CFM(G.mj.cfm)} CFM`);
   if(G.home&&G.home.attic&&G.home.attic.depth) b.push(`attic ${G.home.attic.depth}" ${rbrEsc(String(G.home.attic.mat||'').toLowerCase())}`.trim()); if(G.home&&G.home.year) b.push(`built ${G.home.year}`);
@@ -8587,7 +8647,7 @@ function rbrRoomRows(){
   $('#rbrTot').innerHTML = S.rooms.length
     ? `<b>${CFM(RM.roomSf)} sq ft</b> measured across ${S.rooms.length} rooms · rooms want <b>${CFM(RM.needTot)} CFM</b>`+
       (!rbrHomeSf()?'' : Math.abs(un)<5 ? ` — matches the ${CFM(rbrHomeSf())} sq ft entered above.`
-        : un>0 ? ` · <b>${CFM(un)} sq ft unassigned</b> <span class="asm">hall &amp; closets</span> — normal, those take no supply. The Manual J still sizes off the full ${CFM(rbrHomeSf())} sq ft.`
+        : un>0 ? ` · <b>${CFM(un)} sq ft unassigned</b> <span class="asm">hall &amp; closets</span> — normal, those take no supply. The rule of thumb still sizes off the full ${CFM(rbrHomeSf())} sq ft.`
         : ` · <b style="color:var(--bad)">${CFM(-un)} sq ft more than the ${CFM(rbrHomeSf())} entered above</b> — check the house square footage or a room measurement.`)
     : 'No rooms entered — the tool designs to the take-offs, exactly as it does without this section.';
 }
@@ -8784,7 +8844,7 @@ function rbrSumPlanSync(){ const card=$('#sumPlanCard'), fold=$('#sumPlanFold'),
    before a scan exists. With no plan and the grid not opened, nothing below changes.
    ========================================================================== */
 function fcPlanSetSf(v){ const top=fcTop(); if(S.home.floors.length===1){ S.home.sf=v; S.home.floors[0].sf=v } else { S.home.floors[top].sf=v; fcSyncSf() } }
-function fcScanStat(msg,cls){ const el=$('#rbrScanStat'); if(!el) return; el.className='msg'+(cls?' '+cls:''); el.innerHTML=msg||''; el.style.display=msg?'':'none' }
+function fcScanStat(msg,cls){ ['#rbrScanStat','#fcUpStat'].forEach(sel=>{ const el=$(sel); if(!el) return; el.className='msg'+(cls?' '+cls:''); el.innerHTML=msg||''; el.style.display=msg?'':'none' }) }   /* v2.65: on the Rooms tab and under the upload on the home */
 // a window belongs to the room whose wall it sits on
 function fcSegNear(poly,x,y,tol){ for(let i=0;i<poly.length;i++){ const a=poly[i],b=poly[(i+1)%poly.length]; const dx=b[0]-a[0],dy=b[1]-a[1]; const L2=dx*dx+dy*dy||1e-9; let t=((x-a[0])*dx+(y-a[1])*dy)/L2; t=Math.max(0,Math.min(1,t)); if(Math.hypot(x-(a[0]+t*dx),y-(a[1]+t*dy))<tol) return true } return false }
 function fcWinMid(w){ const r=w.rot*Math.PI/180; return [w.x+w.w/2*Math.cos(r),w.y+w.w/2*Math.sin(r)] }
@@ -8904,10 +8964,10 @@ function rbrScanHtml(){ const P=S.plan;
 // the front screen, right at the top of the home … either upload the file, give me the address, or manually type in the Sq Ft, in that order")
 function fcTopUpHtml(){ const P=S.plan;
   if(P){ const n=S.rooms.length; return `<div class="scanbar on top"><div class="sb1"><b>${rbrEsc(P.name)}</b><span class="asm">${P.g?rbrEsc(P.g.app||'Goettl Room Scan'):'floor plan'}</span></div><div class="sb2">${n} rooms · <b>${CFM(P.sf)} sq ft</b> served by this system${rbrScanFacts()}</div><div class="sb3"><label class="btn sm ghost" for="rbrDxf">Replace</label></div></div>` }
-  return `<div class="scanbox top" id="fcUpTop"><div class="scanico">&#9636;</div><div class="scantxt"><b>1 · Upload the floor plan</b><span>No plan? 2 · look up the address · 3 · or type the sq ft — in that order.</span></div><label class="btn sm" for="rbrDxf">Choose the scan</label></div>` }
+  return `<div class="scanbox top" id="fcUpTop"><div class="scanico">&#9636;</div><div class="scantxt"><b>Upload the room scan</b><span>Goettl Room Scan &#9656; Export, or a 3D Snap JSON / DXF. No scan? Look up the address, or type the sq ft, below.</span></div><label class="btn" for="rbrDxf">Choose the scan</label></div>` }
 function rbrScanWire(){
   const f=$('#rbrDxf'); if(f&&!f.dataset.wired){ f.dataset.wired='1'; f.addEventListener('change',()=>{ const file=f.files&&f.files[0]; if(!file) return; fcScanStat('Reading '+rbrEsc(file.name)+'…');
-    const fr=new FileReader(); fr.onload=()=>{ const ok=fcPlanLoad(String(fr.result||''),file.name); f.value=''; if(ok){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } else if(!S.rbrOpen){ S.rbrOpen=true; save(); rbrRender() } };   /* v2.59: an upload from the top of the home that fails opens Room by room, where the reason shows */
+    const fr=new FileReader(); fr.onload=()=>{ const ok=fcPlanLoad(String(fr.result||''),file.name); f.value=''; if(ok){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } else { rbrRender() } };   /* v2.65: a failed upload says why right under the upload box (fcScanStat writes there too) */
     fr.onerror=()=>fcScanStat('Could not read that file.','warn'); fr.readAsText(file) }) }
   const h=$('#rbrHand'); if(h) h.addEventListener('click',()=>{ S.rbrHand=true; if(!S.rooms.length){ rbrSeed(fcTop()); if(fcHasShape()) fcPack() } save(); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) });
   const x=$('#rbrScanX'); if(x) x.addEventListener('click',()=>{ fcPlanClear(); rbrRender(); rbrSync() });
@@ -8938,7 +8998,7 @@ function rbrWire(){
   rbrSyncSeg();
   $('#rbrBtn').addEventListener('click',()=>{ S.rbrOpen=!S.rbrOpen; save();
     if(S.rbrOpen&&!S.rooms.length&&S.rbrHand){ rbrSeed(fcTop()); if(fcHasShape()) fcPack() }   // v2.54: opening shows the scan block; the hand grid seeds only once it has been chosen
-    rbrRender(); if(S.rbrOpen) setTimeout(rbrGrid,20) });
+    rbrRender(); if(S.rbrOpen){ if(cur!==10) go(10); else setTimeout(rbrGrid,20) } else if(cur===10) go(1) });   // v2.65: the switch opens the Rooms tab; off on the Rooms tab goes back to Existing
   $('#rbrList').addEventListener('input',e=>{ const row=e.target.closest('.rrow'); if(!row) return;
     const r=S.rooms.find(x=>x.id===row.dataset.id); if(!r) return; const k=e.target.dataset.k; if(!k) return;
     if(S.auto) S.auto.rbr=false;   // v2.54 — an edited set is the SM's, never re-seeded
@@ -9048,13 +9108,14 @@ function rbrLine(){
 function rbrSizeFlag(){
   const els=$$('.rbrflag'); if(!els.length) return;
   const rec=rbrRecTons(); let html='';
-  if(rec){ const A=rbrAir();
-    if(A.live && Math.abs(A.tons-rec)>0.01){
-      const under=A.tons<rec;
-      html=`<div class="banner ${under?'bad':'warn'}" style="margin:0 0 10px">Manual J says <b>${rec} ton</b> for ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()} — this option is <b>${tons1(A.tons)} ton</b>.`+
+  if(rec){ const A=rbrAir(); const scan=!!(RM&&RM.mjRaw!=null&&S.rooms&&S.rooms.length&&RM.loadT); const ref=scan?RM.loadT:rec;   /* v2.65: the room scan's Manual J is the reference when there is one */
+    const says=scan?`The room scan's Manual J says <b>${ref} ton</b> (${CFM(RM.mjBtu)} BTUh = ${RM.mjRaw.toFixed(2)} ton)`:`The rule of thumb says <b>${ref} ton</b> for ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()}`;
+    if(A.live && Math.abs(A.tons-ref)>0.01){
+      const under=A.tons<ref;
+      html=`<div class="banner ${under?'bad':'warn'}" style="margin:0 0 10px">${says} — this option is <b>${tons1(A.tons)} ton</b>.`+
         `<br><span style="font-weight:600;font-size:12.5px">${under?'Under the size the house asks for.':'Over the size the house asks for — check the build type before quoting it.'} Change it at the top of 3 · Plan, or change the square footage / build type in <b>The home</b> on step 1.</span></div>`;
     } else if(A.live){
-      html=`<div class="banner ok" style="margin:0 0 10px">Matches the Manual J size — <b>${rec} ton</b> for ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()}.</div>`;
+      html=`<div class="banner ok" style="margin:0 0 10px">Matches the ${scan?"room scan's Manual J":'rule of thumb'} — <b>${ref} ton</b>${scan?'':` for ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()}`}.</div>`;
     }
     // v2.35: if the house is asking for a size above the square footage, the banner carries BOTH ways
     // out (bigger unit / attic to R-38) rather than just reporting the gap.
@@ -9085,7 +9146,7 @@ function rbrExportBlock(){
   return `<div class="pbreak"></div><h2>Room-by-room supply duct design — ACCA Manual D</h2>`+
    `<p class="pnote">The supply is being redesigned room by room so every room gets the air it needs. `+
    `${rbrEsc(A.name)} · ${CFM(A.Qd)} CFM at ${A.esp.toFixed(2)}" · friction rate ${A.fr.toFixed(3)}"/100 ft · `+
-   `${RM.vents} vents — ${rbrVentWords()} · Manual J ${RM.recT||'—'} ton on ${CFM(rbrHomeSf()||RM.roomSf)} sq ft.</p>`+
+   `${RM.vents} vents — ${rbrVentWords()} · rule of thumb ${RM.recT||'—'} ton on ${CFM(rbrHomeSf()||RM.roomSf)} sq ft${RM.mjRaw!=null?` · room scan Manual J ${CFM(RM.mjBtu)} BTUh = ${RM.mjRaw.toFixed(2)} ton`:''}${RM.design?` · ducts designed to ${CFM(RM.design.Qd)} CFM (${RM.design.tons} ton × ${RM.design.cpt}${RM.design.short?', what the blower can do':''})`:''}.</p>`+
    rbrInstallPlanPrintHtml();
 }
 
@@ -9099,15 +9160,17 @@ function go(n){
   // it: a pack that arrived without its job used to be refused here and silently left the technician
   // looking at the bare tool with "Pick a system type first" in the footer.
   if(n===3) n=5; // v2.62: panel 3 (Equipment) is gone — its chips live at the top of 3 · Plan
+  const rooms = n===10; if(rooms&&!S.rbrOpen){ S.rbrOpen=true; save(); try{ rbrRender() }catch(e){} } // v2.65: the Rooms tab — landing on it turns the switch on
   const flow = n<=6||n===9; // v2.47: 6 · Options is panel 9 — part of the flow, never a pack-only tab
   if(flow&&n>1&&!S.sys){ flash('Pick a system type first'); return }
   if(flow&&n>1&&!isPkg()&&!S.orient){ flash('Where is the indoor unit?'); return }
   if(flow&&n>1&&isPkg()&&!S.setup){ flash('Pick the roof / duct setup'); return }
   if(flow&&n>2&&!isPkg()&&!S.room){ flash('How much room is there?'); return }
-  cur=n; $$('.panel').forEach(p=>p.classList.toggle('active',p.id==='p'+n)); { const on=n===4?stepOrd(5)+0.5:stepOrd(n); $$('.step').forEach(s=>{const k=+s.dataset.go;s.classList.toggle('active',k===n);s.classList.toggle('done',stepOrd(k)<on)}) }
-  fitTabSync(n); // v2.62 — Will it Fit is an optional tab: it shows in the strip only while it is open
+  cur=n; $$('.panel').forEach(p=>p.classList.toggle('active',p.id==='p'+n)); { const ord=k=>k===10?0.5:stepOrd(k); const on=n===4?stepOrd(5)+0.5:ord(n); $$('.step').forEach(s=>{const k=+s.dataset.go;s.classList.toggle('active',k===n);s.classList.toggle('done',ord(k)<on&&!(k===10&&!S.rbrOpen))}) }   /* v2.65: Rooms sits between Existing and Space; hidden (switch off) it carries no state */
+  fitTabSync(n); roomsTabSync(); // v2.62 — Will it Fit is an optional tab: it shows in the strip only while it is open · v2.65 — so is Rooms
   syncPackNav(n); // v2.39 — the pack's own three tabs (7 story · 5 the Plan tab itself · 8 tech pack)
   $('#prev').style.visibility=n===1?'hidden':'visible'; $('#next').textContent=n===6?'Start over':'Next ›';
+  if(rooms){ setTimeout(()=>{ try{ rbrGrid() }catch(e){} },30); window.scrollTo({top:0,behavior:'smooth'}); return }   /* v2.65: the Rooms tab is step 1's — nothing is assumed, no output is built; the grid fits its real width once it is on screen */
   if(n>1){ autoAssume(); relabelStand(); refreshOld() }
   if(n===5||n===4){buildTons();renderTiers()} // v2.62: the strip on the Plan tab and the tier cards on Will it Fit
   if(n>3&&!S.tons){buildTons();renderTiers()} // jumped straight to an output tab — make sure there is a tonnage and a lineup behind it
@@ -9139,8 +9202,8 @@ function flash(t){ const f=$('#footNote'); f.textContent=t; f.style.color='var(-
 // v2.47 — the tabs in the order they are shown: 5 Plan → 6 Options (panel 9) → 7 Summary (panel 6). Summary is still the last one.
 // v2.62 — five steps: 1 Existing · 2 Space · 3 Plan (panel 5) · 4 Options (panel 9) · 5 Summary (panel 6). Panel 4 (Will it Fit) is optional, off the Plan tab; panel 3 is gone.
 const STEP_ORDER=[1,2,5,9,6]; const stepOrd=n=>{ const i=STEP_ORDER.indexOf(n); return i<0?99:i };
-$('#next').onclick=()=>{ if(cur===6){ if(confirm('Start a new fit check? Inputs will be cleared.')){store.del(SKEY);location.reload()} return } if(cur===4){ go(9); return } const i=stepOrd(cur); go(i<STEP_ORDER.length-1?STEP_ORDER[i+1]:cur+1) };
-$('#prev').onclick=()=>{ if(cur===4){ go(5); return } const i=stepOrd(cur); go(i>0&&i<STEP_ORDER.length?STEP_ORDER[i-1]:Math.max(1,cur-1)) };
+$('#next').onclick=()=>{ if(cur===6){ if(confirm('Start a new fit check? Inputs will be cleared.')){store.del(SKEY);location.reload()} return } if(cur===4){ go(9); return } if(cur===1&&S.rbrOpen){ go(10); return } if(cur===10){ go(2); return } const i=stepOrd(cur); go(i<STEP_ORDER.length-1?STEP_ORDER[i+1]:cur+1) };   /* v2.65: Rooms between Existing and Space while the switch is on */
+$('#prev').onclick=()=>{ if(cur===4){ go(5); return } if(cur===10){ go(1); return } if(cur===2&&S.rbrOpen){ go(10); return } const i=stepOrd(cur); go(i>0&&i<STEP_ORDER.length?STEP_ORDER[i-1]:Math.max(1,cur-1)) };
 $$('.step').forEach(s=>s.onclick=()=>go(+s.dataset.go));
 { const fb=$('#fitBack'); if(fb) fb.onclick=()=>go(5) }
 wirePriceBook();
