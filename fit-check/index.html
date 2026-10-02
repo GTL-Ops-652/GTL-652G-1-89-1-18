@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-10-01 v2.65 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-10-01 v2.66 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -862,6 +862,101 @@ body.pack .tp .noapp{display:none}
 #fcGate.hidden{display:none}#fcGate .gbox{background:#fff;border:1px solid var(--line);border-radius:18px;padding:22px 20px;width:min(360px,100%);box-shadow:0 8px 30px rgba(0,0,0,.08);text-align:center}
 #fcGate h2{margin:0 0 4px;color:var(--db)}#fcGate p{margin:0 0 14px;color:var(--muted);font-size:13px}#fcGate input{width:100%;font-size:20px;text-align:center;letter-spacing:.2em;padding:10px;border:2px solid var(--line);border-radius:12px;margin-bottom:10px;box-sizing:border-box}
 #fcGate .gerr{color:#CD1E1F;font-size:13px;font-weight:700;min-height:18px;margin:6px 0 0}body.gated>*:not(#fcGate){visibility:hidden}
+/* ===== v2.66 — THE EXISTING TAB AS PICTURES (Stephen 2026-10-01: "so damn easy a person who couldn't read could almost use it, it's colored,
+   and not clustered"). One colored tile per choice with a picture and a word or two; the tile fills with its colour when it is the one;
+   what a piece IS (or that it is assumed) sits on its tile; the arithmetic is kept in the page (.mth) for the record and never shown. ===== */
+.fcsprite{position:absolute;width:0;height:0;overflow:hidden}
+.mth{display:none!important}
+.ico{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;flex:none;display:block;overflow:visible}
+.xcard{padding:14px 14px 16px}.xcard>h2{margin:2px 0 10px}
+.xq{margin-top:14px}.xq.first{margin-top:4px}
+.qh{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin:0 0 7px}
+.qh .ico{width:18px;height:18px;stroke-width:3;color:var(--mb)}
+.qh .qsrc{margin-left:auto;font-size:10.5px;letter-spacing:.4px;color:#0a6b46;background:#e3f5ec;border:1px solid #a9dcc0;border-radius:999px;padding:1px 9px;text-transform:none}
+.qh .qsrc:empty{display:none}
+.xq.need .qh{color:#a35300}.xq.need .xtg>button{border-color:#e2c35a;background:#fffaf0}
+/* the tiles */
+.xtg{display:grid;gap:8px;grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}
+.xtg.x3{grid-template-columns:repeat(3,minmax(0,1fr))}.xtg.x4{grid-template-columns:repeat(4,minmax(0,1fr))}.xtg.x6{grid-template-columns:repeat(6,minmax(0,1fr))}
+.xtg>button,.xt{--tc:var(--mb);position:relative;isolation:isolate;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;min-height:84px;min-width:0;margin:0;padding:10px 6px 9px;background:#fff;border:1.5px solid var(--line);border-radius:14px;cursor:pointer;color:var(--ink);text-align:center;line-height:1.15;font-family:inherit;-webkit-tap-highlight-color:transparent;transition:transform .08s,box-shadow .12s}
+.xtg>button::before,.xt::before{content:'';position:absolute;inset:0;border-radius:inherit;background:var(--tc);opacity:.08;z-index:-1;pointer-events:none}
+.xtg>button .ico,.xt .ico{color:var(--tc);width:34px;height:34px}
+.xtg>button b,.xt b{display:block;font-size:12.5px;font-weight:800;color:var(--ink);max-width:100%}
+.xtg>button:active,.xt:active{transform:scale(.97)}
+.xtg>button.on,.xt.on{background:var(--tc);border-color:var(--tc);box-shadow:0 3px 10px rgba(0,30,60,.18)}
+.xtg>button.on::before,.xt.on::before{opacity:0}
+.xtg>button.on .ico,.xtg>button.on b,.xt.on .ico,.xt.on b,.xt.on .xv{color:#fff}
+.xtg>button.on .xv{color:rgba(255,255,255,.88)}
+.xtg>button.on::after,.xt.ok::after{content:'';position:absolute;top:6px;right:6px;width:17px;height:17px;border-radius:50%;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23003963' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/12px no-repeat;box-shadow:0 1px 2px rgba(0,0,0,.2)}
+.xt.ok::after{background-color:#1f8a4c;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='%23fff' stroke-width='3.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E")}
+.xv{display:block;font-size:11.5px;font-weight:700;color:var(--muted);min-height:14px;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.xn{display:block;font-size:10px;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;opacity:.85}
+/* the three ways in */
+.srcrow{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:8px}
+.xt.src{min-height:78px}
+.xt.scan{--tc:#003963}.xt.addr{--tc:#3678A0}.xt.sqft{--tc:#5b6b7c}
+.xt.scan:not(.ok){background:var(--db);border-color:var(--db);box-shadow:0 3px 12px rgba(0,57,99,.25)}.xt.scan:not(.ok)::before{opacity:0}
+.xt.scan:not(.ok) .ico,.xt.scan:not(.ok) b{color:#fff}.xt.scan:not(.ok) .xv{color:#cfe3f2}
+.xt.ok{--tc:#1f8a4c;border-color:#7fcaa0;background:#eefaf3}.xt.ok::before{opacity:0}.xt.ok .xv{color:#0a6b46}
+.xt.ok.on{background:#1f8a4c;border-color:#1f8a4c}.xt.ok.on .xv{color:#e3f5ec}
+.xt.need:not(.on){border-color:#e2c35a;background:#fff8dc}.xt.need:not(.on) .xv{color:#a35300}
+details.fold.src:not([open]),details.dpane:not([open]){display:none}
+details.fold.src{margin-top:8px;border:1.5px solid var(--line);border-radius:14px}details.fold.src>summary{display:none}details.fold.src>.fb{padding:12px}
+/* what came in with the scan or the record */
+.facts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.fact{display:inline-flex;align-items:center;gap:6px;padding:5px 11px 5px 8px;border-radius:999px;background:#f1f5f9;border:1px solid var(--line);font-size:12px;font-weight:700;color:var(--ink);max-width:100%;min-width:0}
+.fact .ico{width:16px;height:16px;stroke-width:3;color:var(--mb)}.fact span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* the attic */
+.atrow{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.5fr) minmax(0,.8fr) minmax(76px,auto);gap:8px;align-items:end}
+.atrow .field{min-width:0}.atrow .field label{font-size:12px;font-weight:700;color:var(--muted)}
+.xcard .field input,.xcard .field select{font-size:16px;padding:10px 12px;border-radius:12px;border-width:2px}
+.rbadge{height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-family:var(--serif);font-size:21px;font-weight:900;color:#fff;background:#9aa7b4;padding:0 12px;white-space:nowrap}
+.rbadge.ok{background:var(--ok)}.rbadge.warn{background:var(--warn)}.rbadge.bad{background:var(--bad)}.rbadge.none{background:#eef1f4;color:#9aa7b4}
+/* the size band — three numbers and the call, nothing else on show */
+.sizeband.v66{display:grid;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.45fr);gap:8px;margin-top:16px}
+.sizeband.v66 .dim{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;padding:10px 6px;border-radius:14px;border:1.5px solid var(--line);background:#f2f6fa;min-height:86px;min-width:0}
+.sizeband.v66 .dim .lbl{font-size:10.5px;letter-spacing:.5px;line-height:1.2}
+.sizeband.v66 .dim .val{font-size:27px;line-height:1;white-space:nowrap}
+.sizeband.v66 .dim.na .val{color:#b8c2cc}
+.sizeband.v66 .dim.mj{background:#e9f7ef;border-color:#a9dcc0}.sizeband.v66 .dim.mj .val{color:var(--ok)}
+.sizeband.v66 .dim.md{background:#e4f3f3;border-color:#9fd3d3}.sizeband.v66 .dim.md .val{color:#0a6b6b}
+.sizeband.v66 .dim.warn{background:var(--warnbg);border-color:#f0c48a}.sizeband.v66 .dim.warn .val{color:#a35300}
+.sizeband.v66 .rechero{flex-direction:column;align-items:flex-start;justify-content:center;flex-wrap:nowrap;gap:6px;padding:12px 16px;margin:0;border-radius:16px;min-height:86px;min-width:0}
+.sizeband.v66 .rechero .rv{font-size:40px}
+.sizeband.v66 .rechero.na{background:#e9eef3;color:var(--muted);box-shadow:none}.sizeband.v66 .rechero.na .rv{color:#b8c2cc}
+.rps{display:flex;flex-wrap:wrap;gap:5px}
+.rp{font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.17);color:#fff;white-space:nowrap}
+.rp.alt{background:#ffd77a;color:#3b2a00}.rp.warn{background:#f6b25a;color:#2e1a00}.rp.bad{background:#fff;color:#8f1d1d}
+.rechero.na .rp.warn{background:#fdf1e3;color:#a35300;border:1px solid #f0d3ad}
+/* the unit and the ducts — one tile each, a pane opens under the row */
+.dtg{grid-template-columns:repeat(4,minmax(0,1fr))}
+.dt{min-height:88px}.dt.c-eq{--tc:#3678A0}.dt.c-st{--tc:#5b6b7c}.dt.c-ret{--tc:#1f5fbf}.dt.c-sup{--tc:#0f8b8b}
+.dt.is-asm:not(.on){border-style:dashed}.dt.is-asm:not(.on) .xv{font-style:italic;font-weight:600}
+.dt.is-ok:not(.on) .xv{color:#0a6b46}
+.dt.is-warn:not(.on){border-color:#f0c48a;background:#fff6ea}.dt.is-warn:not(.on) .xv{color:#a35300}
+.dt.is-bad:not(.on){border-color:#ef9a9a;background:#fdeeee}.dt.is-bad:not(.on) .xv{color:var(--bad)}
+.dt.is-need:not(.on){border-color:#e2c35a;background:#fff8dc}.dt.is-need:not(.on) .xv{color:#a35300}
+.dt.on::after{display:none}
+details.dpane{margin-top:10px;border-radius:14px}details.dpane>summary{display:none}
+details.dpane>.sect,details.dpane>.dpb{margin-top:0}
+.dpane .sect>.sh .sn,.dpane .sect>.sh .sd{display:none}
+.dpane .dpb{border:2px solid #5b6b7c;border-radius:14px;padding:12px;background:#fff}
+#oldSplitFold .sect+.sect{margin-top:10px}
+@media (min-width:760px){ .dtg{grid-template-columns:repeat(8,minmax(0,1fr))} }
+@media (max-width:640px){
+  .xcard{padding:12px 10px 14px}
+  .xtg{gap:6px}.xtg>button,.xt{min-height:76px;padding:8px 4px 7px;border-radius:12px}
+  .xtg>button .ico,.xt .ico{width:30px;height:30px}.xtg>button b,.xt b{font-size:11.5px}
+  .xtg.x6{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .srcrow{gap:6px}.xt.src{min-height:72px}
+  .facts{gap:5px}.fact{font-size:11px;padding:4px 9px 4px 6px;gap:5px}.fact .ico{width:14px;height:14px}
+  .atrow{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .sizeband.v66{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+  .sizeband.v66 .dim{min-height:70px;padding:8px 4px}.sizeband.v66 .dim .val{font-size:20px}.sizeband.v66 .dim .lbl{font-size:9.5px}
+  .sizeband.v66 .rechero{grid-column:1/-1;flex-direction:row;align-items:center;flex-wrap:wrap;gap:4px 14px;min-height:0;padding:10px 14px}
+  .sizeband.v66 .rechero .rv{font-size:34px}
+  .dt{min-height:80px}
+}
 </style>
 </head>
 <body>
@@ -903,84 +998,231 @@ body.pack .tp .noapp{display:none}
 </nav>
 
 <main>
+<!-- v2.66 — the pictures on the Existing tab (one sprite, referenced by <use>) -->
+<svg class="fcsprite" width="0" height="0" aria-hidden="true" focusable="false"><defs>
+<symbol id="i-scan" viewBox="0 0 48 48"><rect x="14" y="5" width="20" height="38" rx="4"/><path d="M21 9h6"/><path d="M19 19v-3.5h3.5M28.5 15.5H32V19M32 28v3.5h-3.5M22.5 31.5H19V28"/><circle cx="25.5" cy="23.5" r="2.3" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-pin" viewBox="0 0 48 48"><path d="M24 43s-12-12.5-12-22a12 12 0 0 1 24 0c0 9.5-12 22-12 22z"/><circle cx="24" cy="21" r="4.5"/></symbol>
+<symbol id="i-sqft" viewBox="0 0 48 48"><rect x="8" y="15" width="32" height="25" rx="2.5"/><path d="M8 9h32M8 6.5v5M40 6.5v5"/><text x="24" y="32.6" text-anchor="middle" font-size="12.5" font-weight="800" font-family="Montserrat,-apple-system,Segoe UI,Roboto,sans-serif" fill="currentColor" stroke="none">ft²</text></symbol>
+<symbol id="i-house" viewBox="0 0 48 48"><path d="M6 23 24 8l18 15"/><path d="M11 19v20h26V19"/><path d="M20 39V29h8v10"/></symbol>
+<symbol id="i-old" viewBox="0 0 48 48"><path d="M6 23 24 8l18 15"/><path d="M11 19v20h26V19"/><path d="M31 13.5V7h5v10.5"/><path d="M15.5 24l3 3-2 3 3 3"/><path d="M26 39v-9h6v9"/></symbol>
+<symbol id="i-eco" viewBox="0 0 48 48"><path d="M6 23 24 8l18 15"/><path d="M11 19v20h26V19"/><path d="M17 35c0-8 6-12 14-12 0 8-6 12-14 12z"/><path d="M17 35l8-7"/></symbol>
+<symbol id="i-attic" viewBox="0 0 48 48"><path d="M5 31 24 12l19 19"/><path d="M5 31h38"/><path d="M8 37.5c2.5-3 5 3 7.5 0s5 3 7.5 0 5 3 7.5 0 5 3 7.5 0"/></symbol>
+<symbol id="i-gas" viewBox="0 0 48 48"><rect x="11" y="5" width="26" height="38" rx="3"/><path d="M11 14h26"/><path d="M24 37c-4.2 0-6.5-2.8-6.5-6 0-4 4-5.5 4.5-9.5 3 2 4.5 4.5 4.5 6.5 1-.8 1.8-2 2-3.5 2 2 2.5 4.3 2.5 6.5 0 3.3-2.8 6-7 6z"/></symbol>
+<symbol id="i-hp" viewBox="0 0 48 48"><rect x="6" y="9" width="36" height="30" rx="3"/><circle cx="24" cy="24" r="9.5"/><path d="M24 24c0-4 2-6.5 4.5-6.5M24 24c3.5 2 4.8 5 3.6 7.2M24 24c-3.5 2-6.5 1.6-7.8-.6"/><circle cx="24" cy="24" r="1.7" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-pkg" viewBox="0 0 48 48"><path d="M4 41h40"/><rect x="7" y="15" width="34" height="20" rx="2"/><path d="M12 35v6M36 35v6"/><path d="M12 21h9M12 26h9M12 31h9"/><circle cx="31.5" cy="25" r="6"/><path d="M31.5 25v-4M31.5 25l3.4 2M31.5 25l-3.4 2"/></symbol>
+<symbol id="i-pkgg" viewBox="0 0 48 48"><path d="M4 41h40"/><rect x="7" y="15" width="34" height="20" rx="2"/><path d="M12 35v6M36 35v6"/><path d="M12 21h9M12 26h9M12 31h9"/><path d="M31.5 31.5c-2.7 0-4.2-1.8-4.2-3.9 0-2.5 2.5-3.6 2.8-6.1 1.9 1.3 2.8 2.8 2.8 4.2.6-.5 1.1-1.3 1.3-2.2 1.3 1.3 1.6 2.7 1.6 4.1 0 2.1-1.8 3.9-4.3 3.9z"/></symbol>
+<symbol id="i-oh" viewBox="0 0 48 48"><path d="M3 37 24 10l21 27z"/><rect x="11" y="26" width="26" height="8" rx="1.5"/><path d="M15 30h15m-3.5-3 3.5 3-3.5 3"/></symbol>
+<symbol id="i-ou" viewBox="0 0 48 48"><path d="M3 37 24 10l21 27z"/><path d="M14 34h20"/><rect x="19" y="17" width="10" height="17" rx="1.5"/><path d="M24 30.5V21m-3 3 3-3 3 3"/></symbol>
+<symbol id="i-ug" viewBox="0 0 48 48"><path d="M9 43V6h30v37"/><rect x="17" y="13" width="14" height="26" rx="1.5"/><path d="M24 34V19m-4 4 4-4 4 4"/></symbol>
+<symbol id="i-dc" viewBox="0 0 48 48"><path d="M9 43V6h30v37"/><rect x="17" y="9" width="14" height="26" rx="1.5"/><path d="M24 14v15m-4-4 4 4 4-4"/></symbol>
+<symbol id="i-curb" viewBox="0 0 48 48"><rect x="8" y="7" width="32" height="15" rx="2"/><path d="M12 22v5h24v-5"/><path d="M3 27h42"/><path d="M19 31v10m-3-3 3 3 3-3M29 31v10m-3-3 3 3 3-3"/></symbol>
+<symbol id="i-elp" viewBox="0 0 48 48"><path d="M3 44 45 26"/><rect x="4" y="11" width="20" height="13" rx="2"/><path d="M8 24v10M20 24v6"/><path d="M24 14h6c5 0 8 3 8 8v6"/><path d="M24 21h3c3.5 0 4.5 2 4.5 4.5V31"/></symbol>
+<symbol id="i-elf" viewBox="0 0 48 48"><path d="M3 37h42"/><rect x="4" y="12" width="20" height="13" rx="2"/><path d="M8 25v12M20 25v12"/><path d="M24 15h6c5 0 8 3 8 8v14"/><path d="M24 22h3c3.5 0 4.5 2 4.5 4.5V37"/></symbol>
+<symbol id="i-ovu" viewBox="0 0 48 48"><path d="M3 41h42"/><rect x="4" y="9" width="17" height="22" rx="2"/><path d="M21 12h8c6 0 9 3 9 9v20"/><path d="M21 19h4c3 0 4.5 1.5 4.5 4.5V41"/><path d="M21 26h1.5c1.5 0 2 .8 2 2V41"/></symbol>
+<symbol id="i-rev" viewBox="0 0 48 48"><path d="M3 44 45 26"/><rect x="4" y="11" width="20" height="13" rx="2"/><path d="M24 14h6c5 0 8 3 8 8v6"/><path d="M33 23l5 5 5-5"/><path d="M17 17.5H9m3-3-3 3 3 3"/></symbol>
+<symbol id="i-sep" viewBox="0 0 48 48"><rect x="10" y="7" width="28" height="13" rx="2"/><path d="M16 20v8M32 20v8"/><path d="M3 30h42"/><path d="M16 32v10M32 32v10"/><path d="M12.5 30h7M28.5 30h7" stroke-width="4.5"/></symbol>
+<symbol id="i-gauge" viewBox="0 0 48 48"><path d="M8 33a16 16 0 1 1 32 0"/><path d="M24 33l8-10"/><circle cx="24" cy="33" r="2.7" fill="currentColor" stroke="none"/><path d="M12.5 33H10M38 33h-2.5M24 19.5V17"/></symbol>
+<symbol id="i-ret" viewBox="0 0 48 48"><path d="M6 16h28a8 8 0 0 1 0 16H6"/><ellipse cx="6" cy="24" rx="2.6" ry="8"/><path d="M13 24h17m-4.5-4.5L30 24l-4.5 4.5"/></symbol>
+<symbol id="i-grille" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="3"/><path d="M8 16.5h32M8 24h32M8 31.5h32"/></symbol>
+<symbol id="i-sup" viewBox="0 0 48 48"><rect x="5" y="11" width="15" height="26" rx="2"/><path d="M23 17h17m-4-4 4 4-4 4M23 31h17m-4-4 4 4-4 4"/></symbol>
+<symbol id="i-tk" viewBox="0 0 48 48"><rect x="4" y="20" width="40" height="8" rx="2"/><path d="M13 20V10M24 28v10M35 20V10"/><circle cx="13" cy="7.5" r="2.6"/><circle cx="24" cy="40.5" r="2.6"/><circle cx="35" cy="7.5" r="2.6"/></symbol>
+<symbol id="i-reg" viewBox="0 0 48 48"><rect x="7" y="7" width="34" height="34" rx="3"/><rect x="14" y="14" width="20" height="20" rx="1.5"/><path d="M18 19.5h12M18 24h12M18 28.5h12"/></symbol>
+<symbol id="i-runs" viewBox="0 0 48 48"><circle cx="19" cy="24" r="13"/><circle cx="19" cy="24" r="3.6"/><path d="M32 31h12v6H25"/><path d="M36 31v3M40 31v3"/></symbol>
+<symbol id="i-furn" viewBox="0 0 48 48"><rect x="13" y="4" width="22" height="40" rx="2.5"/><path d="M13 22h22"/><path d="M18 18.5 24 9l6 9.5"/><path d="M19 30h10M19 35h10"/></symbol>
+<symbol id="i-cal" viewBox="0 0 48 48"><rect x="7" y="10" width="34" height="31" rx="3"/><path d="M7 19h34M16 6v8M32 6v8"/></symbol>
+<symbol id="i-wall" viewBox="0 0 48 48"><rect x="6" y="9" width="36" height="30" rx="2"/><path d="M6 19h36M6 29h36M18 9v10M30 19v10M18 29v10"/></symbol>
+<symbol id="i-glass" viewBox="0 0 48 48"><rect x="9" y="6" width="30" height="36" rx="2"/><path d="M24 6v36M9 24h30"/></symbol>
+<symbol id="i-north" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><path d="M24 10.5l6 15.5h-12z" fill="currentColor"/><path d="M24 37.5V30"/></symbol>
+</defs></svg>
 <!-- ============ STEP 1 ============ -->
 <section class="panel active" id="p1">
-  <div class="card" id="homeCard">
+<!-- v2.66 — the Existing tab as pictures (Stephen 2026-10-01: "so damn easy a person who couldn't read could almost use it, it's colored, and not clustered").
+     One colored tile per choice, one or two words on it; the arithmetic is out of sight; every input the tool had is still here, behind its tile. -->
+  <div class="card xcard" id="homeCard">
     <h2>The home</h2>
     <div id="fcTop1"></div>
-    <div class="msg" id="fcUpStat" style="display:none;margin:0 0 10px"></div>
-    <!-- v2.65 — the two other ways in, folded: they are options, not the path -->
-    <details class="fold opt" id="fcFold"><summary><span class="car">&#9656;</span><span>Look up the address</span><span class="fs" id="fcFoldSum">Square footage, year built and the aerial off the county record</span><span class="fe">Tap to enter</span></summary><div class="fb">
+    <div class="msg" id="fcUpStat" style="display:none;margin:8px 0 0"></div>
+    <!-- v2.66 — the address and the sq ft open off their tiles in the row above; the folds carry no title bar of their own -->
+    <details class="fold opt src" id="fcFold"><summary><span class="car">&#9656;</span><span>Look up the address</span><span class="fs" id="fcFoldSum"></span><span class="fe">Tap to enter</span></summary><div class="fb">
       <div class="fcrow">
-        <div class="field" style="flex:2;min-width:220px"><label>Address</label><input id="fcAddr" type="text" inputmode="text" autocomplete="off" placeholder="5482 N Jones Blvd"></div>
+        <div class="field" style="flex:2;min-width:200px"><label>Address</label><input id="fcAddr" type="text" inputmode="text" autocomplete="off" placeholder="5482 N Jones Blvd"></div>
         <div class="field" style="max-width:120px"><label>&nbsp;</label><button class="btn sm" id="fcGo" style="width:100%">Look up</button></div>
       </div>
       <div class="msg" id="fcStat" style="display:none;margin-top:8px"></div>
       <div id="fcBox"></div>
     </div></details>
-    <details class="fold opt" id="sfFold"><summary><span class="car">&#9656;</span><span>Type the square footage</span><span class="fs" id="sfFoldSum">Not entered</span><span class="fe">Tap to enter</span></summary><div class="fb">
+    <details class="fold opt src" id="sfFold"><summary><span class="car">&#9656;</span><span>Type the square footage</span><span class="fs" id="sfFoldSum">Not entered</span><span class="fe">Tap to enter</span></summary><div class="fb">
       <div class="row">
         <div class="field req" style="max-width:240px"><label>Total conditioned sq ft</label><input id="homeSf" type="number" inputmode="numeric" min="300" step="25" placeholder="1450"></div>
         <div class="field" style="max-width:150px"><label>Storeys</label><select id="fcStorey"><option value="1">1 storey</option><option value="2">2 storeys</option><option value="3">3 storeys</option></select></div>
       </div>
       <div id="fcFloors"></div>
     </div></details>
-    <div class="sect stat"><div class="sh"><span class="sn"></span><span class="st">Build &amp; attic</span><span class="sd">Sets the size, and the way out of it</span></div><div class="sb">
-      <h4 class="sub" style="margin-top:0">How is the house built?</h4>
-      <div class="seg" id="buildSeg">
-        <button data-v="standard"><b>Standard build</b><span>1980&ndash;2015 tract home, R&#8209;30 to R&#8209;38 attic &middot; 400 sq ft / ton</span></button>
-        <button data-v="pre1980"><b>Old &mdash; pre&#8209;1980</b><span>Thin attic, single pane, leaky duct &middot; half&#8209;ton up, or bring the attic up</span></button>
-        <button data-v="hieff"><b>High&#8209;efficiency home</b><span>Attic ceiling insulated and sealed &middot; 600 sq ft / ton</span></button>
+    <div class="xq" id="buildQ"><div class="qh"><svg class="ico"><use href="#i-house"/></svg><span>Build</span><span class="qsrc" id="buildSrc"></span></div>
+      <div class="seg xtg x3" id="buildSeg">
+        <button data-v="standard" style="--tc:#3678A0"><svg class="ico"><use href="#i-house"/></svg><b>Standard</b></button>
+        <button data-v="pre1980" style="--tc:#9a5b25"><svg class="ico"><use href="#i-old"/></svg><b>Pre&#8209;1980</b></button>
+        <button data-v="hieff" style="--tc:#1f8a4c"><svg class="ico"><use href="#i-eco"/></svg><b>High&#8209;efficiency</b></button>
       </div>
-      <h4 class="sub">How much attic insulation is there?</h4>
-      <div class="row">
-        <div class="field"><label>Depth <small>inches</small></label><input type="number" inputmode="decimal" id="in_depth" placeholder="8"></div>
-        <div class="field"><label>Type</label><select id="in_type"><option value="unknown">Unknown / mixed (&asymp;R-2.8 per in)</option><option value="blown_fg">Blown fiberglass (&asymp;R-2.5 per in)</option><option value="cellulose">Blown cellulose (&asymp;R-3.5 per in)</option><option value="batts">Fiberglass batts (&asymp;R-3.2 per in)</option><option value="spray">Spray foam (&asymp;R-6 per in)</option><option value="none">None</option></select></div>
-        <div class="field opt"><label>Or R-value if known <small>optional</small></label><input type="number" inputmode="decimal" id="in_r" placeholder="R-19"></div>
+    </div>
+    <div class="xq" id="atticQ"><div class="qh"><svg class="ico"><use href="#i-attic"/></svg><span>Attic insulation</span><span class="qsrc" id="atticSrc"></span></div>
+      <div class="atrow">
+        <div class="field"><label>Depth <small>in</small></label><input type="number" inputmode="decimal" id="in_depth" placeholder="8"></div>
+        <div class="field"><label>Type</label><select id="in_type"><option value="unknown">Unknown</option><option value="blown_fg">Blown fiberglass</option><option value="cellulose">Cellulose</option><option value="batts">Batts</option><option value="spray">Spray foam</option><option value="none">None</option></select></div>
+        <div class="field opt"><label>R&#8209;value</label><input type="number" inputmode="decimal" id="in_r" placeholder="R-19"></div>
+        <div class="rbadge none" id="insulRead"></div>
       </div>
-      <div class="msg" id="insulRead" style="margin-top:10px"></div>
-    </div></div>
-
+    </div>
     <div id="mjOut"></div>
   </div>
 
-  <div class="card">
+  <div class="card xcard" id="whatCard">
     <h2>What's in the home today?</h2>
-    <div class="sect eq"><div class="sh"><span class="sn"></span><span class="st">System type</span><span class="sd">Tap one</span></div><div class="sb">
-    <div class="seg" id="sysType">
-      <button data-v="split_gas"><b>Split · Gas</b><span>Furnace + coil indoors, condenser outside</span></button>
-      <button data-v="split_hp"><b>Split · Heat Pump</b><span>Air handler indoors, heat pump outside</span></button>
-      <button data-v="pkg_gas"><b>Package · Gas/Electric</b><span>Rooftop or ground package unit</span></button>
-      <button data-v="pkg_hp"><b>Package · Heat Pump</b><span>Rooftop or ground package heat pump</span></button>
-    </div></div></div>
-
-    <div id="splitLoc" class="sect eq"><div class="sh"><span class="sn"></span><span class="st">Where is the indoor unit?</span><span class="sd">Tap one</span></div><div class="sb">
-      <div class="seg" id="orient">
-        <button data-v="horiz"><b>Attic — horizontal</b><span>Lying on its side, coil in line. Length matters.</span></button>
-        <button data-v="up_attic"><b>Attic — upflow on platform</b><span>Standing up in the attic. Height matters.</span></button>
-        <button data-v="up"><b>Garage / closet — upflow</b><span>Standing, coil on top. Height matters.</span></button>
-        <button data-v="down"><b>Closet — downflow</b><span>Standing, coil underneath. Height matters.</span></button>
-      </div>
+    <div class="xq first"><div class="qh"><svg class="ico"><use href="#i-hp"/></svg><span>System</span></div>
+    <div class="seg xtg x4" id="sysType">
+      <button data-v="split_gas" style="--tc:#d9711c"><svg class="ico"><use href="#i-gas"/></svg><b>Gas split</b></button>
+      <button data-v="split_hp" style="--tc:#0f8b8b"><svg class="ico"><use href="#i-hp"/></svg><b>Heat pump split</b></button>
+      <button data-v="pkg_gas" style="--tc:#b4521a"><svg class="ico"><use href="#i-pkgg"/></svg><b>Gas package</b></button>
+      <button data-v="pkg_hp" style="--tc:#2f6fb0"><svg class="ico"><use href="#i-pkg"/></svg><b>Heat pump package</b></button>
     </div></div>
 
-    <div id="pkgSetup" class="sect eq hidden"><div class="sh"><span class="sn"></span><span class="st">Roof / duct setup</span><span class="sd">Tap one</span></div><div class="sb">
-      <div class="seg" id="setup">
-        <button data-v="curb"><b>Typical curb</b><span>Downflow, unit sits on roof curb</span></button>
-        <button data-v="elbow_pitched"><b>Elbow · pitched roof</b><span>Horizontal discharge into elbows</span></button>
-        <button data-v="elbow_flat"><b>Elbow · flat roof</b><span>Horizontal discharge, flat roof</span></button>
-        <button data-v="over_under"><b>Over-and-under elbow</b><span>Stacked supply/return elbows</span></button>
-        <button data-v="reverse"><b>Reverse-flow elbow · pitched</b><span>Supply/return swapped orientation</span></button>
-        <button data-v="separate"><b>Separate return & supply penetrations</b><span>Needs manual review</span></button>
+    <div id="splitLoc" class="xq"><div class="qh"><svg class="ico"><use href="#i-furn"/></svg><span>Indoor unit</span></div>
+      <div class="seg xtg x4" id="orient">
+        <button data-v="horiz" style="--tc:#6a52b3"><svg class="ico"><use href="#i-oh"/></svg><b>Attic &middot; lying down</b></button>
+        <button data-v="up_attic" style="--tc:#6a52b3"><svg class="ico"><use href="#i-ou"/></svg><b>Attic &middot; standing</b></button>
+        <button data-v="up" style="--tc:#6a52b3"><svg class="ico"><use href="#i-ug"/></svg><b>Garage / closet &middot; up</b></button>
+        <button data-v="down" style="--tc:#6a52b3"><svg class="ico"><use href="#i-dc"/></svg><b>Closet &middot; down</b></button>
       </div>
-    </div></div>
+    </div>
+
+    <div id="pkgSetup" class="xq hidden"><div class="qh"><svg class="ico"><use href="#i-pkg"/></svg><span>On the roof</span></div>
+      <div class="seg xtg x6" id="setup">
+        <button data-v="curb" style="--tc:#6a52b3"><svg class="ico"><use href="#i-curb"/></svg><b>Curb</b></button>
+        <button data-v="elbow_pitched" style="--tc:#6a52b3"><svg class="ico"><use href="#i-elp"/></svg><b>Elbow &middot; pitched</b></button>
+        <button data-v="elbow_flat" style="--tc:#6a52b3"><svg class="ico"><use href="#i-elf"/></svg><b>Elbow &middot; flat</b></button>
+        <button data-v="over_under" style="--tc:#6a52b3"><svg class="ico"><use href="#i-ovu"/></svg><b>Over &amp; under</b></button>
+        <button data-v="reverse" style="--tc:#6a52b3"><svg class="ico"><use href="#i-rev"/></svg><b>Reverse elbow</b></button>
+        <button data-v="separate" style="--tc:#6a52b3"><svg class="ico"><use href="#i-sep"/></svg><b>Separate holes</b></button>
+      </div>
+    </div>
   </div>
 
-  <div class="card" id="oldSplit">
-    <h2>Existing equipment</h2>
-    <details class="fold" id="oldSplitFold"><summary><span class="car">&#9656;</span><span id="oldSplitTtl">Furnace &amp; coil</span><span class="fs" id="oldSplitSum">Not entered — optional</span><span class="fe">Tap to enter</span></summary><div class="fb">
-    <div class="sect furn"><div class="sh"><span class="sn"></span><span class="st" id="oldFurnLbl">Furnace</span><span class="sd">Model # or tape it</span></div><div class="sb">
+  <div class="card xcard" id="airflowCard">
+    <h2>Unit &amp; ducts today</h2>
+    <!-- v2.66 — one tile per piece, showing what is there (or assumed); tap a tile to open just that piece -->
+    <div class="xtg dtg" id="dtGrid">
+      <button type="button" class="dt c-eq" data-pane="oldSplitFold" id="dtEq"><svg class="ico"><use href="#i-furn"/></svg><b id="dtEqL">Furnace &amp; coil</b><span class="xv"></span></button>
+      <button type="button" class="dt c-eq hidden" data-pane="oldPkgFold" id="dtPk"><svg class="ico"><use href="#i-pkg"/></svg><b>Roof unit</b><span class="xv"></span></button>
+      <button type="button" class="dt c-st" data-pane="dpStat"><svg class="ico"><use href="#i-gauge"/></svg><b>Static</b><span class="xv"></span></button>
+      <button type="button" class="dt c-ret" data-pane="dpRet"><svg class="ico"><use href="#i-ret"/></svg><b>Return plenum</b><span class="xv"></span></button>
+      <button type="button" class="dt c-ret" data-pane="dpGr"><svg class="ico"><use href="#i-grille"/></svg><b>Filter grille</b><span class="xv"></span></button>
+      <button type="button" class="dt c-sup" data-pane="dpSup"><svg class="ico"><use href="#i-sup"/></svg><b>Supply plenum</b><span class="xv"></span></button>
+      <button type="button" class="dt c-sup" data-pane="dpTk"><svg class="ico"><use href="#i-tk"/></svg><b>Take-offs</b><span class="xv"></span></button>
+      <button type="button" class="dt c-sup" data-pane="dpReg"><svg class="ico"><use href="#i-reg"/></svg><b>Registers</b><span class="xv"></span></button>
+      <button type="button" class="dt c-st" data-pane="advRuns"><svg class="ico"><use href="#i-runs"/></svg><b>Runs &amp; filter</b><span class="xv"></span></button>
+    </div>
+
+    <details class="dpane" id="dpStat"><summary>Static pressure</summary>
+    <div class="sect stat"><div class="sh"><span class="sn"></span><span class="st">Static pressure</span><span class="sd"></span></div><div class="sb">
     <div class="row">
-      <div class="field" style="flex:2"><label>Model # (optional)</label><input class="mono" id="oldFurnModel" placeholder="e.g. GMS80804BN or ML180UH090E48B"></div>
+      <div class="field" style="flex:1.2"><label>Static (TESP) <small>in. w.c.</small></label><input type="number" inputmode="decimal" step="0.05" id="ex_sp" placeholder="0.50"></div>
+      <div class="field opt"><label>Old blower motor</label><select id="ex_motor"><option value="auto">Auto (from model / age)</option><option value="psc">PSC (most pre-2015)</option><option value="ct_ecm">Constant-torque ECM (X13 type)</option><option value="vs_ecm">Variable-speed ECM</option></select></div>
+      <div class="field opt"><label>Existing tonnage</label><select id="ex_tons"><option value="">Auto (from model, else same as new)</option><option value="1.5">1.5 ton</option><option value="2">2 ton</option><option value="2.5">2.5 ton</option><option value="3">3 ton</option><option value="3.5">3.5 ton</option><option value="4">4 ton</option><option value="5">5 ton</option></select></div>
+    </div>
+    <details class="adv" id="advStatic"><summary>Filter &amp; coil drop</summary>
+    <div class="row optrow" style="margin-top:8px">
+      <div class="field opt"><label>Filter drop <small>in. w.c.</small></label><input type="number" inputmode="decimal" step="0.01" id="ex_fdp" placeholder="0.10"></div>
+      <div class="field opt"><label>Coil drop <small>in. w.c.</small></label><input type="number" inputmode="decimal" step="0.01" id="ex_cdp" placeholder="0.25"></div>
+    </div>
+    </details>
+    </div></div></details>
+
+    <details class="dpane" id="dpRet"><summary>Return plenum</summary>
+    <div class="sect ret"><div class="sh"><span class="sn"></span><span class="st">Return plenum or main duct</span><span class="sd"></span></div><div class="sb">
+    <div class="row">
+      <div class="field req"><label>Round — size</label><select id="ex_ret_d"><option value="">Not checked</option><option value="10">10"</option><option value="12">12"</option><option value="14">14"</option><option value="16">16"</option><option value="18">18"</option><option value="20">20"</option><option value="22">22"</option><option value="24">24"</option></select></div>
+      <div class="field"><label>How many</label><input type="number" inputmode="numeric" id="ex_ret_n" placeholder="1" min="1"></div>
+      <div class="field"><label>Or rectangular <small>W × H</small></label><input id="ex_ret_rect" placeholder="20x25"></div>
+      <div class="field opt" id="exRplenF"><label>Return plenum length <small>in</small></label><input type="number" inputmode="decimal" id="ex_rplen" placeholder="24"></div>
+    </div>
+    </div></div></details>
+
+    <details class="dpane" id="dpGr"><summary>Filter grille</summary>
+    <div class="sect gr"><div class="sh"><span class="sn"></span><span class="st">Return grille(s) in the ceiling</span><span class="sd"></span></div><div class="sb">
+    <div class="row">
+      <div class="field"><label>How many grilles</label><input type="number" inputmode="numeric" id="ex_gr_n" placeholder="1" min="1"></div>
+      <div class="field req"><label id="ex_grl">Grille size <small>W × H</small></label><input id="ex_gr" placeholder="20x25"></div>
+      <div class="field hidden" id="exGr2F"><label>Second grille size <small>W × H</small></label><input id="ex_gr2" placeholder="20x20"></div>
+      <div class="field"><label>&nbsp;</label><div class="chips"><button class="chip sm" data-gr="14x14">14×14</button><button class="chip sm" data-gr="16x16">16×16</button><button class="chip sm" data-gr="20x20">20×20</button><button class="chip sm" data-gr="20x25">20×25</button><button class="chip sm" data-gr="20x30">20×30</button><button class="chip sm" data-gr="20x40">20×40</button></div></div>
+    </div>
+    </div></div></details>
+
+    <details class="dpane" id="dpSup"><summary>Supply plenum</summary>
+    <div class="sect sup"><div class="sh"><span class="sn"></span><span class="st" id="supLbl">Supply plenum / supply main duct</span><span class="sd"></span></div><div class="sb">
+    <div class="row">
+      <div class="field req"><label>Round — size</label><select id="ex_sup_d"><option value="">Not checked</option><option value="12">12"</option><option value="14">14"</option><option value="16">16"</option><option value="18">18"</option><option value="20">20"</option><option value="22">22"</option><option value="24">24"</option></select></div>
+      <div class="field"><label>Or rectangular <small>W × H</small></label><input id="ex_sup_rect" placeholder="18x12"></div>
+      <div class="field"><label>How many trunks</label><input type="number" inputmode="numeric" id="ex_sup_n" placeholder="1" min="1"></div>
+    </div>
+    <div id="supLayoutBlock">
+      <div class="seg" id="supCfgOld">
+        <button data-v="cased"><b>Cased coil + plenum</b></button>
+        <button data-v="plenum_coil"><b>Plenum coil</b></button>
+        <button data-v="trunk"><b>Extended plenum</b></button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <div class="field" id="exTrunkF"><label>Trunk length <small>ft</small></label><input type="number" inputmode="decimal" id="ex_trunk_ft" placeholder="12"></div>
+        <div class="field" id="exSplenF"><label>Supply plenum length <small>in</small></label><input type="number" inputmode="decimal" id="ex_splen" placeholder="24"></div>
+      </div>
+    </div>
+    </div></div></details>
+
+    <details class="dpane" id="dpTk"><summary>Take-offs</summary>
+    <div class="sect sup"><div class="sh"><span class="sn"></span><span class="st" id="tkOldTitle">Take-offs coming off the plenum</span><span class="sd"></span></div><div class="sb">
+    <div id="supCfgBlock">
+      <div class="row">
+        <div class="field req" style="flex:2"><label>Take-off sizes</label><input id="ex_tk" placeholder="6,6,8,8,10 or 4@6, 12x8"></div>
+      </div>
+      <div class="chips" id="tkEndOld" style="margin-top:8px">
+        <span class="note" style="align-self:center" id="tkEndLbl">Do they clear the last 8–12&quot; of the plenum?</span>
+        <button class="chip sm" data-v="ok">Yes</button>
+        <button class="chip sm" data-v="bad">No — to the end</button>
+        <button class="chip sm" data-v="na">Not checked</button>
+      </div>
+    </div>
+    </div></div></details>
+
+    <details class="dpane" id="dpReg"><summary>Registers</summary>
+    <div class="sect sup"><div class="sh"><span class="sn"></span><span class="st">Supply registers today</span><span class="sd"></span></div><div class="sb">
+      <div class="chips" id="regOld">
+        <button class="chip sm" data-v="stamped">Stamped face</button>
+        <button class="chip sm" data-v="bar">Bar type</button>
+      </div>
+      <div class="row" style="margin-top:8px">
+        <div class="field" style="flex:2"><label>Register faces <small>one per run</small></label><input id="ex_reg" placeholder="4x10, 4x12, 6@10x10"></div>
+      </div>
+    </div></div></details>
+
+    <details class="dpane" id="advRuns"><summary>Runs &amp; filter</summary><div class="dpb">
+    <div class="row optrow">
+      <div class="field opt"><label>Return run <small>ft</small></label><input type="number" inputmode="decimal" id="dr_ret" placeholder="20"></div>
+      <div class="field opt"><label>Supply trunk <small>ft</small></label><input type="number" inputmode="decimal" id="dr_sup" placeholder="30"></div>
+      <div class="field opt"><label>Branch run <small>ft</small></label><input type="number" inputmode="decimal" id="dr_br" placeholder="18"></div>
+      <div class="field opt"><label>Supply runs <small>count</small></label><input type="number" inputmode="numeric" id="dr_n" placeholder="auto"></div>
+    </div>
+    <div class="row optrow" style="margin-top:6px;gap:14px;flex-wrap:wrap">
+      <div class="field opt"><label>Return duct</label><div class="chips"><button class="chip sm" data-mat="dr_retm:flex">Flex</button><button class="chip sm" data-mat="dr_retm:metal">Metal</button></div></div>
+      <div class="field opt"><label>Supply trunk</label><div class="chips"><button class="chip sm" data-mat="dr_supm:flex">Flex</button><button class="chip sm" data-mat="dr_supm:metal">Metal</button></div></div>
+      <div class="field opt"><label>Branches</label><div class="chips"><button class="chip sm" data-mat="dr_brm:flex">Flex</button><button class="chip sm" data-mat="dr_brm:metal">Metal</button></div></div>
+      <div class="field opt"><label>Filter going in</label><div class="chips"><button class="chip sm" data-mat="dr_filt:p1">1&quot; pleated</button><button class="chip sm" data-mat="dr_filt:p1_11">1&quot; MERV 11</button><button class="chip sm" data-mat="dr_filt:m4">4&quot; media</button></div></div>
+    </div>
+    </div></details>
+
+    <div id="oldSplit">
+    <details class="dpane" id="oldSplitFold"><summary><span id="oldSplitTtl">Furnace &amp; coil</span> <span id="oldSplitSum"></span></summary>
+    <div class="sect furn"><div class="sh"><span class="sn"></span><span class="st" id="oldFurnLbl">Furnace</span><span class="sd"></span></div><div class="sb">
+    <div class="row">
+      <div class="field" style="flex:2"><label>Model #</label><input class="mono" id="oldFurnModel" placeholder="GMS80804BN"></div>
       <button class="btn sm ghost" id="lookFurn">Look up</button>
     </div>
     <div class="decoded hidden" id="decFurn"></div>
@@ -995,9 +1237,9 @@ body.pack .tp .noapp{display:none}
     </div>
     </div></div>
 
-    <div id="oldCoilBlock" class="sect coil"><div class="sh"><span class="sn"></span><span class="st">Coil</span><span class="sd">Model # or tape it</span></div><div class="sb">
+    <div id="oldCoilBlock" class="sect coil"><div class="sh"><span class="sn"></span><span class="st">Coil</span><span class="sd"></span></div><div class="sb">
       <div class="row">
-        <div class="field" style="flex:2"><label>Model # (optional)</label><input class="mono" id="oldCoilModel" placeholder="e.g. CAPF3636B6 or CX35-36B"></div>
+        <div class="field" style="flex:2"><label>Model #</label><input class="mono" id="oldCoilModel" placeholder="CAPF3636B6"></div>
         <button class="btn sm ghost" id="lookCoil">Look up</button>
       </div>
       <div class="decoded hidden" id="decCoil"></div>
@@ -1007,121 +1249,32 @@ body.pack .tp .noapp{display:none}
         <div class="field"><label id="oC_dl">Depth</label><input type="number" inputmode="decimal" id="oC_d" placeholder="21"></div>
       </div>
     </div></div>
-    <div class="msg" id="oldEnv"></div>
-    </div></details>
-  </div>
+    <div class="msg" id="oldEnv" style="display:none"></div>
+    </details>
+    </div>
 
-  <div class="card hidden" id="oldPkg">
-    <h2>Existing package unit</h2>
-    <details class="fold" id="oldPkgFold"><summary><span class="car">&#9656;</span><span>The unit on the roof</span><span class="fs" id="oldPkgSum">Assumed — optional</span><span class="fe">Tap to enter</span></summary><div class="fb">
-    <div class="sect furn"><div class="sh"><span class="sn"></span><span class="st">The unit on the roof</span><span class="sd">Model # or tape it</span></div><div class="sb">
+    <div class="hidden" id="oldPkg">
+    <details class="dpane" id="oldPkgFold"><summary><span>The unit on the roof</span> <span id="oldPkgSum"></span></summary>
+    <div class="sect furn"><div class="sh"><span class="sn"></span><span class="st">The unit on the roof</span><span class="sd"></span></div><div class="sb">
     <div class="row">
-      <div class="field" style="flex:2"><label>Model # (optional)</label><input class="mono" id="oldPkgModel" placeholder="e.g. GPG1336080M41 or LRP14GE36-072P"></div>
+      <div class="field" style="flex:2"><label>Model #</label><input class="mono" id="oldPkgModel" placeholder="GPG1336080M41"></div>
       <button class="btn sm ghost" id="lookPkg">Look up</button>
     </div>
     <div class="decoded hidden" id="decPkg"></div>
     <div class="row" style="margin-top:8px">
-      <div class="field"><label>Side to side (along the duct face)</label><input type="number" inputmode="decimal" id="oP_l" placeholder="51"></div>
+      <div class="field"><label>Side to side</label><input type="number" inputmode="decimal" id="oP_l" placeholder="51"></div>
       <div class="field"><label>Front to back</label><input type="number" inputmode="decimal" id="oP_w" placeholder="47"></div>
       <div class="field"><label>Height</label><input type="number" inputmode="decimal" id="oP_h" placeholder="34"></div>
     </div>
     <div class="row optrow" style="margin-top:8px">
-      <div class="field opt"><label>Old unit brand / chassis <small>auto from lookup</small></label>
+      <div class="field opt"><label>Old unit brand / chassis</label>
         <select id="oP_chassis"><option value="">Unknown — compare footprint only</option></select></div>
     </div>
     </div></div>
-    </div></details>
-  </div>
-
-  <div class="card" id="airflowCard">
-    <h2>Existing airflow</h2>
-    <div class="reqkey"><i></i> Tinted = needed for the design · plain = optional</div>
-
-    <div class="sect stat"><div class="sh"><span class="sn"></span><span class="st">Static pressure</span><span class="sd">Measured on the old unit — used only for the "new AC on today's ducts" picture</span></div><div class="sb">
-    <div class="row">
-      <div class="field" style="flex:1.2"><label>Static (TESP) <small>in. w.c.</small></label><input type="number" inputmode="decimal" step="0.05" id="ex_sp" placeholder="0.50"></div>
-      <div class="field opt"><label>Old blower motor <small>optional</small></label><select id="ex_motor"><option value="auto">Auto (from model / age)</option><option value="psc">PSC (most pre-2015)</option><option value="ct_ecm">Constant-torque ECM (X13 type)</option><option value="vs_ecm">Variable-speed ECM</option></select></div>
-      <div class="field opt"><label>Existing tonnage <small>optional</small></label><select id="ex_tons"><option value="">Auto (from model, else same as new)</option><option value="1.5">1.5 ton</option><option value="2">2 ton</option><option value="2.5">2.5 ton</option><option value="3">3 ton</option><option value="3.5">3.5 ton</option><option value="4">4 ton</option><option value="5">5 ton</option></select></div>
-    </div>
-    <details class="adv" id="advStatic"><summary>Filter &amp; coil drop</summary>
-    <div class="row optrow" style="margin-top:8px">
-      <div class="field opt"><label>Filter drop <small>in. w.c. · optional</small></label><input type="number" inputmode="decimal" step="0.01" id="ex_fdp" placeholder="0.10"></div>
-      <div class="field opt"><label>Coil drop <small>in. w.c. · optional</small></label><input type="number" inputmode="decimal" step="0.01" id="ex_cdp" placeholder="0.25"></div>
-    </div>
     </details>
-    </div></div>
+    </div>
 
-    <div class="sect ret"><div class="sh"><span class="sn"></span><span class="st">Return plenum or main duct</span><span class="sd">The big duct bringing air back to the unit</span></div><div class="sb">
-    <div class="row">
-      <div class="field req"><label>Round return plenum / main — size</label><select id="ex_ret_d"><option value="">Not checked</option><option value="10">10"</option><option value="12">12"</option><option value="14">14"</option><option value="16">16"</option><option value="18">18"</option><option value="20">20"</option><option value="22">22"</option><option value="24">24"</option></select></div>
-      <div class="field"><label>How many returns</label><input type="number" inputmode="numeric" id="ex_ret_n" placeholder="1" min="1"></div>
-      <div class="field"><label>Rectangular instead? <small>W × H</small></label><input id="ex_ret_rect" placeholder="e.g. 20x25"></div>
-      <div class="field opt" id="exRplenF"><label>Return plenum before the furnace <small>in · optional</small></label><input type="number" inputmode="decimal" id="ex_rplen" placeholder="24"></div>
-    </div>
-    </div></div>
-
-    <div class="sect gr"><div class="sh"><span class="sn"></span><span class="st">Return grille(s) in the ceiling</span><span class="sd">The filter grille the homeowner sees</span></div><div class="sb">
-    <div class="row">
-      <div class="field"><label>How many grilles</label><input type="number" inputmode="numeric" id="ex_gr_n" placeholder="1" min="1"></div>
-      <div class="field req"><label id="ex_grl">Grille size <small>W × H</small></label><input id="ex_gr" placeholder="e.g. 20x25"></div>
-      <div class="field hidden" id="exGr2F"><label>Second grille size <small>W × H · if it is a different size</small></label><input id="ex_gr2" placeholder="e.g. 20x20"></div>
-      <div class="field"><label>&nbsp;</label><div class="chips"><button class="chip sm" data-gr="14x14">14×14</button><button class="chip sm" data-gr="16x16">16×16</button><button class="chip sm" data-gr="20x20">20×20</button><button class="chip sm" data-gr="20x25">20×25</button><button class="chip sm" data-gr="20x30">20×30</button><button class="chip sm" data-gr="20x40">20×40</button></div></div>
-    </div>
-    </div></div>
-
-    <div class="sect sup"><div class="sh"><span class="sn"></span><span class="st" id="supLbl">Supply plenum / supply main duct</span><span class="sd">Where the air leaves the unit</span></div><div class="sb">
-    <div class="row">
-      <div class="field req"><label>Round supply plenum / main — size</label><select id="ex_sup_d"><option value="">Not checked</option><option value="12">12"</option><option value="14">14"</option><option value="16">16"</option><option value="18">18"</option><option value="20">20"</option><option value="22">22"</option><option value="24">24"</option></select></div>
-      <div class="field"><label>Rectangular instead? <small>W × H</small></label><input id="ex_sup_rect" placeholder="e.g. 18x12"></div>
-      <div class="field"><label>How many supply trunks</label><input type="number" inputmode="numeric" id="ex_sup_n" placeholder="1" min="1"></div>
-    </div>
-    <div id="supCfgBlock">
-      <div id="supLayoutBlock">
-      <h4 class="sub">How is the supply built today?</h4>
-      <div class="seg" id="supCfgOld">
-        <button data-v="cased"><b>Cased coil + supply plenum</b><span>Coil in its own cabinet, a plenum after it, ducts off the plenum</span></button>
-        <button data-v="plenum_coil"><b>Plenum coil</b><span>One larger box with the coil inside — ducts attach straight to it</span></button>
-        <button data-v="trunk"><b>Extended supply plenum</b><span>Long square trunk with smaller rounds coming off it</span></button>
-      </div>
-      <div class="row" style="margin-top:8px">
-        <div class="field" id="exTrunkF"><label>Trunk length today <small>ft, up to 30</small></label><input type="number" inputmode="decimal" id="ex_trunk_ft" placeholder="12"></div>
-        <div class="field" id="exSplenF"><label>Supply plenum length today <small>in</small></label><input type="number" inputmode="decimal" id="ex_splen" placeholder="24"></div>
-      </div>
-      </div>
-      <h4 class="sub" id="tkOldTitle">Take-offs coming off the plenum</h4>
-      <div class="row">
-        <div class="field req" style="flex:2"><label>Take-off sizes <small>4@6 = four 6" · 12x8 = rectangular</small></label><input id="ex_tk" placeholder="6,6,8,8,10 or 4@6, 12x8"></div>
-        <div class="field" style="flex:2"><label>Register faces <small>one per run</small></label><input id="ex_reg" placeholder="4x10, 4x12, 6@10x10"></div>
-      </div>
-      <div class="chips" id="tkEndOld" style="margin-top:8px">
-        <span class="note" style="align-self:center" id="tkEndLbl">Do they clear the last 8–12&quot; of the plenum?</span>
-        <button class="chip sm" data-v="ok">Yes — clear of the end</button>
-        <button class="chip sm" data-v="bad">No — they run to the end</button>
-        <button class="chip sm" data-v="na">Not checked</button>
-      </div>
-      <div class="chips" id="regOld" style="margin-top:8px">
-        <span class="note" style="align-self:center">Supply register faces today</span>
-        <button class="chip sm" data-v="stamped">Stamped face</button>
-        <button class="chip sm" data-v="bar">Bar type</button>
-      </div>
-    </div>
-    </div></div>
-
-    <details class="adv" id="advRuns" style="margin-top:10px"><summary>Duct runs &amp; filter</summary>
-    <div class="row optrow" style="margin-top:8px">
-      <div class="field opt"><label>Return run <small>ft · grille to unit</small></label><input type="number" inputmode="decimal" id="dr_ret" placeholder="20"></div>
-      <div class="field opt"><label>Supply trunk <small>ft · unit to last take-off</small></label><input type="number" inputmode="decimal" id="dr_sup" placeholder="30"></div>
-      <div class="field opt"><label>Typical branch run <small>ft · take-off to register</small></label><input type="number" inputmode="decimal" id="dr_br" placeholder="18"></div>
-      <div class="field opt"><label>Supply runs <small>count · rooms served</small></label><input type="number" inputmode="numeric" id="dr_n" placeholder="auto"></div>
-    </div>
-    <div class="row optrow" style="margin-top:6px;gap:14px;flex-wrap:wrap">
-      <div class="field opt"><label>Return duct</label><div class="chips"><button class="chip sm" data-mat="dr_retm:flex">Flex</button><button class="chip sm" data-mat="dr_retm:metal">Metal</button></div></div>
-      <div class="field opt"><label>Supply trunk</label><div class="chips"><button class="chip sm" data-mat="dr_supm:flex">Flex</button><button class="chip sm" data-mat="dr_supm:metal">Metal</button></div></div>
-      <div class="field opt"><label>Branches</label><div class="chips"><button class="chip sm" data-mat="dr_brm:flex">Flex</button><button class="chip sm" data-mat="dr_brm:metal">Metal</button></div></div>
-      <div class="field opt"><label>Filter going in</label><div class="chips"><button class="chip sm" data-mat="dr_filt:p1">1&quot; pleated</button><button class="chip sm" data-mat="dr_filt:p1_11">1&quot; MERV 11</button><button class="chip sm" data-mat="dr_filt:m4">4&quot; media</button></div></div>
-    </div>
-    </details>
-    <div class="msg" id="airflowRead" style="margin-top:10px"></div>
+    <div class="mth"><div class="msg" id="airflowRead"></div></div>
   </div>
 
   </section>
@@ -1976,7 +2129,7 @@ function rpGoettl(d,R,sh){ const g=d&&d.goettl; if(!g||typeof g!=='object') retu
     if(+r.ceilingHeightFt>0) o.h=+r.ceilingHeightFt; if(+r.floorAreaFt2>0) o.sf=+r.floorAreaFt2; o.ns=!!r.notServed; if(r.servedFraction!=null) o.served=+r.servedFraction; o.ceilAbove=r.ceilingAbove||null;
     o.ext=(Array.isArray(r.exteriorWalls)?r.exteriorWalls:[]).map(w=>({facing:w.facing||'',az:isFinite(+w.facingAzimuthDeg)?+w.facingAzimuthDeg:null,win:+w.windowAreaFt2||0,w:+w.widthFt||0})) });
   const L=g.loads||{}, sum=g.summary||{};
-  (Array.isArray(L.rooms)?L.rooms:[]).forEach(x=>{ if(!x||!x.roomId) return; const o=mk(x.roomId,x.room); o.mj={cfm:+x.cfm||0,cfmSf:+x.cfmBySqFt||0,cool:+x.coolingSensibleBtuh||0,heat:+x.heatingBtuh||0,wall:x.wallType||'',win:x.windowType||''} });
+  (Array.isArray(L.rooms)?L.rooms:[]).forEach(x=>{ if(!x||!x.roomId) return; const o=mk(x.roomId,x.room); o.mj={cfm:+x.cfm||0,cfmSf:+x.cfmBySqFt||0,cool:+x.coolingSensibleBtuh||0,heat:+x.heatingBtuh||0,wall:x.wallType||'',win:x.windowType||'',glass:x.windowType||''} });
   (Array.isArray(sum.rooms)?sum.rooms:[]).forEach(x=>{ if(!x||!x.roomId) return; const o=mk(x.roomId,x.name); if(!o.mj&&x.cfm!=null) o.mj={cfm:+x.cfm||0,cfmSf:+x.cfmBySqFt||0,cool:+x.coolingSensibleBtuh||0,heat:+x.heatingBtuh||0,wall:'',win:''};
     if(o.h==null&&+x.ceilingHeightFt>0) o.h=+x.ceilingHeightFt; if(o.sf==null&&+x.floorAreaFt2>0) o.sf=+x.floorAreaFt2; if(x.notServed) o.ns=true });
   const regs=(Array.isArray(g.registers)?g.registers:[]).map(q=>{ if(!q||!Array.isArray(q.position)||q.position.length<3) return null; const p=toFt([+q.position[0],+q.position[2]]); const f=q.face||{}; const type=/return/i.test(q.type||'')?'return':'supply';
@@ -1991,7 +2144,7 @@ function rpGoettl(d,R,sh){ const g=d&&d.goettl; if(!g||typeof g!=='object') retu
     mj:hasMj?{cool:+L.coolingTotalBtuh||+sum.coolingTotalBtuh||0,sens:+L.coolingSensibleBtuh||0,lat:+L.latentBtuh||0,heat:+L.heatingBtuh||+sum.heatingBtuh||0,mjT:+L.manualJTons||+sum.envelopeTons||0,sfT:+L.sqFtRuleTons||+sum.sqFtRuleTons||0,
       recT:+L.recommendedTons||+sum.recommendedTons||0,cfm:+L.systemCFM||+sum.systemCFM||0,roomCfm:+sum.totalRoomCFM||0,basis:L.sizingBasis||sum.sizingBasis||'',note:L.sizingNote||sum.sizingNote||'',why:sum.sqFtRuleWhy||'',build:L.buildType||sum.buildType||'',
       method:L.method||'',served:+sum.servedAreaFt2||+NS.servedAreaFt2||0,notServed:+NS.notServedAreaFt2||0}:null,
-    home:{loc:H.location||'',zip:H.zip||'',year:+H.yearBuilt>0?+H.yearBuilt:null,age:H.ageBand||'',attic:ins?{where:ins.location||'',floorType:ins.floorType||'',mat:ins.blownMaterial||ins.batts||ins.roofDeck||'',depth:+ins.depthIn>0?+ins.depthIn:null}:null},
+    home:{loc:H.location||'',zip:H.zip||'',year:+H.yearBuilt>0?+H.yearBuilt:null,age:H.ageBand||'',build:L.buildType||sum.buildType||'',attic:ins?{where:ins.location||'',floorType:ins.floorType||'',mat:ins.blownMaterial||ins.batts||ins.roofDeck||'',depth:+ins.depthIn>0?+ins.depthIn:null}:null},
     nReg:regs.length,nSup:regs.filter(q=>q.type==='supply').length,nRet:regs.filter(q=>q.type==='return').length,nRoom:Object.keys(rooms).length,north:north};
   return {north,rooms,regs,summary} }
 // the one entry point the app calls: JSON or DXF by what the file IS, not what it is called
@@ -2148,7 +2301,8 @@ function applySys(){
   $('#sp1l').textContent=h?'Length end-to-end available':'Height available (floor to roof/ceiling)';
   $('#sp2l').textContent=h?'Height, catwalk to roof':'Width available';
   $('#sp3l').textContent=h?'Width available':'Depth available';
-  $('#supLbl').textContent=isPkg()?'Supply plenum / supply main duct':'Supply plenum / supply main duct & take-offs';
+  $('#supLbl').textContent='Supply plenum / supply main duct';   /* v2.66: the take-offs are their own tile */
+  try{ dtSync() }catch(e){}
   syncSupCfg();
   $('#flowNote').textContent=S.sys==='split_gas'?(S.orient==='down'?'Downflow furnace models shown.':'Upflow / horizontal furnace models shown.'):'';
   refreshOld(); buildTons();
@@ -2204,7 +2358,7 @@ function syncSupCfg(){ const split=!isPkg();
     : `Cased coil, then a <b>${fmt(splenNew())}"</b> plenum on the discharge. The take-offs go toward the beginning of it — the last ${TKTAIL}" of the back end stays clear.`; }
 $$('[data-splen]').forEach(b=>b.onclick=()=>{ set('new_splen',b.dataset.splen); syncSupCfg(); if(cur>3) renderCompare() });
 $$('#tkEndOld .chip').forEach(b=>{ b.onclick=()=>{ S.tkEndOld=b.dataset.v; save(); syncSupCfg(); if(cur>3) renderCompare() } });
-$$('#regOld .chip').forEach(b=>{ b.onclick=()=>{ S.regOld=b.dataset.v; save(); syncSupCfg(); if(cur>3) renderCompare() } }); // v2.44 register faces today
+$$('#regOld .chip').forEach(b=>{ b.onclick=()=>{ S.regOld=b.dataset.v; save(); syncSupCfg(); try{ dtSync() }catch(e){} if(cur>3) renderCompare() } }); // v2.44 register faces today
 $$('#supCfgOld button').forEach(b=>b.onclick=()=>{ if(!supAllowed(b.dataset.v)) return; S.supOld=b.dataset.v; save(); syncSupCfg(); refreshOld(); if(cur>3) renderCompare() });
 $$('#supCfgNew button').forEach(b=>b.onclick=()=>{ if(!supAllowed(b.dataset.v)) return; S.supNew=b.dataset.v; save(); syncSupCfg(); renderCompare() });
 seg('sysType','sys',applySys); seg('orient','orient',applySys); seg('setup','setup',()=>{refreshOld();applySys()});
@@ -2372,7 +2526,7 @@ function foldSums(){
   const pk=$('#oldPkgSum'); if(pk){ const o=oldPkg(); const u=asmOldUnit();
     pk.textContent= (o.l!=null&&o.w!=null) ? `${$('#oldPkgModel').value?$('#oldPkgModel').value+' · ':''}${fmt(o.l)}×${fmt(o.w)}×${fmt(o.h)}${o.c?' · '+o.c.label:''}`
       : `Assumed ${fmt(u.l)}×${fmt(u.w)}×${fmt(u.h)} — the unit being sold; enter the old model # to get its real footprint and openings` }
-  const mf=$('#metalFoldSum'); if(mf){ if(!isPkg()||S.setup==='separate'){ mf.textContent=''; return }
+  const mf=$('#metalFoldSum'); if(mf){ if(!isPkg()||S.setup==='separate'){ mf.textContent=''; try{ dtSync() }catch(e){} return }
     const curb=isCurbSetup(), pitched=isPitched(); const st=standDims(); const rp=roofPitch(); const eo=existingOpenings0(); const f=elbowFace();
     const parts=[]; parts.push(`${curb?'curb':'stand'} ${st.l!=null&&st.w!=null?fmt(st.l)+'×'+fmt(st.w):'?'}${isAuto('st_l')||isAuto('st_w')?' (assumed)':''}`);
     if(!curb) parts.push(`${(S.elbowMode||'one')==='one'?'elbow':'openings'} ${f.A!=null&&f.B!=null?fmt(f.A)+'×'+fmt(f.B):'?'}${eo.src==='tape'?'':' ('+(eo.src==='spec'?"old unit's spec":'average')+')'}`);
@@ -2380,7 +2534,29 @@ function foldSums(){
     if(pitched) parts.push(`roof ${Math.round(rp.p*10)/10}/12${rp.src==='assumed'?' (assumed)':''}`);
     const ttl=$('#metalFoldTtl'); if(ttl) ttl.textContent=curb?'Curb · openings':'Stand · elbow · jack';
     mf.textContent=parts.join(' · ') }
+  try{ dtSync() }catch(e){}
 }
+// v2.66 — THE UNIT & DUCTS TILES: what each piece is (or that it is assumed), coloured by the same tests the airflow read uses
+function dtSync(){ const G=$('#dtGrid'); if(!G) return; const pk=isPkg(), A=window.AFR||{};
+  const set=(sel,txt,st)=>{ const b=G.querySelector(sel); if(!b) return; const v=b.querySelector('.xv'); if(v) v.textContent=txt; ['ok','warn','bad','asm','need','na'].forEach(c=>b.classList.toggle('is-'+c,st===c)) };
+  const val=id=>String(($('#'+id)||{}).value||'').trim(); const X=s=>s.replace(/\s*[x*]\s*/i,'×');
+  $('#dtEq').classList.toggle('hidden',!!pk); $('#dtPk').classList.toggle('hidden',!pk);
+  { const L=$('#dtEqL'); if(L) L.textContent=S.sys==='split_hp'?'Air handler':'Furnace & coil' }
+  { const m=val('oldFurnModel')||val('oldCoilModel'); const p=oldParts(), F=p&&p.F; const has=!!(F&&(F.h||F.w||F.d)); set('#dtEq',m?m.toUpperCase():has?(F.w?fmt(F.w)+'″ wide':'entered'):'assumed',m||has?'ok':'asm') }
+  { const m=val('oldPkgModel'), o=oldPkg(); set('#dtPk',m?m.toUpperCase():(o.l!=null&&o.w!=null?fmt(o.l)+'×'+fmt(o.w):'assumed'),m||o.l!=null?'ok':'asm') }
+  { const sp=num('ex_sp'); set('[data-pane="dpStat"]',sp!=null?sp.toFixed(2)+'″':'—',sp==null?'na':sp<=0.5?'ok':sp<=(S.thr.sp||0.7)?'warn':'bad') }
+  { const r=val('ex_ret_rect'), d=val('ex_ret_d'), n=parseInt(val('ex_ret_n'))||1, t0=r?X(r):d?d+'″':''; set('[data-pane="dpRet"]',t0?(n>1?n+' × ':'')+t0:'—',!t0?'need':A.ret?'warn':(isAuto('ex_ret_d')&&!r?'asm':'ok')) }
+  { const g=val('ex_gr'), n=parseInt(val('ex_gr_n'))||1, g2=val('ex_gr2'); const scan=!!(S.plan&&S.plan.rets&&S.plan.rets.length); set('[data-pane="dpGr"]',g?(n>1?n+' × ':'')+X(g)+(n>1&&g2&&g2!==g?' +':''):'—',!g?'need':A.gr?'warn':(isAuto('ex_gr')&&!scan?'asm':'ok')) }
+  { const r=val('ex_sup_rect'), d=val('ex_sup_d'), n=parseInt(val('ex_sup_n'))||1, t0=r?X(r):d?d+'″':''; set('[data-pane="dpSup"]',t0?(n>1?n+' × ':'')+t0:'—',!t0?'need':A.sup?'warn':(isAuto('ex_sup_d')&&!r?'asm':'ok')) }
+  { let n=0; try{ const s=takeoffSpec(val('ex_tk')); n=s?s.items.length:0 }catch(e){} set('[data-pane="dpTk"]',n?n+' run'+(n>1?'s':''):'—',n?'ok':'need') }
+  { set('[data-pane="dpReg"]',regOld()==='bar'?'Bar type':'Stamped',(val('ex_reg')||S.regOld)?'ok':'asm') }
+  { const v=['dr_ret','dr_sup','dr_br'].map(num); const asm=['dr_ret','dr_sup','dr_br'].some(isAuto); set('[data-pane="advRuns"]',v.every(x=>x!=null)?v.map(fmt).join(' · ')+' ft':'—',v.every(x=>x==null)?'na':asm?'asm':'ok') }
+  $$('#dtGrid [data-pane]').forEach(b=>{ const p=$('#'+b.dataset.pane), on=!!(p&&p.open); b.classList.toggle('on',on); b.setAttribute('aria-expanded',on?'true':'false') }) }
+function dtWire(){ const G=$('#dtGrid'); if(!G||G.dataset.wired) return; G.dataset.wired='1';
+  G.addEventListener('click',e=>{ const b=e.target.closest('[data-pane]'); if(!b) return; const p=$('#'+b.dataset.pane); if(!p) return; const open=!p.open;
+    $$('#airflowCard details.dpane').forEach(x=>{ if(x!==p) x.open=false }); p.open=open; dtSync();
+    if(open) setTimeout(()=>{ try{ const r=p.getBoundingClientRect(); if(r.bottom>innerHeight-70) p.scrollIntoView({behavior:'smooth',block:'nearest'}) }catch(_){} },40) });
+  $$('#airflowCard details.dpane').forEach(x=>x.addEventListener('toggle',()=>{ try{ dtSync() }catch(_){} })); dtSync() }
 // v2.24: the badge on the box itself — v2.23 documented it but never rendered it. One <span class="asm"> per assumed field, in its label.
 function asmBadges(){ Object.keys(ASM_LABEL).forEach(id=>{ const el=$('#'+id); if(!el) return; const f=el.closest('.field'); const lab=f?f.querySelector('label'):null; if(!lab) return;
   let b=lab.querySelector('.asm'); const on=isAuto(id)&&String(el.value||'').trim()!=='';
@@ -2394,7 +2570,7 @@ function refreshOld(){
   airflowRead(); insulRead(); asmBars(); syncGrille();
   if(isPkg()){ standDiag(); return }
   const e=oldEnv(); const [l1,l2,l3]=labels();
-  $('#oldEnv').innerHTML=e&&(e.a||e.b||e.c)?`Existing assembly ≈ <b>${fmt(e.a)}" ${l1}</b> · <b>${fmt(e.b)}" ${l2}</b> · <b>${fmt(e.c)}" ${l3}</b>`:'Enter what you can — even just the cabinet size helps.';
+  { const has=!!(e&&(e.a||e.b||e.c)); const oe=$('#oldEnv'); oe.innerHTML=has?`Existing assembly ≈ <b>${fmt(e.a)}" ${l1}</b> · <b>${fmt(e.b)}" ${l2}</b> · <b>${fmt(e.c)}" ${l3}</b>`:''; oe.style.display=has?'':'none' }   /* v2.66: no "enter what you can" line */
 }
 // ============================================================ airflow: static pressure + return sizing (v2.2)
 // Round return Ø → tons it will carry (Goettl rule of thumb: 14"→2, 16"→3 (2.5 ok), 18"→4 (3.5 ok), 20"→5); in-between sizes interpolate on area.
@@ -2444,6 +2620,7 @@ function airflowRead(){ const el=$('#airflowRead'); if(!el) return; const a=airf
   if(a.retDesc) parts.push(`Return ${a.retDesc} carries up to <b>${tons1(a.retCap)} ton</b> at the ACCA return-main design velocity (${accaTyp('ret')} fpm; ${accaMax('ret')} fpm absolute max)${a.tons&&a.retCap<a.tons-0.01?` — already undersized for the existing ${tons1(a.tons)}-ton system`:''}.`);
   const gr=fixSpec(grilleBase()); let grShort=false; if(gr){ const t=gr.area/144*accaTyp('grille')/400; grShort=!!(a.tons&&t<a.tons-0.01); parts.push(`Return grille ${gr.size} (${sqinTxt(gr.area)}) carries up to <b>${tons1(t)} ton</b> at the ACCA filter-face limit (${accaTyp('grille')} fpm gross = ${(accaTyp('grille')/144).toFixed(2)} CFM/sq in)${grShort?' — undersized today':''}.`) }
   const sd=ductSpec(parseFloat($('#ex_sup_d').value)||null,$('#ex_sup_rect').value,$('#ex_sup_n').value); let supShort=false; if(sd){ const t=sd.area/144*accaTyp('sup')/400; supShort=!!(a.tons&&t<a.tons-0.01); parts.push(`Supply ${sd.size} (${sqinTxt(sd.area)}) carries up to <b>${tons1(t)} ton</b> at the ACCA supply-trunk design velocity (${accaTyp('sup')} fpm; ${accaMax('sup')} fpm max)${supShort?' — undersized today':''}.`) }
+  window.AFR={sp:a.spCls, ret:!!(a.tons&&a.retCap!=null&&a.retCap<a.tons-0.01), gr:grShort, sup:supShort};   /* v2.66: the duct tiles go amber off these */
   el.className='msg '+(a.spCls==='bad'?'bad':((a.tons&&a.retCap!=null&&a.retCap<a.tons-0.01)||grShort||supShort?'warn':'')); el.innerHTML=parts.join(' ');
 }
 // verdict for the tonnage being sold: return capacity + static remediation. Same for every option at a tonnage, so it renders once as a banner and as a small pill on each card.
@@ -2950,12 +3127,15 @@ function scoreCls(t){ return t>=80?'ok':(t>=60?'warn':'bad') }
 // a stated design point, and what is quoted is the CFM (per ton) off the manufacturer's table at the limit.
 function staticMeasTxt(M){ return (M&&M.sp!=null)?M.sp.toFixed(2)+'"':'—' } // the reading taken on the OLD system — a fact about today's ducts, shown on Today only
 function cptCls(pt){ return pt>=cptFloor()?'ok':(pt>=cptFloor()*0.9?'warn':'bad') } // CFM per ton against the floor
-function insulRead(){ const el=$('#insulRead'); if(!el) return; const i=insulState(); if(!i.known){ el.className='msg'; el.innerHTML='Enter the depth (or R-value) to grade the attic. Las Vegas minimum R-38 · 2021 IECC new-construction R-49.'; return }
+function insulRead(){ const el=$('#insulRead'); if(!el) return; const i=insulState(); try{ atticSrcSync() }catch(e){}
+  if(!i.known){ el.className='rbadge none'; el.innerHTML='R-?<span class="mth">Enter the depth (or R-value) to grade the attic. Las Vegas minimum R-38 · 2021 IECC new-construction R-49.</span>'; return }
   const parts=[`<b>≈ R-${fmt(i.R)}</b>${i.src&&i.src!=='entered'?` from ${i.src}`:''}.`];
   if(i.R<R_MIN){ const cut=Math.round((1-Math.max(i.R,1)/R_MIN)*100); parts.push(`<b>Under the R-38 minimum</b> — topping up to R-38 cuts heat gain through the ceiling by about <b>${cut}%</b> (ceiling conduction scales with 1/R); R-49 (today's code) cuts it ${Math.round((1-Math.max(i.R,1)/R_CODE)*100)}%. Summer attics run 130–150°F, so the ceiling is one of the biggest loads on the system — ENERGY STAR puts sealing + insulating at ~15% off heating and cooling costs.`) }
   else if(i.R<R_CODE) parts.push(`Meets the R-38 minimum; R-49 is today's new-construction code (2021 IECC, Clark County) — optional top-up.`); else parts.push('At or above today\'s R-49 code.');
-  el.className='msg '+(i.R<19?'bad':(i.R<R_MIN?'warn':'')); el.innerHTML=parts.join(' ');
+  el.className='rbadge '+(i.R<19?'bad':(i.R<R_MIN?'warn':'ok')); el.innerHTML=`R-${fmt(i.R)}<span class="mth">${parts.join(' ')}</span>`;   /* v2.66: red under R-19, amber under R-38, green at R-38+ */
 }
+// v2.66 — "from scan" beside Attic insulation while the boxes hold what the room scan said
+function atticSrcSync(){ const at=S.plan&&S.plan.g&&S.plan.g.home&&S.plan.g.home.attic; const s=$('#atticSrc'); if(s) s.textContent=(at&&(isAuto('in_depth')||isAuto('in_type')||isAuto('in_r')))?'from scan':'' }
 
 // ============================================================ lineup → options
 // v2.42 — THE TONNAGE FOLLOWS THE LOAD (Stephen 2026-09-20). Step 1 already works the size out: the measured rooms when Room
@@ -6124,7 +6304,7 @@ function summaryText(o){
       { const ai=insulState(); if(ai.known) L.push(`  Attic: R-${fmt(ai.R)}${ai.src&&ai.src!=='entered'?' ('+ai.src+')':''}`); }
       // v2.35 — the size question always goes out with both answers on it
       { const c=rbrSizeCall(); if(c){
-        L.push(`  SIZE CALL: the ${c.why==='rooms'?'measured rooms':'pre-1980 build'} put this at ${c.askT} ton against the ${c.rec} ton the square footage gives.`);
+        L.push(`  SIZE CALL: the ${c.why==='scan'?'room scan Manual J':c.why==='rooms'?'measured rooms':'pre-1980 build'} put this at ${c.askT} ton against the ${c.rec} ton the square footage gives.`);   /* v2.66: a scan-driven call names the scan */
         if(!c.known) L.push(`    Two ways to land it — the ${c.askT} ton, OR the ${c.rec} ton with the attic at R-38 or better. Attic depth was not taken, so this is undecided.`);
         else if(c.already) L.push(`    Attic is already R-${fmt(c.R)} (at or over R-38), so there is no load to take out up there — THE ${c.askT} TON IS THE ANSWER.`);
         else { L.push(`    1) Put in the ${c.askT} ton.`);
@@ -8460,7 +8640,7 @@ function rbrRender(){
   const gt=$('#rbrGridTitle'); if(gt) gt.textContent=S.plan?'Drag the UNIT tile to where the air drops in':'Arrange the rooms the way the house actually sits';
   ['rbrArr','fcAddUnc'].forEach(id=>{ const el=$('#'+id); if(el) el.classList.toggle('hidden',!!S.plan) });
 }
-function rbrTile(l,v,s,cls){ return `<div class="dim ${cls||''}"><div class="lbl">${l}</div><div class="val">${v}</div><div class="sub">${s}</div></div>` }
+function rbrTile(l,v,s,cls){ return `<div class="dim ${cls||''}"><div class="lbl">${l}</div><div class="val">${v}</div>${s?`<span class="mth">${s}</span>`:''}</div>` }   /* v2.66: the number only — the working stays in the page (.mth), never on show */
 // v2.65 — the switch at the top of the tool and the Rooms tab in the step strip follow S.rbrOpen
 function roomsTabSync(){ const on=!!S.rbrOpen; const st=$('#stepRooms'), nav=$('#steps'); if(st) st.classList.toggle('hidden',!on); if(nav) nav.classList.toggle('rooms',on);
   const b=$('#rbrBtn'); if(b){ b.setAttribute('aria-checked',on?'true':'false'); b.setAttribute('aria-expanded',on?'true':'false') } }
@@ -8473,7 +8653,8 @@ function fcFoldSums(){ const P=S.prop;
     const txt= S.plan ? CFM(S.plan.sf)+' sq ft served — off the scan'+(S.plan.prevSf?' · the record says '+CFM(S.plan.prevSf)+' sq ft':'')
              : sf ? (multi?F.map(f=>CFM(Math.round(parseFloat(f.sf)||0))).join(' + ')+' = ':'')+CFM(sf)+' sq ft'+(multi?' · '+F.length+' storeys':'')+(src?' · '+src:'')
              : 'Needed when there is no scan and no address';
-    s.textContent=txt; if(d) d.classList.toggle('need',!S.plan&&!sf) } }
+    s.textContent=txt; if(d) d.classList.toggle('need',!S.plan&&!sf) }
+  try{ fcSrcSync() }catch(e){} }   /* v2.66: the Address and Sq ft tiles read the same state */
 // v2.35 — when the house asks for more than the square footage alone said, there are always TWO answers:
 // the larger unit, or the Manual J size with the attic brought up so the load comes down to meet it.
 // Ceiling conduction scales with 1/R, and the ceiling is roughly a third of a Las Vegas cooling load
@@ -8566,19 +8747,21 @@ function rbrStretchHtml(x,short){
 function rbrMJ(){
   const el=$('#mjOut'), B=rbrBuild(), sf=rbrHomeSf(), rec=rbrRecTons();
   try{ fcFoldSums() }catch(e){}   /* v2.65 */
-  if(!B||!sf){ el.innerHTML='<div class="msg" style="margin-top:10px">Put in the conditioned square footage (the scan, the address, or typed) and how the house is built — the size lands here.</div>'; return }
+  { const q=$('#buildQ'); if(q) q.classList.toggle('need',!!sf&&!B) }   /* v2.66: a square footage and no build — the build tiles ask for the tap */
+  if(!B||!sf){ el.innerHTML='<div class="sizeband v66 empty">'+rbrTile('Rule of thumb','—','','na')+rbrTile('Manual J','—','','na')+rbrTile('Manual D · CFM needed','—','','na')+
+      `<div class="rechero na"><div class="rk">Recommendation</div><div class="rv">—</div>${sf&&!B?'<div class="rps"><span class="rp warn">Pick the build</span></div>':''}</div></div>`; return }
   const A=rbrAir(), fits=!A.live||A.tons>=(RM.loadT||rec)-0.01;
   const call=rbrSizeCall(), str=rbrStretchInfo(), L=loadTons();
   const G=S.plan&&S.plan.g, mj=G&&G.mj, mjT=mj&&mj.mjT>0?Math.round(mj.mjT*100)/100:null;
   // v2.65 (Stephen 2026-10-01: "Rule of thumb size, Manual J size, Manual D CFM needs and in bold, the recommendation") — three sizes that feed the call, then the call
   const tiles=
     rbrTile('Rule of thumb',rec+' ton',CFM(sf)+' sq ft ÷ '+B.sf+' = '+(sf/B.sf).toFixed(2)+' — '+rbrRoundNote(sf/B.sf)+' · '+rbrEsc(B.n),'')+
-    (mjT ? rbrTile('Manual J',mjT+' ton',CFM(mj.cool)+' BTUh cooling'+(mj.sens?' ('+CFM(mj.sens)+' sensible'+(mj.lat?' + '+CFM(mj.lat)+' latent':'')+')':'')+(mj.heat?' · '+CFM(mj.heat)+' BTUh heating':'')+' · off the room scan','ok')
-         : rbrTile('Manual J','—','the Goettl Room Scan upload carries the room-by-room load calc',''))+
+    (mjT ? rbrTile('Manual J',mjT+' ton',CFM(mj.cool)+' BTUh cooling'+(mj.sens?' ('+CFM(mj.sens)+' sensible'+(mj.lat?' + '+CFM(mj.lat)+' latent':'')+')':'')+(mj.heat?' · '+CFM(mj.heat)+' BTUh heating':'')+' · off the room scan','mj')
+         : rbrTile('Manual J','—','the Goettl Room Scan upload carries the room-by-room load calc','na'))+
     (RM.design&&RM.loadT ? rbrTile('Manual D · CFM needed',CFM(RM.design.Qd)+' CFM',RM.design.tons+' ton × '+RM.design.cpt+' CFM/ton = '+CFM(RM.design.target)+(RM.design.chart==null?' — the ducts are designed to push it · no unit picked yet':RM.design.short?' · '+rbrEsc(RM.design.name)+' moves '+CFM(RM.design.chart)+' at 0.50″ ('+RM.design.chartCpt+'/ton) — the ducts are designed to what it can do':' — the ducts are designed to push it · '+rbrEsc(RM.design.name)+' moves '+CFM(RM.design.chart)+' at 0.50″ ('+RM.design.chartCpt+'/ton)')+
-        (RM.mjRaw==null?' · rooms ask '+CFM(RM.needTot)+' CFM ÷ '+RM.cpt+' CFM/ton ('+rbrEsc(RM.cptSrc)+') = '+(RM.needTot/RM.cpt).toFixed(2)+' — '+rbrRoundNote(RM.needTot/RM.cpt):'')+(RM.loadT>rec?' — bigger unit, or attic to R-38':''),RM.design.short?'warn':(RM.loadT>rec?'warn':''))
-     : L ? rbrTile('Manual D · CFM needed',CFM(Math.round(L.tons*RBR_DESIGN_CPT))+' CFM',L.tons+' ton × '+RBR_DESIGN_CPT+' CFM/ton — the air the ducts are designed to push','')
-              : rbrTile('Manual D · CFM needed','—','appears once the size is in',''));
+        (RM.mjRaw==null?' · rooms ask '+CFM(RM.needTot)+' CFM ÷ '+RM.cpt+' CFM/ton ('+rbrEsc(RM.cptSrc)+') = '+(RM.needTot/RM.cpt).toFixed(2)+' — '+rbrRoundNote(RM.needTot/RM.cpt):'')+(RM.loadT>rec?' — bigger unit, or attic to R-38':''),'md'+(RM.design.short?' warn':(RM.loadT>rec?' warn':'')))
+     : L ? rbrTile('Manual D · CFM needed',CFM(Math.round(L.tons*RBR_DESIGN_CPT))+' CFM',L.tons+' ton × '+RBR_DESIGN_CPT+' CFM/ton — the air the ducts are designed to push','md')
+              : rbrTile('Manual D · CFM needed','—','appears once the size is in','na'));
   // the way out, in one line, when the house asks for more than the square footage gave (the full two-answer script is under Why this size)
   let alt='';
   if(!call&&str&&!str.ok&&str.closes&&str.next) alt=` — <b>or the ${str.size} ton with the attic brought to R-38</b>`;   /* a stretch the attic can carry once it is topped up */
@@ -8588,7 +8771,16 @@ function rbrMJ(){
     else { const c49=rbrInsCut(call.R,R_CODE), a49=Math.round(call.loadNow*(1-c49)); alt=` — R-38 alone is short; R-49 ${rbrSold(a49/(call.cpt||rbrCpt()))<=call.rec?'lands the '+call.rec+' ton':'still leaves it a size big'}` } }
   const quoted= A.live ? `<span class="rq${fits?'':' bad'}">Quoting ${tons1(A.tons)} ton · ${rbrEsc(A.name)}${fits?'':' — <b>under what the house asks for</b>'}</span>` : '';
   const app= mj&&mj.recT>0 ? `<span class="rq">Room Scan app: ${mj.recT} ton · ${CFM(mj.cfm)} CFM${mj.roomCfm?' (rooms '+CFM(mj.roomCfm)+' CFM)':''}</span>` : '';
-  const hero= L ? `<div class="rechero${A.live&&!fits?' bad':''}"><div><div class="rk">Recommendation</div><div class="rv">${L.tons} ton</div></div><div class="rw">${rbrEsc(L.why)}${alt}${quoted}${app}</div></div>` : '';
+  // v2.66 — the call in bold with its choices as pills; the sentence behind it stays in the page (.mth) and goes out in the ServiceTitan text (SIZE CALL / STRETCH CALL)
+  const pills=[];
+  if(L){ const w=String(L.why||''); const tag=/^Manual J/.test(w)?'Manual J':/^measured rooms/.test(w)?'Rooms':/^pre-1980/.test(w)?'Pre-1980':/^rule of thumb/.test(w)?'Rule of thumb':''; if(tag&&!(!call&&str&&!str.ok&&str.known&&str.next)) pills.push(`<span class="rp">${tag}</span>`) }   /* sized up for a thin attic: the pill says that instead */
+  if(call){ if(!call.known){ pills.push('<span class="rp warn">Attic depth?</span>'); pills.push(`<span class="rp alt">or ${call.rec} ton + R-38 attic</span>`) }
+    else if(!call.already){ if(call.closes) pills.push(`<span class="rp alt">or ${call.rec} ton + R-38 attic</span>`);
+      else { const c49=rbrInsCut(call.R,R_CODE), a49=Math.round(call.loadNow*(1-c49)); if(rbrSold(a49/(call.cpt||rbrCpt()))<=call.rec) pills.push(`<span class="rp alt">or ${call.rec} ton + R-49 attic</span>`) } } }
+  else if(str&&!str.ok){ if(!str.known) pills.push('<span class="rp warn">Needs R-38 attic</span>'); else if(str.next){ pills.push('<span class="rp warn">Thin attic</span>'); if(str.closes) pills.push(`<span class="rp alt">or ${str.size} ton + R-38 attic</span>`) } }
+  if(A.live&&!fits) pills.push(`<span class="rp bad">Quoting ${tons1(A.tons)} ton — too small</span>`);
+  if(L&&mj&&mj.recT>0&&Math.abs(mj.recT-L.tons)>0.01) pills.push(`<span class="rp">App: ${mj.recT} ton</span>`);
+  const hero= L ? `<div class="rechero${A.live&&!fits?' bad':''}"><div class="rk">Recommendation</div><div class="rv">${L.tons} ton</div>${pills.length?'<div class="rps">'+pills.join('')+'</div>':''}<span class="mth">${rbrEsc(L.why)}${alt}${quoted}${app}</span></div>` : '';
   const why='<div class="msg" style="margin-top:0">'+B.note+
       // v2.35: when the house asks for more than the square footage gave, the answer is never just
       // "the cross-check wants a bigger size" — it is the bigger unit OR the attic, and the attic depth
@@ -8599,7 +8791,7 @@ function rbrMJ(){
       (str?`<br><br>${rbrStretchHtml(str)}`:'')+
       (A.live&&!fits?`<br><br><b style="color:var(--bad)">The ${tons1(A.tons)}-ton being quoted is under what the house asks for.</b> It delivers ${Math.round(RM.pct*100)}% of the air the rooms need — the duct design still balances, but every room is short by the same share.`:'')+
     '</div>';
-  el.innerHTML='<div class="sizeband"><div class="env">'+tiles+'</div>'+hero+'<details class="why"><summary>Why this size</summary>'+why+'</details></div>';
+  el.innerHTML='<div class="sizeband v66">'+tiles+hero+'<div class="mth why">'+why+'</div></div>';   /* v2.66: no "Why this size" on the tab — the script goes out in the ServiceTitan text on the Summary (SIZE CALL / STRETCH CALL) */
 }
 function rbrScanFacts(){ const G=S.plan&&S.plan.g; if(!G) return ''; const b=[]; if(G.nSup||G.nRet) b.push(`<span class="scn">${G.nSup} ${G.nSup===1?'supply':'supplies'}${G.nRet?' + '+G.nRet+' return'+(G.nRet===1?'':'s'):''} off the scan</span>`);
   if(S.plan.north&&S.plan.north.deg!=null) b.push(`north ${Math.round(S.plan.north.deg)}°${S.plan.north.acc?' ±'+Math.round(S.plan.north.acc)+'°':''}`); if(G.mj&&G.mj.recT>0) b.push(`scan load calc: ${G.mj.recT} ton · ${CFM(G.mj.cfm)} CFM`);
@@ -8889,9 +9081,21 @@ function fcPlanApply(P,name){
     S.plan.rets=rets.map(q=>({x:q.x,y:q.y,w:q.nom?q.nom[0]:null,h:q.nom?q.nom[1]:null,asm:!!q.nomAsm}));
     try{ const nm=q.nom?q.nom[0]+'x'+q.nom[1]:null; if(nm) setAuto('ex_gr',nm); setAuto('ex_gr_n',String(rets.length)); if(typeof refreshOld==='function') refreshOld() }catch(e){} }
   // v2.64 — the home facts off the scan: how the house is built, what is in the attic (assumed until touched)
-  if(G){ const mj=G.mj; if(mj&&mj.build&&!S.home.build){ S.home.build=/pre.?1980|old/i.test(mj.build)?'pre1980':(/high/i.test(mj.build)?'hieff':'standard'); try{ rbrSyncSeg() }catch(e){} }
-    const at=G.home&&G.home.attic; if(at&&at.depth>0){ try{ setAuto('in_depth',String(at.depth)); const m=String(at.mat||at.floorType||'').toLowerCase(); const ty=/cellulose/.test(m)?'cellulose':/batt/.test(m)?'batts':/spray|foam/.test(m)?'spray':/fiber|blown/.test(m)?'blown_fg':null;
-      const sel=$('#in_type'); if(ty&&sel&&(sel.value==='unknown'||isAuto('in_type'))){ sel.value=ty; S.f.in_type=ty; S.auto.in_type=true } }catch(e){} }   /* the type is a select whose default is 'unknown' — only that, or an earlier scan's pick, gives way */
+  if(G){ const mj=G.mj, H=G.home||{};
+    /* v2.66 — how the house is built: the app's own build type (with or without its load calc), else the year / age band it recorded */
+    const bt=(mj&&mj.build)||H.build||''; const yr=+H.year||0, ag=String(H.age||'');
+    if(!S.home.build){ const v=bt?(/pre.?1980|old/i.test(bt)?'pre1980':(/high/i.test(bt)?'hieff':'standard')):(yr?(yr<1980?'pre1980':'standard'):(/pre|19[0-7]\d/i.test(ag)?'pre1980':(ag?'standard':'')));
+      if(v){ S.home.build=v; S.home.buildScan=true; try{ rbrSyncSeg() }catch(e){} } }
+    /* v2.66 — the attic, every way the app writes it: blown (depth + material) · batts ("R-19 batts") · on the roof deck · none */
+    const at=H.attic; if(at){ try{ const mat=String(at.mat||''), m=mat.toLowerCase(), ft=String(at.floorType||'').toLowerCase(), wh=String(at.where||'').toLowerCase(); const Rm=/r-?\s?(\d{1,2})/i.exec(mat);
+      const setType=ty=>{ const sel=$('#in_type'); if(ty&&sel&&(sel.value==='unknown'||isAuto('in_type'))){ sel.value=ty; S.f.in_type=ty; S.auto=S.auto||{}; S.auto.in_type=true } };   /* the type is a select whose default is 'unknown' — only that, or an earlier scan's pick, gives way */
+      if(wh==='none'){ setAuto('in_depth','0'); setType('none') }
+      else { if(at.depth>0) setAuto('in_depth',String(at.depth)); else if(Rm) setAuto('in_r',Rm[1]);
+        setType(/cellulose/.test(m)?'cellulose':(/batt/.test(m)||ft==='batts')?'batts':(/spray|foam/.test(m)||/roof/.test(wh))?'spray':/fiber|blown/.test(m+' '+ft)?'blown_fg':null);
+        if(/roof/.test(wh)&&!bt&&S.home.buildScan){ S.home.build='hieff'; try{ rbrSyncSeg() }catch(e){} } } }catch(e){} }   /* insulation on the roof deck = the attic ceiling is sealed: a high-efficiency home */
+    /* v2.66 — the branch duct the tech recorded on the registers (flex unless every one says metal) */
+    try{ const dt=[]; (P.rooms||[]).forEach(r=>(r.regs||[]).forEach(q=>{ if(q.type==='supply'&&q.ductType) dt.push(String(q.ductType)) })); if(dt.length&&dt.every(x=>/metal|rigid|sheet/i.test(x))&&!S.f.dr_brm){ S.f.dr_brm='metal'; if(typeof syncMatChips==='function') syncMatChips() } }catch(e){}
+    try{ if(typeof refreshOld==='function') refreshOld() }catch(e){}   /* v2.66: the attic read (R badge) after the attic is filled — v2.64 re-read it before, so it said "enter the depth" with the depth sitting there */
     const J=G.job; if(J&&J.address){ try{ const a=$('#fcAddr'); if(a&&!String(a.value||'').trim()){ a.value=J.address; S.prop=S.prop||{}; S.prop.query=J.address } }catch(e){} } }
   S.auto=S.auto||{}; S.auto.rbr=false; S.rbrOpen=true;
   fcApplyRuns(); save(); }
@@ -8962,9 +9166,29 @@ function rbrScanHtml(){ const P=S.plan;
     (hand?'':`<div class="row" style="margin-top:8px"><button class="btn sm ghost" id="rbrHand">No scan? Lay the rooms out by hand &#9656;</button></div>`) }
 // v2.59 (Stephen 2026-09-27: "since we are going to use the file upload for room by room designs, thats the preferred sizing method, add that upload button to
 // the front screen, right at the top of the home … either upload the file, give me the address, or manually type in the Sq Ft, in that order")
-function fcTopUpHtml(){ const P=S.plan;
-  if(P){ const n=S.rooms.length; return `<div class="scanbar on top"><div class="sb1"><b>${rbrEsc(P.name)}</b><span class="asm">${P.g?rbrEsc(P.g.app||'Goettl Room Scan'):'floor plan'}</span></div><div class="sb2">${n} rooms · <b>${CFM(P.sf)} sq ft</b> served by this system${rbrScanFacts()}</div><div class="sb3"><label class="btn sm ghost" for="rbrDxf">Replace</label></div></div>` }
-  return `<div class="scanbox top" id="fcUpTop"><div class="scanico">&#9636;</div><div class="scantxt"><b>Upload the room scan</b><span>Goettl Room Scan &#9656; Export, or a 3D Snap JSON / DXF. No scan? Look up the address, or type the sq ft, below.</span></div><label class="btn" for="rbrDxf">Choose the scan</label></div>` }
+function fcTopUpHtml(){ return `<div class="srcrow">${fcSrcTiles()}</div>`+fcFactsHtml() }
+/* v2.66 — the three ways in, one tile each: the room scan (the label IS the file input's), the address and the sq ft (each opens its fold) */
+function fcSrcTiles(){ const P=S.plan; const op=id=>{ const x=$('#'+id); return !!(x&&x.open) };
+  const scan= P ? `<label class="xt src scan ok" for="rbrDxf" title="${rbrEsc(P.name)} — tap to replace"><svg class="ico"><use href="#i-scan"/></svg><b>Room scan</b><span class="xv">${CFM(P.sf)} sq ft · ${S.rooms.length} rooms</span><span class="xn">${rbrEsc(P.name)}</span></label>`
+              : `<label class="xt src scan" for="rbrDxf"><svg class="ico"><use href="#i-scan"/></svg><b>Room scan</b><span class="xv">Upload</span></label>`;
+  const A=fcAddrTile(), Q=fcSfTile();
+  return scan+`<button type="button" class="xt src addr${op('fcFold')?' on':''}${A.ok?' ok':''}" data-fold="fcFold" aria-expanded="${op('fcFold')}"><svg class="ico"><use href="#i-pin"/></svg><b>Address</b><span class="xv">${rbrEsc(A.t)}</span></button>`+
+    `<button type="button" class="xt src sqft${op('sfFold')?' on':''}${Q.ok?' ok':''}${Q.need?' need':''}" data-fold="sfFold" aria-expanded="${op('sfFold')}"><svg class="ico"><use href="#i-sqft"/></svg><b>Sq ft</b><span class="xv">${rbrEsc(Q.t)}</span></button>` }
+function fcAddrTile(){ const P=S.prop; const fl=P&&Array.isArray(P.floorSqFt)&&P.floorSqFt.length?P.floorSqFt:null; const rec=!!(P&&(P.apn||P.yearBuilt||P.conditionedSqFt||fl));
+  if(rec){ const sf=fl?fl.reduce((s,v)=>s+(+v||0),0):(+P.conditionedSqFt||0); return {ok:true,t:sf?CFM(Math.round(sf))+' sq ft':'found'} }
+  const q=P&&P.query?String(P.query).trim():''; return {ok:false,t:q?q.replace(/\s+(ct|court|st|street|ave|avenue|dr|drive|ln|lane|rd|road|blvd|way|cir|circle|pl|place)\.?$/i,''):''} }
+function fcSfTile(){ const sf=rbrHomeSf(), src=fcSrc('sf'); if(S.plan) return {ok:false,need:false,t:sf?CFM(sf):''};
+  if(sf) return {ok:!src,need:false,t:CFM(sf)+(S.home.floors.length>1?' · '+S.home.floors.length+' fl':'')}; return {ok:false,need:false,t:''} }
+function fcSrcSync(){ const r=$('#fcTop1 .srcrow'); if(r) r.innerHTML=fcSrcTiles() }
+/* v2.66 — what the scan (or the county record) brought in about the house, as chips: built, walls, windows, vents, north */
+function fcFactsHtml(){ const P=S.plan, G=P&&P.g, Q=S.prop; const f=[];
+  const yr=(G&&G.home&&G.home.year)||(Q&&Q.yearBuilt)||null; if(yr) f.push(['i-cal','Built '+yr,'']);
+  if(G){ const most=k=>{ const c={}; (S.rooms||[]).forEach(r=>{ const v=r.mj&&r.mj[k]; if(v) c[v]=(c[v]||0)+1 }); const ks=Object.keys(c).sort((x,y)=>c[y]-c[x]); return ks.length?{v:ks[0],n:ks.length}:null };
+    const w=most('wall'); if(w){ const R=/R-?\s?(\d{1,2})/i.exec(w.v); const s=String(w.v).split(',').map(x=>x.trim()).filter(Boolean); f.push(['i-wall',(R?'R-'+R[1]+' walls':s[0])+(w.n>1?' +'+(w.n-1):''),w.v]) }
+    const g=most('glass'); if(g){ const v=String(g.v); const pane=/single/i.test(v)?'Single pane':/triple/i.test(v)?'Triple pane':/dual|double/i.test(v)?'Dual pane':v.split(',')[0]; f.push(['i-glass',pane+(/low.?e/i.test(v)?' low-E':'')+(g.n>1?' +'+(g.n-1):''),v]) }
+    if(G.nSup||G.nRet) f.push(['i-reg',`${G.nSup} vent${G.nSup===1?'':'s'}${G.nRet?' · '+G.nRet+' return'+(G.nRet===1?'':'s'):''}`,'']);
+    if(P.north&&P.north.deg!=null) f.push(['i-north','North set','North '+Math.round(P.north.deg)+'°'+(P.north.acc?' ±'+Math.round(P.north.acc)+'°':'')]) }
+  return f.length?`<div class="facts">${f.map(([i,t,ti])=>`<span class="fact"${ti?` title="${rbrEsc(ti)}"`:''}><svg class="ico"><use href="#${i}"/></svg><span>${rbrEsc(t)}</span></span>`).join('')}</div>`:'' }
 function rbrScanWire(){
   const f=$('#rbrDxf'); if(f&&!f.dataset.wired){ f.dataset.wired='1'; f.addEventListener('change',()=>{ const file=f.files&&f.files[0]; if(!file) return; fcScanStat('Reading '+rbrEsc(file.name)+'…');
     const fr=new FileReader(); fr.onload=()=>{ const ok=fcPlanLoad(String(fr.result||''),file.name); f.value=''; if(ok){ fcScanStat(''); rbrRender(); rbrSync(); setTimeout(rbrGrid,20) } else { rbrRender() } };   /* v2.65: a failed upload says why right under the upload box (fcScanStat writes there too) */
@@ -8991,7 +9215,13 @@ function rbrPlanGrid(G,px){ const P=S.plan, F=fcField();
 function rbrWire(){
   const sf=$('#homeSf'); if(sf){ sf.value=S.home.sf||''; sf.addEventListener('input',e=>{ S.home.sf=e.target.value; fcClearSrc('sf'); fcSyncSf(); if(S.plan) S.plan.sf=parseFloat(e.target.value)||S.plan.sf; save(); rbrRender(); rbrSync() }) }
   fcWire();
-  $$('#buildSeg button').forEach(b=>b.addEventListener('click',()=>{ S.home.build=b.dataset.v; rbrSyncSeg(); save(); rbrRender(); rbrSync() }));
+  $$('#buildSeg button').forEach(b=>b.addEventListener('click',()=>{ S.home.build=b.dataset.v; S.home.buildScan=false; rbrSyncSeg(); save(); rbrRender(); rbrSync() }));
+  // v2.66 — the Address and Sq ft tiles open their fold (one at a time) and put the cursor in it
+  { const top=$('#fcTop1'); if(top&&!top.dataset.folds){ top.dataset.folds='1'; top.addEventListener('click',e=>{ const b=e.target.closest('[data-fold]'); if(!b) return; const fd=$('#'+b.dataset.fold); if(!fd) return; const open=!fd.open;
+      ['fcFold','sfFold'].forEach(id=>{ const x=$('#'+id); if(x) x.open=false }); fd.open=open; fcSrcSync();
+      if(open){ const inp=fd.querySelector(b.dataset.fold==='fcFold'?'#fcAddr':'#homeSf'); if(inp&&!String(inp.value||'').trim()) setTimeout(()=>{ try{ inp.focus() }catch(_){} },60) } });
+    ['fcFold','sfFold'].forEach(id=>{ const x=$('#'+id); if(x) x.addEventListener('toggle',()=>{ try{ fcSrcSync() }catch(_){} }) }) } }
+  try{ dtWire() }catch(e){}
   // v2.35: the attic now lives in The home, because what is up there decides whether the answer is a
   // bigger unit or a top-up. Retyping it re-runs the size recommendation and the banner, nothing else.
   ['in_depth','in_type','in_r'].forEach(id=>{ const el=$('#'+id); if(el) el.addEventListener('input',()=>{ try{ rbrModel(); rbrMJ(); rbrSizeFlag() }catch(e){} }) });
@@ -9036,7 +9266,7 @@ function rbrWire(){
   $('#rbrExport').addEventListener('click',rbrExport);
   let rz; window.addEventListener('resize',()=>{ clearTimeout(rz); rz=setTimeout(()=>{ if(S.rbrOpen) rbrGrid() },150) });
 }
-function rbrSyncSeg(){ $$('#buildSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===S.home.build)) }
+function rbrSyncSeg(){ $$('#buildSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===S.home.build)); const s=$('#buildSrc'); if(s) s.textContent=(S.home.buildScan&&S.plan&&S.plan.g&&S.home.build)?'from scan':'' }
 function rbrArrange(){ let x=0,y=0,rowH=0;
   S.rooms.forEach(r=>{ if(x+r.w>RBR_GW){ x=0; y+=rowH+2; rowH=0 }
     r.x=x; r.y=Math.min(y,Math.max(0,RBR_GD-r.d)); x+=r.w+2; rowH=Math.max(rowH,r.d) });
