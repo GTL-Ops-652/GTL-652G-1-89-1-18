@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-10-01 v2.66 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-10-01 v2.67 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -957,6 +957,34 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
   .sizeband.v66 .rechero .rv{font-size:34px}
   .dt{min-height:80px}
 }
+/* ===== v2.67 — THE PLAN STRIP IN GROUPS (Stephen 2026-10-01: "make it grouped and make sense easy to understand"). The same picture tiles as the
+   Existing tab, in numbered groups — 1 Design · 2 Ducts · 3 Layout · 4 Attic — and only the tiles that apply to this setup. ===== */
+.pstrip.v67{gap:0;margin:6px 2px 0}
+.pgrp{margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
+.pgrp:first-child{margin-top:4px;padding-top:4px;border-top:0}
+.pgrp>.qh{margin-bottom:8px;font-size:12.5px;color:var(--ink)}
+.pgrp>.qh .pt{letter-spacing:.8px}
+.pn{display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:var(--db);color:#fff;font-size:12px;font-weight:800;letter-spacing:0;flex:none}
+.pgrp .qh .qsrc.warn{color:#a35300;background:#fff3e2;border-color:#f0c48a}.pgrp .qh .qsrc.bad{color:#8f1d1d;background:#fdeeee;border-color:#ef9a9a}
+.ptg{grid-template-columns:repeat(auto-fill,minmax(118px,1fr))}
+.ptg>button{min-height:82px}
+.ptg>button:disabled{opacity:.4;cursor:default}.ptg>button:disabled:active{transform:none}
+.ptg>button.fixed{cursor:default}.ptg>button.fixed:active{transform:none}
+.ptg>button.go{background:#1f8a4c;border-color:#1f8a4c;box-shadow:0 3px 10px rgba(31,138,76,.28)}.ptg>button.go::before{opacity:0}
+.ptg>button.go .ico,.ptg>button.go b{color:#fff}.ptg>button.go .xv{color:#dff3e7}
+.ptg>button.go .xv:empty,.ptg>button .xv:empty{display:none}
+.psub{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-top:9px}
+.psub .plab,.pend .plab{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin-right:2px;flex:none}
+.pstrip.v67 .lreason{margin:8px 2px 0;color:var(--muted)}
+.pstrip.v67 .lreason.bad{color:var(--bad)}
+.pstrip.v67>.prow{margin-top:12px}
+.pstrip.v67 .pend{margin-top:16px;padding-top:12px;border-top:1px solid var(--line)}
+.pstrip.v67 .pend [data-pact="clear"]{margin-left:auto}
+@media (max-width:640px){
+  .ptg{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .ptg>button{min-height:76px}
+  .pgrp>.qh{font-size:12px}
+}
 </style>
 </head>
 <body>
@@ -1033,6 +1061,20 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
 <symbol id="i-wall" viewBox="0 0 48 48"><rect x="6" y="9" width="36" height="30" rx="2"/><path d="M6 19h36M6 29h36M18 9v10M30 19v10M18 29v10"/></symbol>
 <symbol id="i-glass" viewBox="0 0 48 48"><rect x="9" y="6" width="30" height="36" rx="2"/><path d="M24 6v36M9 24h30"/></symbol>
 <symbol id="i-north" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><path d="M24 10.5l6 15.5h-12z" fill="currentColor"/><path d="M24 37.5V30"/></symbol>
+<symbol id="i-curbo" viewBox="0 0 48 48"><rect x="8" y="5" width="32" height="13" rx="2"/><path d="M11 18v5h26v-5"/><path d="M3 23h42"/><path d="M14 27h8M26 27h8"/><ellipse cx="18" cy="33" rx="5" ry="3"/><ellipse cx="30" cy="33" rx="5" ry="3"/><path d="M13 33v6M23 33v6M25 33v6M35 33v6" stroke-dasharray="2 2.5"/></symbol>
+<symbol id="i-curbn" viewBox="0 0 48 48"><rect x="8" y="4" width="32" height="12" rx="2"/><path d="M11 16v4h26v-4"/><path d="M3 20h42"/><rect x="12" y="20" width="10" height="22" rx="1"/><rect x="26" y="20" width="10" height="22" rx="1"/><path d="M17 26v10m-3-3 3 3 3-3M31 36V26m-3 3 3-3 3 3"/></symbol>
+<symbol id="i-cased" viewBox="0 0 48 48"><rect x="3" y="14" width="15" height="20" rx="1.5"/><path d="M7 20h7M7 25h7M7 30h7"/><rect x="18" y="14" width="12" height="20" rx="1"/><path d="M20 32l4-15 4 15"/><rect x="30" y="16" width="15" height="16" rx="1.5"/><path d="M37.5 16v-6M37.5 32v6"/></symbol>
+<symbol id="i-ahu" viewBox="0 0 48 48"><rect x="3" y="13" width="23" height="22" rx="2"/><circle cx="14.5" cy="24" r="6.5"/><path d="M14.5 24v-4.5M14.5 24l3.8 2.2M14.5 24l-3.8 2.2"/><rect x="26" y="16" width="19" height="16" rx="1.5"/><path d="M35.5 16v-6M35.5 32v6"/></symbol>
+<symbol id="i-pcoil" viewBox="0 0 48 48"><rect x="3" y="14" width="13" height="20" rx="1.5"/><path d="M6.5 20h6M6.5 25h6M6.5 30h6"/><rect x="16" y="11" width="29" height="26" rx="2"/><path d="M19 33l3.5-17 3.5 17 3.5-17 3.5 17 3.5-17 3.5 17"/><path d="M24 11V5M38 11V5"/></symbol>
+<symbol id="i-ext" viewBox="0 0 48 48"><rect x="2" y="18" width="10" height="12" rx="1.5"/><rect x="12" y="20" width="34" height="8" rx="1.5"/><path d="M19 20v-9M28 28v9M37 20v-9"/><circle cx="19" cy="8.5" r="2.6"/><circle cx="28" cy="39.5" r="2.6"/><circle cx="37" cy="8.5" r="2.6"/></symbol>
+<symbol id="i-nds" viewBox="0 0 48 48"><rect x="2" y="17" width="10" height="14" rx="1.5"/><path d="M12 24h7"/><path d="M19 24c5 0 6-11 13-11h6M19 24c5 0 6 11 13 11h6M19 24h19"/><circle cx="42" cy="13" r="3"/><circle cx="42" cy="24" r="3"/><circle cx="42" cy="35" r="3"/></symbol>
+<symbol id="i-enl" viewBox="0 0 48 48"><path d="M4 16h18a8 8 0 0 1 0 16H4"/><ellipse cx="4" cy="24" rx="2.4" ry="8"/><path d="M10 24h12m-4-4 4 4-4 4"/><path d="M39 8v32M34 13l5-5 5 5M34 35l5 5 5-5"/></symbol>
+<symbol id="i-addr" viewBox="0 0 48 48"><rect x="4" y="8" width="27" height="27" rx="2.5"/><path d="M4 15h27M4 21.5h27M4 28h27"/><circle cx="37" cy="36" r="9" fill="currentColor" stroke="none"/><path d="M37 31.5v9M32.5 36h9" stroke="#fff" stroke-width="3"/></symbol>
+<symbol id="i-adds" viewBox="0 0 48 48"><rect x="4" y="8" width="27" height="27" rx="2.5"/><rect x="10" y="14" width="15" height="15" rx="1"/><path d="M13.5 19h8M13.5 24h8"/><circle cx="37" cy="36" r="9" fill="currentColor" stroke="none"/><path d="M37 31.5v9M32.5 36h9" stroke="#fff" stroke-width="3"/></symbol>
+<symbol id="i-star" viewBox="0 0 48 48"><path d="M24 3l5.6 15.4L45 24l-15.4 5.6L24 45l-5.6-15.4L3 24l15.4-5.6z"/><path d="M38 6v8M34 10h8" stroke-width="2.4"/></symbol>
+<symbol id="i-auto" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><text x="24" y="31.5" text-anchor="middle" font-size="20" font-weight="800" font-family="Montserrat,-apple-system,Segoe UI,Roboto,sans-serif" fill="currentColor" stroke="none">A</text></symbol>
+<symbol id="i-wye" viewBox="0 0 48 48"><rect x="17" y="38" width="14" height="7" rx="1.5"/><path d="M24 38V27c0-5-4-8-10-10l-3-1M24 27c0-5 4-8 10-10l3-1"/><circle cx="8.5" cy="14" r="3"/><circle cx="39.5" cy="14" r="3"/><path d="M24 27v-7"/><circle cx="24" cy="16.5" r="3"/></symbol>
+<symbol id="i-step" viewBox="0 0 48 48"><rect x="2" y="18" width="13" height="12" rx="1.5"/><rect x="15" y="19.5" width="12" height="9" rx="1"/><rect x="27" y="21" width="11" height="6" rx="1"/><rect x="38" y="22" width="8" height="4" rx="1"/><path d="M11 18v-8M21 28.5v8M32 21v-8M42 26v8"/><circle cx="11" cy="7.5" r="2.4"/><circle cx="21" cy="39" r="2.4"/><circle cx="32" cy="10.5" r="2.4"/><circle cx="42" cy="36.5" r="2.4"/></symbol>
 </defs></svg>
 <!-- ============ STEP 1 ============ -->
 <section class="panel active" id="p1">
@@ -2281,7 +2323,7 @@ let PLAN_SWAP=0; // v2.47 — > 0 while a saved plan's design is swapped in for 
 function save(){ if(PLAN_SWAP>0) return; store.set(SKEY,JSON.stringify(S)) }
 const FIELDS=['oldFurnModel','oF_h','oF_w','oF_d','oldCoilModel','oC_h','oC_w','oC_d','oldPkgModel','oP_l','oP_w','oP_h','oP_chassis','acc_w','acc_l','sp_1','sp_2','sp_3','st_l','st_w','st_h','tr_sw','tr_sh','tr_sx','tr_sz','tr_rw','tr_rh','tr_gap','tr_rz','rf_pitch','el_len','el_h','el_div','el_x','el_throat','el_run','jk_h','jk_w','jk_d','ex_sp','ex_motor','ex_tons','ex_ret_d','ex_ret_n','ex_ret_rect','ex_gr','ex_gr2','ex_gr_n','ex_sup_d','ex_sup_rect','ex_sup_n','ex_fdp','ex_cdp','in_depth','in_type','in_r','pn_r','pn_s','ex_tk','ex_reg','ex_trunk_ft','ex_rplen','new_trunk_ft','ex_splen','new_splen','new_tk_add','dr_ret','dr_sup','dr_br','dr_n'];
 S.f=S.f||{};
-FIELDS.forEach(id=>{const el=$('#'+id); if(S.f[id]!=null) el.value=S.f[id]; el.addEventListener('input',()=>{S.f[id]=el.value;save();clearAuto(id);
+FIELDS.forEach(id=>{const el=$('#'+id); if(S.f[id]!=null) el.value=S.f[id]; el.addEventListener('input',()=>{S.f[id]=el.value;save();clearAuto(id); if(id==='ex_sup_rect') supRectWins(); if(id==='ex_ret_rect') supRectWins('ret');
   if(ELBOW_FACE.includes(id)) deriveJack();
   refreshOld(); if(cur>3&&['new_trunk_ft','ex_trunk_ft','ex_rplen','new_splen','ex_splen','new_tk_add'].includes(id)){syncSupCfg();renderCompare()}})});
 
@@ -2311,7 +2353,11 @@ function applySys(){
 const SUPCFG={cased:'Cased coil + supply plenum',plenum_coil:'Plenum coil',trunk:'Extended supply plenum'};
 const supAllowed=v=> v==='plenum_coil'? isHoriz() : true; // a plenum coil is a horizontal-install detail
 function supOld(){ const v=S.supOld||'cased'; return supAllowed(v)?v:'cased' }
-function supNew(){ const v=S.supNew||supOld(); return supAllowed(v)?v:'cased' }
+// v2.67 — WHAT WE INSTALL ON A SPLIT (Stephen 2026-10-01: "if its a split upflow, then cased upflow coil is the only option. but if split gas, horizontal,
+// we can do the plenum coil, extended plenum, or cased with plenum"): an upflow / downflow takes the cased coil (a heat pump's air handler) + plenum only;
+// a horizontal heat pump's air handler has its coil inside — plenum or extended plenum, no plenum coil. supAllowed stays the rule for what is THERE today.
+const supNewAllowed=v=> v==='cased' ? true : (v==='trunk' ? isHoriz() : (v==='plenum_coil' ? isHoriz()&&S.sys!=='split_hp' : false));
+function supNew(){ const v=S.supNew||supOld(); return supNewAllowed(v)?v:'cased' }
 function trunkFtOld(){ const v=num('ex_trunk_ft'); return clamp(v||12,2,30) }
 function trunkFtNew(){ const v=num('new_trunk_ft'); return clamp(v||trunkFtOld(),2,30) }
 function retPlenLen(){ const v=num('ex_rplen'); return (v!=null&&v>0)?v:24 } // the box the return duct lands on — 2 ft is typical
@@ -2337,7 +2383,7 @@ function syncSupCfg(){ const split=!isPkg();
   // v2.22 — the take-off question is asked on EVERY job. It used to live inside #supCfgBlock, which was hidden whole on a
   // package unit, so ex_tk and new_tk_add never appeared on a rooftop job and the take-off chokepoint could never score there.
   // Only the three-layout / plenum-length half is split-only now; the take-off half and the proposal card are always shown.
-  $('#supCfgBlock').classList.remove('hidden'); $('#supCfgNewCard').classList.remove('hidden');
+  $('#supCfgBlock').classList.remove('hidden'); $('#supCfgNewCard').classList.add('hidden');   /* v2.67: the proposal card is off the page — the coil / plenum and its length are tiles in 1 · Design under the 3D */
   $('#supLayoutBlock').classList.toggle('hidden',!split); $('#exRplenF').classList.toggle('hidden',!split);
   $('#supCfgNew').classList.toggle('hidden',!split); /* v2.42: the layout note stays hidden — the 3D says it */
   $('#supCfgNewTitle').textContent= split?'Proposed supply configuration':'Proposed supply take-offs';
@@ -2352,7 +2398,7 @@ function syncSupCfg(){ const split=!isPkg();
   $$('#regOld .chip').forEach(b=>b.classList.toggle('on',regOld()===b.dataset.v)); // v2.44
   $('#tkEndOld').classList.toggle('hidden',split&&supOld()==='plenum_coil'); // a plenum coil spaces its ducts evenly — the clear-the-end rule does not apply
   const paint=(sel,cur)=>$$(sel+' button').forEach(b=>{ const ok=supAllowed(b.dataset.v); b.classList.toggle('on',b.dataset.v===cur); b.disabled=!ok; b.style.opacity=ok?'':'.45'; b.title=ok?'':'plenum coil applies to a horizontal install' });
-  paint('#supCfgOld',supOld()); paint('#supCfgNew',supNew());
+  paint('#supCfgOld',supOld()); paint('#supCfgNew',supNew()); $$('#supCfgNew button').forEach(b=>{ const ok=supNewAllowed(b.dataset.v); b.disabled=!ok; b.style.opacity=ok?'':'.45' });
   const nt=$('#supCfgNote'); if(nt) nt.innerHTML= supNew()==='plenum_coil'?'The coil sits inside a field-built plenum instead of a cased cabinet — the ducts land straight on that box.'
     : supNew()==='trunk'?`A square trunk running <b>${trunkFtNew()} ft</b> off the discharge, take-offs coming off it along the way.`
     : `Cased coil, then a <b>${fmt(splenNew())}"</b> plenum on the discharge. The take-offs go toward the beginning of it — the last ${TKTAIL}" of the back end stays clear.`; }
@@ -2360,7 +2406,7 @@ $$('[data-splen]').forEach(b=>b.onclick=()=>{ set('new_splen',b.dataset.splen); 
 $$('#tkEndOld .chip').forEach(b=>{ b.onclick=()=>{ S.tkEndOld=b.dataset.v; save(); syncSupCfg(); if(cur>3) renderCompare() } });
 $$('#regOld .chip').forEach(b=>{ b.onclick=()=>{ S.regOld=b.dataset.v; save(); syncSupCfg(); try{ dtSync() }catch(e){} if(cur>3) renderCompare() } }); // v2.44 register faces today
 $$('#supCfgOld button').forEach(b=>b.onclick=()=>{ if(!supAllowed(b.dataset.v)) return; S.supOld=b.dataset.v; save(); syncSupCfg(); refreshOld(); if(cur>3) renderCompare() });
-$$('#supCfgNew button').forEach(b=>b.onclick=()=>{ if(!supAllowed(b.dataset.v)) return; S.supNew=b.dataset.v; save(); syncSupCfg(); renderCompare() });
+$$('#supCfgNew button').forEach(b=>b.onclick=()=>{ if(!supNewAllowed(b.dataset.v)) return; S.supNew=b.dataset.v; save(); syncSupCfg(); renderCompare() });
 seg('sysType','sys',applySys); seg('orient','orient',applySys); seg('setup','setup',()=>{refreshOld();applySys()});
 seg('room','room',()=>{ $('#measure').classList.toggle('hidden',!(S.room==='tight'||S.room==='vtight')); });
 $$('#elbowMode .chip').forEach(b=>{b.classList.toggle('on',b.dataset.v===S.elbowMode);b.onclick=()=>{S.elbowMode=b.dataset.v;save();$$('#elbowMode .chip').forEach(x=>x.classList.toggle('on',x===b));relabelStand()}});
@@ -2482,6 +2528,7 @@ const ASM_LABEL={ex_ret_d:'return plenum / main duct',ex_gr:'return grille',ex_s
 // (the elbow face and the openings are never assumed INTO a box — untaped metal falls back to the old unit's spec pattern inside existingOpenings0 and is flagged est. there)
 function isAuto(id){ return !!(S.auto&&S.auto[id]) }
 function clearAuto(id){ if(S.auto&&S.auto[id]){ delete S.auto[id]; save() } }
+function supRectWins(k){ k=k||'sup'; const r=$('#ex_'+k+'_rect'), d=$('#ex_'+k+'_d'); if(r&&d&&String(r.value||'').trim()&&isAuto('ex_'+k+'_d')&&d.value){ d.value=''; S.f['ex_'+k+'_d']=''; clearAuto('ex_'+k+'_d') } }   // v2.67: a typed rectangular supply / return wins over an ASSUMED round
 function setAuto(id,v){ const el=$('#'+id); if(!el||v==null||v==='') return false;
   const cur=String(el.value||'').trim(); if(cur!=='' && !isAuto(id)) return false;   // typed by hand — leave it alone
   const nv=String(v); if(cur===nv&&isAuto(id)) return false;
@@ -2492,8 +2539,8 @@ function asmOldUnit(){ const o=oldPkg(); if(o.l!=null&&o.w!=null) return {l:o.l,
   const row=rowsFor()[S.star]; const sel=row?pick(S.star,row):null; if(sel&&sel.unit&&PKG[sel.unit]){ const n=pkgDims(sel.unit); return {l:n.l,w:n.w,h:n.h,c:n.c,est:true} }
   return {l:51,w:47,h:36,c:null,est:true} }
 function assumeAirflow(){ const T=asmTons();
-  if(!$('#ex_ret_rect').value.trim()) setAuto('ex_ret_d',ASM_RET[T]);
-  if(!$('#ex_sup_rect').value.trim()) setAuto('ex_sup_d',ASM_SUP[T]);
+  if(!$('#ex_ret_rect').value.trim()) setAuto('ex_ret_d',ASM_RET[T]); else supRectWins('ret');
+  if(!$('#ex_sup_rect').value.trim()) setAuto('ex_sup_d',ASM_SUP[T]); else supRectWins();
   setAuto('ex_gr',ASM_GR[T]);
   // v2.26: duct run lengths for the Manual D static prediction — a bigger house has longer runs (badged, editable)
   const L=MD_LEN[T]||MD_LEN[3]; setAuto('dr_ret',L.ret); setAuto('dr_sup',L.sup); setAuto('dr_br',L.br); }
@@ -2549,6 +2596,7 @@ function dtSync(){ const G=$('#dtGrid'); if(!G) return; const pk=isPkg(), A=wind
   { const g=val('ex_gr'), n=parseInt(val('ex_gr_n'))||1, g2=val('ex_gr2'); const scan=!!(S.plan&&S.plan.rets&&S.plan.rets.length); set('[data-pane="dpGr"]',g?(n>1?n+' × ':'')+X(g)+(n>1&&g2&&g2!==g?' +':''):'—',!g?'need':A.gr?'warn':(isAuto('ex_gr')&&!scan?'asm':'ok')) }
   { const r=val('ex_sup_rect'), d=val('ex_sup_d'), n=parseInt(val('ex_sup_n'))||1, t0=r?X(r):d?d+'″':''; set('[data-pane="dpSup"]',t0?(n>1?n+' × ':'')+t0:'—',!t0?'need':A.sup?'warn':(isAuto('ex_sup_d')&&!r?'asm':'ok')) }
   { let n=0; try{ const s=takeoffSpec(val('ex_tk')); n=s?s.items.length:0 }catch(e){} set('[data-pane="dpTk"]',n?n+' run'+(n>1?'s':''):'—',n?'ok':'need') }
+  { const tb=G.querySelector('[data-pane="dpTk"]'), on=tkApplies(); if(tb) tb.classList.toggle('hidden',!on); const tp=$('#dpTk'); if(!on&&tp&&tp.open) tp.open=false }   // v2.67: a round-supply package has no take-offs
   { set('[data-pane="dpReg"]',regOld()==='bar'?'Bar type':'Stamped',(val('ex_reg')||S.regOld)?'ok':'asm') }
   { const v=['dr_ret','dr_sup','dr_br'].map(num); const asm=['dr_ret','dr_sup','dr_br'].some(isAuto); set('[data-pane="advRuns"]',v.every(x=>x!=null)?v.map(fmt).join(' · ')+' ft':'—',v.every(x=>x==null)?'na':asm?'asm':'ok') }
   $$('#dtGrid [data-pane]').forEach(b=>{ const p=$('#'+b.dataset.pane), on=!!(p&&p.open); b.classList.toggle('on',on); b.setAttribute('aria-expanded',on?'true':'false') }) }
@@ -2664,9 +2712,21 @@ function specCS(sp){ if(!sp) return null; if(sp.kind==='multi'){ const b=specBox
 function takeoffFromItems(items){ if(!items||!items.length) return null; const area=items.reduce((s,a)=>s+(a.d?roundArea(a.d):a.w*a.h),0);
   const grp={}, ord=[]; items.forEach(a=>{ const k=a.d?('Ø'+fmt(a.d)+'"'):(fmt(a.w)+'×'+fmt(a.h)); if(!grp[k]){grp[k]=0;ord.push(k)} grp[k]++ });
   return {kind:'multi',items,n:items.length,area,size:ord.map(k=>(grp[k]>1?grp[k]+' × ':'')+k).join(' + ')} }
+// v2.67 — A PACKAGE WITH A ROUND SUPPLY HAS NO TAKE-OFFS (Stephen 2026-10-01: "take offs doesnt apply to an package ac, if the supply plenum is round").
+// The round drop IS the supply duct — branches only come off a square plenum. Today's take-off sizes and any proposed adds are not asked, scored or drawn;
+// type a square supply (Existing → Supply plenum) and they come back.
+function tkApplies(){ if(!isPkg()) return true; const s=ductSpec(parseFloat(($('#ex_sup_d')||{}).value)||null,($('#ex_sup_rect')||{}).value,($('#ex_sup_n')||{}).value); return !!(s&&s.kind==='rect') }   // the supply the engine scores — a round (typed or assumed) wins, as in buildComps
+function exTkVal(){ return tkApplies()?$('#ex_tk').value:'' }
+function tkAddVal(){ return tkApplies()?String($('#new_tk_add').value||'').trim():'' }
+// v2.67 — an added run needs a plenum to tee into (Stephen 2026-10-01: "adding a duct doesnt work, unless we have a plenum coming down, otherwise theres
+// A new duct system takes no added supply.
+// nothing to connect to"): on a package that is a square plenum on that side (supply or return) or a curb with new plenums; a split always has its plenums.
+function retRect(){ const s=ductSpec(parseFloat(($('#ex_ret_d')||{}).value)||null,($('#ex_ret_rect')||{}).value,($('#ex_ret_n')||{}).value); return !!(s&&s.kind==='rect') }
+function addRunsOk(fix,kind){ fix=fix||S.fix||{}; if(!isPkg()) return true; if(S.setup==='separate') return false; return (fix.install||'reuse')==='curb'||(kind==='r'?retRect():tkApplies()) }
+function addList(fix,k){ fix=fix||S.fix||{}; if(!addRunsOk(fix,k==='addRet'?'r':'s')||(k==='addSup'&&newDuctSystem())) return []; return (fix[k]||[]).filter(a=>a&&a.d>0) }
 // v2.23: which take-off items in the model are NEW (proposed) rather than already on the plenum — so the 3D draws them in the new-metal green
 function takeoffAdded(){ if(S.fix&&S.fix.takeoff) return (it)=>!!it.add;
-  const ex=takeoffSpec($('#ex_tk').value); const base=ex?ex.items.length:0; return (it,i)=>i>=base }
+  const ex=takeoffSpec(exTkVal()); const base=ex?ex.items.length:0; return (it,i)=>i>=base }
 function takeoffSpec(txt){ const s=String(txt||'').trim(); if(!s) return null; const items=[];
   s.split(/[,;+]+/).forEach(tok=>{ tok=tok.trim(); if(!tok) return;
     let m=/^(\d+)\s*@\s*(\d+(?:\.\d+)?)$/.exec(tok); if(m){ const k=Math.min(parseInt(m[1]),24); for(let i=0;i<k;i++) items.push({d:parseFloat(m[2])}); return }
@@ -2720,14 +2780,14 @@ function buildComps(o,fix){ fix=fix||{}; const C=[]; const T=S.thr;
       if(S_) C.push({slot:'penS',side:'s',name:'New plenum — supply (through the roof)',size:`${fmt(S_.w)}×${fmt(S_.h)} (unit opening)`,area:S_.w*S_.h,cap:{fpm:T.opv},newMetal:true});
     } }
   if(sd) C.push({slot:'sup',side:'s',name:isPkg()?'Supply duct':'Supply plenum / trunk',size:sd.size,area:sd.area,cap:{fpm:T.supv},spec:sd,fixed:!!fix.sup});
-  const tkAdd=fix.__noScope?'':String($('#new_tk_add').value||'').trim(); // "today" never counts what we are proposing to add
-  const tk=fixSpec(fix.takeoff)||takeoffSpec([$('#ex_tk').value,tkAdd].filter(x=>String(x||'').trim()).join(','));
+  const tkAdd=fix.__noScope?'':tkAddVal(); // "today" never counts what we are proposing to add
+  const tk=tkApplies()?(fixSpec(fix.takeoff)||takeoffSpec([exTkVal(),tkAdd].filter(x=>String(x||'').trim()).join(','))):null;   // v2.67: none on a round-supply package
   if(tk) C.push({slot:'takeoff',side:'s',name:'Supply take-offs (off the plenum)',size:tk.size,area:tk.area,cap:{fpm:T.supv},spec:tk,fixed:!!fix.takeoff||(!!tkAdd&&!!takeoffSpec(tkAdd)),added:!!tkAdd&&!fix.takeoff});
   // v2.45 — the register faces at the ceiling, one per run: graded on Table 3-1 face velocity through the FREE area, so the face type (stamped 75% ·
   // bar 88%) is part of the size. Entered on step 1, else assumed one per take-off matched to its neck (badged). No take-offs → no faces to grade.
   const rbF=(!fix.__noScope&&typeof rbrFaces==='function')?rbrFaces():null;   // v2.46 — the design's faces are the room design's, kept and new together
   if(rbF){ C.push({slot:'regs',side:'s',name:'Supply registers (at the ceiling)',size:`${rbF.spec.size} · room by room`+(RM&&(RM.keepN+RM.barN)?` (${RM.keepN+RM.barN} kept in place)`:''),area:rbF.free,core:rbF.core,free:rbF.free/Math.max(1,rbF.core),face:regFor(fix),cap:{fpm:MD_TAB31.face.sup},spec:rbF.spec,fixed:true,est:false,rbr:true}) }
-  else if(tk){ const rf=regFacesFor(fix,tk); if(rf){ const face=REG_FACE[regFor(fix)];
+  else if(tk||!tkApplies()){ const rf=regFacesFor(fix,tk); if(rf){ const face=REG_FACE[regFor(fix)];   /* v2.67: with no take-offs (a round-supply package) the faces typed on Existing are still graded */
     C.push({slot:'regs',side:'s',name:'Supply registers (at the ceiling)',size:`${rf.spec.size} · ${face.short}`+(rf.est?' (assumed — matched to the take-offs)':''),area:rf.spec.area*face.free,core:rf.spec.area,free:face.free,face:face.k,cap:{fpm:MD_TAB31.face.sup},spec:rf.spec,fixed:rf.fixed,est:rf.est}) } }
   // v2.47 — ADD A SUPPLY · ADD A RETURN (Stephen 2026-09-25: "add a supply duct, new, just to increase supply airflow — used when the client
   // can't afford to replace all the ducts, so we just add one to lower the static and increase the airflow — or add a return with filter to
@@ -2737,12 +2797,12 @@ function buildComps(o,fix){ fix=fix||{}; const C=[]; const T=S.thr;
   // elbow sit upstream of where either one tees in: an added run never opens those. TODAY never has one. A new duct system replaces the supply
   // outright, so an added supply run means nothing on top of it. The ducts that stay are not "proposed" — only the run is new (no .fixed).
   if(!fix.__noScope){ const cOf=sl=>C.find(q=>q.slot===sl);
-    (newDuctSystem()?[]:(fix.addSup||[])).filter(a=>a&&a.d>0).forEach(a=>{ const ar=roundArea(a.d), nm='Ø'+fmt(a.d)+'"';
+    addList(fix,'addSup').forEach(a=>{ const ar=roundArea(a.d), nm='Ø'+fmt(a.d)+'"';
       const cs=cOf('sup'); if(cs){ cs.area+=ar; cs.spec=Object.assign({},cs.spec||{}); cs.spec.add=(cs.spec.add||[]).concat([ductSpec(a.d,null,1)]); cs.size+=` + ${nm} added run`; cs.added=true }
       const ct=cOf('takeoff'); if(ct){ const items=((ct.spec&&ct.spec.items)||[]).map(x=>Object.assign({},x)).concat([{d:a.d,add:true,addRun:true,hide:isPkg()}]); const sp=takeoffFromItems(items); ct.spec=sp; ct.area=sp.area; ct.size=sp.size; ct.added=true }
       const cr=cOf('regs'); if(cr&&!cr.rbr){ const s=addRunFace(a.d); const items=((cr.spec&&cr.spec.items)||[]).map(x=>Object.assign({},x)).concat([{w:s,h:s,add:true}]); const sp=takeoffFromItems(items);
         cr.spec=sp; cr.core=sp.area; cr.area=sp.area*(cr.free||REG_FACE[regFor(fix)].free); cr.size=`${sp.size} · ${(REG_FACE[cr.face]||REG_FACE[regFor(fix)]).short}${cr.est?' (assumed — matched to the take-offs)':''}`; cr.added=true } });
-    (fix.addRet||[]).filter(a=>a&&a.d>0).forEach(a=>{ const ar=roundArea(a.d), nm='Ø'+fmt(a.d)+'"'; const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d);
+    addList(fix,'addRet').forEach(a=>{ const ar=roundArea(a.d), nm='Ø'+fmt(a.d)+'"'; const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d);
       const cr=cOf('ret'); if(cr){ cr.area+=ar; cr.spec=Object.assign({},cr.spec||{}); cr.spec.add=(cr.spec.add||[]).concat([ductSpec(a.d,null,1)]); cr.size+=` + ${nm} added return`; cr.added=true }
       const cg=cOf('grille'); if(cg){ const items=specBoxes(cg.spec,null,null,24).map(q=>({w:q.w,h:q.h,add:!!q.add})).concat([{w:g[0],h:g[1],add:true}]); const sp=takeoffFromItems(items); cg.spec=sp; cg.area=sp.area; cg.size=sp.size; cg.added=true } }) }
   // v2.12: on a split, an install-scope tick means that piece is being replaced — new metal sized to the unit, so it stops being a chokepoint (Stephen: a new duct system resolves the static and the score goes up)
@@ -4507,7 +4567,7 @@ function buildScene(){
       // filter grille, in the new-metal green beside the return that stays. The model counts it with the return duct and the filter face.
       // v2.50 — the run stops short of the corner and a radiused bend turns it down onto the grille (Stephen 2026-09-25: "connect them with a clean
       // bend, just like the other ducts"); the ceiling too close for a bend falls back to the straight drop it drew before.
-      { const adds=((S.fix&&S.fix.addRet)||[]).filter(a=>a&&a.d>0); if(adds.length&&rpG){ const n=Math.min(adds.length,3);
+      { const adds=addList(S.fix,'addRet'); if(adds.length&&rpG){ const n=Math.min(adds.length,3);
         adds.slice(0,n).forEach((a,i)=>{ const D=a.d, g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(D); const csA={a:D,b:D,round:true};
           const xc=rpG.x+rpG.dx/2+(i-(n-1)/2)*(D+6), yc=rpG.y+rpG.dy/2, z0=rpG.z+rpG.dz, L=30+i*6, zc2=z0+L; // zc2 = the corner where the run's centreline meets the drop's
           const gy2=ceilY-4, dn=gy2<yc; let R=bendR(csA,L,Math.abs(yc-gy2)); if(Math.abs(yc-gy2)<R+2||L<R+4) R=0;
@@ -4562,8 +4622,8 @@ function addRunStep(kind,i,dir){ const key=kind==='r'?'addRet':'addSup', list=ki
   const j=Math.max(0,Math.min(list.length-1,(list.indexOf(a.d)<0?list.findIndex(x=>x>=a.d):list.indexOf(a.d))+dir)); a.d=list[j]; if(kind==='r') a.g=addRetGrille(a.d) }
 function addRunRemove(kind,i){ const key=kind==='r'?'addRet':'addSup'; const L=(S.fix[key]||[]).slice(); L.splice(i,1); if(L.length) S.fix[key]=L; else delete S.fix[key] }
 function currentFixOrBase(slot){ if(S.fix[slot]) return JSON.parse(JSON.stringify(S.fix[slot])); const n=id=>Math.max(1,parseInt($('#'+id).value)||1);
-  if(slot==='takeoff'){ const s=takeoffSpec($('#ex_tk').value); return s?{list:s.items.map(a=>Object.assign({},a))}:{list:[]} }
-  if(slot==='regs'){ const rf=regFacesFor({},takeoffSpec($('#ex_tk').value)); return rf?{list:rf.spec.items.map(a=>Object.assign({},a))}:{list:[]} } // v2.45
+  if(slot==='takeoff'){ const s=takeoffSpec(exTkVal()); return s?{list:s.items.map(a=>Object.assign({},a))}:{list:[]} }
+  if(slot==='regs'){ const rf=regFacesFor({},takeoffSpec(exTkVal())); return rf?{list:rf.spec.items.map(a=>Object.assign({},a))}:{list:[]} } // v2.45
   if(slot==='grille'){ return grilleBase() }
   if(slot==='ret'){ const d=parseFloat($('#ex_ret_d').value); const r=parseWH($('#ex_ret_rect').value); return d?{d,n:n('ex_ret_n')}:(r?{w:r.w,h:r.h,n:n('ex_ret_n')}:null) }
   if(slot==='sup'){ const d=parseFloat($('#ex_sup_d').value); const r=parseWH($('#ex_sup_rect').value); return d?{d,n:n('ex_sup_n')}:(r?{w:r.w,h:r.h,n:n('ex_sup_n')}:null) }
@@ -4625,7 +4685,7 @@ function proposedChanges(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); 
   { const rl=rbrLine(); if(rl) L.push({k:'rbrnew',txt:rl,undo:()=>{ S.rbrNew=false }}) }
   const inst=S.fix.install||'reuse'; if(inst==='curb'){ const pr=c1('penR'), ps=c1('penS'); L.push({k:'install',txt:'New curb install design — cut two enlarged roof holes, set the curb, reattach the existing supply and return in the attic',undo:()=>{S.fix.install='reuse'}}); L.push({k:'plenums',txt:`New plenums through the roof to the attic, sized to the unit${pr&&ps?` (return ${pr.size.replace(' (unit opening)','')} · supply ${ps.size.replace(' (unit opening)','')})`:''} — roof penetrations score perfect`,undo:()=>{S.fix.install='reuse'}}) }
   else if(inst==='curb_old') L.push({k:'install',txt:'New curb install design — set the curb over the existing roof penetrations and reuse the existing supply and return drops',undo:()=>{S.fix.install='reuse'}});
-  { const add=takeoffSpec($('#new_tk_add').value); if(add&&!S.fix.takeoff){ const b=M.comps.find(c=>c.slot==='takeoff');
+  { const add=takeoffSpec(tkAddVal()); if(add&&!S.fix.takeoff){ const b=M.comps.find(c=>c.slot==='takeoff');
       L.push({k:'tkadd',txt:`Add supply take-offs: <b>${add.size}</b> on top of what is there${b?` — branches now carry ${CFM(b.max)} CFM`:''}`,undo:()=>{ set('new_tk_add','') }}) } }
   [['grille','Filter grille'],['ret','Return duct'],['sup',isPkg()?'Supply duct':'Supply plenum / trunk'],['takeoff','Supply take-offs'],['penR','Roof penetration — return'],['penS','Roof penetration — supply'],['elbR',(isCurbSetup()?'Curb':'Elbow')+' opening — return'],['elbS',(isCurbSetup()?'Curb':'Elbow')+' opening — supply']].forEach(([sl,nm])=>{ if(!S.fix[sl]) return; if(inst==='curb'&&/^(pen|elb)/.test(sl)) return; /* new plenums replace the penetrations AND the elbow / curb openings */ if(inst!=='reuse'&&/^elb/.test(sl)) return; /* v2.25: any curb removes the elbow */ const a=c0(sl), b=c1(sl); if(sl==='takeoff'&&b&&M.md){ const br=M.md.sizes.br; const per=Math.round(M.design/Math.max(1,(b.spec&&b.spec.n)||br.nRuns)); const vel=Math.round(per/(roundArea(br.d)/144)); const aVel=a?Math.round(M.design/Math.max(1,(a.spec&&a.spec.n)||1)/((a.area/Math.max(1,(a.spec&&a.spec.n)||1))/144)):null; L.push({k:sl,txt:`${nm}: ${a?a.size+(aVel?` (${CFM(Math.round(M.design/((a.spec&&a.spec.n)||1)))} CFM per run at ${aVel.toLocaleString()} fpm)`:''):'none'} → <b>${b.size}</b> — <b>${CFM(per)} CFM per run</b> at ${vel.toLocaleString()} fpm${(()=>{ const ra=c0('regs'), rb=c1('regs'); return (rb&&!S.fix.regs&&rb.est&&(!ra||ra.spec.size!==rb.spec.size))?` · new <b>${rb.spec.size}</b> cans and ${REG_FACE[rb.face].short} registers to take the bigger necks`:'' })()} <span class="note" style="text-transform:none;letter-spacing:0">— together they carry the ${CFM(M.design)} the unit puts out</span>`,undo:()=>{delete S.fix[sl]}}); return }
     if(sl==='grille'&&b&&M.md&&M.md.sizes.grille&&M.md.sizes.grille.kept&&M.md.sizes.grille.add){ const ad=M.md.sizes.grille.add; // v2.32 — the grille that is there stays; a second duct and a small grille go in beside it. v2.58: only when there IS a second grille — a grille kept as it is (big enough on its own, e.g. a two-grille fix left over from a bigger tonnage) has no .add, and reading ad.w there threw, which stopped renderCompare before the design strip was drawn (Stephen 2026-09-27: the curb buttons gone, the split rows showing on a package)
@@ -4635,9 +4695,9 @@ function proposedChanges(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); 
   if(S.fix.regs){ const a=c0('regs'), b=c1('regs'); if(b){ const per=b.spec&&b.spec.n?CFM(Math.round(b.maxAbs/b.spec.n)):null;
     L.push({k:'regs',txt:`Supply registers: ${a?a.size.replace(/ \(assumed.*\)$/,'')+' (the faces pass '+CFM(a.maxAbs)+' CFM)':'none'} → <b>${b.size}</b> (${CFM(b.maxAbs)} CFM${per?`, ${per} per face`:''}) <span class="note" style="text-transform:none;letter-spacing:0">— Goettl square faces, one per run, ${MD_REG_REC} fpm through the free area</span>`,undo:()=>{ delete S.fix.regs }}) } }
   // v2.47 — the added runs: one line each, with what the run carries on its own
-  if(!newDuctSystem()) (S.fix.addSup||[]).forEach(a=>{ const s=addRunFace(a.d);
+  addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d);
     L.push({k:'addsup',txt:`Add a supply run: one new <b>Ø${fmt(a.d)}"</b> off ${addRunFrom('s')} to its own <b>${s}×${s}</b> ${REG_FACE[regFor(S.fix)].short} register — the ducts that are there stay <span class="note" style="text-transform:none;letter-spacing:0">— up to ${CFM(addRunCfm('s',a))} CFM more supply, less static on the rest</span><div class="obal" style="margin-top:6px"><b>Not fully balanced.</b> ${addSupNote(M,true)}</div>`,undo:()=>{ S.fix.addSup=(S.fix.addSup||[]).filter(x=>x!==a); if(!S.fix.addSup.length) delete S.fix.addSup }}) });
-  (S.fix.addRet||[]).forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d);
+  addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d);
     L.push({k:'addret',txt:`Add a return: one new <b>Ø${fmt(a.d)}"</b> return duct with its own <b>${g[0]}×${g[1]}</b> filter grille, into ${addRunFrom('r')} — the return that is there stays <span class="note" style="text-transform:none;letter-spacing:0">— up to ${CFM(addRunCfm('r',a))} CFM more return, less static</span>`,undo:()=>{ S.fix.addRet=(S.fix.addRet||[]).filter(x=>x!==a); if(!S.fix.addRet.length) delete S.fix.addRet }}) });
   if(S.fix.insul&&S.fix.insul!=='none'&&M.ins.known&&M.ins.R<M.ins.Rf) L.push({k:'insul',txt:`Top up attic insulation R-${fmt(M.ins.R)} → <b>R-${fmt(M.ins.Rf)}</b> (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`,undo:()=>{S.fix.insul='none'}});
   if(regNew()!==regOld()&&!S.fix.regs){ const a=REG_FACE[regOld()], b=REG_FACE[regNew()]; const ca=c0('regs'), cb=c1('regs'); // v2.44 — the register face is part of the design; it reads last, after the install, the metal and the insulation
@@ -4717,7 +4777,7 @@ const SCOPE_SPLIT=[['hp','Convert from gas to heat pump'],
 const SCOPE_AIR={grille:'grille',rdrop:'ret',splen:'sup',ducts:'sup'}; // which ticks size metal in the airflow model
 function scopeState(){ const m=S.scope||{};
   if(!isPkg()){ const na={hp:S.sys!=='split_gas'};
-    const items=SCOPE_SPLIT.map(([k,l])=>{ if(k.indexOf('cfg:')===0){ const v=k.slice(4); return {k,l,cfg:v,on:supNew()===v,auto:false,na:!supAllowed(v),air:false} }
+    const items=SCOPE_SPLIT.map(([k,l])=>{ if(k.indexOf('cfg:')===0){ const v=k.slice(4); return {k,l,cfg:v,on:supNew()===v,auto:false,na:!supNewAllowed(v),air:false} }
       return {k,l,on:na[k]?false:!!m[k],auto:false,na:!!na[k],air:!!SCOPE_AIR[k]} });
     const lines=items.filter(i=>i.on).map(i=>i.l+(i.cfg==='trunk'?` (${trunkFtNew()} ft)`:''));
     return {split:true,items,redesign:null,curb:false,lines} }
@@ -4852,7 +4912,7 @@ function renderOutputs(o,light){
 // ---- design buttons under the 3D (v2.23) ------------------------------------
 // Everything that changes the design, where the design is being looked at: the install method (curb with the old
 // drops / curb with new plenums / keep the metal), one-tap duct and insulation fixes, Design to 100 and Clear.
-// Splits get the same fix buttons — the install radios are package-only because a split has no roof metal.
+// Splits get the same fix buttons — the install radios are package-only because a split has no roof metal. (v2.67: the strip is grouped tiles — see renderPlanActions.)
 function fixDucts(o){ designDucts(o) } // v2.28: the Manual D sizes on every spot the install keeps — insulation and the crew scope are left alone
 // v2.42 — THE DESIGN STRIP. Every button that changes the design sits right under the 3D, in one strip (Stephen 2026-09-20: "if we change
 // a design, we see the 3D visual change and the CFMs"): the install method, the one-tap fixes, Design to 100 / Clear, the room-by-room
@@ -4865,81 +4925,128 @@ function planReadoutHtml(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); 
     +`<span><span class="k">Chokepoints</span>${a(M0.chokes.length,M.chokes.length,String,M.chokes.length?'bad':'ok')}</span>`
     +(M.ins.known?`<span><span class="k">Attic</span>${a(M.ins.R,M.ins.Rf,v=>'R-'+fmt(v),M.ins.Rf>=R_MIN?'ok':'warn')}</span>`:'')
     +`<span><span class="k">Score</span>${a(M0.score.total,M.score.total,String,scoreCls(M.score.total))}</span>` }
-function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); if(!el) return; mode=mode||'plan';
-  const M=flowModel(o,S.fix); if(!M){ el.innerHTML=''; const ro=$('#planReadout'); if(ro&&mode==='plan') ro.innerHTML=''; return }
-  const pkg=isPkg()&&S.setup!=='separate'; const inst=S.fix.install||'reuse'; const ins=M.ins;
+// v2.67 — THE PLAN STRIP IN GROUPS (Stephen 2026-10-01: "its confusing, i like how we simplified the 1st tab. lets simplify this tab too … chose the
+// design, meaning coil or curb with or not, then chose your duct, new duct system, enlarge return, add a new return w/ grill, add a new supply, or fix
+// design to 100 … if we are doing a new duct system, we can lay that out auto, wye, or stepped trunk … make it grouped and make sense easy to understand").
+// Picture tiles in numbered groups, and only the tiles that apply to this setup:
+//   1 Design  — a package: Keep old setup · Curb, no plenum (the old drops) · Curb + plenum (new drops); a split: the coil and plenum Goettl installs —
+//               an upflow / downflow takes the cased coil (air handler) + plenum only; a horizontal gas furnace: plenum coil · extended plenum · cased coil
+//               + plenum; a horizontal heat pump: air handler + plenum · extended plenum. Under it, the replace chips (Keep old setup) or the plenum length.
+//   2 Ducts   — New duct system · Enlarge return · + Return & grille · + Supply · Fix to 100. An added run needs a plenum to tee into, so on a package it
+//               shows only where one comes down on that side — a square supply / return plenum, or a curb + plenum; + Supply is not there under a new duct system.
+//   3 Layout  — with a new duct system only: Auto · Wye Tree · Stepped Trunk (the Remote Box is gone, Stephen's call 2026-10-01).
+//   4 Attic   — R-38 · R-49 · R-60.
+// Then the plans and ↺ Start over. Fix ducts, the bar-type button, Convert to heat pump and the split's crew ticks left the strip (Fix to 100 still swaps
+// the faces to bar type and tops the attic to R-38; the Fix ▸ on each row of the chokepoint table still sizes one spot).
+const PSETUP_ICO={curb:'i-curb',elbow_pitched:'i-elp',elbow_flat:'i-elf',over_under:'i-ovu',reverse:'i-rev'};
+const PSETUP_NM={curb:'Curb',elbow_pitched:'Elbow · pitched',elbow_flat:'Elbow · flat',over_under:'Over & under',reverse:'Reverse elbow'};
+const PSCOPE_NM={stand:'New stand',elbow:'New elbow',trans:'Transition box',jack:'New roof jack',plen:'New plenums'};
+function supNewName(v){ return v==='plenum_coil'?'Plenum coil':(v==='trunk'?'Extended plenum':(S.sys==='split_hp'?'Air handler + plenum':'Cased coil + plenum')) }
+function pkgScopeShow(k){ if(k==='trans') return isOverUnder(); if(k==='plen') return true; return !isCurbSetup() }   // the pieces that exist on this roof
+// v2.67 — ENLARGE RETURN: the filter grille and the return duct sized to the unit (Manual D), each only where it is tight — the same rule Fix to 100
+// uses on the return side (a grille under the 300 fpm design face counts as tight: its size feeds the filter's pressure drop).
+function retTight(c,M){ if(!c||c.newMetal) return false; const want=needAreaFor(c.slot,M); return c.cls!=='ok'||!!c.neck||(c.slot==='grille'&&want!=null&&c.area<want-0.5) }
+function retCanGrow(o){ const M=flowModel(o,S.fix); return !!M&&['grille','ret'].some(sl=>retTight(M.comps.find(x=>x.slot===sl),M)) }
+function enlargeReturn(o){ ['grille','ret'].forEach(sl=>{ const M=flowModel(o,S.fix); if(!M) return; const c=M.comps.find(x=>x.slot===sl); if(!retTight(c,M)) return;
+    const f=mdFixSpec(sl,M)||legacyFix(sl,needAreaFor(sl,M),currentFixOrBase(sl)); if(f) S.fix[sl]=f }); save() }
+function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); if(!el) return; mode=mode||'plan'; const P=mode==='plan';
+  const M=flowModel(o,S.fix); if(!M){ el.innerHTML=''; const ro=$('#planReadout'); if(ro&&P) ro.innerHTML=''; return }
+  el.classList.add('v67');
+  const pkgAny=isPkg(), pkg=pkgAny&&S.setup!=='separate'; const inst=S.fix.install||'reuse'; const ins=M.ins; const nd=newDuctSystem(); const rooms=!!(S.rooms&&S.rooms.length);
   const anyFix=Object.keys(S.fix).some(k=>k!=='install'&&k!=='insul'&&S.fix[k])||inst!=='reuse'||(S.fix.insul&&S.fix.insul!=='none')||Object.values(S.scope||{}).some(Boolean)||!!S.rbrNew;
-  const ductLeft=M.comps.some(c=>c.cls!=='ok'&&!c.newMetal);
-  const insOn=!!(S.fix.insul&&S.fix.insul!=='none');
-  // v2.49: the target is a choice — R-38 (Las Vegas minimum) · R-49 (2021 IECC code) · R-60. A chip whose target the attic already meets is greyed.
-  const insChips=`<span class="insr">${['38','49','60'].map(k=>`<button class="btn sm ${S.fix.insul===k?'':'ghost'}" data-insulr="${k}"${(!ins.known||(ins.R!=null&&ins.R>=INS_TARGETS[k]))?' disabled style="opacity:.45"':''}>R-${k}</button>`).join('')}</span>`;
   const b=(id,lbl,on,dis,extra)=>`<button class="btn sm ${on?'':'ghost'}" data-pact="${id}"${extra||''}${dis?' disabled style="opacity:.45"':''}>${lbl}</button>`;
-  const rowInst= pkg?`<div class="prow"><span class="plab">Install</span>${[b('reuse','Keep existing roof metal',inst==='reuse',false,' data-inst="reuse"'),b('curb_old','Curb — old drops',inst==='curb_old',false,' data-inst="curb_old"'),b('curb','Curb — new plenums',inst==='curb',false,' data-inst="curb"')].join('')}</div>`:'';
-  const rowFix=`<div class="prow"><span class="plab">Design</span>${[b('d100','✦ Design to 100',false,false,mode==='plan'?' id="design100"':''),b('ducts','Fix ducts',false,!ductLeft),b('insul',insOn?'✓ Insulation to R-'+INS_TARGETS[S.fix.insul]:'Fix insulation',insOn,!ins.known&&!insOn,' data-insul="38"')+insChips,b('regbar',(regNew()==='bar'?'✓ ':'')+'Bar-type registers',regNew()==='bar',false,' data-reg="bar" title="Swap the faces there today for bar-type aluminum — 17% more free area at every vent. Design to 100 does this first when the register faces are the tight spot."'),b('clear','↺ Clear',false,!anyFix,mode==='plan'?' id="fixReset"':'')].join('')}${S.rooms&&S.rooms.length?b('rbrnew',(S.rbrNew?'✓ ':'')+'New duct system',S.rbrNew):''}</div>`;
-  // crew scope — the ticks that size new metal to the unit (split) or replace the roof metal (package); Plan tab only
-  let rowScope=''; if(mode==='plan'){ const sc=scopeState();
-    const chip=i=>`<label class="sc ${i.on?'on':''} ${i.na?'na':''}" title="${i.na?(i.k==='hp'?'the system in the home is already a heat pump':'not on this setup'):(i.air?'new metal sized to the unit — it stops being a chokepoint':'')}"><input type="checkbox" data-scope="${i.k}" ${i.on?'checked':''} ${i.na?'disabled':''}> ${i.l}${i.air?' <span class="est" style="color:var(--ok)">sized to the unit</span>':''}${i.req?' <span class="est">required</span>':''}</label>`;
-    if(sc.split){ const lay=sc.items.filter(i=>i.cfg), rest=sc.items.filter(i=>!i.cfg);
-      rowScope=`<div class="prow"><span class="plab">Supply layout</span>${lay.map(chip).join('')}</div><div class="prow" id="planScope"><span class="plab">Crew replaces</span>${rest.map(chip).join('')}</div>`; }
-    else rowScope=`<div class="prow" id="planScope"><span class="plab">Crew replaces</span>${sc.items.map(i=>chip(Object.assign({},i,{l:i.l.replace(' — required for this setup','')}))).join('')}${sc.curb?'<span class="note">— a curb redesign replaces all of this</span>':''}</div>`; }
-  // v2.47 — ADD A RUN: one more supply run, or a return with its own filter grille, beside the ducts that stay (the budget fix). Each one
-  // is sized by the model to make the spots it bypasses pass, and steps − / + or comes out from its chip.
-  const addS=(S.fix.addSup||[]), addR=(S.fix.addRet||[]); const supBlocked=newDuctSystem();
+  const T=(attrs,ico,lbl,xv,cls,dis,tip,tc)=>`<button type="button" class="${cls||''}"${attrs}${tc?` style="--tc:${tc}"`:''}${dis?' disabled':''}${tip?` title="${tpEsc(tip)}"`:''}><svg class="ico"><use href="#${ico}"/></svg><b>${lbl}</b><span class="xv">${xv||''}</span></button>`;
+  let n=0; const G=(id,title,body,pill)=>`<div class="pgrp"${id?` id="${id}"`:''}><div class="qh"><span class="pn">${++n}</span><span class="pt">${title}</span>${pill||''}</div>${body}</div>`;
+  const chipSc=i=>`<label class="sc ${i.on?'on':''} ${i.na?'na':''}"><input type="checkbox" data-scope="${i.k}" ${i.on?'checked':''} ${i.na?'disabled':''}> ${PSCOPE_NM[i.k]||i.l}${i.req?' <span class="est">required</span>':''}</label>`;
+  const lenChips=(k,vals,curV,unit,lab)=>{ const all=(curV&&!vals.includes(curV))?vals.concat([curV]).sort((a,c)=>a-c):vals;
+    return `<div class="psub" id="planLen"><span class="plab">${lab}</span><button type="button" class="chip sm ${curV?'':'on'}" data-${k}="">Auto</button>${all.map(v=>`<button type="button" class="chip sm ${curV===v?'on':''}" data-${k}="${v}">${fmt(v)}${unit}</button>`).join('')}</div>` };
+  // 1 · DESIGN
+  let g1='';
+  if(pkg){ const st=S.setup||'curb';
+    const tiles=T(' data-pact="reuse" data-inst="reuse"',PSETUP_ICO[st]||'i-elp','Keep old setup',PSETUP_NM[st]||'',inst==='reuse'?'on':'',false,'Keep the roof metal that is there','#6a52b3')
+      +T(' data-pact="curb_old" data-inst="curb_old"','i-curbo','Curb, no plenum','Old drops',inst==='curb_old'?'on':'',false,'A curb over the existing roof penetrations — the supply and return drops that are there stay','#6a52b3')
+      +T(' data-pact="curb" data-inst="curb"','i-curbn','Curb + plenum','New drops',inst==='curb'?'on':'',false,'A curb with new plenums through the roof to the attic, sized to the unit','#6a52b3');
+    let sub=''; if(P&&inst==='reuse'){ const items=scopeState().items.filter(i=>pkgScopeShow(i.k)); if(items.length) sub=`<div class="psub" id="planScope"><span class="plab">Replace</span>${items.map(chipSc).join('')}</div>` }
+    g1=G(P?'pgDesign':'','Design',`<div class="xtg ptg">${tiles}</div>${sub}`) }
+  else if(!pkgAny){ const opts=['plenum_coil','trunk','cased'].filter(supNewAllowed); const cur=supNew(); const one=opts.length===1;
+    const ICO={plenum_coil:'i-pcoil',trunk:'i-ext',cased:S.sys==='split_hp'?'i-ahu':'i-cased'};
+    const tiles=opts.map(v=>T(` data-scope="cfg:${v}"`,ICO[v],supNewName(v),'',(cur===v?'on':'')+(one?' fixed':''),false,one?'The one way this setup is installed':'','#3678A0')).join('');
+    const sub=!P?'':(cur==='trunk'?lenChips('tft',[8,12,16,20,30],num('new_trunk_ft'),' ft','Length'):lenChips('plen',[24,36,48,60],num('new_splen'),'″','Plenum'));
+    g1=G(P?'pgDesign':'','Design',`<div class="xtg ptg">${tiles}</div>${sub}`) }
+  // 2 · DUCTS
+  const addOkS=addRunsOk(S.fix,'s'), addOkR=addRunsOk(S.fix,'r'); const addS=addList(S.fix,'addSup'), addR=addList(S.fix,'addRet');
+  let dt='';
+  if(rooms) dt+=T(' data-pact="rbrnew"','i-nds','New duct system',S.rbrNew?rbrVentCount()+' runs':'',S.rbrNew?'on':'',false,'Replace the supply ducts, room by room','#0f8b8b');
+  else if(!pkgAny){ const on=!!(S.scope&&S.scope.ducts); dt+=T(' data-scope="ducts"','i-nds','New duct system',on?'new runs':'',on?'on':'',false,'Replace the supply duct system — plenum, trunks and take-offs','#0f8b8b') }
+  else if(P) dt+=T(' data-pact="rooms"','i-nds','New duct system','rooms first','',false,'A package\'s new duct system is laid out room by room — this opens the Rooms tab','#0f8b8b');   // a package needs the rooms to lay one out
+  { const on=!!(S.fix.ret||S.fix.grille); const can=on||retCanGrow(o); const sz=on?[S.fix.grille&&fixSpec(S.fix.grille),S.fix.ret&&fixSpec(S.fix.ret)].filter(Boolean).map(s=>s.size).join(' · '):(can?'too small':'passes');
+    dt+=T(' data-pact="enlret"','i-enl','Enlarge return',sz,on?'on':'',!can,'The return duct and the filter grille sized to the unit','#1f5fbf') }
+  if(addOkR) dt+=T(' data-pact="addret"','i-addr','+ Return & grille',addR.length?addR.length+' added':'','',addR.length>=4,'A second return duct with its own filter grille, into '+addRunFrom('r')+' — the return that is there stays','#1f5fbf');
+  if(addOkS&&!nd) dt+=T(' data-pact="addsup"','i-adds','+ Supply',addS.length?addS.length+' added':'','',addS.length>=4,'One more supply run off '+addRunFrom('s')+' to its own register — the ducts that are there stay','#0f8b8b');
+  dt+=T(` data-pact="d100"${P?' id="design100"':''}`,'i-star','Fix to 100','','go',false,'Every tight spot sized to the unit, the attic to R-38, and on a package the stand / metal the fit needs');
   const addChip=(k,i,txt)=>`<span class="addchip"><span>${txt}</span><button data-addstep="${k}:${i}:-1" aria-label="Smaller" title="Smaller">−</button><button data-addstep="${k}:${i}:1" aria-label="Bigger" title="Bigger">+</button><button data-addrm="${k}:${i}" aria-label="Take it out" title="Take it out">✕</button></span>`;
-  const rowAdd=`<div class="prow" id="planAdd"><span class="plab">Add a run</span>${b('addsup','+ Add supply',false,supBlocked||addS.length>=4,` title="${supBlocked?'A new duct system replaces the supply — there is nothing to add a run beside':'One more supply run off '+addRunFrom('s')+' to its own register — less static, more CFM, the ducts that are there stay'}"`)}${b('addret','+ Add return',false,addR.length>=4,` title="A second return duct with its own filter grille, into ${addRunFrom('r')} — less static, more return CFM, the return that is there stays"`)}${supBlocked?'':addS.map((a,i)=>addChip('s',i,`Supply Ø${fmt(a.d)}"`)).join('')}${addR.map((a,i)=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); return addChip('r',i,`Return Ø${fmt(a.d)}" + ${g[0]}×${g[1]}`) }).join('')}</div>`;
-  // v2.47 — PLANS: save the design on screen as one of up to four, and put a saved one back up. They line up side by side on 4 · Options.
+  const addRow=(addS.length||addR.length)?`<div class="psub" id="planAdd"><span class="plab">Added</span>${addS.map((a,i)=>addChip('s',i,`Supply Ø${fmt(a.d)}"`)).join('')}${addR.map((a,i)=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); return addChip('r',i,`Return Ø${fmt(a.d)}" + ${g[0]}×${g[1]}`) }).join('')}</div>`:'';
+  const g2=G(P?'pgDucts':'','Ducts',`<div class="xtg ptg">${dt}</div>${addRow}`);
+  // 3 · LAYOUT — with a new duct system
+  const g3=nd?G('planLayout','Layout',dnPickerHtml()):'';
+  // v2.58 — the rooms whose vents cannot pass their share at 500 fpm, each with its call (Push · Enlarge · Add)
+  const mr=(S.rbrNew&&RM&&RM.moreRooms)?RM.moreRooms.filter(r=>S.rooms.includes(r)):[];
+  const rowVents=mr.length?`<div class="prow" id="planVents"><span class="plab">Vents</span>${mr.map(r=>`<span class="vmroom"><b>${rbrEsc(r.n)}</b> ${rbrVmChips(r,'data-pvm')}</span>`).join('')}</div>`:'';
+  // 4 · ATTIC
+  let g4=''; { const lit=S.fix.insul;
+    const tiles=['38','49','60'].map(k=>T(` data-insulr="${k}"`,'i-attic','R-'+k,'',lit===k?'on':'',lit!==k&&(!ins.known||(ins.R!=null&&ins.R>=INS_TARGETS[k])),'Top the attic up to R-'+k,'#c77700')).join('');
+    const pill=ins.known?`<span class="qsrc ${ins.R<19?'bad':ins.R<R_MIN?'warn':''}">now R-${fmt(ins.R)}</span>`:`<span class="qsrc warn">depth?</span>`;
+    g4=G(P?'pgAttic':'','Attic',`<div class="xtg ptg">${tiles}</div>`,pill) }
+  // PLANS — save the design on screen as one of up to four (they line up on 4 · Options), and Start over
   let rowPlans=''; { const plans=S.plans||[]; const mt=planMatch(); const ed=planById(S.planEdit); const full=plans.length>=PLAN_MAX; const apId=S.planApproved;
     const chip=p=>`<button class="chip sm ${mt&&mt.id===p.id?'on':''}" data-pload="${p.id}" title="Put ${tpEsc(planName(p))} back up on the 3D">${tpEsc(planName(p))}${apId===p.id?' ✓':''}</button>`;
     const saveBtn= mt ? `<span class="note psaved">✓ Saved as <b>${tpEsc(planName(mt))}</b></span>`
-      : b('psave',`💾 Save ${plans.length?'as a new plan':'plan'}${plans.length?` (${plans.length} of ${PLAN_MAX})`:''}`,true,full,mode==='plan'?' id="planSave"':'')
+      : b('psave',`💾 Save ${plans.length?'as a new plan':'plan'}${plans.length?` (${plans.length} of ${PLAN_MAX})`:''}`,true,full,P?' id="planSave"':'')
         +((ed&&planSig(ed.d)!==planSig(planCapture()))?b('pupd',`Update ${tpEsc(planName(ed))}`,false,false,` data-pid="${ed.id}" title="Write this design over ${tpEsc(planName(ed))}"`):'');
-    rowPlans=`<div class="prow" id="planPlans"><span class="plab">Plans</span>${saveBtn}${plans.map(chip).join('')}${plans.length?b('popts','Compare on 4 · Options ›',false,false):''}${full&&!mt?'<span class="note">4 of 4 saved — delete one on 4 · Options to save another</span>':''}</div>` }
-  const rowLay=newDuctSystem()?dnPickerHtml():'';   // v2.57: with a new duct system, how the ducts are laid out
-  // v2.58 — the rooms whose vents cannot pass their share at 500 fpm, each with its call (Push · Enlarge · Add) — right under the 3D, where the design is looked at
-  const mr=(S.rbrNew&&RM&&RM.moreRooms)?RM.moreRooms.filter(r=>S.rooms.includes(r)):[];
-  const rowVents=mr.length?`<div class="prow" id="planVents"><span class="plab">Vents</span>${mr.map(r=>`<span class="vmroom"><b>${rbrEsc(r.n)}</b> ${rbrVmChips(r,'data-pvm')}</span>`).join('')}<span class="note">— no vent is added or enlarged unless you tap it</span></div>`:'';
-  el.innerHTML=rowInst+rowFix+rowLay+rowVents+rowAdd+rowScope+rowPlans;
-  const ro=$('#planReadout'); if(ro&&mode==='plan') ro.innerHTML=planReadoutHtml(o);
+    rowPlans=`<div class="prow pend" id="planPlans"><span class="plab">Plans</span>${saveBtn}${plans.map(chip).join('')}${plans.length?b('popts','Compare on 4 · Options ›',false,false):''}${full&&!mt?'<span class="note">4 of 4 saved — delete one on 4 · Options to save another</span>':''}${b('clear','↺ Start over',false,!anyFix,(P?' id="fixReset"':'')+' title="Back to the system as it is today"')}</div>` }
+  el.innerHTML=g1+g2+g3+rowVents+g4+rowPlans;
+  const ro=$('#planReadout'); if(ro&&P) ro.innerHTML=planReadoutHtml(o);
+  const done=()=>{ save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() };
   el.querySelectorAll('[data-pact]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.pact;
-    if(k==='reuse'||k==='curb_old'||k==='curb') S.fix.install=k;
+    if(k==='reuse'||k==='curb_old'||k==='curb'){ S.fix.install=k; if(!addRunsOk(S.fix,'s')) delete S.fix.addSup; if(!addRunsOk(S.fix,'r')) delete S.fix.addRet }   // v2.67: no plenum coming down on that side, nothing to tee an added run into
     else if(k==='d100') designTo100(o);
-    else if(k==='ducts') fixDucts(o);
-    else if(k==='insul') S.fix.insul=(S.fix.insul&&S.fix.insul!=='none')?'none':'38';
-    else if(k==='regbar'){ S.fix.reg=(regNew()==='bar')?'stamped':'bar'; if(S.fix.reg===regOld()&&!newDuctSystem()) delete S.fix.reg } // v2.44 · v2.45: back to the faces as found = no override left behind
+    else if(k==='enlret'){ if(S.fix.ret||S.fix.grille){ delete S.fix.ret; delete S.fix.grille; if(S.scope){ delete S.scope.rdrop; delete S.scope.grille } } else enlargeReturn(o) }
     else if(k==='clear'){ S.fix={install:'reuse',insul:'none'}; S.scope={}; S.rbrNew=false }
-    else if(k==='rbrnew'){ S.rbrNew=!S.rbrNew; if(S.rbrNew&&!isPkg()){ S.scope=S.scope||{}; S.scope.ducts=true } if(S.rbrNew) rbrModel(); }
-    else if(k==='addsup'||k==='addret'){ const kind=k==='addret'?'r':'s', key=kind==='r'?'addRet':'addSup'; const z=addRunSize(o,kind); S.fix[key]=(S.fix[key]||[]).concat([kind==='r'?{d:z.d,g:addRetGrille(z.d)}:{d:z.d}]) }
+    else if(k==='rbrnew'){ S.rbrNew=!S.rbrNew; if(!isPkg()){ S.scope=S.scope||{}; S.scope.ducts=S.rbrNew } if(S.rbrNew) rbrModel(); }   // v2.67: one tile — off takes the split's duct-system tick off with it
+    else if(k==='addsup'||k==='addret'){ const kind=k==='addret'?'r':'s'; if(!addRunsOk(S.fix,kind)) return; const key=kind==='r'?'addRet':'addSup'; const z=addRunSize(o,kind); S.fix[key]=(S.fix[key]||[]).concat([kind==='r'?{d:z.d,g:addRetGrille(z.d)}:{d:z.d}]) }
     else if(k==='psave'){ const p=planSaveNew(); if(p){ try{ flash('Saved as '+planName(p)+' — see it on 4 · Options') }catch(e){} } }
     else if(k==='pupd'){ const p=planUpdate(btn.dataset.pid); if(p){ try{ flash(planName(p)+' updated') }catch(e){} } }
     else if(k==='popts'){ go(9); return }
-    save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() });
-  el.querySelectorAll('[data-lay]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.lay; if(k==='auto') delete S.layout; else S.layout=k; if(S.rooms&&S.rooms.length){ try{ rbrModel() }catch(e){} } save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() });
+    else if(k==='rooms'){ go(10); return }
+    done() });
+  el.querySelectorAll('[data-lay]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.lay; if(k==='auto') delete S.layout; else S.layout=k; if(S.rooms&&S.rooms.length){ try{ rbrModel() }catch(e){} } done() });
   el.querySelectorAll('[data-pvm]').forEach(btn=>btn.onclick=()=>{ rbrSetVm(btn.dataset.vmid,btn.dataset.pvm); try{ rbrModel() }catch(e){} save(); renderCompare(); try{ if(S.rbrOpen) rbrRender() }catch(e){} if(typeof packStoryRefresh==='function') packStoryRefresh() });   // v2.58
-  el.querySelectorAll('[data-insulr]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.insulr; S.fix.insul=(S.fix.insul===k)?'none':k; save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() });
-  el.querySelectorAll('[data-addstep]').forEach(btn=>btn.onclick=()=>{ const [kind,i,dir]=btn.dataset.addstep.split(':'); addRunStep(kind,+i,+dir); save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() });
-  el.querySelectorAll('[data-addrm]').forEach(btn=>btn.onclick=()=>{ const [kind,i]=btn.dataset.addrm.split(':'); addRunRemove(kind,+i); save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() });
+  el.querySelectorAll('[data-insulr]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.insulr; S.fix.insul=(S.fix.insul===k)?'none':k; done() });
+  el.querySelectorAll('[data-addstep]').forEach(btn=>btn.onclick=()=>{ const [kind,i,dir]=btn.dataset.addstep.split(':'); addRunStep(kind,+i,+dir); done() });
+  el.querySelectorAll('[data-addrm]').forEach(btn=>btn.onclick=()=>{ const [kind,i]=btn.dataset.addrm.split(':'); addRunRemove(kind,+i); done() });
   el.querySelectorAll('[data-pload]').forEach(btn=>btn.onclick=()=>{ if(!planGuard(planById(btn.dataset.pload))) return; const p=planUse(btn.dataset.pload,false); if(!p) return; renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh(); try{ flash(planName(p)+' is back up on the 3D') }catch(e){} });
-  el.querySelectorAll('[data-scope]').forEach(cb=>cb.onchange=()=>{ const k=cb.dataset.scope;
-    if(k.indexOf('cfg:')===0){ S.supNew=k.slice(4); save(); syncSupCfg(); renderCompare(); return } // the three layouts are one choice, not three ticks
-    S.scope=S.scope||{}; S.scope[k]=cb.checked; save(); renderCompare() });
-  if(mode!=='plan') return;
+  el.querySelectorAll('[data-plen],[data-tft]').forEach(btn=>btn.onclick=()=>{ const tr=btn.dataset.tft!=null; set(tr?'new_trunk_ft':'new_splen',tr?btn.dataset.tft:btn.dataset.plen); syncSupCfg(); renderCompare() });
+  // the design tiles (a split's coil and plenum, the split's New duct system) are buttons; the package's replace chips are checkboxes
+  el.querySelectorAll('button[data-scope]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.scope;
+    if(k.indexOf('cfg:')===0){ const v=k.slice(4); if(!supNewAllowed(v)||btn.classList.contains('fixed')) return; S.supNew=v; save(); syncSupCfg(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh(); return }
+    S.scope=S.scope||{}; S.scope[k]=!S.scope[k]; done() });
+  el.querySelectorAll('input[data-scope]').forEach(cb=>cb.onchange=()=>{ const k=cb.dataset.scope; S.scope=S.scope||{}; S.scope[k]=cb.checked; save(); renderCompare() });
+  if(!P) return;
   if(S.rooms&&S.rooms.length){ try{ rbrModel(); rbrPlan2D() }catch(e){} } // the room design follows the equipment the SM is quoting
   rbrDuctViewSync();
 }
 
-// v2.57 — THE LAYOUT PICKER: Auto (★ the recommendation) · Wye Tree · Stepped Trunk · Remote Box. Each chip says what the worst room gets in that
-// layout; one line under them says why Auto picks what it picks, and one more if the layout had to bend to a hard rule. Sticky per plan (S.layout).
+// v2.57 — THE LAYOUT PICKER · v2.67: three picture tiles — Auto · Wye Tree · Stepped Trunk (the Remote Box is gone, Stephen 2026-10-01). Each says what the
+// worst room gets in that layout; one line under them says why Auto picks what it picks, and one more if the layout had to bend to a hard rule. Sticky per plan.
 function dnPickerHtml(){ const RN=(S.rbrNew&&S.rooms&&S.rooms.length&&RM)?RM.dn:null; const want=dnLayoutKey(); const auto=RN?RN.auto:{k:'wye',reason:'No room layout — the runs are dealt round the plenum; Wye Tree.'};
-  const worst=k=>{ const N=RN&&RN.nets[k]; if(!N||!N.worst) return ''; const w=N.worst; const pct=Math.round(w.pct*100); return pct>=100?'every room full CFM':`worst room ${CFM(Math.round(w.got))} CFM (${pct}%)` };
-  const tip=k=>{ const N=RN&&RN.nets[k]; if(!N||!N.worst) return ''; const w=N.worst; return ` title="${tpEsc(w.room)} gets ${CFM(Math.round(w.got))} of the ${CFM(Math.round(w.q))} CFM it is designed for in the ${dnName(k)} — ${dnTrunkWord(N)}"` };
+  const worst=k=>{ const N=RN&&RN.nets[k]; if(!N||!N.worst) return ''; const pct=Math.round(N.worst.pct*100); return pct>=100?'every room full':`worst room ${pct}%` };
+  const tip=k=>{ const N=RN&&RN.nets[k]; if(!N||!N.worst) return ''; const w=N.worst; return `${w.room} gets ${CFM(Math.round(w.got))} of the ${CFM(Math.round(w.q))} CFM it is designed for in the ${dnName(k)} — ${dnTrunkWord(N)}` };
   const star=k=>auto.k===k?'★ ':'';
-  const chip=(k,lbl,sub,dis,why)=>`<button class="chip sm laych ${(want===k)?'on':''}" data-lay="${k}"${dis?` disabled title="${tpEsc(why||'')}"`:(k!=='auto'?tip(k):'')}><b>${lbl}</b>${sub?`<small>${sub}</small>`:''}</button>`;
-  const boxOk=!!(RN&&RN.nets.box);
-  const chips=chip('auto',`Auto (★ ${dnName(auto.k)})`,worst(auto.k))+chip('wye',star('wye')+'Wye Tree',worst('wye'))+chip('step',star('step')+'Stepped Trunk',worst('step'))
-    +chip('box',star('box')+'Remote Box',boxOk?worst('box'):'no far cluster',!boxOk,RN?('Remote Box: '+(RN.boxWhy||'no qualifying cluster')):'Remote Box needs the rooms laid out');
+  const T=(k,ico,lbl,xv,ttl)=>`<button type="button" class="${want===k?'on':''}" data-lay="${k}" style="--tc:#0f8b8b"${ttl?` title="${tpEsc(ttl)}"`:''}><svg class="ico"><use href="#${ico}"/></svg><b>${lbl}</b><span class="xv">${xv||''}</span></button>`;
+  const tiles=T('auto','i-auto','Auto',dnName(auto.k),auto.reason)+T('wye','i-wye',star('wye')+'Wye Tree',worst('wye'),tip('wye'))+T('step','i-step',star('step')+'Stepped Trunk',worst('step'),tip('step'));
   const N=RN?(RN.nets[RN.chosen]||null):null; const hard=N?N.checks.filter(c=>c.hard&&!c.ok):[]; const note=N&&N.notes&&N.notes[0]?N.notes[0]:'';
   const pickTxt=want==='auto'?auto.reason:`${dnName(RN?RN.chosen:want)} picked — Auto would be ${dnName(auto.k)}: ${auto.reason}`;
-  return `<div class="prow" id="planLayout"><span class="plab">Layout</span>${chips}<p class="lreason" id="layReason">${tpEsc(pickTxt)}${(!hard.length&&note)?` <span id="layNote">· ${tpEsc(note)}</span>`:''}</p>${hard.length?`<p class="lreason bad" id="layHard">${tpEsc(hard[0].txt)}</p>`:''}</div>` }   // v2.57: one line under the chips — the reason, and the fit note when there is one
+  return `<div class="xtg ptg">${tiles}</div><p class="lreason" id="layReason">${tpEsc(pickTxt)}${(!hard.length&&note)?` <span id="layNote">· ${tpEsc(note)}</span>`:''}</p>${hard.length?`<p class="lreason bad" id="layHard">${tpEsc(hard[0].txt)}</p>`:''}` }
 // ---- 4 Fit ------------------------------------------------------------------
 function renderFitHero(o){ const el=$('#fitHero'); if(!el) return;
   if(isPkg()&&S.setup!=='separate'){
@@ -5003,9 +5110,9 @@ function designDetailsHtml(o){
     if(supNew()!=='trunk'){ const sl=num('new_splen')||num('ex_splen'); if(sl) add('Supply plenum', `${fmt(sl)}" long · take-offs at a natural pitch from the discharge end, last 12" of the back left clear`) }
     const rp=(typeof retPlenLen==='function')?retPlenLen():null; if(rp) add('Return plenum', `${fmt(rp)}" long at the full return face`);
   }
-  const tk=takeoffSpec(val('new_tk_add')); if(tk) add('Supply take-offs added', tk.size+' — on top of what is there');
-  if(!newDuctSystem()) (S.fix.addSup||[]).forEach(a=>{ const s=addRunFace(a.d); add('Added supply run', `Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}×${s} register — the ducts that are there stay. ${addSupNote(M)}`) });
-  (S.fix.addRet||[]).forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); add('Added return', `Ø${fmt(a.d)}" return duct + ${g[0]}×${g[1]} filter grille into ${addRunFrom('r')} — the return that is there stays`) });
+  const tk=takeoffSpec(tkAddVal()); if(tk) add('Supply take-offs added', tk.size+' — on top of what is there');
+  addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d); add('Added supply run', `Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}×${s} register — the ducts that are there stay. ${addSupNote(M)}`) });
+  addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); add('Added return', `Ø${fmt(a.d)}" return duct + ${g[0]}×${g[1]} filter grille into ${addRunFrom('r')} — the return that is there stays`) });
   if(M) [['grille'],['ret'],['sup'],['takeoff'],['regs'],['penR'],['penS']].forEach(([sl])=>{ const c=M.comps.find(x=>x.slot===sl); if(!c) return;
     if(!(S.fix[sl]||c.newMetal||c.scopeNew||(sl==='regs'&&regNew()!==regOld()))) return; add(c.name, `${c.size} — ${sl==='regs'?'the faces pass '+CFM(c.maxAbs)+' CFM':'carries '+CFM(c.max)+' CFM'}`) });
   if(M&&M.ins&&M.ins.known&&M.ins.Rf>M.ins.R) add('Attic insulation', `top up R-${fmt(M.ins.R)} → R-${fmt(M.ins.Rf)} (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`);
@@ -5163,7 +5270,7 @@ function optScoresHtml(M){ const s=optScores(M);
 function addSupNote(M,short){ const got=M&&M.delivered>=(M.need2!=null?M.need2:M.needs)-0.5;
   return short?`${got?'The airflow it needs':'More airflow'}, not fully balanced — one added run carries the extra air. You pick where it goes: a room that never got enough air, the kitchen, or the master.`
     :`${got?'This reaches the airflow the system needs':'This adds airflow'}, but the house will not be fully balanced — we are adding one run, not redoing the ducts, so the extra air all goes to one place. The trade-off: you get to tell us where. We would put it in a room that never got enough air, or the kitchen, or the master bedroom.` }
-function planAddSup(){ return newDuctSystem()?0:((S.fix&&S.fix.addSup)||[]).filter(a=>a&&a.d>0).length }
+function planAddSup(){ return addList(S.fix,'addSup').length }
 const pClone=x=>x===undefined?undefined:JSON.parse(JSON.stringify(x));
 function planCapture(){ const d={}; PLAN_KEYS.forEach(k=>{ if(S[k]!==undefined) d[k]=pClone(S[k]) }); d.f={}; PLAN_F.forEach(id=>{ d.f[id]=String(val(id)||'') });
   const vm={}; (S.rooms||[]).forEach(r=>{ if(r&&r.vm&&RBR_VM[r.vm]) vm[r.id]=r.vm }); if(Object.keys(vm).length) d.vm=vm;   // v2.58: the SM's per-room vent call (push / enlarge / add) is part of the design
@@ -5200,7 +5307,7 @@ function planChangeList(o,M,M0){ const out=[]; const inst=S.fix.install||'reuse'
     if(k==='install'){ out.push({k:'install',cat:'curb',t:inst==='curb'?'New curb + new plenums through the roof':'New curb over the existing roof holes'}); return }
     if(k==='rbrnew'){ out.push({k,cat:'rbr',t:'New duct system, designed room by room'}); return }
     if(k.indexOf('scope:')===0){ const l=(SCOPE_SPLIT.find(x=>'scope:'+x[0]===k)||[k,k.slice(6)])[1]; let cat=k; try{ if(k.indexOf('scope:cfg:')===0&&supNew()===supOld()) cat='layout' }catch(e){} out.push({k,cat,t:l.replace(/ — .*$/,'')}); return }
-    if(k==='tkadd'){ const a=takeoffSpec(val('new_tk_add')); out.push({k,cat:'takeoff',t:'Add supply take-offs'+(a?' '+a.size:'')}); return }
+    if(k==='tkadd'){ const a=takeoffSpec(tkAddVal()); out.push({k,cat:'takeoff',t:'Add supply take-offs'+(a?' '+a.size:'')}); return }
     if(k==='addsup'){ const a=((it.txt||'').match(/Ø[\d½¼¾.]+"/)||[''])[0]; out.push({k,cat:'addsup',t:`Add a supply run ${a}`.trim()}); return }
     if(k==='addret'){ const a=((it.txt||'').match(/Ø[\d½¼¾.]+"/)||[''])[0], g=((it.txt||'').match(/\d+×\d+/)||[''])[0]; out.push({k,cat:'addret',t:`Add a return ${a}${g?' + '+g+' filter grille':''}`.trim()}); return }
     if(k==='insul'){ out.push({k,cat:'insul',t:`Attic insulation R-${fmt(M.ins.R)} → R-${fmt(M.ins.Rf)}`}); return }
@@ -6292,9 +6399,9 @@ function summaryText(o){
     if(inst!=='reuse') L.push(`Install proposal: ${inst==='curb'?'NEW CURB — two enlarged roof holes, new plenum drops to the attic, existing ducts reattached':'NEW CURB over the existing roof penetrations — existing drops reused'}`);
     { const sc=scopeState(); if(sc.lines.length) L.push(`INSTALL SCOPE: ${sc.lines.join(' · ')}`); }
     if(M.bal&&M.bal.ratio!=null) L.push(`Supply vs return: return side ${CFM(M.bal.ret)} CFM at its tightest vs supply ${CFM(M.bal.sup)} → ${M.bal.ratio>=1?'return leads (good)':'MORE SUPPLY THAN RETURN — open the return side'}`);
-    { const add=takeoffSpec($('#new_tk_add').value); if(add&&!S.fix.takeoff) L.push(`Proposed added supply take-offs: ${add.size}`) }
-    if(!newDuctSystem()) (S.fix.addSup||[]).forEach(a=>{ const s=addRunFace(a.d); L.push(`ADDED SUPPLY RUN: Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}x${s} register (up to ${CFM(addRunCfm('s',a))} CFM) — existing ducts stay. NOT FULLY BALANCED: one added run carries the extra air — customer picks where it goes (a room that never got enough air, the kitchen or the master)`) });
-    (S.fix.addRet||[]).forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); L.push(`ADDED RETURN: Ø${fmt(a.d)}" return duct + ${g[0]}x${g[1]} filter grille into ${addRunFrom('r')} (up to ${CFM(addRunCfm('r',a))} CFM) — existing return stays`) });
+    { const add=takeoffSpec(tkAddVal()); if(add&&!S.fix.takeoff) L.push(`Proposed added supply take-offs: ${add.size}`) }
+    addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d); L.push(`ADDED SUPPLY RUN: Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}x${s} register (up to ${CFM(addRunCfm('s',a))} CFM) — existing ducts stay. NOT FULLY BALANCED: one added run carries the extra air — customer picks where it goes (a room that never got enough air, the kitchen or the master)`) });
+    addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); L.push(`ADDED RETURN: Ø${fmt(a.d)}" return duct + ${g[0]}x${g[1]} filter grille into ${addRunFrom('r')} (up to ${CFM(addRunCfm('r',a))} CFM) — existing return stays`) });
     M.comps.forEach(c=>L.push(`  ${c.name}: ${strip(c.size)} · ${sqinTxt(c.area)}${c.newMetal?' · manufacturer connection, sized to the unit → OK':` · ${c.vel} fpm · max ${CFM(c.max)} CFM → ${statusTxt(c,M).toUpperCase()}`}${c.neck?` (smaller than the ${strip(c.feed.size)} duct through it — must be enlarged)`:''}${c.fixed?' (PROPOSED)':''}${c.newMetal?' (NEW)':''}`));
     if(M.ins.known) L.push(`Insulation: R-${fmt(M.ins.R)}${M.ins.src&&M.ins.src!=='entered'?' ('+M.ins.src+')':''}${M.ins.R<R_MIN?' — UNDER R-38 minimum':''}${M.ins.target?` → top up to R-${M.ins.target} (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`:''}`); } }
   { const P=issuePairs(o); if(P.length){ L.push(''); L.push('WHAT WAS WRONG → HOW THIS DESIGN FIXES IT');
@@ -7960,13 +8067,14 @@ function dnMaterials(N){ const flex={}, ty={}, box={}, coll={}, damp={}, keep={}
   Object.values(N.nodes).forEach(n=>{ if(n.t==='ty') bump(ty,n.name,1); if(n.t==='box') bump(box,`${n.wIn}×${n.lIn}×${n.hIn}" insulated · Ø${n.inD}" inlet`,1) });
   return {flex,ty,box,coll,damp,keep} }
 // ---------------------------------------------------------------- the room design's hook: build the chosen layout, the other two for their chips
-function dnLayoutKey(){ return DN_LAY[S.layout]?S.layout:'auto' }
+function dnLayoutKey(){ return (DN_LAY[S.layout]&&(DN_BOX||S.layout!=='box'))?S.layout:'auto' }   // v2.67: a stored Remote Box reads as Auto
 // what the network was laid out against — the plenum it comes off and the equipment; a 3D drawn after one of these changed rebuilds the room design first
 function dnSig(){ try{ const pl=dnPlenum(); return [pl.kind,pl.L,pl.W,pl.H,(pl.faces||[]).map(f=>f.k+f.len+'/'+f.h).join(','),S.tons,(S.fix&&S.fix.install)||'',S.orient||'',S.setup||'',S.sys||'',S.layout||'',S.pkFree||'',S.pkRet||'',S.rbrNew?1:0,unitRot()].join('|') }catch(e){ return '' } }
 function dnCtx(regs,A){ const r=unitRot(); const pl=dnRotPl(dnPlenum(),r); const U=[S.unitPos.x+3,S.unitPos.y+3];
   const downs=(RM&&RM.down)?RM.down.reduce((s,x)=>s+x.n+(x.add||[]).length,0):0;
   return {regs,U,pl,r,tons:A.tons,fr:A.fr,asp:A.asp,telRet:A.telRet,downs,pkg:isPkg()&&S.setup!=='separate',telRef:(DN_TEL&&S.rbrNew)?DN_TEL.total:null} }
-function dnAll(regs,A,downs){ const ctx=dnCtx(regs,A); if(downs!=null) ctx.downs=downs; const cl=dnCluster(regs,ctx.U);
+const DN_BOX=false;   // v2.67: the Remote Box is gone — Auto · Wye Tree · Stepped Trunk (Stephen 2026-10-01); dnCluster / dnBoxNode stay for the record
+function dnAll(regs,A,downs){ const ctx=dnCtx(regs,A); if(downs!=null) ctx.downs=downs; const cl=DN_BOX?dnCluster(regs,ctx.U):null;
   const box=cl?Object.assign({},cl,{share:cl.q/(regs.reduce((s,g)=>s+g.q,0)||1)}):null; const out={auto:null,nets:{},ctx,box};
   const build=(k,fr)=>{ try{ const N=dnBuild(k,Object.assign({},ctx,{box,fr})); N.fr=fr; return N }catch(e){ try{ console.warn('Fit Check: layout',k,e) }catch(_){} return null } };
   const W0=build('wye',A.fr);
