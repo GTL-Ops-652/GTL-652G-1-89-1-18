@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-10-01 v2.67 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-10-02 v2.68 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -985,6 +985,95 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
   .ptg>button{min-height:76px}
   .pgrp>.qh{font-size:12px}
 }
+/* ===== v2.68 — THE BUILD CONDENSED, THE LOAD DETAILS UNDER IT, REQUIRED vs OPTIONAL DUCT TILES, THE PLAN STRIP ON ONE LINE, THE SUMMARY AS A
+   CLIENT PAGE, NIGHT MODE PER TAB, THE JOB-CODE TILE (Stephen 2026-10-02). */
+/* the build on one row */
+.xq.buildrow{display:flex;align-items:center;gap:10px;margin-top:12px}.buildrow .qh{margin:0;flex:none}.buildrow .xtg{flex:1;min-width:0}
+.xtg.mini>button{min-height:40px;flex-direction:row;gap:6px;padding:6px 8px;border-radius:11px}.xtg.mini>button .ico{width:20px;height:20px}.xtg.mini>button b{font-size:12px;white-space:nowrap}
+.xtg.mini>button.on::after{width:14px;height:14px;top:4px;right:4px;background-size:10px}
+/* the load details — the Room Scan app's Manual J inputs, folded under the attic */
+details.fold.ld{margin-top:10px}details.fold.ld>summary .fs{font-size:12.5px}
+.ldgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px 10px;margin-top:10px}
+.ldgrid .field label{display:flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;color:var(--muted);min-height:16px}
+.ldgrid .field input,.ldgrid .field select{font-size:14px;padding:8px 10px;border-radius:10px;border-width:1.5px;min-width:0;width:100%}
+.ldb{font-size:9.5px;font-weight:800;letter-spacing:.4px;text-transform:uppercase;padding:1px 7px;border-radius:999px;background:#eef1f4;color:#5b6b7c;white-space:nowrap}
+.ldb.scan{background:#e3f5ec;color:#0a6b46;border:1px solid #a9dcc0}.ldb.set{background:#eaf2f9;color:var(--db);border:1px solid #bcd3e6}
+.ldout{margin-top:10px;font-size:13px;line-height:1.4;padding:9px 12px;border-radius:12px;background:#f2f6fa;border:1px solid var(--line)}
+.ldout.warn{background:var(--warnbg);border-color:#f0c48a}.ldout.na{color:var(--muted)}
+.ldout b{font-family:var(--serif);font-size:15px}
+.ldout .app{display:block;font-size:12px;color:var(--muted);margin-top:3px}
+.ldcomp{display:flex;flex-wrap:wrap;gap:4px 10px;margin-top:6px;font-size:11.5px;color:var(--muted)}.ldcomp span b{font-family:var(--sans);font-size:11.5px;color:var(--ink)}
+/* unit & ducts: what we need, then the optional additions a row down */
+#dtGrid{display:block}
+.dtg.req{grid-template-columns:repeat(5,minmax(0,1fr))}
+.dtlbl{display:flex;align-items:center;gap:8px;margin:12px 0 6px;font-size:10.5px;font-weight:800;letter-spacing:.7px;text-transform:uppercase;color:var(--muted)}.dtlbl::after{content:'';flex:1;height:1px;background:var(--line)}
+.dtg.opt{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.dtg.opt>button{min-height:50px;flex-direction:row;justify-content:flex-start;gap:8px;padding:6px 10px;border-radius:11px;opacity:.92}
+.dtg.opt>button .ico{width:22px;height:22px}.dtg.opt>button b{font-size:11.5px;text-align:left}.dtg.opt>button .xv{font-size:11px;margin-left:auto;text-align:right;max-width:52%}
+.dtg.opt>button.on::after{top:4px;right:4px;width:14px;height:14px;background-size:10px}
+@media (max-width:640px){ .dtg.req{grid-template-columns:repeat(3,minmax(0,1fr))} .dtg.opt{grid-template-columns:1fr;gap:5px} .dtg.opt>button{min-height:42px} .ldgrid{grid-template-columns:repeat(2,minmax(0,1fr))} .xq.buildrow{flex-wrap:wrap} .buildrow .xtg{flex:1 1 100%} }
+/* the fourth way in — a Room Scan job code */
+.srcrow{grid-template-columns:minmax(0,1.25fr) minmax(0,1fr) minmax(0,1fr) minmax(0,.85fr)}
+.xt.code{--tc:#6a52b3}
+@media (max-width:640px){ .srcrow{grid-template-columns:repeat(2,minmax(0,1fr))} }
+/* the plan strip on one line: size · unit · Will it Fit — tap one and its choices drop down, pick, it closes. The strip is the dark band at the top of the
+   Plan tab and carries the comfort line (Stephen: "will it moves to the upper dark border section if needed") */
+.eqstrip{background:var(--grad);color:#fff;border-color:transparent;box-shadow:var(--shadow);padding:10px 12px 10px}
+.eqstrip .plab{color:#cfe3f2}
+.eqstrip .fitbtn{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.35);color:#fff}
+.eqstrip .hero.compact{background:transparent;box-shadow:none;margin:8px 0 0;padding:8px 2px 0;border-top:1px solid rgba(255,255,255,.22);border-radius:0;overflow:visible}
+.eqline{display:flex;align-items:stretch;gap:8px;position:relative;flex-wrap:wrap}
+details.eqpick{position:static}details.eqpick>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:7px;padding:7px 10px;border-radius:12px;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);color:#fff;min-height:40px;user-select:none;white-space:nowrap}
+details.eqpick>summary::-webkit-details-marker{display:none}
+details.eqpick>summary .plab{font-size:10px;letter-spacing:.9px;text-transform:uppercase;opacity:.75;font-weight:800}
+details.eqpick>summary b{font-size:14px;font-weight:800;display:inline-flex;align-items:center;gap:5px}
+details.eqpick>summary .car{font-size:10px;opacity:.8;transition:transform .15s}details.eqpick[open]>summary .car{transform:rotate(180deg)}
+details.eqpick[open]>summary{background:rgba(255,255,255,.22)}
+details.eqpick>summary b.auto::after{content:'load';font-size:9px;letter-spacing:.6px;text-transform:uppercase;padding:1px 6px;border-radius:999px;background:#9fe2bd;color:#0a3d24;margin-left:2px}
+.eqpanel{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:12;background:var(--db);border:1px solid rgba(255,255,255,.3);border-radius:14px;padding:10px 12px;box-shadow:0 10px 26px rgba(0,0,0,.35);display:flex;flex-direction:column;gap:8px}
+.eqpanel .chips{display:flex;flex-wrap:wrap;gap:6px}
+.eqline .fitbtn{margin-left:auto}
+.eqstrip .note{margin-top:0;font-size:12px;color:#d5e3ee}
+.eqstrip #flowNote{margin-top:6px}
+@media (max-width:640px){ .eqline{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px} details.eqpick>summary{padding:6px 8px;min-height:36px;overflow:hidden} details.eqpick>summary b{font-size:12.5px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block} #tierCur .eqb{display:none} .eqline .fitbtn{grid-column:1/-1;margin-left:0;justify-content:center} .xtg.mini>button b{white-space:normal;font-size:11px} }
+/* the plan hero on one line: the score and the rail, nothing explained */
+.hero.compact{padding:10px 16px 12px;margin:10px 0}
+.hero.compact .hrow{display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+.hero.compact .hk{flex:none}.hero.compact .hv{font-size:20px;margin:0;flex:none}
+.hero.compact .railwrap{flex:1;min-width:160px}.hero.compact .rail{margin:0 0 3px;height:9px}.hero.compact .railkey{font-size:10.5px}
+/* the summary as a client page */
+.hero .hs.short{font-size:13.5px;max-width:none}
+.pairs .why{font-size:12.5px}
+#sumCard .ba .d{font-size:12px}
+.tp .hint,.tp p.help{font-size:12.5px}
+.tp ol.steps2 li .ct{font-size:14px}
+/* night mode — one tab at a time, remembered on the device */
+body.night{--bg:#0e1621;--ink:#e6edf5;--muted:#a9b8c8;--line:#2f4257;--okbg:#153a28;--warnbg:rgba(224,123,18,.26);--badbg:rgba(205,30,31,.28);--shadow:0 6px 20px rgba(0,0,0,.5)}
+body.night .card,body.night .step,body.night .seg button,body.night .chip,body.night .xtg>button,body.night .xt,body.night .dim,body.night .msg,body.night .fact,body.night details.fold,body.night details.fold>summary,body.night details.fold.opt>summary,body.night details.fold.opt[open]>summary,body.night details.fold.src,body.night .dpb,body.night .footbar,body.night .rbrbtn,body.night .scanbox,body.night .ucard,body.night .ocard,body.night .tier,body.night textarea,body.night input,body.night select,body.night .ldout,body.night .rbadge.none,body.night .pgrp,body.night .ptg,body.night .xtg.ptg>button,body.night .sect .sb,body.night .part,body.night .alts,body.night .readout,body.night .chk,body.night .pwabar,body.night dialog,body.night .vleg,body.night .scanbar{background:#172230;color:var(--ink);border-color:var(--line)}
+body.night .dim,body.night .msg,body.night details.fold>summary,body.night .fact,body.night .ldout,body.night .sizeband.v66 .dim,body.night .sizeband.v66 .rechero.na,body.night .step .n{background:#1f2d3d}
+body.night .sizeband.v66 .dim.mj{background:#173828}body.night .sizeband.v66 .dim.md{background:#153838}
+body.night .seg button.on,body.night .chip.on{background:#24415f;color:#fff;border-color:#4d79a6}
+body.night .xtg>button b,body.night .xt b,body.night .xv,body.night .field label,body.night label,body.night .ldb,body.night .step,body.night .step .n{color:var(--ink)}
+body.night .ldb{background:#243445}body.night .ldb.scan{background:#153a28;color:#9fe2bd}body.night .ldb.set{background:#1f3550;color:#bcd3e6}
+body.night .xt.ok,body.night .dt.is-ok:not(.on){background:#173828;border-color:#2f7a52}body.night .xt.ok .xv,body.night .dt.is-ok:not(.on) .xv{color:#9fe2bd}
+body.night .dt.is-warn:not(.on){background:#3a2a12;border-color:#8a5a1a}body.night .dt.is-bad:not(.on){background:#3d1c1c;border-color:#8f2a2a}body.night .dt.is-need:not(.on),body.night .xt.need:not(.on){background:#3a3210;border-color:#8a7a1a}
+body.night .step.active{border-color:#77B2D0;color:#cfe3f2}body.night .step.done .n,body.night .step.active .n{background:#3678A0;color:#fff}
+body.night .status.ok{background:#153a28}body.night .status.warn{background:#3a2a12}body.night .status.bad{background:#3d1c1c}
+body.night table,body.night th,body.night td{color:var(--ink);border-color:var(--line)}body.night tr.side td{background:#1f2d3d}
+body.night .xtg>button::before,body.night .xt::before{opacity:.16}
+body.night .btn.ghost{background:transparent;color:#cfe3f2;border-color:#4d79a6}
+body.night .facts .fact .ico,body.night .qh .ico{color:#77B2D0}
+body.night .ldout.warn{background:rgba(224,123,18,.2)}
+body.night .scanbox.top,body.night .scanbox{color:var(--ink)}
+body.night h1,body.night h2,body.night h3,body.night h4,body.night .kv b,body.night .chklist li,body.night .chklist li span,body.night .part .k,body.night .part .m,body.night .pl,body.night details.adv>summary,body.night .airtbl th,body.night .airtbl td,body.night .sh .st{color:var(--ink)}
+body.night details.adv,body.night details.adv>summary,body.night .ws,body.night .chk{background:#1f2d3d;border-color:var(--line)}
+body.night .chklist li{background:#172230}
+body.night .viewer+.help,body.night p.help,body.night .note{color:#a9b8c8}
+body.night .sum,body.night textarea.sum{background:#111a26;color:#d8e2ec}
+body.night .bax,body.night .pair .was,body.night .pair .now,body.night .shots .cap{color:var(--ink)}
+body.night .pair .was{background:#3d1c1c}body.night .pair .was.warn{background:#3a2a12}body.night .pair .now{background:#173828}body.night .pair .now.open{background:#1f2d3d}
+body.night .bax.ok{background:#173828}body.night .bax.warn{background:#3a2a12}body.night .bax.bad{background:#3d1c1c}body.night .bax.na{background:#1f2d3d}
+.iconbtn.night{font-size:15px;line-height:1;min-width:38px}
 </style>
 </head>
 <body>
@@ -995,6 +1084,7 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
   <span class="netpill" id="netPill" hidden title="No connection — running from the copy saved on this device">Offline</span>
   <button class="iconbtn" id="btnInstall" hidden title="Install Fit Check on this device">⤓ Install</button>
   <label class="iconbtn" for="openPack" id="btnOpenPack" title="Open a design file — a Fit Check design texted or emailed to you">&#128194;</label><input type="file" id="openPack" accept=".html,.htm,text/html" hidden>
+  <button class="iconbtn night" id="nightBtn" title="Night mode for this tab" aria-pressed="false">&#9790;</button>
   <button class="iconbtn" id="btnSettings" title="Thresholds">⚙︎</button>
   <button class="iconbtn" id="btnReset" title="Start over">↺</button>
 </div></header>
@@ -1030,6 +1120,7 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
 <svg class="fcsprite" width="0" height="0" aria-hidden="true" focusable="false"><defs>
 <symbol id="i-scan" viewBox="0 0 48 48"><rect x="14" y="5" width="20" height="38" rx="4"/><path d="M21 9h6"/><path d="M19 19v-3.5h3.5M28.5 15.5H32V19M32 28v3.5h-3.5M22.5 31.5H19V28"/><circle cx="25.5" cy="23.5" r="2.3" fill="currentColor" stroke="none"/></symbol>
 <symbol id="i-pin" viewBox="0 0 48 48"><path d="M24 43s-12-12.5-12-22a12 12 0 0 1 24 0c0 9.5-12 22-12 22z"/><circle cx="24" cy="21" r="4.5"/></symbol>
+<symbol id="i-code" viewBox="0 0 48 48"><rect x="6" y="13" width="36" height="22" rx="4"/><path d="M14 20v8M20 20v8M26 20v8M32 20v8M34 20v8"/></symbol>
 <symbol id="i-sqft" viewBox="0 0 48 48"><rect x="8" y="15" width="32" height="25" rx="2.5"/><path d="M8 9h32M8 6.5v5M40 6.5v5"/><text x="24" y="32.6" text-anchor="middle" font-size="12.5" font-weight="800" font-family="Montserrat,-apple-system,Segoe UI,Roboto,sans-serif" fill="currentColor" stroke="none">ft²</text></symbol>
 <symbol id="i-house" viewBox="0 0 48 48"><path d="M6 23 24 8l18 15"/><path d="M11 19v20h26V19"/><path d="M20 39V29h8v10"/></symbol>
 <symbol id="i-old" viewBox="0 0 48 48"><path d="M6 23 24 8l18 15"/><path d="M11 19v20h26V19"/><path d="M31 13.5V7h5v10.5"/><path d="M15.5 24l3 3-2 3 3 3"/><path d="M26 39v-9h6v9"/></symbol>
@@ -1100,8 +1191,17 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
       </div>
       <div id="fcFloors"></div>
     </div></details>
-    <div class="xq" id="buildQ"><div class="qh"><svg class="ico"><use href="#i-house"/></svg><span>Build</span><span class="qsrc" id="buildSrc"></span></div>
-      <div class="seg xtg x3" id="buildSeg">
+    <!-- v2.68 — a Room Scan job code: the tech's 7-day hand-off, typed here (the #scan= / #job= links land on the same path) -->
+    <details class="fold opt src" id="codeFold"><summary><span class="car">&#9656;</span><span>Room Scan job code</span><span class="fs"></span><span class="fe">Tap to enter</span></summary><div class="fb">
+      <div class="fcrow">
+        <div class="field" style="flex:2;min-width:180px"><label>Job code from the Room Scan app</label><input id="rsCode" type="text" inputmode="text" autocapitalize="characters" autocomplete="off" spellcheck="false" placeholder="GTL-XXXXXX"></div>
+        <div class="field" style="max-width:120px"><label>&nbsp;</label><button class="btn sm" id="rsGo" style="width:100%">Load</button></div>
+      </div>
+      <div class="msg" id="rsStat" style="display:none;margin-top:8px"></div>
+    </div></details>
+    <!-- v2.68 — the build on one row (Stephen: "condense the build … always show the insulation"); the load details fold under the attic -->
+    <div class="xq buildrow" id="buildQ"><div class="qh"><svg class="ico"><use href="#i-house"/></svg><span>Build</span><span class="qsrc" id="buildSrc"></span></div>
+      <div class="seg xtg x3 mini" id="buildSeg">
         <button data-v="standard" style="--tc:#3678A0"><svg class="ico"><use href="#i-house"/></svg><b>Standard</b></button>
         <button data-v="pre1980" style="--tc:#9a5b25"><svg class="ico"><use href="#i-old"/></svg><b>Pre&#8209;1980</b></button>
         <button data-v="hieff" style="--tc:#1f8a4c"><svg class="ico"><use href="#i-eco"/></svg><b>High&#8209;efficiency</b></button>
@@ -1115,6 +1215,10 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
         <div class="rbadge none" id="insulRead"></div>
       </div>
     </div>
+    <details class="fold opt ld" id="ldFold"><summary><span class="car">&#9656;</span><span>Load details</span><span class="fs" id="ldFoldSum">year · people · walls · windows · air · ducts · roof</span><span class="fe">Tap to edit</span></summary><div class="fb">
+      <div class="ldgrid" id="ldGrid"></div>
+      <div class="ldout na" id="ldOut"></div>
+    </div></details>
     <div id="mjOut"></div>
   </div>
 
@@ -1152,16 +1256,21 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
   <div class="card xcard" id="airflowCard">
     <h2>Unit &amp; ducts today</h2>
     <!-- v2.66 — one tile per piece, showing what is there (or assumed); tap a tile to open just that piece -->
-    <div class="xtg dtg" id="dtGrid">
+    <div id="dtGrid">
+      <div class="xtg dtg req">
       <button type="button" class="dt c-eq" data-pane="oldSplitFold" id="dtEq"><svg class="ico"><use href="#i-furn"/></svg><b id="dtEqL">Furnace &amp; coil</b><span class="xv"></span></button>
       <button type="button" class="dt c-eq hidden" data-pane="oldPkgFold" id="dtPk"><svg class="ico"><use href="#i-pkg"/></svg><b>Roof unit</b><span class="xv"></span></button>
-      <button type="button" class="dt c-st" data-pane="dpStat"><svg class="ico"><use href="#i-gauge"/></svg><b>Static</b><span class="xv"></span></button>
       <button type="button" class="dt c-ret" data-pane="dpRet"><svg class="ico"><use href="#i-ret"/></svg><b>Return plenum</b><span class="xv"></span></button>
       <button type="button" class="dt c-ret" data-pane="dpGr"><svg class="ico"><use href="#i-grille"/></svg><b>Filter grille</b><span class="xv"></span></button>
       <button type="button" class="dt c-sup" data-pane="dpSup"><svg class="ico"><use href="#i-sup"/></svg><b>Supply plenum</b><span class="xv"></span></button>
       <button type="button" class="dt c-sup" data-pane="dpTk"><svg class="ico"><use href="#i-tk"/></svg><b>Take-offs</b><span class="xv"></span></button>
+      </div>
+      <div class="dtlbl">Optional additions</div>
+      <div class="xtg dtg opt">
+      <button type="button" class="dt c-st" data-pane="dpStat"><svg class="ico"><use href="#i-gauge"/></svg><b>Static</b><span class="xv"></span></button>
       <button type="button" class="dt c-sup" data-pane="dpReg"><svg class="ico"><use href="#i-reg"/></svg><b>Registers</b><span class="xv"></span></button>
       <button type="button" class="dt c-st" data-pane="advRuns"><svg class="ico"><use href="#i-runs"/></svg><b>Runs &amp; filter</b><span class="xv"></span></button>
+      </div>
     </div>
 
     <details class="dpane" id="dpStat"><summary>Static pressure</summary>
@@ -1507,11 +1616,15 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
 <!-- ============ STEP 5 — PLAN: what we are going to build ============ -->
 <section class="panel" id="p5">
   <div class="card eqstrip" id="eqStrip">
-    <div class="eqrow"><span class="plab">Designing around</span><div class="chips" id="tons"></div><span id="afueWrap"><span class="chips" id="afue"><button class="chip on" data-v="80">80% AFUE</button><button class="chip" data-v="90">90%+ AFUE</button></span></span></div>
-    <div class="eqrow" style="margin-top:8px"><div class="chips" id="eqTiers"></div><button class="btn fitbtn" id="willFit"><span class="fdot"></span>Will it Fit &#8250;</button></div>
-    <div id="tonsSrc" class="note"></div><div id="flowNote" class="note hidden"></div>
+    <!-- v2.68 — one line: the size, the unit, Will it Fit (Stephen: "shrink down the tons, and the equipment choice, to one line … if clicked show the other options … then it collapses again") -->
+    <div class="eqline">
+      <details class="eqpick" id="tonsPick"><summary><span class="plab">Size</span><b id="tonsCur">—</b><span class="car">&#9660;</span></summary><div class="eqpanel"><div class="chips" id="tons"></div><span id="afueWrap"><span class="chips" id="afue"><button class="chip on" data-v="80">80% AFUE</button><button class="chip" data-v="90">90%+ AFUE</button></span></span><div id="tonsSrc" class="note"></div></div></details>
+      <details class="eqpick" id="tierPick"><summary><span class="plab">Unit</span><b id="tierCur">—</b><span class="car">&#9660;</span></summary><div class="eqpanel"><div class="chips" id="eqTiers"></div></div></details>
+      <button class="btn fitbtn" id="willFit"><span class="fdot"></span>Will it Fit &#8250;</button>
+    </div>
+    <div id="flowNote" class="note hidden"></div>
+    <div id="planHero"></div>
   </div>
-  <div id="planHero"></div>
   <div class="card hidden" id="supCfgNewCard">
     <h2 id="supCfgNewTitle">Proposed supply configuration</h2>
     <p class="help hidden" id="supCfgNewHelp"></p>
@@ -1550,7 +1663,7 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
       </div>
       <div class="vleg"><span><i style="background:#9aa6b2"></i>Existing</span><span><i style="background:#3678A0"></i>Furnace / AHU / Unit</span><span><i style="background:#77B2D0"></i>Coil</span><span><i style="background:#ffd166"></i>Access / openings</span><span><i style="background:#d9e2ec"></i>Existing metal</span><span><i style="background:#a9d9bd"></i>New metal</span><span><i style="background:#9d82f2"></i>Return</span></div>
     </div>
-    <p class="help" style="margin:8px 4px 0" id="viewerHelp">Drag to rotate · pinch to zoom · Focus frames the unit, the ducts or both. Ghost = today, solid = proposed.</p>
+    <p class="help" style="margin:8px 4px 0" id="viewerHelp">Drag to turn · pinch to zoom. Ghost = today, solid = the design.</p>
     <div class="readout" id="planReadout"></div>
     <div class="pstrip" id="planActions"></div>
   </div>
@@ -1568,7 +1681,7 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
   <div class="card hidden" id="sumPlanCard"><details class="fold" id="sumPlanFold"><summary><span class="car">&#9656;</span>Installer plan &amp; pick list<span class="fs">the size on every duct &middot; what to load on the truck</span></summary><div class="fb" id="sumPlanBox"></div></details></div>
   <div class="card">
     <h2>Design summary for the job</h2>
-    <p class="help">Everything above in plain text — paste it into the ServiceTitan job or estimate notes.</p>
+    <p class="help">Plain text for the ServiceTitan job notes.</p>
     <textarea class="sum" id="summary" readonly></textarea>
     <div class="actbar">
       <button class="btn sm" id="copySum">Copy for ServiceTitan</button>
@@ -1577,7 +1690,7 @@ details.dpane>.sect,details.dpane>.dpb{margin-top:0}
   </div>
     <div class="card" id="techCard">
     <h2>Send it to the tech</h2>
-    <p class="help">One self-contained file — the whole design and the whole tool — to text or email to the tech <i>or</i> the customer, with no signal. Tapped on a phone it opens as the customer's presentation: the score today &rarr; designed, the two 3Ds (today and the design, chokepoints called out) and every improvement. Opened in Fit Check on any iPad with the tool — <b>Open a design file</b> below — it is the working design: <b>Your system</b> with two working 3Ds and the install options to walk through together, then <b>Save &amp; send</b> so the tech can text the agreed design to the customer. <b>3D Design</b> is this Plan tab; <b>Tech pack</b> holds the worksheet, the chokepoint table and <b>Open in Fit Check</b>.</p>
+    <p class="help">One file to text or email, no signal needed. On a phone it opens as the customer page; in Fit Check (<b>Open a design file</b>) it is the working design — two working 3Ds, <b>Save &amp; send</b>, the <b>3D Design</b> tab and the <b>Tech pack</b>.</p>
     <div class="row">
       <div class="field" style="flex:2"><label>Customer or address <small>goes on the cover and the file name</small></label><input id="techName" placeholder="Smith &mdash; 4412 Desert Inn"></div>
       <div class="field"><label>Service manager <small>optional</small></label><input id="techSm" placeholder="Your name"></div>
@@ -2164,12 +2277,17 @@ function rpKind(name,fallback){ const n=String(name||''); if(/master|bed/i.test(
   if(/dining|nook/i.test(n)) return 'dining'; if(/office|study/i.test(n)) return 'office'; if(/garage/i.test(n)) return 'room'; return fallback||'room' }
 function rpGoettl(d,R,sh){ const g=d&&d.goettl; if(!g||typeof g!=='object') return null; if(g.format&&!/goettl/i.test(String(g.format))) return null;
   const toFt=p=>{ const q=sh(R([p[0],p[1]])); return [q[0]*M2FT,q[1]*M2FT] };
+  // v2.68 — the door and opening area on each exterior wall, off the structure's own doors (parentIdentifier → wall), matched to the export's wall by its midpoint;
+  // the app's RoomGeometry counts both doors and openings against the wall. A newer export carries doorAreaFt2 itself and wins.
+  const FT2=10.7639; const doorBy={}; [].concat(Array.isArray(d.doors)?d.doors:[],Array.isArray(d.openings)?d.openings:[]).forEach(o=>{ const p=o&&o.parentIdentifier; if(!p) return; const dm=o.dimensions||[0,0,0]; doorBy[p]=(doorBy[p]||0)+(+dm[0]||0)*(+dm[1]||0)*FT2 });
+  const WLS=(Array.isArray(d.walls)?d.walls:[]).map(w=>{ const t=w&&w.transform; return (Array.isArray(t)&&t.length===16)?{id:w.identifier,c:[t[12],t[14]]}:null }).filter(Boolean);
+  const doorArea=(a,b)=>{ if(!Array.isArray(a)||!Array.isArray(b)) return 0; const m=[(+a[0]+ +b[0])/2,(+a[1]+ +b[1])/2]; let best=null; WLS.forEach(w=>{ const dd=Math.hypot(w.c[0]-m[0],w.c[1]-m[1]); if(dd<0.6&&(!best||dd<best.d)) best={d:dd,w} }); return best?(doorBy[best.w.id]||0):0 };
   let north=null; const n=g.north; if(n&&n.set!==false&&Array.isArray(n.vectorXZ)&&n.vectorXZ.length===2){ const v=R([+n.vectorXZ[0],+n.vectorXZ[1]]); const L=Math.hypot(v[0],v[1]);
     if(L>1e-6){ const deg=(Math.atan2(v[0]/L,-v[1]/L)*180/Math.PI+360)%360; north={deg:+deg.toFixed(1),acc:+n.meanAccuracyDeg>0?+n.meanAccuracyDeg:null,src:n.source||null} } }
-  const rooms={}; const mk=(id,name)=>rooms[id]||(rooms[id]={id,name:name||'',c:null,h:null,sf:null,ns:false,served:1,ext:[],ceilAbove:null,mj:null});
+  const rooms={}; const mk=(id,name)=>rooms[id]||(rooms[id]={id,name:name||'',c:null,h:null,sf:null,vol:null,nonFlat:false,ns:false,served:1,ext:[],ceilAbove:null,mj:null});
   (Array.isArray(g.rooms)?g.rooms:[]).forEach(r=>{ if(!r||!r.id) return; const o=mk(r.id,r.name); if(Array.isArray(r.center)&&r.center.length>=2) o.c=toFt([+r.center[0],+r.center[1]]);
-    if(+r.ceilingHeightFt>0) o.h=+r.ceilingHeightFt; if(+r.floorAreaFt2>0) o.sf=+r.floorAreaFt2; o.ns=!!r.notServed; if(r.servedFraction!=null) o.served=+r.servedFraction; o.ceilAbove=r.ceilingAbove||null;
-    o.ext=(Array.isArray(r.exteriorWalls)?r.exteriorWalls:[]).map(w=>({facing:w.facing||'',az:isFinite(+w.facingAzimuthDeg)?+w.facingAzimuthDeg:null,win:+w.windowAreaFt2||0,w:+w.widthFt||0})) });
+    if(+r.ceilingHeightFt>0) o.h=+r.ceilingHeightFt; if(+r.floorAreaFt2>0) o.sf=+r.floorAreaFt2; if(+r.volumeFt3>0) o.vol=+r.volumeFt3; o.nonFlat=!!r.nonFlatCeiling; o.ns=!!r.notServed; if(r.servedFraction!=null) o.served=+r.servedFraction; o.ceilAbove=r.ceilingAbove||null;
+    o.ext=(Array.isArray(r.exteriorWalls)?r.exteriorWalls:[]).map(w=>({facing:w.facing||'',az:isFinite(+w.facingAzimuthDeg)?+w.facingAzimuthDeg:null,win:+w.windowAreaFt2||0,w:+w.widthFt||0,h:+w.heightFt||0,door:(+w.doorAreaFt2>=0&&w.doorAreaFt2!=null)?+w.doorAreaFt2:doorArea(w.a,w.b)})) });   /* v2.68: the height and the door area, for the load */
   const L=g.loads||{}, sum=g.summary||{};
   (Array.isArray(L.rooms)?L.rooms:[]).forEach(x=>{ if(!x||!x.roomId) return; const o=mk(x.roomId,x.room); o.mj={cfm:+x.cfm||0,cfmSf:+x.cfmBySqFt||0,cool:+x.coolingSensibleBtuh||0,heat:+x.heatingBtuh||0,wall:x.wallType||'',win:x.windowType||'',glass:x.windowType||''} });
   (Array.isArray(sum.rooms)?sum.rooms:[]).forEach(x=>{ if(!x||!x.roomId) return; const o=mk(x.roomId,x.name); if(!o.mj&&x.cfm!=null) o.mj={cfm:+x.cfm||0,cfmSf:+x.cfmBySqFt||0,cool:+x.coolingSensibleBtuh||0,heat:+x.heatingBtuh||0,wall:'',win:''};
@@ -2186,8 +2304,14 @@ function rpGoettl(d,R,sh){ const g=d&&d.goettl; if(!g||typeof g!=='object') retu
     mj:hasMj?{cool:+L.coolingTotalBtuh||+sum.coolingTotalBtuh||0,sens:+L.coolingSensibleBtuh||0,lat:+L.latentBtuh||0,heat:+L.heatingBtuh||+sum.heatingBtuh||0,mjT:+L.manualJTons||+sum.envelopeTons||0,sfT:+L.sqFtRuleTons||+sum.sqFtRuleTons||0,
       recT:+L.recommendedTons||+sum.recommendedTons||0,cfm:+L.systemCFM||+sum.systemCFM||0,roomCfm:+sum.totalRoomCFM||0,basis:L.sizingBasis||sum.sizingBasis||'',note:L.sizingNote||sum.sizingNote||'',why:sum.sqFtRuleWhy||'',build:L.buildType||sum.buildType||'',
       method:L.method||'',served:+sum.servedAreaFt2||+NS.servedAreaFt2||0,notServed:+NS.notServedAreaFt2||0}:null,
-    home:{loc:H.location||'',zip:H.zip||'',year:+H.yearBuilt>0?+H.yearBuilt:null,age:H.ageBand||'',build:L.buildType||sum.buildType||'',attic:ins?{where:ins.location||'',floorType:ins.floorType||'',mat:ins.blownMaterial||ins.batts||ins.roofDeck||'',depth:+ins.depthIn>0?+ins.depthIn:null}:null},
+    home:{loc:H.location||'',zip:H.zip||'',year:+H.yearBuilt>0?+H.yearBuilt:null,age:H.ageBand||'',build:L.buildType||sum.buildType||'',attic:ins?{where:ins.location||'',floorType:ins.floorType||'',mat:ins.blownMaterial||ins.batts||ins.roofDeck||'',depth:+ins.depthIn>0?+ins.depthIn:null}:null,
+      /* v2.68 — the project-level picks a newer export carries (null = the tech left it assumed); the id names are load_config.json's */
+      occ:(H.occupantsOverride!=null&&isFinite(+H.occupantsOverride))?+H.occupantsOverride:null,
+      ids:{build:H.buildTypeID||null,floor:H.floorTypeID||null,wall:H.wallPresetID||null,glass:H.windowPresetID||null,shade:H.windowShadingID||null,infil:H.infiltrationID||null,duct:H.ductOptionID||null,roof:H.roofColorID||null}},
+    /* v2.68 — the geometry the load engine reads, per room: served area, ceiling, volume, what is above, the exterior walls with their glass and doors, the wall / window type the app used */
+    geo:Object.fromEntries(Object.values(rooms).map(o=>[o.id,{n:o.name,sf:o.sf,h:o.h,vol:o.vol,above:o.ceilAbove,served:o.served,nonFlat:o.nonFlat,ext:o.ext.map(w=>({w:+(w.w||0).toFixed(2),h:+(w.h||0).toFixed(2),win:+(w.win||0).toFixed(2),door:+(w.door||0).toFixed(2),facing:w.facing||''})),wall:o.mj?o.mj.wall:'',glass:o.mj?o.mj.glass:''}])),
     nReg:regs.length,nSup:regs.filter(q=>q.type==='supply').length,nRet:regs.filter(q=>q.type==='return').length,nRoom:Object.keys(rooms).length,north:north};
+  summary.mjApp=summary.mj?Object.assign({},summary.mj):null;   /* v2.68: the app's own load calc, kept as the cross-check once Fit Check's engine has run */
   return {north,rooms,regs,summary} }
 // the one entry point the app calls: JSON or DXF by what the file IS, not what it is called
 function planFromFile(text){ const t=String(text||'').replace(/^\uFEFF/,'').trim();
@@ -2201,6 +2325,116 @@ function hull(P){ const pts=P.slice().sort((a,b)=>a[0]-b[0]||a[1]-b[1]); const c
 
 const api={parseDxf,planFromDxf,planFromRoomPlan,planFromFile,dxfYDown,polyArea,polyCent,pointIn,bbox,rpSize,rpSnap,rpKind};
 if(typeof module!=='undefined'&&module.exports) module.exports=api; else if(typeof window!=='undefined') window.FCDxf=api;
+})();
+
+</script>
+<script>
+const LOADCFG={"_readme":"Goettl Room Scan load engine config (Manual J-method room-by-room loads, Manual S tonnage pick, Manual D room CFM). infiltrationPresets are the tightness choices on the Home page (ACH); age bands carry their own ACH used when none is picked. Every null must be filled from ACCA Manual J (8th ed.) / your ACCA-approved software for the location before loads show; the app lists exactly which values are missing. The engine has no numbers of its own. Temperatures in deg F, U-factors in Btu/h-ft2-F, R-values in h-ft2-F/Btu. Rename/add presets freely (ids must be unique; ageBands point at preset ids). This is an estimate, not an ACCA-approved calculation; permit loads come from ACCA-approved software.","_starterNotes":"STARTER VALUES — set by Claude with Stephen's field input (2026-09-30); check against an ACCA report when one is available, then set starterValues to false. Design: Goettl designs Las Vegas cooling at 118°F outdoor (ASHRAE 1% is ~106; 118 covers the extreme days), 72 indoor — a 46°F ΔT; heating 32/70. Grains difference 0 (dry design air). Wall ETDs by facing and the attic ETD are scaled to the 46°F ΔT (attic ≈150°F at 118 ambient). Glass solar = peak gain per ft² per unit SHGC by facing at ~36°N, no shading credit. Air factors 1.1 / 0.68 × altitude ≈ 0.93. Wall U = whole-wall assembly incl. framing (foam/R-20 walls only from the 2012 code); window U/SHGC typical NFRC per era. Blown fiberglass R-2.3/in (settled), cellulose 3.5; ceiling added R 1.5; exterior doors U 0.40; slab edge F 0.73. People 230/200, kitchen 1,200. Infiltration ACH by era on Manual J average/semi-tight construction (2012+ blower-door era 0.35, back to 1.0 pre-1980). Ducts in the attic 30% gain / 15% loss. FIELD NOTE (Stephen, 30 yrs Las Vegas): 400 sq ft per ton almost always holds unless it's a cocoon home with insulation at the roof deck. Even at 118°F the envelope method lands ~600–650 sq ft/ton on a 2012+ home — it leaves out pull-down after setback, duct leakage and real-life use — so the size follows sizingRule and the envelope number is secondary. 2026-10-02: added CoolCalc-style inputs (floor type, window shading, duct location/insulation, roof color, occupants override) as assumed defaults that match the earlier numbers; the recommendation now follows the envelope estimate (rule of thumb shown for reference); 1.5 ton added to the sizes. 2026-10-02: occupants default to max(bedrooms+1, 5) (Stephen); heating airflow per ton added (default 400, editable in Settings → Airflow design).","starterValues":true,"indoor":{"coolingDbF":72,"heatingDbF":70},"locations":[{"id":"las_vegas","name":"Las Vegas valley","zipPrefixes":["889","890","891"],"outdoorCoolingDbF":118,"outdoorHeatingDbF":32,"coolingGrainsDifference":0,"wallCoolingETDF":{"N":35,"NE":41,"E":47,"SE":46,"S":43,"SW":50,"W":52,"NW":45},"ceilingCoolingETDF":{"attic":80,"sealedAttic":17,"roof":88},"glassSolarBtuhPerFt2":{"N":23,"NE":56,"E":80,"SE":72,"S":47,"SW":72,"W":80,"NW":56}}],"air":{"sensibleFactor":1.02,"latentFactor":0.63},"wallPresets":[{"id":"wall_block","name":"Block (CMU), no insulation","uFactor":0.35},{"id":"wall_2x4_r11","name":"2x4 frame, stucco, R-11","uFactor":0.09},{"id":"wall_2x4_r13","name":"2x4 frame, stucco, R-13","uFactor":0.082},{"id":"wall_2x4_r13_foam","name":"2x4 frame, stucco + foam board, R-13","uFactor":0.058},{"id":"wall_2x6_r19","name":"2x6 frame, stucco, R-19","uFactor":0.06}],"windowPresets":[{"id":"win_single_alum","name":"Single pane, aluminum frame","uFactor":1.1,"shgc":0.75},{"id":"win_dual_alum","name":"Dual pane, aluminum frame","uFactor":0.72,"shgc":0.65},{"id":"win_dual_vinyl","name":"Dual pane, vinyl frame, clear","uFactor":0.49,"shgc":0.56},{"id":"win_dual_vinyl_lowe_early","name":"Dual pane, vinyl frame, early low-E (2006–2011)","uFactor":0.45,"shgc":0.38},{"id":"win_dual_vinyl_lowe","name":"Dual pane, vinyl frame, low-E","uFactor":0.32,"shgc":0.25}],"attic":{"blownTypes":[{"id":"blown_fiberglass","name":"Blown fiberglass","rPerInch":2.3},{"id":"blown_cellulose","name":"Blown cellulose","rPerInch":3.5}],"batts":[{"id":"batt_r11","name":"R-11 batts","rValue":11},{"id":"batt_r13","name":"R-13 batts","rValue":13},{"id":"batt_r19","name":"R-19 batts","rValue":19},{"id":"batt_r30","name":"R-30 batts","rValue":30},{"id":"batt_r38","name":"R-38 batts","rValue":38}],"roofDeck":[{"id":"deck_open_foam","name":"Open-cell spray foam under roof deck","rValue":20},{"id":"deck_closed_foam","name":"Closed-cell spray foam under roof deck","rValue":20}],"ceilingAddedR":1.5,"uninsulatedCeilingU":0.6,"sealedAtticHeatingTDFraction":0.3},"slabEdgeFFactor":0.73,"exteriorDoorUFactor":0.4,"internalGains":{"peopleSensibleBtuh":230,"peopleLatentBtuh":200,"kitchenAppliancesBtuh":1200,"bedroomNameKeywords":["bed","master","primary"],"kitchenNameKeywords":["kitchen"],"minimumOccupants":5},"ducts":{"coolingGainPct":30,"heatingLossPct":15},"infiltrationPresets":[{"id":"tight","name":"Tight (blower-door tested, 2012+)","coolingACH":0.25,"heatingACH":0.35},{"id":"semiTight","name":"Semi-tight (newer production home)","coolingACH":0.35,"heatingACH":0.45},{"id":"average","name":"Average (1990s–2000s)","coolingACH":0.5,"heatingACH":0.65},{"id":"loose","name":"Loose (1980s, original windows)","coolingACH":0.7,"heatingACH":0.9},{"id":"veryLoose","name":"Very loose (pre-1980, unsealed)","coolingACH":1.0,"heatingACH":1.2}],"infiltrationDefault":{"coolingACH":0.55,"heatingACH":0.7},"ageBands":[{"id":"pre1980","name":"Before 1980","fromYear":null,"toYear":1979,"wallPresetID":"wall_2x4_r11","windowPresetID":"win_single_alum","coolingACH":1.0,"heatingACH":1.2},{"id":"y1980_1993","name":"1980–1993","fromYear":1980,"toYear":1993,"wallPresetID":"wall_2x4_r11","windowPresetID":"win_dual_alum","coolingACH":0.7,"heatingACH":0.9},{"id":"y1994_2005","name":"1994–2005","fromYear":1994,"toYear":2005,"wallPresetID":"wall_2x4_r13","windowPresetID":"win_dual_vinyl","coolingACH":0.55,"heatingACH":0.7},{"id":"y2006_2011","name":"2006–2011","fromYear":2006,"toYear":2011,"wallPresetID":"wall_2x4_r13","windowPresetID":"win_dual_vinyl_lowe_early","coolingACH":0.5,"heatingACH":0.6},{"id":"y2012_up","name":"2012 and newer","fromYear":2012,"toYear":null,"wallPresetID":"wall_2x4_r13_foam","windowPresetID":"win_dual_vinyl_lowe","coolingACH":0.35,"heatingACH":0.45}],"equipment":{"btuhPerTon":12000,"nominalTonnages":[1.5,2,2.5,3,3.5,4,5],"cfmPerTon":400,"furnaceOutputsBtuh":[],"heatingCFMPerTon":400},"sizingRule":{"_note":"Goettl's square-footage rule — the same table Fit Check uses on step 1 (locked 2026-09-15). tons = served ft² ÷ sqFtPerTon, then rounded through nominalTonnages with the stretch window (hold the smaller size until the load is stretchHalfTon over it; stretchFullTon for the 4→5 step). Room CFM by this rule = ft² × cfmPerSqFt × ceiling factor (+ceilingFactorPerFtOver per ft of ceiling above ceilingFactorFromFt, capped at ceilingFactorMaxFt). extraTons is added for pre-1980 homes unless the attic is at atticTargetR. The app recommends the larger of this rule and the Manual J-method load.","buildTypes":[{"id":"standard","name":"Standard build","sqFtPerTon":400,"cfmPerSqFt":1.0,"extraTons":null,"note":"400 sq ft per ton — the Las Vegas standard-build number."},{"id":"pre1980","name":"Old — pre-1980","sqFtPerTon":400,"cfmPerSqFt":1.0,"extraTons":0.5,"note":"400 sq ft per ton, then a half ton more unless the attic is brought up to R-38."},{"id":"hieff","name":"High-efficiency home","sqFtPerTon":600,"cfmPerSqFt":0.667,"extraTons":null,"note":"Insulated and sealed at the roof deck — 600 sq ft per ton, and each room turns over less air."}],"defaultBuild":"standard","defaultBuildByAgeBand":{"pre1980":"pre1980","y1980_1993":"standard","y1994_2005":"standard","y2006_2011":"standard","y2012_up":"standard"},"buildWhenRoofDeckInsulated":"hieff","ceilingFactorFromFt":10,"ceilingFactorPerFtOver":0.1,"ceilingFactorMaxFt":16,"stretchHalfTon":0.15,"stretchFullTon":0.25,"atticTargetR":38},"headingAccuracyMaxDeg":25,"floorPresets":[{"id":"slab","name":"Slab on grade","uFactor":null,"coolingETDF":null,"note":"Default. Heating uses slabEdgeFFactor × exposed perimeter; no cooling floor load."},{"id":"crawl_vented","name":"Vented crawlspace, R-19 floor","uFactor":0.05,"coolingETDF":10},{"id":"crawl_uninsulated","name":"Vented crawlspace, no floor insulation","uFactor":0.25,"coolingETDF":10},{"id":"basement","name":"Over a basement (conditioned)","uFactor":0.0,"coolingETDF":0}],"windowShading":[{"id":"none","name":"No interior shading","solarFactor":1.0},{"id":"blinds","name":"Blinds, half closed","solarFactor":0.75},{"id":"drapes","name":"Drapes / blackout","solarFactor":0.55}],"ductOptions":[{"id":"attic_r6","name":"Attic, R-6 flex","coolingGainPct":30,"heatingLossPct":15},{"id":"attic_r8","name":"Attic, R-8 flex","coolingGainPct":25,"heatingLossPct":12},{"id":"attic_r4","name":"Attic, old R-4 / leaky","coolingGainPct":40,"heatingLossPct":20},{"id":"conditioned","name":"Inside conditioned space","coolingGainPct":0,"heatingLossPct":0},{"id":"crawl","name":"Crawlspace, R-6","coolingGainPct":15,"heatingLossPct":10}],"roofColors":[{"id":"light","name":"Light / reflective","ceilingETDFactor":0.85},{"id":"medium","name":"Medium (tan tile, grey shingle)","ceilingETDFactor":1.0},{"id":"dark","name":"Dark","ceilingETDFactor":1.15}],"assumedDefaults":{"floorTypeID":"slab","windowShadingID":"none","ductOptionID":"attic_r6","roofColorID":"medium","_note":"Used when the Info page field is left on 'assumed'. Occupants default to Manual J's bedrooms + 1."},"roofColorDetection":{"_note":"Aerial sample at the parcel centre (ArcGIS World Imagery). Mean luminance 0–1 of the central patch: below darkBelow → dark roof, above lightAbove → light, else medium. sampleFraction = share of the image width sampled.","sampleFraction":0.3,"darkBelow":0.38,"lightAbove":0.6}};
+</script>
+<script>
+// fcload.js — v2.68 THE LOAD ENGINE (Stephen 2026-10-02: the Service Manager "could see all the options the tech selected, and how they came to the
+// system size choice, he can also edit it, before reviewing it with a client"). A port of the Goettl Room Scan app's LoadEngine.swift — the
+// Manual J-method room-by-room load — reading the SAME load_config.json the app reads (inlined by build.sh as LOADCFG), so an edit on the
+// Existing tab's Load details re-runs the load here instead of waiting for a new export. The app's own numbers ride in the export as the
+// cross-check (S.plan.g.mjApp). No number of its own: every coefficient is in the config.
+//   FCLoad.house(inp) → {ok, rooms:[{id,cool,heat,lat,cfm,share,lines,missing}], sens, lat, cool, heat, mjT, cfm, occupants, missing, comp:{}}
+//   inp = {cfg, zip, year, buildId, occ, floorId, wallId, glassId, shadeId, infilId, ductId, roofId, attic:{R, where}, north:bool,
+//          rooms:[{id,name,sf,h,vol,ceilAbove,served,ext:[{w,h,win,door,facing}],wallId,glassId}], sizes:[...], ruleTons}
+(function(){
+const CARD=['N','NE','E','SE','S','SW','W','NW'];
+function norm(a){ let x=a%360; if(x<0) x+=360; return x }
+function cardinal(az){ return CARD[Math.floor((norm(az)+22.5)/45)%8] }
+function ageBand(cfg,year){ if(!(year>0)) return null; return (cfg.ageBands||[]).find(b=>(b.fromYear==null||year>=b.fromYear)&&(b.toYear==null||year<=b.toYear))||null }
+function location(cfg,zip){ const z=String(zip||''); const L=cfg.locations||[]; if(z){ const hit=L.find(l=>(l.zipPrefixes||[]).some(p=>z.indexOf(p)===0)); if(hit) return hit } return L[0]||null }
+function byId(list,id){ return (list||[]).find(x=>x.id===id)||null }
+function byName(list,name){ if(!name) return null; const n=String(name).trim().toLowerCase(); return (list||[]).find(x=>String(x.name||'').trim().toLowerCase()===n)||null }
+function ceilingFactor(rule,h){ const from=rule.ceilingFactorFromFt||10, per=rule.ceilingFactorPerFtOver||0, max=rule.ceilingFactorMaxFt||16; const hh=Math.min(h||from,max); return 1+Math.max(0,hh-from)*per }
+// the picks: an explicit id, else the age band's, else the assumed default — and which it was
+function pick(cfg,inp,band){
+  const P={};
+  const def=(k,explicit,bandV,assumed,list)=>{ const id=explicit||bandV||assumed||null; P[k]={id,obj:byId(list,id),src:explicit?'set':(bandV?'band':'assumed')} };
+  def('wall',inp.wallId,band&&band.wallPresetID,null,cfg.wallPresets);
+  def('glass',inp.glassId,band&&band.windowPresetID,null,cfg.windowPresets);
+  def('infil',inp.infilId,null,null,cfg.infiltrationPresets);
+  const A=cfg.assumedDefaults||{};
+  def('floor',inp.floorId,null,A.floorTypeID,cfg.floorPresets);
+  def('shade',inp.shadeId,null,A.windowShadingID,cfg.windowShading);
+  def('duct',inp.ductId,null,A.ductOptionID,cfg.ductOptions);
+  def('roof',inp.roofId,null,A.roofColorID,cfg.roofColors);
+  return P }
+function house(inp){
+  const cfg=inp.cfg; if(!cfg) return {ok:false,missing:['load_config']};
+  const miss=[]; const need=(v,l)=>{ if(v==null||(typeof v==='number'&&!isFinite(v))){ if(miss.indexOf(l)<0) miss.push(l); return null } return v };
+  const loc=location(cfg,inp.zip); const band=ageBand(cfg,inp.year); if(!band) need(null,'Year built');
+  const P=pick(cfg,inp,band);
+  const IG=cfg.internalGains||{}; const kw=(ks,n)=>(ks||[]).some(k=>String(n||'').toLowerCase().indexOf(String(k).toLowerCase())>=0);
+  const rooms=(inp.rooms||[]).filter(r=>r&&r.sf>0);
+  const served=rooms.filter(r=>(r.served==null?1:r.served)>0);
+  // occupants — Manual J bedrooms + 1 (the extra in the largest other room), never under the configured minimum; or the number typed
+  const isBed=r=>kw(IG.bedroomNameKeywords,r.name), isKit=r=>kw(IG.kitchenNameKeywords,r.name);
+  const notBed=served.filter(r=>!isBed(r)); const living=(notBed.length?notBed:served).reduce((b,r)=>(!b||r.sf>b.sf)?r:b,null);
+  const occ={};
+  if(inp.occ!=null&&inp.occ>=0){ let left=Math.round(inp.occ); served.forEach(r=>{ if(isBed(r)&&left>0){ occ[r.id]=1; left-- } }); if(left>0&&living) occ[living.id]=(occ[living.id]||0)+left }
+  else { served.forEach(r=>{ occ[r.id]=(isBed(r)?1:0)+(living&&r.id===living.id?1:0) }); const tot=Object.values(occ).reduce((s,v)=>s+v,0); const mn=IG.minimumOccupants; if(mn!=null&&tot<mn&&living) occ[living.id]=(occ[living.id]||0)+(mn-tot) }
+  const inC=need(cfg.indoor&&cfg.indoor.coolingDbF,'indoor.coolingDbF'), inH=need(cfg.indoor&&cfg.indoor.heatingDbF,'indoor.heatingDbF');
+  const outC=need(loc&&loc.outdoorCoolingDbF,'location outdoorCoolingDbF'), outH=need(loc&&loc.outdoorHeatingDbF,'location outdoorHeatingDbF');
+  const dTc=(outC!=null&&inC!=null)?outC-inC:null, dTh=(inH!=null&&outH!=null)?inH-outH:null;
+  const AT=cfg.attic||{}; const added=AT.ceilingAddedR!=null?AT.ceilingAddedR:1.5;
+  const out={ok:true,rooms:[],comp:{},missing:miss,occupants:Object.values(occ).reduce((s,v)=>s+v,0),picks:P,band:band?band.name:'',loc:loc?loc.name:''};
+  let sensT=0, latT=0, heatT=0, complete=served.length>0;
+  served.forEach(r=>{
+    const f=(r.served==null?1:r.served); const area=r.sf*f, vol=(r.vol>0?r.vol:r.sf*(r.h||10))*f; const lines=[]; const lm=[]; let cool=0, heat=0, lat=0;
+    const ln=(l,c,h)=>{ lines.push({l,c:c||0,h:h||0}); cool+=c||0; heat+=h||0 };
+    const lneed=(v,l)=>{ if(v==null){ need(null,l); if(lm.indexOf(l)<0) lm.push(l); return null } return v };
+    const ext=(r.ext||[]).filter(w=>w&&w.w>0);
+    const wallP=byId(cfg.wallPresets,r.wallId)||P.wall.obj, glassP=byId(cfg.windowPresets,r.glassId)||P.glass.obj;
+    // walls: U × net area × ΔT (heating) · U × net area × ETD by facing (cooling)
+    if(ext.length){ if(!wallP) lneed(null,'Wall type (Load details) or year built'); else { const u=lneed(wallP.uFactor,'U-factor for wall '+wallP.name); let c=0, cOk=true, areaN=0;
+      ext.forEach(w=>{ const net=Math.max(0,w.w*w.h-(w.win||0)-(w.door||0)); areaN+=net; if(!inp.north||!w.facing){ lneed(null,'Orientation (north)'); cOk=false; return } const etd=loc&&loc.wallCoolingETDF&&loc.wallCoolingETDF[w.facing]; if(etd==null||u==null){ lneed(etd,'wallCoolingETDF '+w.facing); cOk=false; return } c+=u*net*etd });
+      ln('Walls',cOk?c:null,(u!=null&&dTh!=null)?u*areaN*dTh:null) } }
+    // doors: U × door area × ΔT · U × door area × the wall's ETD
+    const doorA=ext.reduce((s,w)=>s+(w.door||0),0);
+    if(doorA>0){ const u=lneed(cfg.exteriorDoorUFactor,'exteriorDoorUFactor'); let c=0, cOk=u!=null; ext.forEach(w=>{ if(!(w.door>0)) return; const etd=(inp.north&&w.facing&&loc&&loc.wallCoolingETDF)?loc.wallCoolingETDF[w.facing]:null; if(etd==null||u==null){ cOk=false; return } c+=u*w.door*etd });
+      ln('Doors',cOk?c:null,(u!=null&&dTh!=null)?u*doorA*dTh:null) }
+    // windows: U × A × ΔT · A × (U × ΔT + SHGC × solar × shading)
+    const winA=ext.reduce((s,w)=>s+(w.win||0),0);
+    if(winA>0){ if(!glassP) lneed(null,'Window type (Load details) or year built'); else { const u=lneed(glassP.uFactor,'U-factor for window '+glassP.name), g=lneed(glassP.shgc,'SHGC for window '+glassP.name); const shade=(P.shade.obj&&P.shade.obj.solarFactor!=null)?P.shade.obj.solarFactor:1; let c=0, cOk=true;
+      ext.forEach(w=>{ if(!(w.win>0)) return; if(!inp.north||!w.facing){ lneed(null,'Orientation (north)'); cOk=false; return } const sol=loc&&loc.glassSolarBtuhPerFt2&&loc.glassSolarBtuhPerFt2[w.facing]; if(sol==null||u==null||g==null||dTc==null){ lneed(sol,'glassSolarBtuhPerFt2 '+w.facing); cOk=false; return } c+=w.win*(u*dTc+g*sol*shade) });
+      ln('Windows',cOk?c:null,(u!=null&&dTh!=null)?u*winA*dTh:null) } }
+    // ceiling, off the attic: U = 1/(R + added) on the floor or the roof deck, the uninsulated U with nothing, nothing over a conditioned space
+    if(r.ceilAbove!=='conditioned'){ const at=inp.attic||{}; const roof=r.ceilAbove==='roof'; let u=null, key=null, hf=1;
+      if(at.where==='none'||at.R===0){ u=lneed(AT.uninsulatedCeilingU,'attic.uninsulatedCeilingU'); key=roof?'roof':'attic' }
+      else if(at.R>0){ u=1/(at.R+added); if(at.where==='roofDeck'){ key=roof?'roof':'sealedAttic'; hf=lneed(AT.sealedAtticHeatingTDFraction,'attic.sealedAtticHeatingTDFraction') } else key=roof?'roof':'attic' }
+      else lneed(null,'Attic insulation');
+      if(u!=null){ const etd=lneed(loc&&loc.ceilingCoolingETDF&&loc.ceilingCoolingETDF[key],'ceilingCoolingETDF '+key); const rk=(P.roof.obj&&P.roof.obj.ceilingETDFactor!=null)?P.roof.obj.ceilingETDFactor:1;
+        ln('Ceiling',etd!=null?u*area*etd*rk:null,(dTh!=null&&hf!=null)?u*area*dTh*hf:null) } }
+    // floor: slab edge (heating only) or conduction over a crawlspace / basement
+    const fp=P.floor.obj; if(fp&&fp.id!=='slab'){ const u=lneed(fp.uFactor,'U-factor for floor '+fp.name)||0; const etd=fp.coolingETDF||0; ln('Floor',u*area*etd,dTh!=null?u*area*dTh:null) }
+    else { const per=ext.reduce((s,w)=>s+w.w,0); if(per>0){ const F=lneed(cfg.slabEdgeFFactor,'slabEdgeFFactor'); ln('Slab edge',0,(F!=null&&dTh!=null)?F*per*dTh:null) } }
+    // infiltration: ACH × volume → CFM · sensible = factor × CFM × ΔT · latent = factor × CFM × grains
+    const inf=P.infil.obj; const achC=lneed(inf?inf.coolingACH:(band?band.coolingACH:(cfg.infiltrationDefault||{}).coolingACH),'Infiltration (Load details) or year built');
+    const achH=lneed(inf?inf.heatingACH:(band?band.heatingACH:(cfg.infiltrationDefault||{}).heatingACH),'Infiltration (Load details) or year built');
+    const sf=lneed(cfg.air&&cfg.air.sensibleFactor,'air.sensibleFactor'); const cfmC=achC!=null?achC*vol/60:null, cfmH=achH!=null?achH*vol/60:null;
+    ln('Infiltration',(sf!=null&&cfmC!=null&&dTc!=null)?sf*cfmC*dTc:null,(sf!=null&&cfmH!=null&&dTh!=null)?sf*cfmH*dTh:null);
+    { const lf=lneed(cfg.air&&cfg.air.latentFactor,'air.latentFactor'), gr=lneed(loc&&loc.coolingGrainsDifference,'location coolingGrainsDifference'); if(lf!=null&&gr!=null&&cfmC!=null) lat+=lf*cfmC*gr }
+    // people and the kitchen
+    const n=occ[r.id]||0; if(n>0){ const ps=lneed(IG.peopleSensibleBtuh,'internalGains.peopleSensibleBtuh'); ln('People ('+n+')',ps!=null?ps*n:null,0); const pl=lneed(IG.peopleLatentBtuh,'internalGains.peopleLatentBtuh'); if(pl!=null) lat+=pl*n }
+    if(isKit(r)){ ln('Appliances',lneed(IG.kitchenAppliancesBtuh,'internalGains.kitchenAppliancesBtuh'),0) }
+    // the ducts, on the room's envelope load
+    const d=P.duct.obj; const gain=lneed(d?d.coolingGainPct:(cfg.ducts||{}).coolingGainPct,'ducts.coolingGainPct'), loss=lneed(d?d.heatingLossPct:(cfg.ducts||{}).heatingLossPct,'ducts.heatingLossPct');
+    ln('Ducts',gain!=null?cool*gain/100:null,loss!=null?heat*loss/100:null);
+    const ok=lm.length===0; if(!ok) complete=false;
+    lines.forEach(x=>{ const k=/^People/.test(x.l)?'People':x.l; out.comp[k]=out.comp[k]||{c:0,h:0}; out.comp[k].c+=x.c; out.comp[k].h+=x.h });
+    if(ok){ sensT+=cool; heatT+=heat; latT+=lat }
+    out.rooms.push({id:r.id,name:r.name,cool:ok?cool:null,heat:ok?heat:null,lat,lines,missing:lm,occ:n,sf:area,served:f}) });
+  rooms.filter(r=>(r.served==null?1:r.served)<=0).forEach(r=>out.rooms.push({id:r.id,name:r.name,cool:null,heat:null,lat:0,lines:[],missing:[],occ:0,sf:0,served:0,ns:true}));
+  if(complete){ out.sens=sensT; out.lat=latT; out.cool=sensT+latT; out.heat=heatT; const bt=need(cfg.equipment&&cfg.equipment.btuhPerTon,'equipment.btuhPerTon'); if(bt) out.mjT=out.cool/bt }
+  // the room shares — the larger of the cooling and heating share, as the app splits its system CFM; the system CFM at the config's CFM/ton on the size handed in
+  if(complete&&out.sens>0){ const tons=inp.soldTons||null; const cpt=(cfg.equipment||{}).cfmPerTon||400; const sys=tons?tons*cpt:null; let sum=0; const w=out.rooms.map(x=>{ if(x.ns||x.cool==null) return 0; const c=x.cool/out.sens, h=out.heat>0?(x.heat||0)/out.heat:0; const v=Math.max(c,h); sum+=v; return v });
+    out.rooms.forEach((x,i)=>{ x.share=sum>0?w[i]/sum:0; if(sys!=null) x.cfm=x.share*sys }); out.cfm=sys }
+  out.complete=complete; return out }
+const api={house,ageBand,location,cardinal,norm,ceilingFactor,byName,byId};
+if(typeof module!=='undefined'&&module.exports) module.exports=api; if(typeof window!=='undefined') window.FCLoad=api;
 })();
 
 </script>
@@ -2325,7 +2559,8 @@ const FIELDS=['oldFurnModel','oF_h','oF_w','oF_d','oldCoilModel','oC_h','oC_w','
 S.f=S.f||{};
 FIELDS.forEach(id=>{const el=$('#'+id); if(S.f[id]!=null) el.value=S.f[id]; el.addEventListener('input',()=>{S.f[id]=el.value;save();clearAuto(id); if(id==='ex_sup_rect') supRectWins(); if(id==='ex_ret_rect') supRectWins('ret');
   if(ELBOW_FACE.includes(id)) deriveJack();
-  refreshOld(); if(cur>3&&['new_trunk_ft','ex_trunk_ft','ex_rplen','new_splen','ex_splen','new_tk_add'].includes(id)){syncSupCfg();renderCompare()}})});
+  refreshOld(); if(/^in_/.test(id)){ try{ fcLoadSync() }catch(e){} }   /* v2.68: the attic feeds the load */
+  if(cur>3&&['new_trunk_ft','ex_trunk_ft','ex_rplen','new_splen','ex_splen','new_tk_add'].includes(id)){syncSupCfg();renderCompare()}})});
 
 // ============================================================ segmented controls
 function seg(id,key,cb){ $$('#'+id+' button').forEach(b=>{ b.classList.toggle('on',S[key]===b.dataset.v); b.onclick=()=>{S[key]=b.dataset.v;save();seg(id,key,cb);cb&&cb()} }) }
@@ -3239,6 +3474,7 @@ function buildTons(){
   tons.forEach(t=>{const b=document.createElement('button');b.className='chip'+(t===S.tons?' on':'');b.textContent=t.replace('T',' Ton');b.onclick=()=>{S.tons=t;S.tonsAuto=(L&&L.tons+'T'===t)?true:false;save();if(S.rooms&&S.rooms.length){try{rbrModel()}catch(e){}}buildTons();renderTiers();if(cur>3){try{renderCompare()}catch(e){}}};el.appendChild(b)});
   const src=$('#tonsSrc'); if(src){ src.innerHTML= L ? (auto||L.tons+'T'===S.tons ? `<b>${L.tons} ton</b> from the load on step 1 — ${L.why}.` : `Load on step 1 says <b>${L.tons} ton</b> (${L.why}) — you have <b>${tonNum(S.tons)} ton</b> selected. <button class="chip sm" id="tonsFollow">Use ${L.tons} ton</button>`) : 'Put the square footage and build type in on step 1 and the tonnage sets itself from the load.';
     const f=$('#tonsFollow'); if(f) f.onclick=()=>{ S.tonsAuto=true; save(); buildTons(); renderTiers() } }
+  try{ eqLineSync() }catch(e){}   /* v2.68 */
 }
 function rowsFor(){
   let rows=LINEUP.filter(r=>r.type===S.sys&&r.tons===S.tons);
@@ -3406,7 +3642,8 @@ function renderEqStrip(){ const el=$('#eqTiers'); if(!el) return; const byStar=r
     return `<button class="chip ${S.star===star?'on':''}" data-eqstar="${star}" title="${tpEsc(tierSub(row,o))}"><span class="ostar">${'★'.repeat(star)}</span><span class="eqb">${tpEsc(row.brand)} · </span>${tpEsc(tierModel(row,o))}<i class="fdot ${st}"></i></button>` }).join('');
   el.querySelectorAll('[data-eqstar]').forEach(b=>b.onclick=()=>{ const st=+b.dataset.eqstar; if(S.star===st) return; S.star=st; save(); renderTiers(); if(cur>3) renderCompare(); if(cur===9){ try{ renderOptions() }catch(e){} } });
   const fb=$('#willFit'); if(fb){ const row=byStar[S.star]; let st='na'; try{ if(row) st=fitVerdict(pick(S.star,row)) }catch(e){}
-    fb.innerHTML=`<span class="fdot ${st}"></span>Will it Fit &#8250;<small>${{ok:'fits',warn:'tight',bad:'may not fit',na:'not judged yet'}[st]||''}</small>`; fb.onclick=()=>go(4) } }
+    fb.innerHTML=`<span class="fdot ${st}"></span>Will it Fit &#8250;<small>${{ok:'fits',warn:'tight',bad:'may not fit',na:'not judged yet'}[st]||''}</small>`; fb.onclick=()=>go(4) }
+  try{ eqLineSync() }catch(e){} }   /* v2.68: the one-line strip */
 function partRow(k,m,e,extra){
   if(!e) return '';
   const dims=e.type==='coil_h'?`${fmt(e.h)}H × ${fmt(e.w)}W × ${fmt(e.l)}L`:e.type==='cond'?`${fmt(e.h)}H × ${fmt(e.w)} × ${fmt(e.d)}`:`${fmt(e.h)}H × ${fmt(e.w)}W × ${fmt(e.d)}D`;
@@ -4113,7 +4350,7 @@ function syncMoveUi(){ const m=moveMode(); if(typeof syncFocusChip==='function')
   $('#v_mvu').classList.toggle('hidden',!isPkg()||S.setup==='separate'||curbDesign()); $('#v_mvs').classList.toggle('hidden',!isPkg()||isCurbSetup()||S.setup==='separate'||curbDesign());
   const h=$('#viewerHelp'); if(h) h.innerHTML= m==='unit'?'<b>Move unit:</b> drag slides the new unit along the stand and shims it up. Tap Move unit again to rotate.'
     : m==='stand'?'<b>Move stand:</b> drag relocates the stand under the metal — along the ridge, and the leg height. Tap Move stand again to rotate.'
-    : 'Drag to rotate · pinch to zoom · Focus frames the unit, the ducts or both. Ghost = today, solid = proposed'+(labelState()==='flag'?' · showing problems only':(labelState()==='none'?' · notes off':''))+'.'; }
+    : 'Drag to turn · pinch to zoom. Ghost = today, solid = the design'+(labelState()==='flag'?' · problems only':(labelState()==='none'?' · notes off':''))+'.'; }   /* v2.68: short */
 function labelState(){ const i=S.view.info!==false, f=S.view.flag!==false; return i&&f?'all':(f?'flag':(i?'info':'none')) }
 $('#v_mvu').onclick=()=>setMoveMode('unit'); $('#v_mvs').onclick=()=>setMoveMode('stand');
 function moveAxes(){ // screen-pixel vectors for +1" along the duct face and +1" up (or in, on a curb) at the moved object
@@ -4727,7 +4964,7 @@ function renderAirCard(o){ const el=$('#airCard'); if(!el) return; const M=flowM
     ${necks.length?`<div class="msg bad" style="margin-top:8px"><b>${necks.every(c=>/^pen/.test(c.slot))?'Roof penetration too small.':'A hole in the path is too small.'}</b> ${necks.map(c=>`${c.name} is ${c.size} — the ${c.feed.size} through it cannot pass.`).join(' ')}</div>`:''}
     ${sc.total>=100&&!necks.length?`<div class="msg" style="background:var(--okbg);color:var(--ok);font-weight:700;margin-top:8px">100 — every spot passes, ${M.perTon} CFM/ton, attic at R-38 or better.</div>`:(sc.ac>=85&&sc.total<100&&!necks.length?`<div class="msg" style="background:var(--okbg);color:var(--ok);font-weight:700;margin-top:8px">${sc.total} — the air conditioning side is complete (85 of 85). The last ${100-sc.total} point${100-sc.total===1?'':'s'} ${ins.known?'are the attic — Fix insulation':'need the insulation entered on step 1'}.</div>`:'')}</div>`;
   el.innerHTML=`<h2>Airflow &amp; comfort <span class="status ${scoreCls(sc.total)}">Score ${sc.total}</span></h2>
-    ${tiles}${mdStatement(M)}${checklist}${table}
+    ${tiles}${checklist}${table}
     ${mdWorksheetHtml(M)}`;
   wireAirCard(o);
 }
@@ -5084,11 +5321,11 @@ function renderPlanHero(o){ const el=$('#planHero'); if(!el) return;
     : sc>=100 ? `Every spot passes — ${M.perTon} CFM/ton — attic at R-38 or better.`
     : (M.score.ac>=85 ? `Air side complete (85 of 85). The last ${100-sc} point${100-sc===1?'':'s'} ${M.ins.known?'are the attic — Fix insulation.':'need the insulation entered on step 1.'}`
     : (M.blowerBound ? `Every spot passes — the ducts deliver all ${CFM(M.Qb)} CFM this blower can push.` : 'No chokepoints left.'));
-  el.innerHTML=`<div class="hero ${cls}"><div class="hk">Step 3 · The plan</div>
+  /* v2.68 (Stephen 2026-10-02: "the big section, saying Comfort score shrink that to one line, get rid of the additional notes, but keep the line showing % to completion") */
+  el.innerHTML=`<div class="hero compact ${cls}"><div class="hrow"><div class="hk">Step 3 · The plan</div>
     <div class="hv">Comfort score ${sc0} → ${sc}</div>
-    <div class="rail"><i style="width:${Math.max(2,Math.min(100,sc))}%"></i><b style="left:${Math.max(0,Math.min(99,sc0))}%"></b></div>
-    <div class="railkey"><span>new AC on today's ducts ${sc0}</span><span>this design ${sc}</span><span>100</span></div>
-    <div class="hs">${hs} Airflow ${arw(M0.delivered,M.delivered,CFM)} CFM · ${nch0===nch?nch:nch0+' → '+nch} chokepoint${nch===1?'':'s'}${M.ins.known?` · attic ${arw(M.ins.R,M.ins.Rf,v=>'R-'+fmt(v))}`:''}.</div></div>`;
+    <div class="railwrap"><div class="rail"><i style="width:${Math.max(2,Math.min(100,sc))}%"></i><b style="left:${Math.max(0,Math.min(99,sc0))}%"></b></div>
+    <div class="railkey"><span>today ${sc0}</span><span>${Math.min(100,sc)}% of 100</span></div></div></div><span class="mth">${hs}</span></div>`;
 }
 function designDetailsHtml(o){
   const M=flowModel(o,S.fix); const L=[];
@@ -5129,30 +5366,31 @@ function issuePairs(o){
     const c1=sl=>M.comps.find(c=>c.slot===sl);
     const inst=(S.fix&&S.fix.install)||'reuse'; const replaced=sl=>(inst==='curb'&&/^(pen|elb)/.test(sl))||(inst!=='reuse'&&/^elb/.test(sl)); // v2.25: a spot the curb redesign removes outright is answered, not "not addressed"
     M0.comps.forEach(a=>{ if(a.cls==='ok'&&!a.neck) return; const b=c1(a.slot); const gone=!b&&replaced(a.slot); const ok=gone||!!(b&&b.cls==='ok'&&!b.neck);
-      const why = a.neck ? `Smaller than the ${a.feed?a.feed.size:'duct'} running through it — the duct physically cannot pass, whatever the CFM says.`
-        : (a.cls==='bad' ? `Maxes out at ${CFM(a.max)} CFM. This unit needs ${CFM(M0.needs)}, so the air is not getting through.`
-                         : `Carries the ${CFM(M0.needs)} floor but not the ${CFM(M0.design)} we charge it up to — it runs on the edge.`);
+      /* v2.68: plain words — a presentation to a client */
+      const why = a.neck ? `Smaller than the ${a.feed?a.feed.size:'duct'} through it — the air cannot get past.`
+        : (a.cls==='bad' ? `Passes ${CFM(a.max)} CFM. This unit needs ${CFM(M0.needs)}.`
+                         : `Passes the ${CFM(M0.needs)} CFM floor, not the ${CFM(M0.design)} we design to.`);
       push(a.name, a.size, why, ok, b?b.size:(gone?'Removed':'—'),
-        ok ? (gone?(/^elb/.test(a.slot)?'The new curb takes the elbow out — the unit\'s own opening lands on the roof, so this squeeze no longer exists.':'Replaced by a new plenum sized to the unit — no longer a chokepoint.')
-                 :(b.newMetal?(/^pen/.test(a.slot)?'New plenum sized to the unit\'s own opening — the manufacturer\'s connection, not a chokepoint.':'New metal built for this unit — sized to its airflow, no longer a chokepoint.'):`Opened up to ${CFM(b.max)} CFM in the proposed design.`))
-           : 'Not addressed yet — tap <b>Fix ▸</b> on that row, or <b>Design to 100</b>, on the Plan tab.',
+        ok ? (gone?(/^elb/.test(a.slot)?'The new curb takes the elbow out.':'Replaced by a new plenum sized to the unit.')
+                 :(b.newMetal?(/^pen/.test(a.slot)?'New plenum sized to the unit\'s own opening.':'New metal sized to this unit.'):`Opened up to ${CFM(b.max)} CFM.`))
+           : 'Not fixed yet — <b>Fix ▸</b> or <b>Fix to 100</b> on the Plan tab.',
         (a.cls==='warn'&&!a.neck)?'warn':'bad', a.slot) });
     if(M0.ins.known&&M0.ins.R<R_MIN){ const done=M.ins.Rf>=R_MIN;
-      push('Attic insulation','R-'+fmt(M0.ins.R),`Under the R-${R_MIN} minimum, so the ceiling keeps dumping heat into the rooms however well the system runs.`,
-        done,'R-'+fmt(M.ins.Rf), done?`Topped up — cuts ceiling heat gain about ${Math.round(M.ins.gain*100)}% and lowers the load on the new system.`:'Not in the proposal yet — the insulation toggle is on the Plan tab.','warn','insul') }
+      push('Attic insulation','R-'+fmt(M0.ins.R),`Under the R-${R_MIN} minimum — the ceiling pours heat in all afternoon.`,
+        done,'R-'+fmt(M.ins.Rf), done?`Topped up — about ${Math.round(M.ins.gain*100)}% less heat through the ceiling.`:'Not in the design yet — the Attic tiles on the Plan tab.','warn','insul') }
     if(M0.perTon<cptFloor()&&!M0.blowerBound){ const bl=!!M.blowerBound; const done=M.perTon>=cptFloor()||bl; // v2.42: everything the blower can push, delivered, is a pass
-      push('Airflow per ton',`${M0.perTon} CFM/ton`,`Under the ${cptFloor()}/ton floor. The coil is starved: it runs cold, dehumidifies poorly and the rooms at the end of the runs never get their air.`,
-        done,`${M.perTon} CFM/ton`, done?(bl?`Every spot passes — the ducts deliver every CFM this blower can push (${CFM(M.Qb)}). That is the most this unit can do.`:`Inside the ${cptFloor()}–${cptAim()} band — every chokepoint opened to its Manual D size, so the unit moves what its blower table says.`):'Still under the floor — chokepoints left to open.',M0.perTon<cptFloor()*0.9?'bad':'warn') }
+      push('Airflow per ton',`${M0.perTon} CFM/ton`,`Under the ${cptFloor()}/ton floor — the coil is starved and the far rooms never get their air.`,
+        done,`${M.perTon} CFM/ton`, done?(bl?`Every spot passes — all ${CFM(M.Qb)} CFM this blower can push.`:`Inside the ${cptFloor()}–${cptAim()} band — every spot opened to its size.`):'Still under the floor.',M0.perTon<cptFloor()*0.9?'bad':'warn') }
     if(M0.bal&&M0.bal.ratio!=null&&M0.bal.ratio<1&&M0.bal.cls!=='ok'){ const leads=!!(M.bal&&(M.bal.ratio>=1||M.bal.cls==='ok')); const both=!!(M.bal&&M.bal.ret>=M.needs&&M.bal.sup>=M.needs); const done=leads||both; // v2.27: a return side at a lower static than the supply is the return flowing slower — answered // v2.24: both sides carrying what the unit needs answers it — the rule of thumb is a preference, not a chokepoint
       push('Supply vs return',`${CFM(M0.bal.ret)} return / ${CFM(M0.bal.sup)} supply`,
-        'More supply than return. The system cannot give back what it cannot pull in, so rooms go uneven and the coil runs cold.',
+        'More supply than return — the unit cannot give out what it cannot pull in.',
         done, M.bal?`${CFM(M.bal.ret)} return / ${CFM(M.bal.sup)} supply`:'—',
-        leads?'Return now leads the supply — the side the rule of thumb wants.':(both?`Both sides now carry more than the ${CFM(M.needs)} CFM the unit needs — the return can breathe in what the supply gives out.`:'Still supply-heavy — open the return grille or the return duct rather than adding supply.'),'warn') }
+        leads?'The return now leads the supply.':(both?`Both sides carry more than the ${CFM(M.needs)} CFM the unit needs.`:'Still supply-heavy — open the return first.'),'warn') }
   }
   if(S.tkEndOld==='bad'&&!(!isPkg()&&supOld()==='plenum_coil'))
     push('Supply take-off placement','Branches run to the very end of the plenum',
-      'A branch at the dead end fights the static regain and starves — the last 8–12" of a plenum should stay clear.',
-      true,'Pulled back off the end','The proposed plenum keeps the last foot clear and spaces the branches from the discharge.','warn');
+      'A branch at the dead end starves — the last 8–12" of a plenum should stay clear.',
+      true,'Pulled back off the end','The new plenum keeps the last foot clear.','warn');
   if(isPkg()&&S.setup!=='separate'){
     const j0=judgeToday(o.unit), j=judgePkg(o.unit);
     if(j0&&j&&!j0.manual) j0.boxes.forEach((b,i)=>{ if(b.cls==='ok'||b.cls==='na') return; const nb=j.boxes[i]; const ok=!!(nb&&nb.cls==='ok');
@@ -5176,8 +5414,8 @@ function renderSumCard(o){
   if(hero) hero.innerHTML=`<div class="hero ${scoreCls(sc)}"><div class="hk">Step 5 · Summary</div>
     <div class="hv">New AC on today's ducts: ${sc0} &nbsp;→&nbsp; Goettl design: ${sc}</div>
     ${sumPlanLine()}
-    <div class="hs">${P.length?(allDone?`Every one of the ${P.length} problems found on this system is answered by the design.`:`${solved} of ${P.length} problem${P.length===1?'':'s'} solved — ${P.length-solved} still open; the pairs below show which and what closes ${P.length-solved===1?'it':'them'}.`):'Nothing wrong found — the new equipment goes in as it sits and the ductwork carries what it wants to move.'}${gain>0?` A new unit alone would score <b>${sc0}</b>; this design scores <b>${sc}</b>.`:''}</div></div>`;
-  const tile=(k,a,b,f,cls)=>`<div class="dim ${cls||''}"><div class="lbl">${k}</div><div class="val">${a===b?f(b):f(a)+' → '+f(b)}</div><div class="sub">${a===b?'unchanged':'new AC on today\'s ducts → this design'}</div></div>`;
+    <div class="hs short">${P.length?(allDone?`Every one of the ${P.length} problems found on this system is answered by the design.`:`${solved} of ${P.length} problem${P.length===1?'':'s'} solved — ${P.length-solved} still open.`):'Nothing wrong found — the new equipment goes in as it sits.'}</div></div>`;   /* v2.68: short */
+  const tile=(k,a,b,f,cls)=>`<div class="dim ${cls||''}"><div class="lbl">${k}</div><div class="val">${a===b?f(b):f(a)+' → '+f(b)}</div></div>`;   /* v2.68: the number only */
   const tiles=[tile('Airflow',M0.delivered,M.delivered,CFM,M.delivered>=M.needs?'ok':'bad'),
     tile('CFM per ton',M0.perTon,M.perTon,v=>String(v),airCls(M)),
     (M.ins.known?tile('Insulation',M.ins.R,M.ins.Rf,v=>'R-'+fmt(v),M.ins.Rf>=R_MIN?'ok':'warn'):''),
@@ -5192,8 +5430,9 @@ function renderSumCard(o){
       +`<div><div class="cap">Proposed — as built</div><div class="recshot"><span class="sbadge ${scoreCls(sc)}">${sc}</span><div class="viewer sumv" id="sumV1"><canvas id="sumC1" role="img" aria-label="3D of the proposed design"></canvas><div class="lbls" id="sumL1"></div></div></div></div></div>`;
   // why each fix matters — the chain, in air-path order, with what each one does to the number
   const steps=stepEffects(o); const sp=M.sp;
-  const chain=steps.length?`<h3>Why each fix matters</h3><p class="help" style="margin-top:0">Air moves in series. Every squeeze point caps the airflow at what it passes at the size it is, so the unit only gets what the tightest one lets through. The steps run tightest first: each one frees the air the one before it exposed, and the score climbs with the CFM. Leave one out and the unit is still being strangled at that spot.</p>
-    <ol class="chain">${steps.map((s_,i)=>`<li><span class="n">${i+1}</span><div><div class="ct">${s_.txt.replace(/ — one way to get.*$/,'')}</div><div class="cw">${whyFor(s_.k)}</div><div class="ce"><span>airflow <b>${CFM(s_.cfm)}</b>${s_.dCfm>0?` <i>+${s_.dCfm}</i>`:''}</span><span>${Math.round(s_.cfm/M.tons)} <b>CFM/ton</b></span>${s_.R!=null&&s_.dR?`<span>attic <b>R-${fmt(s_.R)}</b></span>`:''}<span>score <b>${s_.score}</b>${s_.dScore>0?` <i>+${s_.dScore}</i>`:''}</span></div></div></li>`).join('')}</ol>`:'';
+  // v2.68 (Stephen 2026-10-02: "on the why each fix matters section, it has all the numbers, saying that each fix didnt fix any cfm, thats making them look
+  // unimportant. lets drop that whole section because below it the What was wrong, addresses it all anyway") — the chain is gone from the page; the PDF export keeps its table.
+  const chain='';
   const pairs=P.length?`<h3>What was wrong — and how this design fixes it</h3><div class="pairs">${P.map(x=>
       `<div class="pair"><div class="was ${x.cls==='warn'?'warn':''}"><span class="t">${x.t}</span><span class="sz">${strip(x.was)}</span><span class="why">${x.wasWhy}</span></div>`
       +`<div class="arw">→</div>`
@@ -5202,13 +5441,12 @@ function renderSumCard(o){
   el.innerHTML=`<h2>Before and after</h2>
     ${shots}
     <div class="ba">
-      <div class="bax ${scoreCls(sc0)}"><div class="k">New AC on today's ducts</div><div class="n">${sc0}</div><div class="d">${M0.chokes.length} chokepoint${M0.chokes.length===1?'':'s'} · the unit is being strangled</div></div>
+      <div class="bax ${scoreCls(sc0)}"><div class="k">New AC on today's ducts</div><div class="n">${sc0}</div><div class="d">${M0.chokes.length} chokepoint${M0.chokes.length===1?'':'s'}</div></div>
       <div class="arw">→</div>
       <div class="bax ${scoreCls(sc)}"><div class="k">Goettl design</div><div class="n">${sc}</div><div class="d">${M.chokes.length} chokepoint${M.chokes.length===1?'':'s'}${sc>=100?' · every spot clear':''}</div></div>
     </div>
     <div class="env" style="grid-template-columns:repeat(auto-fit,minmax(140px,1fr))">${tiles}</div>
-    ${mdStatement(M)}
-    ${chain}${pairs}`;
+    ${chain}${pairs}`;   /* v2.68: no Manual D sentence on the client page — it is in the ST text and the worksheet */
   if(shots) sumViewersInit();
 }
 // v2.47 — the Summary says which option it is showing: the approved plan, the approved plan changed since, or no plan approved yet
@@ -5647,16 +5885,16 @@ function tpStoryHtml(o){
   <div class="phero" id="tpHero">${tpHeroInner(o,M,M0,cls)}</div>
   <div class="card" style="padding:12px">
     <h2 style="margin:2px 0 4px">Your system today, and the Goettl design</h2>
-    <p class="help" style="margin:0 0 6px">Both pictures turn — drag them. Red is where the air is being choked today. Tap the options under the design and watch the airflow and the score move.</p>
+    <p class="help" style="margin:0 0 6px">Drag to turn. Red is where the air is choked today.</p>
     <div class="duo">
       <div class="one"><div class="cap"><span>Today — new AC on the ducts as they are</span><span class="sb ${scoreCls(M0.score.total)}" id="tpSb0">${M0.score.total}</span></div>
-        <div class="viewer" id="tpV0"><canvas id="tpC0"></canvas><div class="lbls" id="tpL0"></div></div><div class="hint">Every red note is a spot the air has to squeeze through — the unit only gets what the tightest one lets past.</div></div>
+        <div class="viewer" id="tpV0"><canvas id="tpC0"></canvas><div class="lbls" id="tpL0"></div></div><div class="hint">Red = a squeeze point.</div></div>
       <div class="one"><div class="cap"><span>The Goettl design</span><span class="sb ${scoreCls(M.score.total)}" id="tpSb1">${M.score.total}</span></div>
-        <div class="viewer" id="tpV1"><canvas id="tpC1"></canvas><div class="lbls" id="tpL1"></div></div><div class="hint">Green is what we build new or open up. Sized to ACCA Manual D for this exact unit.</div></div>
+        <div class="viewer" id="tpV1"><canvas id="tpC1"></canvas><div class="lbls" id="tpL1"></div></div><div class="hint">Green = new or opened up, sized to ACCA Manual D.</div></div>
     </div>
     <div class="readout" id="tpReadout">${planReadoutHtml(o)}</div>
     <div class="pstrip" id="storyActions"></div>
-    <p class="help noprint" style="margin:8px 4px 0">Try the install options together — every tap redraws the design, the airflow and the score. <b>3D Design</b> above has the full chokepoint table behind it.</p>
+    <p class="help noprint" style="margin:8px 4px 0">Tap an option — the design, the airflow and the score follow.</p>
   </div>
   <div class="card" id="tpFound">${tpFoundInner(o,M,M0)}</div>
   <div class="card" id="tpSteps">${tpStepsInner(o,M,M0)}</div>
@@ -5685,7 +5923,7 @@ function tpHeroInner(o,M,M0,cls){ const meta=tpMeta(); const sysName=SYS_LABEL[S
   const apx=(typeof planApproved==='function')?planApproved():null;
   return `<div class="pk">Goettl comfort design${meta.name?' · '+tpEsc(meta.name):''}${apx&&apx.same?' · approved option: '+tpEsc(planName(apx.p)):''}</div>
     <div class="pt">${M.score.total>=100?'Built to move every bit of air this system can':(M.score.total>=85?'Every squeeze point opened — the unit can breathe':'Fixing the air, not just the unit')}</div>
-    <div class="ps">A new ${tpEsc(sysName.toLowerCase())} on the ductwork as it sits today scores <b>${M0.score.total}</b> — the equipment is new, but the air still squeezes through ${M0.chokes.length===1?'the same tight spot':'the same '+M0.chokes.length+' tight spots'}. The design on this page scores <b>${M.score.total}</b>${M.blowerBound?' — every CFM this blower can push, delivered':''}.</div>
+    <div class="ps">A new ${tpEsc(sysName.toLowerCase())} on today's ducts scores <b>${M0.score.total}</b>. The Goettl design scores <b>${M.score.total}</b>.</div>
     <div class="pscores"><div class="sc ${cls(M0.score.total)}"><div class="k">New AC on today's ducts</div><div class="n">${M0.score.total}</div><div class="s">${M0.chokes.length} tight spot${M0.chokes.length===1?'':'s'}</div></div><div class="arw">→</div><div class="sc ${cls(M.score.total)}"><div class="k">The Goettl design</div><div class="n">${M.score.total}</div><div class="s">${M.chokes.length} tight spot${M.chokes.length===1?'':'s'}${M.chokes.length?'':' · every spot clear'}</div></div></div>
     <div class="pgain"><span>Airflow <b>${CFM(M0.delivered)} → ${CFM(M.delivered)} CFM</b></span><span>Per ton <b>${M0.perTon} → ${M.perTon}</b></span>${M.ins.known?`<span>Attic <b>R-${fmt(M.ins.R)}${M.ins.Rf>M.ins.R?' → R-'+fmt(M.ins.Rf):''}</b></span>`:''}<span>Problems solved <b>${solved} of ${pairs.length}</b></span>${gain>0?`<span>Score <b>+${gain}</b></span>`:''}</div>` }
 function tpFoundInner(o,M,M0){ const pairs=issuePairs(o); const open=pairs.filter(p=>!p.fixed).length;
@@ -5693,11 +5931,12 @@ function tpFoundInner(o,M,M0){ const pairs=issuePairs(o); const open=pairs.filte
     <div class="was"><span class="lb">What is there now — ${tpEsc(p.was)}</span>${p.wasWhy}</div>
     <div class="now${p.fixed?'':' open'}"><span class="lb">${p.fixed?'What we are doing':'Still open'} — ${tpEsc(p.now)}</span>${p.nowWhy}</div></div>`).join('');
   return `<h2>What we found, and what we are doing about it</h2>
-    <p class="help">Every problem on the left is answered on the right.${open?` ${open} ${open===1?'is':'are'} still open — the options under the design close ${open===1?'it':'them'}.`:''}</p>
+    <p class="help">${open?`${open} still open — the options under the design close ${open===1?'it':'them'}.`:'Every problem answered.'}</p>
     ${pairHtml||'<p class="help">Nothing on this system is restricting the airflow.</p>'}` }
 function tpStepsInner(o,M,M0){ const steps=stepEffects(o);
+  /* v2.68: the list only — no per-step numbers (a step that frees no CFM on its own read as unimportant), no paragraph each */
   return `<h2>The improvements, in the order they get built</h2>
-    ${steps.length?`<ol class="steps2">${steps.map((s_,i)=>`<li><span class="n">${i+1}</span><div><div class="ct">${tpEsc(s_.txt.replace(/ — one way to get.*$/,''))}</div><div class="cw">${whyFor(s_.k)}</div><div class="ce"><span>airflow <b>${CFM(s_.cfm)}</b>${s_.dCfm>0?` <i>+${s_.dCfm}</i>`:''}</span><span>${Math.round(s_.cfm/M.tons)} <b>CFM/ton</b></span>${s_.R!=null&&s_.dR?`<span>attic <b>R-${fmt(s_.R)}</b></span>`:''}<span>score <b>${s_.score}</b>${s_.dScore>0?` <i>+${s_.dScore}</i>`:''}</span></div></div></li>`).join('')}</ol>`:'<p class="help">Nothing proposed yet — tap the options under the design.</p>'}` }
+    ${steps.length?`<ol class="steps2">${steps.map((s_,i)=>`<li><span class="n">${i+1}</span><div><div class="ct">${tpEsc(s_.txt.replace(/ — one way to get.*$/,''))}</div></div></li>`).join('')}</ol>`:'<p class="help">Nothing proposed yet — tap the options under the design.</p>'}` }
 // the two story viewers: created once per render of the page, redrawn on every design change
 function tpViewersInit(o){ const c0=$('#tpC0'), c1=$('#tpC1'); if(!c0||!c1) return;
   const keep=(k,c,l,cam)=>{ const old=PV[k]; const V=makeViewer(c,l,old?Object.assign({},old.view):cam); PV[k]=V; wireViewer(V); return V };
@@ -5894,7 +6133,7 @@ function fcStaticHtml(o,shots,optShots){
     <h2 style="margin:2px 0 4px">Your system today, and the Goettl design</h2>
     <p class="help" style="margin:0 0 6px">Red is where the air is being choked today. Green is what we build new or open up — sized to ACCA Manual D for this exact unit.</p>
     <div class="duo">
-      <div class="one"><div class="cap"><span>Today — new AC on the ducts as they are</span><span class="sb ${scoreCls(M0.score.total)}">${M0.score.total}</span></div>${pic(shots.before,'Your system today, with every chokepoint called out')}<div class="hint">Every red note is a spot the air has to squeeze through — the unit only gets what the tightest one lets past.</div></div>
+      <div class="one"><div class="cap"><span>Today — new AC on the ducts as they are</span><span class="sb ${scoreCls(M0.score.total)}">${M0.score.total}</span></div>${pic(shots.before,'Your system today, with every chokepoint called out')}<div class="hint">Red = a squeeze point.</div></div>
       <div class="one"><div class="cap"><span>The Goettl design</span><span class="sb ${scoreCls(M.score.total)}">${M.score.total}</span></div>${pic(shots.after,'The Goettl design')}<div class="hint">Green is what we build new or open up.</div></div>
     </div>
     <div class="readout">${planReadoutHtml(o)}</div>
@@ -6409,6 +6648,12 @@ function summaryText(o){
   { const B=rbrBuild(), sfh=rbrHomeSf(), rec=rbrRecTons();
     if(sfh&&B){ L.push(''); L.push(`THE HOME: ${CFM(sfh)} sq ft · ${B.n} · rule of thumb ${rec} ton (${B.sf} sq ft/ton)${RM&&RM.loadT?(RM.mjRaw!=null?` · room scan Manual J ${CFM(RM.mjBtu)} BTUh = ${RM.loadT} ton`:` · measured room load ${CFM(RM.needTot)} CFM = ${RM.loadT} ton`):''}`);
       { const ai=insulState(); if(ai.known) L.push(`  Attic: R-${fmt(ai.R)}${ai.src&&ai.src!=='entered'?' ('+ai.src+')':''}`); }
+      /* v2.68 — the load details and the Manual J behind the size, for the office */
+      try{ const R=window.FC_LOAD, G=S.plan&&S.plan.g; if(G&&G.geo){ const C=ldCfg()||{}; const ld=S.home.ld||{}; const nm=(list,id,dflt)=>{ const p=id&&(C[list]||[]).find(x=>x.id===id); return p?p.name:dflt };
+        const parts=[`built ${ldYear()||'?'}`,`${R&&R.occupants!=null?R.occupants:'?'} ${R&&R.occupants===1?'person':'people'}`,`floor: ${nm('floorPresets',ld.floor,ldDefault('floor'))}`,`walls: ${nm('wallPresets',ld.wall,ldDefault('wall'))}`,`windows: ${nm('windowPresets',ld.glass,ldDefault('glass'))}`,`shading: ${nm('windowShading',ld.shade,ldDefault('shade'))}`,`air: ${nm('infiltrationPresets',ld.infil,ldDefault('infil'))}`,`ducts: ${nm('ductOptions',ld.duct,ldDefault('duct'))}`,`roof: ${nm('roofColors',ld.roof,ldDefault('roof'))}`];
+        L.push(`  LOAD DETAILS: ${parts.join(' · ')}`);
+        if(R&&R.complete) L.push(`  MANUAL J (Fit Check load engine, Room Scan geometry): ${CFM(R.cool)} BTUh cooling (${CFM(R.sens)} sensible + ${CFM(R.lat)} latent) · ${CFM(R.heat)} BTUh heating = ${R.mjT.toFixed(2)} ton${G.mjApp?` · Room Scan app said ${CFM(G.mjApp.cool)} BTUh = ${(G.mjApp.mjT||0).toFixed(2)} ton`:''}`);
+        else if(R&&R.missing&&R.missing.length) L.push(`  MANUAL J: not complete — needs ${R.missing.slice(0,4).join(', ')}${G.mjApp?` · using the Room Scan app's ${CFM(G.mjApp.cool)} BTUh`:''}`) } }catch(e){}
       // v2.35 — the size question always goes out with both answers on it
       { const c=rbrSizeCall(); if(c){
         L.push(`  SIZE CALL: the ${c.why==='scan'?'room scan Manual J':c.why==='rooms'?'measured rooms':'pre-1980 build'} put this at ${c.askT} ton against the ${c.rec} ton the square footage gives.`);   /* v2.66: a scan-driven call names the scan */
@@ -8747,6 +8992,7 @@ function rbrRender(){
   const body=$('#rbrBody'); if(body) body.classList.toggle('hidden',!(S.plan||S.rbrHand||S.rooms.length));
   const gt=$('#rbrGridTitle'); if(gt) gt.textContent=S.plan?'Drag the UNIT tile to where the air drops in':'Arrange the rooms the way the house actually sits';
   ['rbrArr','fcAddUnc'].forEach(id=>{ const el=$('#'+id); if(el) el.classList.toggle('hidden',!!S.plan) });
+  try{ renderLoadDetails() }catch(e){ console.error('load details',e) }   /* v2.68 */
 }
 function rbrTile(l,v,s,cls){ return `<div class="dim ${cls||''}"><div class="lbl">${l}</div><div class="val">${v}</div>${s?`<span class="mth">${s}</span>`:''}</div>` }   /* v2.66: the number only — the working stays in the page (.mth), never on show */
 // v2.65 — the switch at the top of the tool and the Rooms tab in the step strip follow S.rbrOpen
@@ -8864,7 +9110,7 @@ function rbrMJ(){
   // v2.65 (Stephen 2026-10-01: "Rule of thumb size, Manual J size, Manual D CFM needs and in bold, the recommendation") — three sizes that feed the call, then the call
   const tiles=
     rbrTile('Rule of thumb',rec+' ton',CFM(sf)+' sq ft ÷ '+B.sf+' = '+(sf/B.sf).toFixed(2)+' — '+rbrRoundNote(sf/B.sf)+' · '+rbrEsc(B.n),'')+
-    (mjT ? rbrTile('Manual J',mjT+' ton',CFM(mj.cool)+' BTUh cooling'+(mj.sens?' ('+CFM(mj.sens)+' sensible'+(mj.lat?' + '+CFM(mj.lat)+' latent':'')+')':'')+(mj.heat?' · '+CFM(mj.heat)+' BTUh heating':'')+' · off the room scan','mj')
+    (mjT ? rbrTile('Manual J',mjT+' ton',CFM(mj.cool)+' BTUh cooling'+(mj.sens?' ('+CFM(mj.sens)+' sensible'+(mj.lat?' + '+CFM(mj.lat)+' latent':'')+')':'')+(mj.heat?' · '+CFM(mj.heat)+' BTUh heating':'')+(mj.fc?' · Fit Check load engine on the room scan (Load details above)':' · off the room scan'),'mj')
          : rbrTile('Manual J','—','the Goettl Room Scan upload carries the room-by-room load calc','na'))+
     (RM.design&&RM.loadT ? rbrTile('Manual D · CFM needed',CFM(RM.design.Qd)+' CFM',RM.design.tons+' ton × '+RM.design.cpt+' CFM/ton = '+CFM(RM.design.target)+(RM.design.chart==null?' — the ducts are designed to push it · no unit picked yet':RM.design.short?' · '+rbrEsc(RM.design.name)+' moves '+CFM(RM.design.chart)+' at 0.50″ ('+RM.design.chartCpt+'/ton) — the ducts are designed to what it can do':' — the ducts are designed to push it · '+rbrEsc(RM.design.name)+' moves '+CFM(RM.design.chart)+' at 0.50″ ('+RM.design.chartCpt+'/ton)')+
         (RM.mjRaw==null?' · rooms ask '+CFM(RM.needTot)+' CFM ÷ '+RM.cpt+' CFM/ton ('+rbrEsc(RM.cptSrc)+') = '+(RM.needTot/RM.cpt).toFixed(2)+' — '+rbrRoundNote(RM.needTot/RM.cpt):'')+(RM.loadT>rec?' — bigger unit, or attic to R-38':''),'md'+(RM.design.short?' warn':(RM.loadT>rec?' warn':'')))
@@ -8878,7 +9124,7 @@ function rbrMJ(){
     else if(call.closes) alt=` — <b>or keep the ${call.rec} ton and bring the attic to R-38</b>, the cheaper one`;
     else { const c49=rbrInsCut(call.R,R_CODE), a49=Math.round(call.loadNow*(1-c49)); alt=` — R-38 alone is short; R-49 ${rbrSold(a49/(call.cpt||rbrCpt()))<=call.rec?'lands the '+call.rec+' ton':'still leaves it a size big'}` } }
   const quoted= A.live ? `<span class="rq${fits?'':' bad'}">Quoting ${tons1(A.tons)} ton · ${rbrEsc(A.name)}${fits?'':' — <b>under what the house asks for</b>'}</span>` : '';
-  const app= mj&&mj.recT>0 ? `<span class="rq">Room Scan app: ${mj.recT} ton · ${CFM(mj.cfm)} CFM${mj.roomCfm?' (rooms '+CFM(mj.roomCfm)+' CFM)':''}</span>` : '';
+  const mja=G&&(G.mjApp||mj); const app= mja&&mja.recT>0 ? `<span class="rq">Room Scan app: ${mja.recT} ton · ${CFM(mja.cfm)} CFM${mja.roomCfm?' (rooms '+CFM(mja.roomCfm)+' CFM)':''}</span>` : '';   /* v2.68: the app's call, never Fit Check's own */
   // v2.66 — the call in bold with its choices as pills; the sentence behind it stays in the page (.mth) and goes out in the ServiceTitan text (SIZE CALL / STRETCH CALL)
   const pills=[];
   if(L){ const w=String(L.why||''); const tag=/^Manual J/.test(w)?'Manual J':/^measured rooms/.test(w)?'Rooms':/^pre-1980/.test(w)?'Pre-1980':/^rule of thumb/.test(w)?'Rule of thumb':''; if(tag&&!(!call&&str&&!str.ok&&str.known&&str.next)) pills.push(`<span class="rp">${tag}</span>`) }   /* sized up for a thin attic: the pill says that instead */
@@ -8887,7 +9133,7 @@ function rbrMJ(){
       else { const c49=rbrInsCut(call.R,R_CODE), a49=Math.round(call.loadNow*(1-c49)); if(rbrSold(a49/(call.cpt||rbrCpt()))<=call.rec) pills.push(`<span class="rp alt">or ${call.rec} ton + R-49 attic</span>`) } } }
   else if(str&&!str.ok){ if(!str.known) pills.push('<span class="rp warn">Needs R-38 attic</span>'); else if(str.next){ pills.push('<span class="rp warn">Thin attic</span>'); if(str.closes) pills.push(`<span class="rp alt">or ${str.size} ton + R-38 attic</span>`) } }
   if(A.live&&!fits) pills.push(`<span class="rp bad">Quoting ${tons1(A.tons)} ton — too small</span>`);
-  if(L&&mj&&mj.recT>0&&Math.abs(mj.recT-L.tons)>0.01) pills.push(`<span class="rp">App: ${mj.recT} ton</span>`);
+  if(L&&mja&&mja.recT>0&&Math.abs(mja.recT-L.tons)>0.01) pills.push(`<span class="rp">App: ${mja.recT} ton</span>`);
   const hero= L ? `<div class="rechero${A.live&&!fits?' bad':''}"><div class="rk">Recommendation</div><div class="rv">${L.tons} ton</div>${pills.length?'<div class="rps">'+pills.join('')+'</div>':''}<span class="mth">${rbrEsc(L.why)}${alt}${quoted}${app}</span></div>` : '';
   const why='<div class="msg" style="margin-top:0">'+B.note+
       // v2.35: when the house asks for more than the square footage gave, the answer is never just
@@ -8902,7 +9148,7 @@ function rbrMJ(){
   el.innerHTML='<div class="sizeband v66">'+tiles+hero+'<div class="mth why">'+why+'</div></div>';   /* v2.66: no "Why this size" on the tab — the script goes out in the ServiceTitan text on the Summary (SIZE CALL / STRETCH CALL) */
 }
 function rbrScanFacts(){ const G=S.plan&&S.plan.g; if(!G) return ''; const b=[]; if(G.nSup||G.nRet) b.push(`<span class="scn">${G.nSup} ${G.nSup===1?'supply':'supplies'}${G.nRet?' + '+G.nRet+' return'+(G.nRet===1?'':'s'):''} off the scan</span>`);
-  if(S.plan.north&&S.plan.north.deg!=null) b.push(`north ${Math.round(S.plan.north.deg)}°${S.plan.north.acc?' ±'+Math.round(S.plan.north.acc)+'°':''}`); if(G.mj&&G.mj.recT>0) b.push(`scan load calc: ${G.mj.recT} ton · ${CFM(G.mj.cfm)} CFM`);
+  if(S.plan.north&&S.plan.north.deg!=null) b.push(`north ${Math.round(S.plan.north.deg)}°${S.plan.north.acc?' ±'+Math.round(S.plan.north.acc)+'°':''}`); { const ma=G.mjApp||G.mj; if(ma&&ma.recT>0) b.push(`scan load calc: ${ma.recT} ton · ${CFM(ma.cfm)} CFM`) }
   if(G.home&&G.home.attic&&G.home.attic.depth) b.push(`attic ${G.home.attic.depth}" ${rbrEsc(String(G.home.attic.mat||'').toLowerCase())}`.trim()); if(G.home&&G.home.year) b.push(`built ${G.home.year}`);
   return b.length?' · '+b.join(' · '):'' }
 function rbrVentSum(r){ if(r.nr) return ''; if(r.vAsm&&r.vSzAsm) return ' (assumed)'; const b=[];   // v2.58: assumed vents say so; pushed ones say how hard
@@ -9171,7 +9417,8 @@ function fcPlanApply(P,name){
     const ld= r.kind==='kitchen'?'high':(r.kind==='bath'||r.kind==='laundry'||nr)?'low':((wins.length>=2&&winFt>0.18*perim)?'high':'avg');
     const room={id:'r'+(S.rbrSeq++),n:r.name,sf:Math.max(1,Math.round(r.sf)),h:(r.h>=6&&r.h<=30)?Math.round(r.h*10)/10:10,ld,x:r2(bb.x0),y:r2(bb.y0),w:r2(Math.max(1,bb.w)),d:r2(Math.max(1,bb.d)),fl:top,
       poly:r.poly.map(p=>[r2(p[0]),r2(p[1])]),cx:r2(r.c[0]),cy:r2(r.c[1]),kind:r.kind,nr,win:wins.length,plan:true};
-    if(r.g&&r.g.mj&&r.g.mj.cfm>0){ room.mj=Object.assign({},r.g.mj); room.ld='scan' }   // the app's Manual J for this room — the Scan chip; Low / Average / High still override it
+    if(r.g&&r.g.mj&&r.g.mj.cfm>0){ room.mj=Object.assign({},r.g.mj); room.mjApp=Object.assign({},r.g.mj); room.ld='scan' }   // the app's Manual J for this room — the Scan chip; Low / Average / High still override it
+    if(r.g&&r.g.id) room.gid=r.g.id;   /* v2.68: the app's room id — the load engine's geometry is keyed on it */
     if(r.ns){ room.ns=true; room.nr=true }   // not served by this system: no load, no register
     if(r.g&&r.g.ext&&r.g.ext.length) room.ext=r.g.ext.map(w=>({f:w.facing,az:w.az,win:+w.win.toFixed(1),w:+w.w.toFixed(1)}));
     if(hasReg) room.nrScan=true;
@@ -9204,6 +9451,7 @@ function fcPlanApply(P,name){
     /* v2.66 — the branch duct the tech recorded on the registers (flex unless every one says metal) */
     try{ const dt=[]; (P.rooms||[]).forEach(r=>(r.regs||[]).forEach(q=>{ if(q.type==='supply'&&q.ductType) dt.push(String(q.ductType)) })); if(dt.length&&dt.every(x=>/metal|rigid|sheet/i.test(x))&&!S.f.dr_brm){ S.f.dr_brm='metal'; if(typeof syncMatChips==='function') syncMatChips() } }catch(e){}
     try{ if(typeof refreshOld==='function') refreshOld() }catch(e){}   /* v2.66: the attic read (R badge) after the attic is filled — v2.64 re-read it before, so it said "enter the depth" with the depth sitting there */
+    try{ ldFromScan(G); fcLoadRun() }catch(e){ console.error('load',e) }   /* v2.68: the picks off the export, then Fit Check's own load on the scan's geometry */
     const J=G.job; if(J&&J.address){ try{ const a=$('#fcAddr'); if(a&&!String(a.value||'').trim()){ a.value=J.address; S.prop=S.prop||{}; S.prop.query=J.address } }catch(e){} } }
   S.auto=S.auto||{}; S.auto.rbr=false; S.rbrOpen=true;
   fcApplyRuns(); save(); }
@@ -9281,7 +9529,8 @@ function fcSrcTiles(){ const P=S.plan; const op=id=>{ const x=$('#'+id); return 
               : `<label class="xt src scan" for="rbrDxf"><svg class="ico"><use href="#i-scan"/></svg><b>Room scan</b><span class="xv">Upload</span></label>`;
   const A=fcAddrTile(), Q=fcSfTile();
   return scan+`<button type="button" class="xt src addr${op('fcFold')?' on':''}${A.ok?' ok':''}" data-fold="fcFold" aria-expanded="${op('fcFold')}"><svg class="ico"><use href="#i-pin"/></svg><b>Address</b><span class="xv">${rbrEsc(A.t)}</span></button>`+
-    `<button type="button" class="xt src sqft${op('sfFold')?' on':''}${Q.ok?' ok':''}${Q.need?' need':''}" data-fold="sfFold" aria-expanded="${op('sfFold')}"><svg class="ico"><use href="#i-sqft"/></svg><b>Sq ft</b><span class="xv">${rbrEsc(Q.t)}</span></button>` }
+    `<button type="button" class="xt src sqft${op('sfFold')?' on':''}${Q.ok?' ok':''}${Q.need?' need':''}" data-fold="sfFold" aria-expanded="${op('sfFold')}"><svg class="ico"><use href="#i-sqft"/></svg><b>Sq ft</b><span class="xv">${rbrEsc(Q.t)}</span></button>`+
+    `<button type="button" class="xt src code${op('codeFold')?' on':''}" data-fold="codeFold" aria-expanded="${op('codeFold')}"><svg class="ico"><use href="#i-code"/></svg><b>Job code</b><span class="xv">${P&&/^Room Scan GTL-/.test(P.name||'')?rbrEsc(P.name.replace('Room Scan ','')):'Room Scan'}</span></button>` }   /* v2.68: the hand-off code */
 function fcAddrTile(){ const P=S.prop; const fl=P&&Array.isArray(P.floorSqFt)&&P.floorSqFt.length?P.floorSqFt:null; const rec=!!(P&&(P.apn||P.yearBuilt||P.conditionedSqFt||fl));
   if(rec){ const sf=fl?fl.reduce((s,v)=>s+(+v||0),0):(+P.conditionedSqFt||0); return {ok:true,t:sf?CFM(Math.round(sf))+' sq ft':'found'} }
   const q=P&&P.query?String(P.query).trim():''; return {ok:false,t:q?q.replace(/\s+(ct|court|st|street|ave|avenue|dr|drive|ln|lane|rd|road|blvd|way|cir|circle|pl|place)\.?$/i,''):''} }
@@ -9326,9 +9575,9 @@ function rbrWire(){
   $$('#buildSeg button').forEach(b=>b.addEventListener('click',()=>{ S.home.build=b.dataset.v; S.home.buildScan=false; rbrSyncSeg(); save(); rbrRender(); rbrSync() }));
   // v2.66 — the Address and Sq ft tiles open their fold (one at a time) and put the cursor in it
   { const top=$('#fcTop1'); if(top&&!top.dataset.folds){ top.dataset.folds='1'; top.addEventListener('click',e=>{ const b=e.target.closest('[data-fold]'); if(!b) return; const fd=$('#'+b.dataset.fold); if(!fd) return; const open=!fd.open;
-      ['fcFold','sfFold'].forEach(id=>{ const x=$('#'+id); if(x) x.open=false }); fd.open=open; fcSrcSync();
-      if(open){ const inp=fd.querySelector(b.dataset.fold==='fcFold'?'#fcAddr':'#homeSf'); if(inp&&!String(inp.value||'').trim()) setTimeout(()=>{ try{ inp.focus() }catch(_){} },60) } });
-    ['fcFold','sfFold'].forEach(id=>{ const x=$('#'+id); if(x) x.addEventListener('toggle',()=>{ try{ fcSrcSync() }catch(_){} }) }) } }
+      ['fcFold','sfFold','codeFold'].forEach(id=>{ const x=$('#'+id); if(x) x.open=false }); fd.open=open; fcSrcSync();
+      if(open){ const inp=fd.querySelector(b.dataset.fold==='fcFold'?'#fcAddr':(b.dataset.fold==='codeFold'?'#rsCode':'#homeSf')); if(inp&&!String(inp.value||'').trim()) setTimeout(()=>{ try{ inp.focus() }catch(_){} },60) } });
+    ['fcFold','sfFold','codeFold'].forEach(id=>{ const x=$('#'+id); if(x) x.addEventListener('toggle',()=>{ try{ fcSrcSync() }catch(_){} }) }) } }
   try{ dtWire() }catch(e){}
   // v2.35: the attic now lives in The home, because what is up there decides whether the answer is a
   // bigger unit or a top-up. Retyping it re-runs the size recommendation and the banner, nothing else.
@@ -9488,7 +9737,107 @@ function rbrExportBlock(){
    rbrInstallPlanPrintHtml();
 }
 
+// ============================================================ v2.68 — LOAD DETAILS, THE LIVE MANUAL J, NIGHT MODE, THE HAND-OFF (Stephen 2026-10-02)
+// LOAD DETAILS (Stephen: "add the other items needed for a true load, they should be right under the build … just like in the app. that way when we export a
+// project scan to fit check, that a tech in the field did, the service manager could see all the options the tech selected, and how they came to the system
+// size choice, he can also edit it"). The Room Scan app's Load details page, folded under the attic: year built · people · floor · walls · windows · shading ·
+// air tightness · ducts · roof colour. Every pick is an id out of the same load_config.json the app reads (LOADCFG, inlined by build.sh), filled from the scan
+// where the export carries it (badged "scan"), the age band or the config's assumed default otherwise (badged "assumed"). A change re-runs the load engine
+// (fcload.js — the app's LoadEngine ported) on the scan's geometry, and the Manual J tile, the Recommendation, the room shares and the ST text all follow.
+const LD_KEYS=['floor','wall','glass','shade','infil','duct','roof'];
+const LD_DEF=[['floor','Floor','floorPresets','floorTypeID'],['wall','Walls','wallPresets',null],['glass','Windows','windowPresets',null],['shade','Window shading','windowShading','windowShadingID'],['infil','Air tightness','infiltrationPresets',null],['duct','Ducts','ductOptions','ductOptionID'],['roof','Roof colour','roofColors','roofColorID']];
+function ldCfg(){ return (typeof LOADCFG==='object'&&LOADCFG)?LOADCFG:null }
+function ldState(){ S.home.ld=S.home.ld||{}; S.home.ldSrc=S.home.ldSrc||{}; return S.home.ld }
+function ldBand(){ const C=ldCfg(); if(!C||typeof FCLoad==='undefined') return null; const y=ldYear(); return y?FCLoad.ageBand(C,y):null }
+function ldYear(){ const ld=ldState(); if(+ld.year>0) return +ld.year; const G=S.plan&&S.plan.g; if(G&&G.home&&G.home.year) return G.home.year; if(S.prop&&S.prop.yearBuilt) return +S.prop.yearBuilt; return null }
+function ldZip(){ const ld=ldState(); if(ld.zip) return ld.zip; const G=S.plan&&S.plan.g; if(G&&G.home&&G.home.zip) return G.home.zip; if(S.prop&&S.prop.zip) return String(S.prop.zip); return '' }
+// the default behind a blank pick, in words — the age band's for the envelope, the config's assumed default for the rest
+function ldDefault(k){ const C=ldCfg(); if(!C) return ''; const b=ldBand(); const A=C.assumedDefaults||{};
+  if(k==='wall'){ const p=b&&(C.wallPresets||[]).find(x=>x.id===b.wallPresetID); return p?p.name+' (age)':'needs the year built' }
+  if(k==='glass'){ const p=b&&(C.windowPresets||[]).find(x=>x.id===b.windowPresetID); return p?p.name+' (age)':'needs the year built' }
+  if(k==='infil'){ return b?(b.name+' · '+(b.coolingACH!=null?b.coolingACH.toFixed(2)+' ACH':'')):'needs the year built' }
+  const d=LD_DEF.find(x=>x[0]===k); const id=d&&d[3]?A[d[3]]:null; const p=id&&(C[d[2]]||[]).find(x=>x.id===id); return p?p.name:'—' }
+function ldBadge(k){ const src=(S.home.ldSrc||{})[k]; const ld=ldState(); if(ld[k]) return src==='scan'?'<span class="ldb scan">scan</span>':'<span class="ldb set">set</span>'; return '<span class="ldb">assumed</span>' }
+function renderLoadDetails(){ const g=$('#ldGrid'); if(!g) return; const C=ldCfg(); if(!C){ g.innerHTML=''; return } const ld=ldState(); const esc=s=>String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;');
+  const yr=ldYear(); const occDef=(function(){ try{ const r=fcLoadRun({dry:true}); return r&&r.occupants||'' }catch(e){ return '' } })();
+  let h=`<div class="field"><label>Year built ${ld.year?ldBadge('year'):(yr?'<span class="ldb scan">scan</span>':'<span class="ldb">needed</span>')}</label><input type="number" inputmode="numeric" id="ld_year" placeholder="${esc(yr||'e.g. 2004')}" value="${esc(ld.year||'')}"></div>`;
+  h+=`<div class="field"><label>People ${ld.occ!=null&&ld.occ!==''?ldBadge('occ'):'<span class="ldb">assumed</span>'}</label><input type="number" inputmode="numeric" id="ld_occ" placeholder="${esc(occDef)}" value="${esc(ld.occ!=null?ld.occ:'')}"></div>`;
+  LD_DEF.forEach(([k,lbl,list])=>{ const opts=(C[list]||[]).map(p=>`<option value="${esc(p.id)}"${ld[k]===p.id?' selected':''}>${esc(p.name)}${k==='infil'&&p.coolingACH!=null?' · '+p.coolingACH.toFixed(2)+' ACH':''}</option>`).join('');
+    h+=`<div class="field"><label>${lbl} ${ldBadge(k)}</label><select id="ld_${k}"><option value=""${ld[k]?'':' selected'}>Assumed · ${esc(ldDefault(k))}</option>${opts}</select></div>` });
+  g.innerHTML=h;
+  $$('#ldGrid input,#ldGrid select').forEach(el=>{ el.addEventListener('change',()=>{ const k=el.id.slice(3); const v=String(el.value||'').trim(); if(k==='year'||k==='occ'){ ld[k]=v===''?null:+v } else ld[k]=v||null; S.home.ldSrc[k]=v?'set':null; save(); fcLoadSync(); renderLoadDetails() }) });
+  ldOutSync() }
+// the line under the picks: what the load comes to, and what the app said
+function ldOutSync(){ const el=$('#ldOut'); if(!el) return; const G=S.plan&&S.plan.g; const R=window.FC_LOAD||null;
+  if(!G||!G.geo){ el.className='ldout na'; el.innerHTML='Upload a Goettl Room Scan and the load runs room by room on its walls, windows and north. Until then the size is the rule of thumb.'; ldFoldSum(); return }
+  if(!R||!R.complete){ const need=(R&&R.missing&&R.missing.length)?R.missing.slice(0,4).join(' · '):'the scan\'s geometry'; el.className='ldout warn'; el.innerHTML=`<b>Load not complete</b> — needs ${rbrEsc(need)}.${G.mjApp?' Using the Room Scan app\'s load calc ('+CFM(G.mjApp.cool)+' BTUh) meanwhile.':''}`; ldFoldSum(); return }
+  const app=G.mjApp; const diff=app&&app.cool>0?Math.abs(R.cool-app.cool)/app.cool:0;
+  const comps=Object.keys(R.comp||{}).filter(k=>R.comp[k].c>0).sort((a,b)=>R.comp[b].c-R.comp[a].c).slice(0,6).map(k=>`<span>${rbrEsc(k)} <b>${CFM(R.comp[k].c)}</b></span>`).join('');
+  el.className='ldout'; el.innerHTML=`Manual J <b>${CFM(R.cool)} BTUh</b> cooling · ${CFM(R.heat)} BTUh heating · <b>${(R.mjT||0).toFixed(2)} ton</b> · ${R.occupants} ${R.occupants===1?'person':'people'} · ${rbrEsc(R.band||'')}`+
+    `<div class="ldcomp">${comps}</div>`+(app?`<span class="app">Room Scan app: ${CFM(app.cool)} BTUh · ${(app.mjT||0).toFixed(2)} ton${diff>0.02?' — differs: the picks above are not the app\'s':' — matches'}</span>`:'');
+  ldFoldSum() }
+function ldFoldSum(){ const s=$('#ldFoldSum'); if(!s) return; const R=window.FC_LOAD; const G=S.plan&&S.plan.g; const n=LD_KEYS.filter(k=>(S.home.ld||{})[k]).length; const sc=LD_KEYS.filter(k=>(S.home.ldSrc||{})[k]==='scan').length;
+  s.textContent=(R&&R.complete)?`Manual J ${CFM(R.cool)} BTUh · ${(R.mjT||0).toFixed(2)} ton · ${R.occupants} ${R.occupants===1?'person':'people'}${sc?' · '+sc+' from scan':''}`:(G&&G.geo?'year · people · walls · windows · air · ducts · roof':'year · people · walls · windows · air · ducts · roof') }
+// the engine's inputs off the job: the scan's geometry, the attic as entered on the tab (the R the badge shows), the picks
+function fcLoadInputs(o){ o=o||{}; const C=ldCfg(); const G=S.plan&&S.plan.g; if(!C||!G||!G.geo||typeof FCLoad==='undefined') return null; const ld=ldState();
+  const ins=o.atticR!=null?{known:true,R:o.atticR}:insulState();   /* o.atticR: a dry run on another attic R (the harness reproduces the app's number on its own per-inch figure) */ const ty=($('#in_type')||{}).value||'unknown'; const where=ty==='spray'?'roofDeck':(ty==='none'?'none':'floor');
+  const rooms=(S.rooms||[]).filter(r=>r.gid&&G.geo[r.gid]).map(r=>{ const q=G.geo[r.gid]; return {id:r.gid,name:r.n,sf:q.sf||r.sf,h:q.h||r.h,vol:q.vol,ceilAbove:q.above,served:r.ns?0:(q.served==null?1:q.served),ext:q.ext||[],
+    wallId:ld.wall?null:((FCLoad.byName(C.wallPresets,q.wall)||{}).id||null),glassId:ld.glass?null:((FCLoad.byName(C.windowPresets,q.glass)||{}).id||null)} });
+  return {cfg:C,zip:ldZip(),year:ldYear(),occ:(ld.occ!=null&&ld.occ!=='')?+ld.occ:null,floorId:ld.floor||null,wallId:ld.wall||null,glassId:ld.glass||null,shadeId:ld.shade||null,infilId:ld.infil||null,ductId:ld.duct||null,roofId:ld.roof||null,
+    attic:{R:ins.known?ins.R:null,where},north:!!(S.plan.north&&S.plan.north.deg!=null),rooms,
+    noGeo:(S.rooms||[]).filter(r=>!r.ns&&!(r.gid&&G.geo[r.gid])).map(r=>r.n||'a room')} }   /* a served room the scan has no walls for (an older export, a row the SM added) — the house load is not complete without it */
+// run it: S.plan.g.mj becomes Fit Check's own number (the app's stays in mjApp), every scanned room's share follows
+function fcLoadRun(o){ o=o||{}; const G=S.plan&&S.plan.g; const inp=fcLoadInputs(o); if(!G||!inp||!inp.rooms.length){ if(!o.dry) window.FC_LOAD=null; return null }
+  let R; try{ R=FCLoad.house(inp) }catch(e){ console.error('load engine',e); return null }
+  if(R&&inp.noGeo&&inp.noGeo.length){ R.complete=false; R.missing=(R.missing||[]).concat(['walls for '+inp.noGeo.join(', ')+' (re-export from the Room Scan app)']) }
+  if(o.dry) return R;
+  window.FC_LOAD=R;
+  if(R&&R.complete&&R.mjT>0){ const sold=rbrSold(R.mjT); const cpt=(inp.cfg.equipment||{}).cfmPerTon||400; const sys=sold*cpt;
+    G.mj=Object.assign({},G.mjApp||{},{cool:R.cool,sens:R.sens,lat:R.lat,heat:R.heat,mjT:R.mjT,recT:sold,cfm:sys,fc:true,basis:'Fit Check load engine',occ:R.occupants});
+    (S.rooms||[]).forEach(r=>{ if(!r.gid) return; const x=R.rooms.find(y=>y.id===r.gid); if(!x||x.ns||x.cool==null) return; r.mj=Object.assign({},r.mj||{},{cfm:+(x.share*sys).toFixed(2),cool:x.cool,heat:x.heat,fc:true}); if(!r.ld||r.ld==='scan') r.ld='scan' }) }
+  else if(G.mjApp){ G.mj=Object.assign({},G.mjApp); (S.rooms||[]).forEach(r=>{ if(r.mj&&r.mj.fc&&r.mjApp){ r.mj=Object.assign({},r.mjApp) } }) }
+  return R }
+function fcLoadSync(){ try{ fcLoadRun() }catch(e){} try{ if(S.rooms&&S.rooms.length) rbrModel() }catch(e){} try{ rbrMJ() }catch(e){} try{ ldOutSync() }catch(e){} try{ if(cur>3) renderCompare() }catch(e){} }
+// the scan fills the picks in (an export that carries them) — assumed until the SM touches one
+function ldFromScan(G){ const H=G&&G.home; if(!H) return; const ld=ldState(); S.home.ldSrc=S.home.ldSrc||{};
+  const ids=H.ids||{}; LD_KEYS.forEach(k=>{ if(ids[k]&&(!ld[k]||S.home.ldSrc[k]==='scan')){ ld[k]=ids[k]; S.home.ldSrc[k]='scan' } else if(!ids[k]&&S.home.ldSrc[k]==='scan'){ ld[k]=null; S.home.ldSrc[k]=null } });   /* a pick the previous scan filled in and this one does not carry goes back to assumed */
+  if(H.occ!=null&&(ld.occ==null||S.home.ldSrc.occ==='scan')){ ld.occ=H.occ; S.home.ldSrc.occ='scan' } else if(H.occ==null&&S.home.ldSrc.occ==='scan'){ ld.occ=null; S.home.ldSrc.occ=null }
+  if(H.year&&(!ld.year||S.home.ldSrc.year==='scan')){ ld.year=H.year; S.home.ldSrc.year='scan' } else if(!H.year&&S.home.ldSrc.year==='scan'){ ld.year=null; S.home.ldSrc.year=null }
+  if(H.zip&&!ld.zip) ld.zip=H.zip }
+// ---- the plan strip on one line (Stephen: "shrink down the tons, and the equipment choice, to one line, have both next to each other, if clicked show the other options")
+function eqLineSync(){ const tc=$('#tonsCur'); if(tc){ tc.textContent=S.tons?S.tons.replace('T',' Ton'):'—'; tc.classList.toggle('auto',S.tonsAuto!==false&&!!loadTons()) }
+  const uc=$('#tierCur'); if(uc){ const row=rowsFor()[S.star]; let o=null; try{ o=row?pick(S.star,row):null }catch(e){} let st='na'; try{ st=o?fitVerdict(o):'na' }catch(e){}
+    uc.innerHTML=row?`<span class="ostar">${'★'.repeat(S.star)}</span><span class="eqb">${tpEsc(row.brand)} · </span>${tpEsc(tierModel(row,o))}<i class="fdot ${st}"></i>`:'—' }
+  ['tonsPick','tierPick'].forEach(id=>{ const d=$('#'+id); if(d&&d.open) d.open=false }) }
+function eqLineWire(){ ['tonsPick','tierPick'].forEach(id=>{ const d=$('#'+id); if(!d||d.dataset.wired) return; d.dataset.wired='1'; d.addEventListener('toggle',()=>{ if(d.open) ['tonsPick','tierPick'].forEach(o=>{ const x=$('#'+o); if(x&&x!==d) x.open=false }) }) });
+  document.addEventListener('click',e=>{ if(e.target.closest&&e.target.closest('.eqline')) return; ['tonsPick','tierPick'].forEach(id=>{ const d=$('#'+id); if(d&&d.open) d.open=false }) }) }
+// ---- night mode, per tab (Stephen: "turn on or off night mode or day mode, for each tab") — remembered on the device, never in the job
+const NIGHT=(function(){ try{ const o=JSON.parse(store.get('fc_night')||'{}'); return (o&&typeof o==='object')?o:{} }catch(e){ return {} } })();
+function nightOn(n){ return !!NIGHT[String(n==null?cur:n)] }
+function nightSync(){ const on=nightOn(cur); document.body.classList.toggle('night',on); const b=$('#nightBtn'); if(b){ b.textContent=on?'☀':'☾'; b.title=on?'Day mode for this tab':'Night mode for this tab'; b.setAttribute('aria-pressed',on?'true':'false') } }
+function nightToggle(){ NIGHT[String(cur)]=!nightOn(cur); try{ store.set('fc_night',JSON.stringify(NIGHT)) }catch(e){} nightSync(); try{ if(cur>3) setTimeout(draw,30) }catch(e){} }
+// ---- the hand-off from the Goettl Room Scan app (docs/FitCheck_Handoff_Task.md): #scan=<base64url raw-deflate JSON> phone to phone, #job=GTL-XXXXXX any device,
+// and the Job code tile on the home. The text lands on the same path as the upload (fcPlanLoad); the hash is cleared so a refresh cannot re-apply it.
+const HANDOFF='https://roomscan-handoff.stephen-gamst.workers.dev';
+function fcB64urlBytes(s){ s=String(s||'').replace(/-/g,'+').replace(/_/g,'/'); s+='='.repeat((4-s.length%4)%4); const bin=atob(s); const u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); return u }
+async function fcInflateRaw(bytes){ if(typeof DecompressionStream==='undefined') throw new Error('this browser cannot unpack a hand-off (Safari 16.4+ or Chrome 103+)'); const ds=new DecompressionStream('deflate-raw'); return await new Response(new Blob([bytes]).stream().pipeThrough(ds)).text() }
+async function fcScanFromCode(code){ code=String(code||'').trim().toUpperCase(); if(!/^GTL-[A-Z0-9]{4,12}$/.test(code)) throw new Error('a job code looks like GTL-XXXXXX');
+  const r=await fetch(HANDOFF+'/scan/'+encodeURIComponent(code)); if(!r.ok) throw new Error(r.status===404?'that code has expired or was mistyped':'hand-off service error '+r.status);
+  const enc=r.headers.get('X-Scan-Encoding')||'identity'; const bytes=new Uint8Array(await r.arrayBuffer()); return enc==='deflate-raw'?await fcInflateRaw(bytes):new TextDecoder().decode(bytes) }
+function fcScanLand(text,name){ const ok=fcPlanLoad(text,name); if(ok){ fcScanStat(''); try{ rbrRender(); rbrSync() }catch(e){} setTimeout(()=>{ try{ rbrGrid() }catch(e){} },20) } else { try{ rbrRender() }catch(e){} } return ok }
+async function fcHashScan(){ const h=location.hash||''; const m=/[#&](scan|job)=([^&]+)/.exec(h); if(!m||PACK) return false; const kind=m[1]; let v=m[2]; try{ v=decodeURIComponent(v) }catch(e){}
+  try{ history.replaceState(null,'',location.pathname+location.search) }catch(e){ try{ location.hash='' }catch(_){} }
+  fcScanStat(kind==='job'?'Loading job '+rbrEsc(v.toUpperCase())+' from Room Scan…':'Unpacking the room scan…');
+  try{ const text=kind==='scan'?await fcInflateRaw(fcB64urlBytes(v)):await fcScanFromCode(v); return fcScanLand(text,kind==='job'?'Room Scan '+v.toUpperCase():'Room Scan') }
+  catch(e){ fcScanStat('Could not load the room scan — '+rbrEsc(e&&e.message||e)+'.','warn'); return false } }
+function rsCodeWire(){ const b=$('#rsGo'), i=$('#rsCode'); if(!b||b.dataset.wired) return; b.dataset.wired='1';
+  const go_=async()=>{ const code=String(i.value||'').trim().toUpperCase(); const st=$('#rsStat'); const say=(m,c)=>{ if(st){ st.className='msg'+(c?' '+c:''); st.innerHTML=m||''; st.style.display=m?'':'none' } };
+    if(!code){ say('Type the code the tech was given — GTL-XXXXXX.','warn'); return } say('Loading '+rbrEsc(code)+'…'); b.disabled=true;
+    try{ const text=await fcScanFromCode(code); if(fcScanLand(text,'Room Scan '+code)){ say(''); const f=$('#codeFold'); if(f) f.open=false; try{ fcSrcSync() }catch(e){} } else say('That code did not carry a floor plan Fit Check can read.','warn') }
+    catch(e){ say('Could not load it — '+rbrEsc(e&&e.message||e)+'.','warn') } finally{ b.disabled=false } };
+  b.addEventListener('click',go_); i.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); go_() } }) }
 try{ rbrWire(); rbrWireDuctView(); rbrRender(); rbrSizeFlag(); }catch(e){ console.error('rbr init',e) }
+try{ eqLineWire(); rsCodeWire() }catch(e){ console.error('v2.68 wire',e) }
 try{ const f=$('#sumPlanFold'); if(f) f.addEventListener('toggle',()=>{ try{ rbrSumPlanSync() }catch(e){} }) }catch(e){}   /* v2.63 */
 // ============================================================ navigation
 let cur=1;
@@ -9504,7 +9853,7 @@ function go(n){
   if(flow&&n>1&&!isPkg()&&!S.orient){ flash('Where is the indoor unit?'); return }
   if(flow&&n>1&&isPkg()&&!S.setup){ flash('Pick the roof / duct setup'); return }
   if(flow&&n>2&&!isPkg()&&!S.room){ flash('How much room is there?'); return }
-  cur=n; $$('.panel').forEach(p=>p.classList.toggle('active',p.id==='p'+n)); { const ord=k=>k===10?0.5:stepOrd(k); const on=n===4?stepOrd(5)+0.5:ord(n); $$('.step').forEach(s=>{const k=+s.dataset.go;s.classList.toggle('active',k===n);s.classList.toggle('done',ord(k)<on&&!(k===10&&!S.rbrOpen))}) }   /* v2.65: Rooms sits between Existing and Space; hidden (switch off) it carries no state */
+  cur=n; try{ nightSync() }catch(e){} $$('.panel').forEach(p=>p.classList.toggle('active',p.id==='p'+n));   /* v2.68: each tab keeps its own day / night */ { const ord=k=>k===10?0.5:stepOrd(k); const on=n===4?stepOrd(5)+0.5:ord(n); $$('.step').forEach(s=>{const k=+s.dataset.go;s.classList.toggle('active',k===n);s.classList.toggle('done',ord(k)<on&&!(k===10&&!S.rbrOpen))}) }   /* v2.65: Rooms sits between Existing and Space; hidden (switch off) it carries no state */
   fitTabSync(n); roomsTabSync(); // v2.62 — Will it Fit is an optional tab: it shows in the strip only while it is open · v2.65 — so is Rooms
   syncPackNav(n); // v2.39 — the pack's own three tabs (7 story · 5 the Plan tab itself · 8 tech pack)
   $('#prev').style.visibility=n===1?'hidden':'visible'; $('#next').textContent=n===6?'Start over':'Next ›';
@@ -9550,6 +9899,8 @@ $('#btnSettings').onclick=()=>{$('#thr_cpt').value=S.thr.cpt;$('#thr_gr').value=
 $('#dlgClose').onclick=()=>{S.thr.tight=parseFloat($('#thr_tight').value)||4;S.thr.acc=parseFloat($('#thr_acc').value)||2;S.thr.al1=parseFloat($('#thr_al1').value)||1;S.thr.al3=parseFloat($('#thr_al3').value)||3;const ov=parseFloat($('#thr_ovh').value);S.thr.ovh=isNaN(ov)?2:ov;const spv=parseFloat($('#thr_sp').value);S.thr.sp=isNaN(spv)?0.7:spv;{const g=parseFloat($('#thr_spGoal').value);S.thr.spGoal=g>0?g:0.5;const fl=parseFloat($('#thr_cptFloor').value);S.thr.cptFloor=fl>0?fl:390;S.thr.damper=!!$('#thr_damper').checked}S.thr.gr=parseFloat($('#thr_gr').value)||2;S.thr.retv=parseFloat($('#thr_retv').value)||900;S.thr.supv=parseFloat($('#thr_supv').value)||900;S.thr.opv=parseFloat($('#thr_opv').value)||900;S.thr.cpt=parseFloat($('#thr_cpt').value)||450;save();refreshOld();$('#thrTxt').textContent=S.thr.tight;$('#dlgSettings').close();if(cur>3){renderTiers();renderCompare()}};
 $('#thrTxt').textContent=S.thr.tight;
 applySys(); $('#prev').style.visibility='hidden';
+try{ nightSync(); const nb=$('#nightBtn'); if(nb) nb.onclick=nightToggle }catch(e){}   /* v2.68: night mode for this tab */
+try{ fcHashScan() }catch(e){}   /* v2.68: a room scan handed over in the URL (#scan= · #job=) */
 // ============================================================ v2.39 — BOOT A PACK
 // By the time this runs the job is already loaded: PACK.state went in through the ordinary saved-check
 // key at the top of the file, so every field, the equipment, the rooms and the design are simply what
