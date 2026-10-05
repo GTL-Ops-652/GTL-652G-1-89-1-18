@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-10-04 v2.73 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-10-04 v2.74 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -950,7 +950,7 @@ details.fold.src{margin-top:8px;border:1.5px solid var(--line);border-radius:14p
 .sizeband.v66 .rechero.na{background:#e9eef3;color:var(--muted);box-shadow:none}.sizeband.v66 .rechero.na .rv{color:#b8c2cc}
 .rps{display:flex;flex-wrap:wrap;gap:5px}
 .rp{font-size:11.5px;font-weight:800;padding:3px 10px;border-radius:999px;background:rgba(255,255,255,.17);color:#fff;white-space:nowrap}
-.rp.alt{background:#ffd77a;color:#3b2a00}.rp.warn{background:#f6b25a;color:#2e1a00}.rp.bad{background:#fff;color:#8f1d1d}
+.rp.alt{background:#ffd77a;color:#3b2a00}.rp.plan{background:#c9f2dc;color:#06402a}.msplan{color:#0a6b46;font-weight:700}.ldout .app.plan{color:#0a6b46;font-weight:600}.mst.plan .k{color:#0a6b46}.rp.warn{background:#f6b25a;color:#2e1a00}.rp.bad{background:#fff;color:#8f1d1d}
 .rechero.na .rp.warn{background:#fdf1e3;color:#a35300;border:1px solid #f0d3ad}
 /* the unit and the ducts — one tile each, a pane opens under the row */
 .dtg{grid-template-columns:repeat(4,minmax(0,1fr))}
@@ -3937,7 +3937,7 @@ function atticSrcSync(){ const at=S.plan&&S.plan.g&&S.plan.g.home&&S.plan.g.home
 // by Room was done, otherwise the square-footage Manual J with the attic factored in. Step 3 used to show that as a mismatch
 // banner and leave the chip on 3 ton; now the chip is set to the load's size and the SM taps a different one only to override.
 // Returns {tons, why} or null when step 1 has nothing to size from (no square footage / build type).
-function loadTons(){ try{
+function loadTons0(){ try{
   // v2.43 — the measured rooms count the moment they exist, wherever this is asked from. The room model is built
   // here if it has not been yet, so the office page and a pack booting from the same job read the SAME load:
   // until now a pack ran buildTons() before its room model existed, sized from the Manual J alone, and could land
@@ -3948,14 +3948,15 @@ function loadTons(){ try{
   if(c){ // the house asks for a size above the square footage (measured rooms, or the pre-1980 rule) — as the house sits today that IS the size;
          // the attic only takes it back down once it is at R-38 and it closes the gap, which is a Fix-insulation decision on the Plan tab
     const cw=c.why==='scan'?`Manual J ${RM.mjRaw.toFixed(2)} ton off the room scan`:c.why==='rooms'?'measured rooms':'pre-1980 build';
-    if(c.already) return {tons:c.askT,why:cw+` · attic already R-${fmt(c.R)}`};
+    if(c.already) return {tons:c.askT,why:cw+(c.planR!=null?` · attic R-${fmt(c.R)} in the plan`:` · attic already R-${fmt(c.R)}`)};
+    if(c.planCloses) return {tons:c.rec,why:cw+` · the plan tops the attic up R-${fmt(c.R)} → R-${c.planT}, which carries the ${c.rec} ton`,planAttic:c.planT,todayT:c.askT};   /* v2.74 */
     return {tons:c.askT,why:cw+(c.known?` · attic R-${fmt(c.R)} under R-38 as it sits`:' · attic not entered')} }
   const x=rbrStretchInfo(); const ld=x&&x.scan?'Manual J':(x&&x.measured?'measured rooms':'rule of thumb');   /* v2.65: sq ft ÷ 400 is the rule of thumb; the Manual J is the room scan's */
-  if(x){ if(x.ok) return {tons:x.size,why:`${ld} ${x.raw.toFixed(2)} ton, held at ${x.size} · attic R-${fmt(x.R)} carries the stretch`};
+  if(x){ if(x.ok) return {tons:x.size,why:`${ld} ${x.raw.toFixed(2)} ton, held at ${x.size} · ${x.plan?'the plan\'s R-'+fmt(x.R)+' attic':'attic R-'+fmt(x.R)} carries the stretch`,planAttic:x.plan?x.R:null,todayT:(x.plan&&x.R0!=null&&x.R0<R_MIN&&x.next)?x.next:null};
     if(!x.known) return {tons:x.size,why:`${ld} ${x.raw.toFixed(2)} ton, held at ${x.size} — a stretch; needs the attic at R-38`};
     if(x.next) return {tons:x.next,why:`${ld} ${x.raw.toFixed(2)} ton · attic R-${fmt(x.R)} under R-38 cannot carry the ${x.size} stretch`};
     return {tons:x.size,why:`${ld} ${x.raw.toFixed(2)} ton`} }
-  if(rooms&&RM.mjRaw!=null) return {tons:RM.loadT,why:`Manual J — ${CFM(RM.mjBtu)} BTUh = ${RM.mjRaw.toFixed(2)} ton off the room scan`};   /* v2.65: the scan sizes the AC */
+  if(rooms&&RM.mjRaw!=null) return {tons:RM.loadT,why:`Manual J${RM.mjPlan?' with the plan ('+RM.mjPlan.join(' · ')+')':''} — ${CFM(RM.mjBtu)} BTUh = ${RM.mjRaw.toFixed(2)} ton off the room scan`};   /* v2.65: the scan sizes the AC */
   if(rooms) return {tons:RM.loadT,why:`measured rooms — ${CFM(RM.needTot)} CFM ÷ ${RM.cpt} CFM/ton`};
   return {tons:rec,why:`rule of thumb — ${CFM(rbrHomeSf())} sq ft on a ${rbrBuild().n.toLowerCase()}`};
 }catch(e){ return null } }
@@ -3980,6 +3981,7 @@ function buildTons(){
     src.innerHTML=(msT&&msT===S.tons&&auto)?`<b>${tonNum(S.tons)} ton</b> — Manual S: the smallest ${tier} that delivers the <b>${CFM(Lm.cool)} BTUh</b> Manual J at the ${msOutT()}°F design temp${e&&e.cap!=null?` (${CFM(e.cap)} BTUh at ${Math.round(e.cpt)} CFM/ton = ${msPctTxt(e)})`:''}.`
       :(msT?`Manual S picks <b>${tonNum(msT)} ton</b> for the ${tier} — you have <b>${tonNum(S.tons)} ton</b>${e&&e.pct!=null?` (${msPctTxt(e)} of the ${CFM(Lm.cool)} BTUh)`:''}. <button class="chip sm" id="tonsFollow">Use ${tonNum(msT)} ton</button>`
       :`Nothing in the ${tier} delivers the <b>${CFM(Lm.cool)} BTUh</b> Manual J at the ${msOutT()}°F design temp${e&&e.pct!=null?` — ${tonNum(S.tons)} ton makes ${msPctTxt(e)}`:''}. Another tier, two systems, or the envelope first.`);
+    if(Lm&&Lm.plan) src.insertAdjacentHTML('beforeend',` <span class="msplan">Manual J with the plan (${tpEsc(Lm.plan.join(' · '))})${Lm.today?' — today '+CFM(Lm.today)+' BTUh':''}.</span>`);   /* v2.74 */
     const f=$('#tonsFollow'); if(f) f.onclick=()=>{ S.tonsAuto=true; save(); buildTons(); renderTiers() } }
   else if(src){ src.innerHTML= L ? (auto||L.tons+'T'===S.tons ? `<b>${L.tons} ton</b> from the load on step 1 — ${L.why}.` : `Load on step 1 says <b>${L.tons} ton</b> (${L.why}) — you have <b>${tonNum(S.tons)} ton</b> selected. <button class="chip sm" id="tonsFollow">Use ${L.tons} ton</button>`) : 'Put the square footage and build type in on step 1 and the tonnage sets itself from the load.';
     const f=$('#tonsFollow'); if(f) f.onclick=()=>{ S.tonsAuto=true; save(); buildTons(); renderTiers() } }
@@ -4084,8 +4086,8 @@ function msCfg(){ try{ const B=designCfgBase(); return (B&&B.manualS)||{} }catch
 function msOutT(){ return designVal('outC') }   /* the design outdoor temperature only — ⚙︎, else the scan's, else the location's (Stephen 2026-10-04: 'it's whatever the design temp is') */
 function msKeepCpt(){ const v=S.thr&&S.thr.indKeep; return (v!=null&&isFinite(+v)&&+v>=0)?+v:15 }   /* = THR_DEF.indKeep */
 function msMinPct(){ const v=+(S.thr&&S.thr.msMin); if(v>0) return v; const c=+msCfg().minCapacityPctOfLoad; return c>0?c:100 }
-function msLoad(){ const G=S.plan&&S.plan.g, mj=G&&G.mj; if(!(mj&&mj.cool>0)) return null; const r=v=>v>0?Math.round(v):null;
-  return {cool:Math.round(mj.cool),sens:r(mj.sens),lat:r(mj.lat),heat:r(mj.heat),mjT:mj.mjT||null,src:mj.fc?'Fit Check load engine':'Room Scan app'} }
+function msLoad(){ const mj=mjDesign(); if(!(mj&&mj.cool>0)) return null; const r=v=>v>0?Math.round(v):null;   /* v2.74: the plan's load when the plan changes it */
+  return {cool:Math.round(mj.cool),sens:r(mj.sens),lat:r(mj.lat),heat:r(mj.heat),mjT:mj.mjT||null,src:mj.plan?'Fit Check load engine — the plan':(mj.fc?'Fit Check load engine':'Room Scan app'),plan:mj.plan?mj.words:null,today:(mj.plan&&mj.today)?Math.round(mj.today.cool):null} }
 function msOn(){ return !!(CAPX&&msLoad()) }
 function cabOfW(w){ if(!(w>0)) return null; return w<16?'A':(w<19.5?'B':(w<23?'C':'D')) }                  // A 14–14½ · B 17½ · C 21 · D 24½
 function msCab(m){ const e=E[m]; if(!e) return null; if(e.cab) return e.cab; return (e.type==='ahu'||e.type==='furnace')?cabOfW(+e.w):null } // a Lennox air handler has no letter — its width says it
@@ -4222,7 +4224,7 @@ const msPctTxt=e=>e&&e.pct!=null?Math.round(e.pct)+'%':'';
 function msVerdictTxt(e){ if(!e||e.pass==null) return ''; return e.pass?(e.over?`over the ACCA ${e.max}% for ${MS_STAGE_TXT[e.stage]} — check`:'meets the load'):'short of the load' }
 function msLineHtml(o){ if(!o||!S.sys) return ''; const e=o.ms; if(!e||e.cap==null) return msOn()?`<b>Manual S</b> · no expanded rating for this pairing`:'';
   const L=msLoad(), cls=e.pass===false?'bad':(e.over?'warn':(e.pass?'ok':'na'));
-  return `<span class="msk ${cls}">Manual S</span> <b>${CFM(e.cap)} BTUh</b> at the ${e.T}°F design temp · ${Math.round(e.cpt)} CFM/ton${e.short?(e.stat?` at ${e.stat.toFixed(2)}"`:' (the blower\'s limit)'):''}${L?` · <b>${msPctTxt(e)}</b> of the ${CFM(L.cool)} BTUh Manual J — ${msVerdictTxt(e)}`:' · no Manual J on this job yet (upload the Room Scan)'}${e.est?' · <span class="est" title="no expanded table for this unit — the nearest Goodman package family of the same staging is borrowed">est.</span>':''}` }
+  return `<span class="msk ${cls}">Manual S</span> <b>${CFM(e.cap)} BTUh</b> at the ${e.T}°F design temp · ${Math.round(e.cpt)} CFM/ton${e.short?(e.stat?` at ${e.stat.toFixed(2)}"`:' (the blower\'s limit)'):''}${L?` · <b>${msPctTxt(e)}</b> of the ${CFM(L.cool)} BTUh Manual J${L.plan?' (the plan)':''} — ${msVerdictTxt(e)}`:' · no Manual J on this job yet (upload the Room Scan)'}${e.est?' · <span class="est" title="no expanded table for this unit — the nearest Goodman package family of the same staging is borrowed">est.</span>':''}` }
 // v2.70 — the Indoor pick on the strip (splits): every AHRI-matched furnace + coil (or air handler) for the condenser, its cabinet letter, the CFM per
 // ton its blower makes at the design static and its Manual S capacity; "best" marks the auto pick; Match old cabinet holds it to the cabinet there today.
 function renderIndoor(){ const wrap=$('#indPick'); if(!wrap) return; const show=!!S.sys&&!isPkg(); wrap.classList.toggle('hidden',!show); if(!show) return;
@@ -4248,7 +4250,7 @@ function renderIndoor(){ const wrap=$('#indPick'); if(!wrap) return; const show=
 // output at the design temp and the CFM output we plan to achieve, and what that is per ton")
 function msTilesHtml(o){ if(!S.sys||!o) return ''; const L=msLoad(), tons=tonNum(S.tons); let e=o.ms; if(e===undefined){ try{ e=msEval(o,tons) }catch(err){ e=null } } const row=rowsFor()[S.star];
   const eq=isPkg()?o.unit:(S.sys==='split_hp'?`${o.cond} + ${o.ahu}`:`${o.cond} + ${o.coil} + ${o.furn}`);
-  const t1=L?`<div class="mst"><div class="k">Manual J</div><div class="v">${CFM(L.cool)}<small> BTUh cooling</small></div><div class="s">${L.heat?CFM(L.heat)+' BTUh heating':'heating not figured'}${L.sens?' · '+CFM(L.sens)+' sensible'+(L.lat?' + '+CFM(L.lat)+' latent':''):''}</div></div>`
+  const t1=L?`<div class="mst${L.plan?' plan':''}"><div class="k">Manual J${L.plan?' · the plan':''}</div><div class="v">${CFM(L.cool)}<small> BTUh cooling</small></div><div class="s">${L.plan&&L.today?'today '+CFM(L.today)+' · '+tpEsc(L.plan.join(' + '))+' · ':''}${L.heat?CFM(L.heat)+' BTUh heating':'heating not figured'}${L.sens?' · '+CFM(L.sens)+' sensible'+(L.lat?' + '+CFM(L.lat)+' latent':''):''}</div></div>`
     :`<div class="mst na"><div class="k">Manual J</div><div class="v">—</div><div class="s">upload the Room Scan for the load</div></div>`;
   const cls=e&&e.pass===false?'bad':(e&&e.over?'warn':(e&&e.pass?'ok':''));
   const t2=`<div class="mst ${cls}"><div class="k">Equipment · Manual S</div><div class="v">${e&&e.cap!=null?CFM(e.cap)+`<small> BTUh at the ${e.T}°F design temp</small>`:'—'}</div><div class="s">${starTxt(S.star||0)} ${row?tpEsc(row.brand):''} ${tons1(tons)} ton · ${tpEsc(eq)}${e&&e.pct!=null?` · <b>${msPctTxt(e)} of the load</b>${e.pass===false?' — short':(e.over?` — over the ACCA ${e.max}%`:'')}`:''}</div></div>`;
@@ -4256,7 +4258,7 @@ function msTilesHtml(o){ if(!S.sys||!o) return ''; const L=msLoad(), tons=tonNum
   return `<div class="mstiles">${t1}${t2}${t3}</div>` }
 function msStLine(o){ const e=o&&o.ms; if(!e||e.cap==null) return msOn()?'MANUAL S: no expanded rating for this pairing':''; const Lm=msLoad();
   return `MANUAL S: ${CFM(e.cap)} BTUh at the ${e.T}°F outdoor design temp · ${Math.round(e.cpt)} CFM/ton (${CFM(e.Q)} CFM${e.short?(e.stat?` — at ${e.stat.toFixed(2)}", over the ${spLimit().toFixed(2)}" line`:' — the blower\'s limit'):''}) · AHRI ${CFM(e.b95)} BTUh at 95°F${e.est?' (est. — borrowed expanded table)':''} · ${MS_STAGE_TXT[e.stage]}`+
-    (Lm?` · Manual J ${CFM(Lm.cool)} BTUh cooling → ${e.pct}% — ${e.pass?'MEETS THE LOAD':'SHORT OF THE LOAD'}${e.over?` · OVER the ACCA Manual S ${e.max}% ceiling for ${MS_STAGE_TXT[e.stage]} — check`:''}`:' · no Manual J on this job yet') }
+    (Lm?` · Manual J${Lm.plan?' (the plan: '+Lm.plan.join(' + ')+')':''} ${CFM(Lm.cool)} BTUh cooling → ${e.pct}% — ${e.pass?'MEETS THE LOAD':'SHORT OF THE LOAD'}${e.over?` · OVER the ACCA Manual S ${e.max}% ceiling for ${MS_STAGE_TXT[e.stage]} — check`:''}`:' · no Manual J on this job yet') }
 // component picks for a star given selections
 function pick(star,row,opts){
   const base=!!(opts&&opts.base); const sel=base?{}:(S.sel[star]||{}); const o={}; const tons=tonNum((row&&row.tons)||S.tons); // opts.base = the Matchup Guide default pairing, no SM pick and no airflow upsize (v2.44)
@@ -5809,8 +5811,9 @@ function mdBudgetTxt(md){ const B=md&&md.budget; if(!B) return ''; return `STATI
 function rbrRoomAir(M){ if(!(S.rooms&&S.rooms.length&&RM)) return null; const N=(S.rbrNew&&RM.net&&RM.net.rooms)?RM.net:null; const cpt=designCpt();
   const Qa=M&&M.md?(M.md.over?M.md.Qp:M.md.Qd):null; const Qdes=(RM.A&&RM.A.Qd>0)?RM.A.Qd:Qa; const real=(M&&Qa>0)?Math.min(Qa,M.delivered):null; const k=(real!=null&&Qdes>0)?Math.min(1,real/Qdes):1;   /* v2.72 re-cut: the shares add up to the design air — the air the system really moves over THAT */
   const byRoom=new Map(); if(N) N.rooms.forEach(x=>byRoom.set(x.rid,x));
-  const rows=S.rooms.filter(r=>!r.nr&&!r.ns).map(r=>{ const mj=r.mj&&r.mj.cool>0; const min=mj?r.mj.cool/12000*cpt:r.need; const nx=byRoom.get(r.id||r.n); const got=(nx?nx.got:r.cfm)*k;
-    return {name:r.n,min:Math.round(min),share:Math.round(r.cfm),got:Math.round(got),ok:got>=min-0.5,pct:min>0?got/min:1,src:mj?'mj':'rule',btu:mj?Math.round(r.mj.cool):null,regs:r.nReg||0} });
+  const P0=(function(){ try{ return mjPlanned() }catch(e){ return null } })();   /* v2.74 */
+  const rows=S.rooms.filter(r=>!r.nr&&!r.ns).map(r=>{ const rm=rbrMjOf(r,P0), mj=!!(rm&&rm.cool>0); const min=mj?rm.cool/12000*cpt:r.need; const nx=byRoom.get(r.id||r.n); const got=(nx?nx.got:r.cfm)*k;
+    return {name:r.n,min:Math.round(min),share:Math.round(r.cfm),got:Math.round(got),ok:got>=min-0.5,pct:min>0?got/min:1,src:mj?'mj':'rule',btu:mj?Math.round(rm.cool):null,regs:r.nReg||0} });
   (RM.down||[]).forEach(x=>rows.push({name:`Floor ${x.fl+1} — one duct down`,min:Math.round(x.need),share:x.cfm,got:Math.round(x.cfm*k),ok:x.cfm*k>=x.need-0.5,pct:x.need>0?x.cfm*k/x.need:1,src:'down',btu:null,regs:x.n}));
   const nr=S.rooms.filter(r=>r.nr&&!r.ns).map(r=>r.n);
   const T={min:rows.reduce((s,x)=>s+x.min,0),got:rows.reduce((s,x)=>s+x.got,0),short:rows.filter(x=>!x.ok).length,design:Math.round(RM.A&&RM.A.Qd||0)};
@@ -5964,6 +5967,7 @@ function planReadoutHtml(o,noAir){ const M=flowModel(o,S.fix), M0=flowModel(o,TO
   const a=(x,y,f,cls)=>x===y?`<b class="${cls||''}">${f(y)}</b>`:`<span class="arw">${f(x)} →</span> <b class="${cls||''}">${f(y)}</b>`;
   return (noAir?'':`<span><span class="k">Airflow</span>${a(M0.delivered,M.delivered,CFM,airCls(M))} <span style="font-size:12px;color:var(--muted)">CFM · ${M.perTon}/ton${M.blowerBound?' — all this blower can push':''}</span></span>`)   /* v2.73: on the Plan the card under the 3D carries the airflow */
     +`<span><span class="k">Chokepoints</span>${a(M0.chokes.length,M.chokes.length,String,M.chokes.length?'bad':'ok')}</span>`
+    +(function(){ let P=null; try{ P=mjPlanned() }catch(e){} return (P&&P.today)?`<span><span class="k">Manual J</span>${a(Math.round(P.today.cool),Math.round(P.cool),CFM,'ok')} <span style="font-size:12px;color:var(--muted)">BTUh</span></span>`:'' })()   /* v2.74 */
     +(M.ins.known?`<span><span class="k">Attic</span>${a(M.ins.R,M.ins.Rf,v=>'R-'+fmt(v),M.ins.Rf>=R_MIN?'ok':'warn')}</span>`:'')
     +`<span><span class="k">Score</span>${a(M0.score.total,M.score.total,String,scoreCls(M.score.total))}</span>` }
 // v2.67 — THE PLAN STRIP IN GROUPS (Stephen 2026-10-01: "its confusing, i like how we simplified the 1st tab. lets simplify this tab too … chose the
@@ -6050,7 +6054,7 @@ function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); i
   el.innerHTML=g1+g2+g3+rowVents+gAir+g4+rowPlans;
   const ro=$('#planReadout'); if(ro&&P) ro.innerHTML=planReadoutHtml(o,true);
   const oc=$('#opCard'); if(oc&&P){ oc.innerHTML=opCardHtml(o,M,flowModel(o,TODAY)); const rs=$('#opResize'); if(rs) rs.onclick=()=>{ holdClear(); if(S.rooms&&S.rooms.length){ try{ rbrModel() }catch(e){} } save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() } }
-  const done=()=>{ save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() };
+  const done=()=>{ try{ planLoadFollow() }catch(e){} save(); renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh() }   /* v2.74: the plan's load moves the size */;
   el.querySelectorAll('[data-pact]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.pact;
     if(k==='reuse'||k==='curb_old'||k==='curb'){ S.fix.install=k; if(!addRunsOk(S.fix,'s')) delete S.fix.addSup; if(!addRunsOk(S.fix,'r')) delete S.fix.addRet }   // v2.67: no plenum coming down on that side, nothing to tee an added run into
     else if(k==='d100'){ holdClear(); designTo100(o) }   /* v2.73: a duct action sizes for the parts on screen */
@@ -6377,7 +6381,7 @@ function planUpdate(id){ const p=planById(id); if(!p) return null; p.d=planCaptu
 function planDelete(id){ S.plans=S.plans.filter(p=>p.id!==id); if(S.planApproved===id) S.planApproved=null; if(S.planRec===id) delete S.planRec; if(S.planEdit===id) S.planEdit=null; if(S.planPick===id) delete S.planPick; save() }
 function planUse(id,approve){ const p=planById(id); if(!p) return null; planApply(p.d); S.planEdit=p.id; if(S.tonsAuto!==false){ try{ const w=tonsAutoPick(); if(w&&w!==S.tons) S.tonsAuto=false }catch(e){} } if(approve){ S.planApproved=p.id; S.planPick=p.id; p.approvedAt=Date.now(); p.apStar=S.star }
   save(); if(S.rooms&&S.rooms.length){ try{ rbrModel() }catch(e){} }
-  try{ $$('#afue .chip').forEach(x=>x.classList.toggle('on',x.dataset.v===S.afue)) }catch(e){} try{ syncSupCfg() }catch(e){} try{ buildTons(); renderTiers() }catch(e){}
+  try{ $$('#afue .chip').forEach(x=>x.classList.toggle('on',x.dataset.v===S.afue)) }catch(e){} try{ syncSupCfg() }catch(e){} try{ buildTons(); renderTiers() }catch(e){} try{ PLAN_LOAD_KEY=planLoadKey() }catch(e){}
   return p }
 // ============================================================ v2.62 · THE PRICE BOOK
 // Stephen 2026-09-28: "for each item we can add in the setting tab, where we edit the price, have a field for ST code, so we know how to find that
@@ -7469,33 +7473,35 @@ function summaryText(o){
   { const P=issuePairs(o); if(P.length){ L.push(''); L.push('WHAT WAS WRONG → HOW THIS DESIGN FIXES IT');
       P.forEach(x=>L.push(`- ${strip(x.t)} (${strip(x.was)}): ${strip(x.wasWhy)} ${x.fixed?'FIXED → '+strip(x.now)+' — '+strip(x.nowWhy):'STILL OPEN — '+strip(x.nowWhy)}`)) } }
   { const B=rbrBuild(), sfh=rbrHomeSf(), rec=rbrRecTons();
-    if(sfh&&B){ L.push(''); L.push(`THE HOME: ${CFM(sfh)} sq ft · ${B.n} · rule of thumb ${rec} ton (${B.sf} sq ft/ton)${RM&&RM.loadT?(RM.mjRaw!=null?` · room scan Manual J ${CFM(RM.mjBtu)} BTUh = ${RM.loadT} ton`:` · measured room load ${CFM(RM.needTot)} CFM = ${RM.loadT} ton`):''}`);
-      { const ai=insulState(); if(ai.known) L.push(`  Attic: R-${fmt(ai.R)}${ai.src&&ai.src!=='entered'?' ('+ai.src+')':''}`); }
+    if(sfh&&B){ L.push(''); L.push(`THE HOME: ${CFM(sfh)} sq ft · ${B.n} · rule of thumb ${rec} ton (${B.sf} sq ft/ton)${RM&&RM.loadT?(RM.mjRaw!=null?` · room scan Manual J${RM.mjPlan?' (the plan)':''} ${CFM(RM.mjBtu)} BTUh = ${RM.loadT} ton`:` · measured room load ${CFM(RM.needTot)} CFM = ${RM.loadT} ton`):''}`);
+      { const ai=insulState(), ap=insulState(S.fix); if(ai.known) L.push(`  Attic: R-${fmt(ai.R)}${ai.src&&ai.src!=='entered'?' ('+ai.src+')':''}${ap.target!=null&&ap.Rf>ai.R?' → R-'+fmt(ap.Rf)+' in the plan':''}`); }
       /* v2.68 — the load details and the Manual J behind the size, for the office */
       try{ const R=window.FC_LOAD, G=S.plan&&S.plan.g; if(G&&G.geo){ const C=ldCfg()||{}; const ld=S.home.ld||{}; const nm=(list,id,dflt)=>{ const p=id&&(C[list]||[]).find(x=>x.id===id); return p?p.name:dflt };
         const parts=[`built ${ldYear()||'?'}`,`${R&&R.occupants!=null?R.occupants:'?'} ${R&&R.occupants===1?'person':'people'}`,`floor: ${nm('floorPresets',ld.floor,ldDefault('floor'))}`,`walls: ${nm('wallPresets',ld.wall,ldDefault('wall'))}`,`windows: ${nm('windowPresets',ld.glass,ldDefault('glass'))}`,`shading: ${nm('windowShading',ld.shade,ldDefault('shade'))}`,`air: ${nm('infiltrationPresets',ld.infil,ldDefault('infil'))}`,`ducts: ${nm('ductOptions',ld.duct,ldDefault('duct'))}`,`roof: ${nm('roofColors',ld.roof,ldDefault('roof'))}`];
         L.push(`  MANUAL J INPUTS: ${parts.join(' · ')}`);
         if(R&&R.complete) L.push(`  MANUAL J (Fit Check load engine, Room Scan geometry): ${CFM(R.cool)} BTUh cooling (${CFM(R.sens)} sensible + ${CFM(R.lat)} latent) · ${CFM(R.heat)} BTUh heating = ${R.mjT.toFixed(2)} ton${G.mjApp?` · Room Scan app said ${CFM(G.mjApp.cool)} BTUh = ${(G.mjApp.mjT||0).toFixed(2)} ton`:''}`);
-        else if(R&&R.missing&&R.missing.length) L.push(`  MANUAL J: not complete — needs ${R.missing.slice(0,4).join(', ')}${G.mjApp?` · using the Room Scan app's ${CFM(G.mjApp.cool)} BTUh`:''}`) } }catch(e){}
+        else if(R&&R.missing&&R.missing.length) L.push(`  MANUAL J: not complete — needs ${R.missing.slice(0,4).join(', ')}${G.mjApp?` · using the Room Scan app's ${CFM(G.mjApp.cool)} BTUh`:''}`);
+        { const P=mjPlanned(); if(P) L.push(`  MANUAL J — THE PLAN (${P.words.join(' + ')}): ${CFM(P.cool)} BTUh cooling (${CFM(P.sens)} sensible + ${CFM(P.lat)} latent) · ${CFM(P.heat)} BTUh heating = ${P.mjT.toFixed(2)} ton${P.today?` (today ${CFM(P.today.cool)} BTUh${P.today.mjT?' = '+P.today.mjT.toFixed(2)+' ton':''})`:''} — THIS SIZES THE EQUIPMENT`) } } }catch(e){}   /* v2.74 */
       // v2.35 — the size question always goes out with both answers on it
       { const c=rbrSizeCall(); if(c){
         L.push(`  SIZE CALL: the ${c.why==='scan'?'room scan Manual J':c.why==='rooms'?'measured rooms':'pre-1980 build'} put this at ${c.askT} ton against the ${c.rec} ton the square footage gives.`);   /* v2.66: a scan-driven call names the scan */
         if(!c.known) L.push(`    Two ways to land it — the ${c.askT} ton, OR the ${c.rec} ton with the attic at R-38 or better. Attic depth was not taken, so this is undecided.`);
-        else if(c.already) L.push(`    Attic is already R-${fmt(c.R)} (at or over R-38), so there is no load to take out up there — THE ${c.askT} TON IS THE ANSWER.`);
+        else if(c.planCloses) L.push(`    The plan brings the attic R-${fmt(c.R)} → R-${c.planT}: about ${Math.round(rbrInsCut(c.R,c.planT)*100)}% off the load — THE ${c.rec} TON IS THE CALL (leave the attic out of the plan and it is the ${c.askT} ton).`);   /* v2.74 */
+        else if(c.already) L.push(c.planR!=null?`    The plan brings the attic to R-${fmt(c.R)} and the Manual J carries it — THE ${c.askT} TON IS THE ANSWER.`:`    Attic is already R-${fmt(c.R)} (at or over R-38), so there is no load to take out up there — THE ${c.askT} TON IS THE ANSWER.`);
         else { L.push(`    1) Put in the ${c.askT} ton.`);
                L.push(`    2) Keep the ${c.rec} ton and bring the attic R-${fmt(c.R)} → R-38: about ${Math.round(c.cut*100)}% off the load${c.why==='rooms'?` (${CFM(RM.needTot)} → ${CFM(Math.round(c.loadNow*(1-c.cut)))} CFM)`:''}.`);
                L.push(`    ${c.closes?'Both land the house — the attic is the cheaper one and keeps paying every month after.':'R-38 alone does not close it — price R-49, or put in the '+c.askT+' ton.'}`) } } }
       // v2.36 — a stretch call goes on the invoice with what the attic has to be
       { const x=rbrStretchInfo(); if(x){
         L.push(`  STRETCH CALL: load ${x.raw.toFixed(2)} ton → holding the ${x.size} ton (${x.over.toFixed(2)} over; we hold to ${x.stretch.toFixed(2)} before moving up${x.next?' to a '+x.next:''}).`);
-        L.push(`    A stretch only holds on an insulated house. ${!x.known?'Attic not taken — confirm R-38 or better before quoting the '+x.size+' ton.':(x.ok?'Attic R-'+fmt(x.R)+' — at or over R-38, the envelope carries it.':(x.closes?'Attic R-'+fmt(x.R)+' — UNDER R-38: bring it to R-38 with this unit, or put in the '+x.next+' ton.':'Attic R-'+fmt(x.R)+' — R-38 does not close it; put in the '+x.next+' ton.'))}`) } }
+        L.push(`    A stretch only holds on an insulated house. ${!x.known?'Attic not taken — confirm R-38 or better before quoting the '+x.size+' ton.':(x.ok?(x.plan?'The plan brings the attic to R-'+fmt(x.R)+' — the envelope carries it.':'Attic R-'+fmt(x.R)+' — at or over R-38, the envelope carries it.'):(x.closes?'Attic R-'+fmt(x.R)+' — UNDER R-38: bring it to R-38 with this unit, or put in the '+x.next+' ton.':'Attic R-'+fmt(x.R)+' — R-38 does not close it; put in the '+x.next+' ton.'))}`) } }
     }
     if(S.rooms.length&&RM){ rbrModel();
       L.push(`ROOM BY ROOM: ${S.rooms.length} rooms · ${CFM(RM.roomSf)} sq ft measured · rooms want ${CFM(RM.needTot)} CFM · ducts designed to ${CFM(RM.A.Qd)}${RM.design?` (${RM.design.tons} ton × ${RM.design.cpt}${RM.design.short?' — what the blower can do':''})`:''} (${Math.round(RM.pct*100)}%)`);   /* v2.65: 430 is always */
-      if(RM.design&&RM.mjRaw!=null) L.push(`  MANUAL J (room scan): ${CFM(RM.mjBtu)} BTUh = ${RM.mjRaw.toFixed(2)} ton → ${RM.loadT} ton · DESIGN CFM: ${RM.design.tons} ton × ${RM.design.cpt} = ${CFM(RM.design.target)}${RM.design.chart!=null?` · ${RM.design.name} moves ${CFM(RM.design.chart)} at 0.50" (${RM.design.chartCpt}/ton)${RM.design.short?' — designed to what it can do':''}`:''}`);   /* v2.65 */
+      if(RM.design&&RM.mjRaw!=null) L.push(`  MANUAL J (room scan${RM.mjPlan?' — the plan: '+RM.mjPlan.join(' + '):''}): ${CFM(RM.mjBtu)} BTUh = ${RM.mjRaw.toFixed(2)} ton → ${RM.loadT} ton · DESIGN CFM: ${RM.design.tons} ton × ${RM.design.cpt} = ${CFM(RM.design.target)}${RM.design.chart!=null?` · ${RM.design.name} moves ${CFM(RM.design.chart)} at 0.50" (${RM.design.chartCpt}/ton)${RM.design.short?' — designed to what it can do':''}`:''}`);   /* v2.65 */
       else L.push(`  CROSS-CHECK: ${CFM(RM.needTot)} CFM ÷ ${RM.cpt} CFM/ton (${RM.cptSrc}) = ${(RM.needTot/RM.cpt).toFixed(2)} → ${RM.loadT} ton${(function(){ const oo=curOpt(); return oo&&oo.upsize?' · divides by the Matchup Guide default indoor — the indoor picked for airflow never shrinks the condenser':'' })()}`);
       if(S.plan) L.push(`  FLOOR PLAN: ${S.plan.name} · ${CFM(S.plan.sf)} sq ft served by this system${S.plan.prevSf?' (record '+CFM(S.plan.prevSf)+' sq ft — the rest is on another system)':''} · rooms named off the scan`);
-      S.rooms.forEach(r=>L.push(r.nr?`  ${r.n}: ${r.sf} sf · no register (${r.kind==='hall'?'hall':'closet'}) · ${CFM(r.need)} CFM of load spread over the rooms around it`:`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.needSrc==='scan'?'Manual J '+CFM(r.mj.cool)+' BTUh (scan)':r.ld+' load'} · ${CFM(r.cfm)} CFM · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)}${r.flag?' — PAST '+RBR_PUSH_MAX+' FPM, NEEDS A CALL':r.overOk?' — pushed past '+RBR_PUSH_MAX+' fpm by choice':''} · ${rbrDuctTxt(r).replace(/<br>/g,' / ').replace(/<[^>]+>/g,'')}`));
+      S.rooms.forEach(r=>L.push(r.nr?`  ${r.n}: ${r.sf} sf · no register (${r.kind==='hall'?'hall':'closet'}) · ${CFM(r.need)} CFM of load spread over the rooms around it`:`  ${r.n}: ${r.sf} sf · ${r.h} ft clg · ${r.needSrc==='scan'?'Manual J '+CFM((rbrMjOf(r)||r.mj).cool)+' BTUh ('+((rbrMjOf(r)||{}).plan?'the plan':'scan')+')':r.ld+' load'} · ${CFM(r.cfm)} CFM · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)}${r.flag?' — PAST '+RBR_PUSH_MAX+' FPM, NEEDS A CALL':r.overOk?' — pushed past '+RBR_PUSH_MAX+' fpm by choice':''} · ${rbrDuctTxt(r).replace(/<br>/g,' / ').replace(/<[^>]+>/g,'')}`));
       if(S.rbrNew){ L.push(`NEW DUCT SYSTEM — REDOING THE ROOM-BY-ROOM DUCTS to ensure adequate flow to each room.`);
         const Nn=RM.net; L.push(`  LAYOUT: ${dnLayTxt()}`); L.push(`  Trunks: ${rbrTrunksTxt()}`);
         if(Nn) L.push(`  Runs: ${Nn.edges.filter(e=>e.k==='trunk'||e.k==='boxfeed'||e.k==='direct').map(e=>'Ø'+e.d+'" '+CFM(e.q)+' CFM '+Math.round(e.len)+' ft').join(' · ')}`);   /* v2.63: sizes only — no tags anywhere */
@@ -8235,14 +8241,14 @@ function rbrModel1(){
   const B=rbrBuild()||RBR_BUILD.standard, A=rbrAir(), cap=rbrCap(), top=fcTop();
   // v2.65 — a Goettl Room Scan with a load calc: the AC is sized to ITS Manual J (through the same stretch window), and the design air is tons × 430 CFM —
   // the unit's blower chart caps it ("if a blower can't do it, do whatever it can do"). Without that upload nothing below changes (the old way).
-  const MJG=S.plan&&S.plan.g&&S.plan.g.mj, MJ=(MJG&&MJG.mjT>0)?MJG:null;
+  const MJG=mjDesign(), MJ=(MJG&&MJG.mjT>0)?MJG:null, MJP=(MJ&&MJ.plan)?MJ:null;   /* v2.74: the plan's load designs the rooms */
   if(S.rooms.length){ const tD=A.live?A.tons:(MJ?rbrSold(MJ.mjT):(rbrRecTons()||3)), target=Math.round(tD*designCpt()), chart=A.live?Math.round(A.Qd):null;   /* v2.65: 430 is always — every room-by-room job */
     A.design={tons:tD,target,chart,Qd:chart!=null?Math.min(target,chart):target,cpt:designCpt(),short:chart!=null&&chart<target-0.5,name:A.name,esp:A.esp!=null?A.esp:spGoal(),chartCpt:chart!=null&&tD>0?Math.round(chart/tD):null};
     A.Qd=A.design.Qd }
   S.rooms.forEach(r=>{ if(!r.poly) r.d=r.sf/r.w;   // v2.54: a scanned room keeps its measured shape
     r.hf=r.h<=10?1:Math.min(1.6,1+0.10*(r.h-10));
     r.lf=r.ld==='high'?1.25:(r.ld==='low'?0.85:1);
-    if(r.ld==='scan'&&r.mj&&r.mj.cfm>0){ r.hf=1; r.lf=1; r.need=r.mj.cfm; r.needSrc='scan' }   // v2.64: the scan app's Manual J for this room (its CFM at the app's system CFM — the shares are what matter)
+    const rmj=rbrMjOf(r,MJP); if(r.ld==='scan'&&rmj&&rmj.cfm>0){ r.hf=1; r.lf=1; r.need=rmj.cfm; r.needSrc='scan' }   // v2.64: the scan app's Manual J for this room (its CFM at the app's system CFM — the shares are what matter)
     else { if(r.ld==='scan') r.ld='avg'; r.need=r.sf*B.base*r.hf*r.lf; r.needSrc=null }
     if(r.ns) r.need=0; });
   // v2.54 — a hall or closet off the scan carries load and no register: it is the residual, so it leaves the room list here
@@ -8329,7 +8335,7 @@ function rbrModel1(){
   // Wye Tree · Stepped Trunk · Remote Box (Auto by where the unit sits). The network (dnAll) replaces v2.56's balanced trunks and 4-ft TY rule.
   const ux=S.unitPos.x+3, uy=S.unitPos.y+3;
   rooms.forEach(r=>{ r.trunk=null; r.ty=uy; r.run=0; r.legFt=0; r.tys=0 });
-  RM={B,A,cap,tmat:'flex',segs:[],needTot,needRooms,needUp,needDown,hall,roomSf,loadT,cpt,cptSrc,ux,uy, mjRaw:MJ?MJ.mjT:null, mjBtu:MJ?MJ.cool:null, design:A.design||null,   /* v2.65 */
+  RM={B,A,cap,tmat:'flex',segs:[],needTot,needRooms,needUp,needDown,hall,roomSf,loadT,cpt,cptSrc,ux,uy, mjRaw:MJ?MJ.mjT:null, mjBtu:MJ?MJ.cool:null, mjPlan:MJP?MJP.words:null, mjToday:MJP&&MJP.today?MJP.today:null, design:A.design||null,   /* v2.65 */
       down,downCfm,Qup,spill:Math.max(0,Math.round(Qup-needUp*ratio)),ratio,
       recT:rbrRecTons(), homeSf:rbrHomeSf(),
       pct:needTot>0?A.Qd/needTot:1,
@@ -9773,7 +9779,7 @@ function rbrRoomTbl(){
   let h='<thead><tr><th>Room</th><th class="num">Sq ft</th><th class="num">Ceiling</th><th>Load</th><th class="num">Needs</th><th class="num">Design CFM</th><th>Take-off &rarr; TY &rarr; leg</th><th>Can &amp; grille</th></tr></thead><tbody>';
   S.rooms.forEach(r=>{ h+=`<tr><td><b>${rbrEsc(r.n)}</b><br><span class="note">${rbrFt(r.w)} × ${rbrFt(r.d)} ft</span></td>`+
     `<td class="num">${r.sf}</td><td class="num">${r.h} ft${r.hf>1?' <span class="asm">×'+r.hf.toFixed(2)+'</span>':''}</td>`+
-    `<td>${r.needSrc==='scan'?'<span class="status ok">Manual J</span><br><span class="note">'+CFM(r.mj.cool)+' BTUh · scan</span>':r.ld==='high'?'<span class="status warn">High</span>':r.ld==='low'?'<span class="status na">Low</span>':'Average'}</td>`+
+    `<td>${r.needSrc==='scan'?'<span class="status ok">Manual J</span><br><span class="note">'+CFM((rbrMjOf(r)||r.mj).cool)+' BTUh · '+((rbrMjOf(r)||{}).plan?'the plan':'scan')+'</span>':r.ld==='high'?'<span class="status warn">High</span>':r.ld==='low'?'<span class="status na">Low</span>':'Average'}</td>`+
     `<td class="num">${CFM(r.need)}</td><td class="num"><b>${CFM(r.cfm)}</b></td>`+
     `<td>${rbrDuctTxt(r)}</td><td>${r.nr?'—':rbrRegCol(r)+'<br><span class="note">'+CFM(r.perReg)+' CFM each · '+r.face+' fpm</span>'}</td></tr>` });
   (RM.down||[]).forEach(x=>{ h+=`<tr><td><b>Floor ${x.fl+1}</b><br><span class="note">one duct down</span></td><td class="num">${CFM(Math.round(x.sf))}</td><td class="num">—</td><td>Average</td><td class="num">${CFM(x.need)}</td><td class="num"><b>${CFM(x.cfm)}</b></td><td>${x.n>1?x.n+' × ':''}Ø${x.d}" ${x.mat} down${x.entered?'':' <span class="asm">assumed</span>'}${x.short>0?`<br><span class="note" style="color:var(--bad)">${CFM(x.short)} CFM short — goes upstairs · needs ${x.spec.n>1?x.spec.n+' × ':''}Ø${x.spec.d}"</span>`:''}</td><td>existing registers downstairs</td></tr>` });
@@ -9884,23 +9890,28 @@ function rbrInsCut(R,target){ if(R==null||!(target>0)||R>=target) return 0;
 // way out of it. Returns null when there is nothing to decide.
 function rbrSizeCall(){
   const rec=rbrRecTons(); if(!rec) return null;
-  const i=insulState(), R=i.known?i.R:null;
   const pre=S.home.build==='pre1980';
+  /* v2.74 — a scanned job's Manual J already carries the plan's attic, so it is graded on the attic as planned; the rules (measured rooms, pre-1980) grade the
+     attic as it sits and the plan's own top-up is the way out (planCloses) */
+  const scan0=!!(RM&&RM.mjRaw!=null&&S.rooms&&S.rooms.length); const i0=insulState(), iP=insulState(S.fix); const planR=(scan0&&iP.target!=null)?iP.Rf:null;
+  const i={known:planR!=null||i0.known}, R=planR!=null?planR:(i0.known?i0.R:null);
   // the size the house asks for: the measured rooms when they have been taken, else the build-type rule
   const bigger=RBR_TONS.find(t=>t>rec)||null;
   const scan=!!(RM&&RM.mjRaw!=null&&S.rooms&&S.rooms.length);   /* v2.65: the room scan's Manual J */
   const askT=(RM&&RM.loadT&&RM.loadT>rec)?RM.loadT:(pre&&!scan?bigger:null);
   if(!askT||askT<=rec) return null;
   const target=R_MIN; // at least R-38 — Stephen 2026-09-15
-  const cut=rbrInsCut(R,target);
+  let cut=rbrInsCut(R,target);
   // does the top-up actually close the gap? compare the load after the cut against what `rec` carries
   const cpt=rbrCpt();
   const loadNow=scan?RM.mjRaw*cpt:((RM&&RM.needTot)?RM.needTot:rec*cpt*(askT/rec));
   const capRec=rec*cpt;
-  const closes=R!=null && cut>0 && loadNow*(1-cut)<=capRec+1e-6;
+  let closes=R!=null && cut>0 && loadNow*(1-cut)<=capRec+1e-6, cutT=Math.round(loadNow*(1-cut)/cpt*100)/100;
+  if(scan&&R!=null&&R<target){ const t=mjAtR(target); cut=(t!=null&&RM.mjRaw>0)?Math.max(0,1-t/RM.mjRaw):0; closes=t!=null&&rbrSold(t)<=rec; if(t!=null) cutT=Math.round(t*100)/100 }   /* v2.74: the engine at R-38, never the 30 % share */
+  let planT=null, planCloses=false; if(!scan&&iP.target!=null&&R!=null&&R<iP.target){ planT=iP.target; const cp=rbrInsCut(R,planT); planCloses=cp>0&&loadNow*(1-cp)<=capRec+1e-6 }
   return {rec, askT, why:(RM&&RM.loadT&&RM.loadT>rec)?(scan?'scan':'rooms'):'build', R, known:i.known,
           target, cut, closes, already:R!=null&&R>=target, loadNow, capRec,
-          cpt, cutT:Math.round(loadNow*(1-cut)/cpt*100)/100};
+          cpt, cutT, scan, planR, planT, planCloses};
 }
 // The sentence the SM reads out. Never "the cross-check wants a bigger size" on its own.
 function rbrSizeCallHtml(c,short){
@@ -9910,8 +9921,10 @@ function rbrSizeCallHtml(c,short){
     : c.why==='rooms'
     ? `The rooms you measured come to <b>${CFM(RM.needTot)} CFM</b> of load &mdash; that is a <b>${c.askT} ton</b> house, a size above the ${c.rec} ton the square footage alone gives.`
     : `A pre-1980 house carries more load than its square footage suggests &mdash; that is a <b>${c.askT} ton</b> house on the rule, against the <b>${c.rec} ton</b> the square footage gives.`;
+  if(c.planCloses) return `${src} <b>The plan brings the attic from R-${fmt(c.R)} up to R-${c.planT}</b> &mdash; about ${Math.round(rbrInsCut(c.R,c.planT)*100)}% off the load, <b>so the ${c.rec} ton is the call</b>. Take the attic out of the plan and it is the ${c.askT} ton.`;   /* v2.74 */
+  if(c.planR!=null) return `${src} The plan brings the attic to <b>R-${fmt(c.R)}</b> and the Manual J above already carries it &mdash; <b>the answer on this house is the ${c.askT} ton</b>.`;
   if(!c.known) return `${src} <b>Two ways to land it: put in the ${c.askT} ton, or keep the ${c.rec} ton and bring the attic to at least R-38.</b> Put the attic depth in above and the tool will tell you which one this house needs.`;
-  if(c.already) return `${src} The attic is already <b>R-${fmt(c.R)}</b>, at or over the R-38 minimum, so there is no load to take out up there &mdash; <b>the answer on this house is the ${c.askT} ton</b>.${c.R<R_CODE?` (R-49 is today's code; going R-${fmt(c.R)}&nbsp;&rarr;&nbsp;R-49 is worth about ${Math.round(rbrInsCut(c.R,R_CODE)*100)}% of the load &mdash; not enough to drop a size.)`:''}`;
+  if(c.already) return `${src} The attic is already <b>R-${fmt(c.R)}</b>, at or over the R-38 minimum, so there is no load to take out up there &mdash; <b>the answer on this house is the ${c.askT} ton</b>.${c.R<R_CODE?` (R-49 is today's code; going R-${fmt(c.R)}&nbsp;&rarr;&nbsp;R-49 is worth about ${Math.round(rbrInsPct(c,R_CODE)*100)}% of the load &mdash; not enough to drop a size.)`:''}`;
   const sold=rbrSold, cpt=c.cpt||rbrCpt();
   const after=Math.round(c.loadNow*(1-c.cut));
   const head=`${src} <b>Pick one:</b>`;
@@ -9922,7 +9935,7 @@ function rbrSizeCallHtml(c,short){
      :`, which is what the half-ton up is covering.`);
   if(c.closes) return short?head+two:head+two+
     `<br><span style="font-weight:600">Both land the house. The attic is the cheaper one and it keeps paying every month after &mdash; the unit only has to be bigger if the insulation stays as it is.</span>`;
-  const cut49=rbrInsCut(c.R,R_CODE), after49=Math.round(c.loadNow*(1-cut49));
+  const cut49=rbrInsPct(c,R_CODE), after49=Math.round(c.loadNow*(1-cut49));
   const closes49=sold(after49/cpt)<=c.rec;
   return short?head+two:head+two+
     `<br><span style="font-weight:600;color:#a35300">R-38 helps but does not get all the way there. R-49 &mdash; today's code &mdash; takes about ${Math.round(cut49*100)}% off`+(c.why==='rooms'?` (${CFM(after49)} CFM, ${sold(after49/cpt)} ton)`:c.why==='scan'?` (${(after49/cpt).toFixed(2)} ton → ${sold(after49/cpt)})`:'')+`, `+
@@ -9942,10 +9955,12 @@ function rbrStretchInfo(){
   if(size<rec) return null;                            // the sq-ft size already covers the rooms
   if(!(raw>size+1e-9)) return null;                    // lands on or under the size — no stretch
   const next=RBR_TONS.find(t=>t>size)||null;
-  const i=insulState(), R=i.known?i.R:null, target=R_MIN, cut=rbrInsCut(R,target);
+  /* v2.74 — the plan's attic counts: topped up on the Plan the stretch is carried (a scanned job's load already holds it); a scan's way out reads the engine */
+  const i0=insulState(), iP=insulState(S.fix); const R=iP.target!=null?iP.Rf:(i0.known?i0.R:null), target=R_MIN; let cut=rbrInsCut(R,target);
+  let closes=R!=null&&cut>0&&raw*(1-cut)<=size+1e-9; if(scan&&R!=null&&R<target){ const t=mjAtR(target); cut=(t!=null&&raw>0)?Math.max(0,1-t/raw):0; closes=t!=null&&t<=size+1e-9 }
+  const R0=i0.known?i0.R:null;
   return {raw, size, next, measured, scan, over:raw-size, pct:raw/size-1, stretch:rbrStretchFor(size),
-          R, known:i.known, target, cut, ok:R!=null&&R>=target,
-          closes:R!=null&&cut>0&&raw*(1-cut)<=size+1e-9};
+          R, known:R!=null, target, cut, ok:R!=null&&R>=target, closes, R0, plan:iP.target!=null&&R!=null&&R>=target&&!(R0!=null&&R0>=target)};
 }
 function rbrStretchHtml(x,short){
   if(!x) return '';
@@ -9954,6 +9969,7 @@ function rbrStretchHtml(x,short){
     (x.next?` to a ${x.next}`:'')+`. <b>That makes this a stretch, and a stretch only holds on a house that is insulated.</b>`;
   if(short) return head;
   if(!x.known) return `${head} Put the attic depth in above and the tool will say whether this house carries it.`;
+  if(x.ok&&x.plan) return `${head} The plan brings the attic to <b>R-${fmt(x.R)}</b> &mdash; <b>the envelope carries it, the ${x.size} ton is the unit</b>.`;   /* v2.74 */
   if(x.ok) return `${head} The attic is <b>R-${fmt(x.R)}</b>, at or over the R-38 minimum &mdash; <b>the envelope carries it, the ${x.size} ton is the unit</b>.`;
   if(x.closes) return `${head} The attic is <b>R-${fmt(x.R)}</b>, <b>under the R-38 minimum</b>. Bring it to at least R-38 with this unit &mdash; that takes about ${Math.round(x.cut*100)}% off the load`+
     (x.measured&&!x.scan?` (${CFM(RM.needTot)} CFM becomes ${CFM(Math.round(RM.needTot*(1-x.cut)))})`:x.scan?` (${x.raw.toFixed(2)} ton becomes ${(x.raw*(1-x.cut)).toFixed(2)})`:'')+
@@ -9986,20 +10002,22 @@ function rbrMJ(){
   // the way out, in one line, when the house asks for more than the square footage gave (the full two-answer script is under Why this size)
   let alt='';
   if(!call&&str&&!str.ok&&str.closes&&str.next) alt=` — <b>or the ${str.size} ton with the attic brought to R-38</b>`;   /* a stretch the attic can carry once it is topped up */
-  if(call){ if(!call.known) alt=` — <b>or keep the ${call.rec} ton and bring the attic to at least R-38</b>; put the attic depth in above and the tool picks`;
+  if(call&&!call.planCloses){ if(!call.known) alt=` — <b>or keep the ${call.rec} ton and bring the attic to at least R-38</b>; put the attic depth in above and the tool picks`;
     else if(call.already) alt='';
     else if(call.closes) alt=` — <b>or keep the ${call.rec} ton and bring the attic to R-38</b>, the cheaper one`;
-    else { const c49=rbrInsCut(call.R,R_CODE), a49=Math.round(call.loadNow*(1-c49)); alt=` — R-38 alone is short; R-49 ${rbrSold(a49/(call.cpt||rbrCpt()))<=call.rec?'lands the '+call.rec+' ton':'still leaves it a size big'}` } }
+    else { const c49=rbrInsPct(call,R_CODE), a49=Math.round(call.loadNow*(1-c49)); alt=` — R-38 alone is short; R-49 ${rbrSold(a49/(call.cpt||rbrCpt()))<=call.rec?'lands the '+call.rec+' ton':'still leaves it a size big'}` } }
   const quoted= A.live ? `<span class="rq${fits?'':' bad'}">Quoting ${tons1(A.tons)} ton · ${rbrEsc(A.name)}${fits?'':' — <b>under what the house asks for</b>'}</span>` : '';
   const mja=G&&(G.mjApp||mj); const app= mja&&mja.recT>0 ? `<span class="rq">Room Scan app: ${mja.recT} ton · ${CFM(mja.cfm)} CFM${mja.roomCfm?' (rooms '+CFM(mja.roomCfm)+' CFM)':''}</span>` : '';   /* v2.68: the app's call, never Fit Check's own */
   // v2.66 — the call in bold with its choices as pills; the sentence behind it stays in the page (.mth) and goes out in the ServiceTitan text (SIZE CALL / STRETCH CALL)
   const pills=[];
   if(L){ const w=String(L.why||''); const tag=/^Manual J/.test(w)?'Manual J':/^measured rooms/.test(w)?'Rooms':/^pre-1980/.test(w)?'Pre-1980':/^rule of thumb/.test(w)?'Rule of thumb':''; if(tag&&!(!call&&str&&!str.ok&&str.known&&str.next)) pills.push(`<span class="rp">${tag}</span>`) }   /* sized up for a thin attic: the pill says that instead */
-  if(call){ if(!call.known){ pills.push('<span class="rp warn">Attic depth?</span>'); pills.push(`<span class="rp alt">or ${call.rec} ton + R-38 attic</span>`) }
+  if(call&&!call.planCloses){ if(!call.known){ pills.push('<span class="rp warn">Attic depth?</span>'); pills.push(`<span class="rp alt">or ${call.rec} ton + R-38 attic</span>`) }
     else if(!call.already){ if(call.closes) pills.push(`<span class="rp alt">or ${call.rec} ton + R-38 attic</span>`);
-      else { const c49=rbrInsCut(call.R,R_CODE), a49=Math.round(call.loadNow*(1-c49)); if(rbrSold(a49/(call.cpt||rbrCpt()))<=call.rec) pills.push(`<span class="rp alt">or ${call.rec} ton + R-49 attic</span>`) } } }
+      else { const c49=rbrInsPct(call,R_CODE), a49=Math.round(call.loadNow*(1-c49)); if(rbrSold(a49/(call.cpt||rbrCpt()))<=call.rec) pills.push(`<span class="rp alt">or ${call.rec} ton + R-49 attic</span>`) } } }
   else if(str&&!str.ok){ if(!str.known) pills.push('<span class="rp warn">Needs R-38 attic</span>'); else if(str.next){ pills.push('<span class="rp warn">Thin attic</span>'); if(str.closes) pills.push(`<span class="rp alt">or ${str.size} ton + R-38 attic</span>`) } }
   if(A.live&&!fits) pills.push(`<span class="rp bad">Quoting ${tons1(A.tons)} ton — too small</span>`);
+  if(L&&L.plan&&L.plan.length) pills.push(`<span class="rp plan">Plan: ${rbrEsc(L.plan.join(' · '))}</span>`);   /* v2.74 */
+  if(L&&L.today!=null&&Math.abs(L.today-L.tons)>0.01) pills.push(`<span class="rp">Today: ${L.today} ton</span>`);
   if(L&&mja&&mja.recT>0&&Math.abs(mja.recT-L.tons)>0.01) pills.push(`<span class="rp">App: ${mja.recT} ton</span>`);
   const hero= L ? `<div class="rechero${A.live&&!fits?' bad':''}"><div class="rk">Recommendation</div><div class="rv">${L.tons} ton</div>${pills.length?'<div class="rps">'+pills.join('')+'</div>':''}<span class="mth">${rbrEsc(L.why)}${alt}${quoted}${app}</span></div>` : '';
   const why='<div class="msg" style="margin-top:0">'+B.note+
@@ -10033,7 +10051,7 @@ function rbrVmChips(r,attr){ attr=attr||'data-vm'; const m=r.vmode||'push'; cons
 function rbrSetVm(id,vm){ const r=S.rooms.find(x=>x.id===id); if(!r||!RBR_VM[vm]) return; if(vm==='push'){ if(r.over&&(r.vmode||'push')==='push') r.vm='push'; else delete r.vm } else r.vm=vm; save() }   // Push is the default; tapped again on a room past 700 fpm it is the SM's approval, and the red clears
 function rbrRowOut(row,r){ const o=row.querySelector('.out'); if(!o) return;
   o.innerHTML=`<b>${CFM(r.cfm)}</b> CFM<span>${rbrFt(r.w)} × ${rbrFt(r.d)} ft · ${r.nReg} vent${r.nReg>1?'s':''}${rbrVentSum(r)} · ${r.hf>1?'×'+r.hf.toFixed(2)+' ceiling ':''}${r.lf!==1?'×'+r.lf.toFixed(2)+' load ':''}needs ${CFM(r.need)}${rbrMjWords(r)}</span>` }
-function rbrMjWords(r){ return (r.needSrc==='scan'&&r.mj)?' · Manual J '+CFM(r.mj.cool)+' BTUh (scan)':'' }   /* v2.64 */
+function rbrMjWords(r){ const m=rbrMjOf(r); return (r.needSrc==='scan'&&m)?' · Manual J '+CFM(m.cool)+' BTUh ('+(m.plan?'the plan':'scan')+')':'' }   /* v2.64 */
 // v2.69 — THE ROOMS LIST THE WAY THE ROOM SCAN APP SHOWS IT (Stephen 2026-10-03: "the room by room info is bland, i like the way the scan app does it
 // better. just looks cleaner and easier to understand"): one clean row per room — a colour dot, the name, ft² · ceiling · ft³, the Btu/h and the CFM on
 // the right, its register chips under — and a tap opens the edits (ceiling, load, vents, vent size, face, register). The same data-* hooks as before
@@ -10049,7 +10067,7 @@ function rbrVentChips(r){ // the registers the room has today: one chip per supp
   if(!out.length&&!r.nr&&r.needMore) out.push('<span class="rchip warn"><i></i>needs more air</span>');
   if(r.nr) out.push(`<span class="rchip none"><i></i>${r.ns?'other system':'no register'}</span>`);
   return out.length?`<span class="rchips">${out.join('')}</span>`:'' }
-function rbrRowHead(r,i){ const col=rbrColor(i); const btu=(r.needSrc==='scan'&&r.mj&&r.mj.cool>0)?CFM(Math.round(r.mj.cool))+' Btu/h':null;
+function rbrRowHead(r,i){ const col=rbrColor(i); const btu=(function(){ const m=rbrMjOf(r); return (r.needSrc==='scan'&&m&&m.cool>0)?CFM(Math.round(m.cool))+' Btu/h':null })();
   const right=r.nr?`<b class="muted">${r.ns?'not served':'no vent'}</b><small>${CFM(r.need)} CFM of load to its neighbours</small>`:`<b>${btu||CFM(r.cfm)+' CFM'}</b><small>${btu?CFM(r.cfm)+' CFM':'needs '+CFM(r.need)}${r.flag?' · <span class="rflag">over 700 fpm</span>':''}</small>`;
   return `<summary class="rhead"><span class="rdot" style="background:${col}"></span><span class="rname"><b>${rbrEsc(r.n)}</b><small>${CFM(r.sf)} ft² · ${rbrFt1(r.h)}′ · ${CFM(rbrVol(r))} ft³${r.plan?'':' · typed'}</small>${rbrVentChips(r)}</span><span class="rnum">${right}</span><span class="rchev">›</span></summary>` }
 function rbrFt1(v){ const n=parseFloat(v)||0; return Number.isInteger(n)?String(n):n.toFixed(1) }
@@ -10714,7 +10732,7 @@ function ldOutSync(){ const el=$('#ldOut'); if(!el) return; const G=S.plan&&S.pl
   const app=G.mjApp; const diff=app&&app.cool>0?Math.abs(R.cool-app.cool)/app.cool:0;
   const comps=Object.keys(R.comp||{}).filter(k=>R.comp[k].c>0).sort((a,b)=>R.comp[b].c-R.comp[a].c).slice(0,6).map(k=>`<span>${rbrEsc(k)} <b>${CFM(R.comp[k].c)}</b></span>`).join('');
   el.className='ldout'; el.innerHTML=`Manual J <b>${CFM(R.cool)} BTUh</b> cooling · ${CFM(R.heat)} BTUh heating · <b>${(R.mjT||0).toFixed(2)} ton</b> · ${R.occupants} ${R.occupants===1?'person':'people'} · ${rbrEsc(R.band||'')}`+
-    `<div class="ldcomp">${comps}</div>`+(app?`<span class="app">Room Scan app: ${CFM(app.cool)} BTUh · ${(app.mjT||0).toFixed(2)} ton${diff>0.02?' — differs: the picks above are not the app\'s':' — matches'}</span>`:'');
+    `<div class="ldcomp">${comps}</div>`+(app?`<span class="app">Room Scan app: ${CFM(app.cool)} BTUh · ${(app.mjT||0).toFixed(2)} ton${diff>0.02?' — differs: the picks above are not the app\'s':' — matches'}</span>`:'')+(function(){ let P=null; try{ P=mjPlanned() }catch(e){} return P?`<span class="app plan">With the plan (${rbrEsc(P.words.join(' · '))}): <b>${CFM(P.cool)} BTUh</b> · ${(P.mjT||0).toFixed(2)} ton — this sizes the equipment</span>`:'' })();
   ldFoldSum() }
 function ldFoldSum(){ const s=$('#ldFoldSum'); if(!s) return; const R=window.FC_LOAD; const G=S.plan&&S.plan.g; const n=LD_KEYS.filter(k=>(S.home.ld||{})[k]).length; const sc=LD_KEYS.filter(k=>(S.home.ldSrc||{})[k]==='scan').length;
   s.textContent=(R&&R.complete)?`Manual J ${CFM(R.cool)} BTUh · ${(R.mjT||0).toFixed(2)} ton · ${R.occupants} ${R.occupants===1?'person':'people'}${sc?' · '+sc+' from scan':''}`:(G&&G.geo?'year · people · walls · windows · air · ducts · roof':'year · people · walls · windows · air · ducts · roof') }
@@ -10741,8 +10759,56 @@ function fcLoadRun(o){ o=o||{}; const G=S.plan&&S.plan.g; const inp=fcLoadInputs
 function fcLoadSync(){ try{ fcLoadRun() }catch(e){ console.error('load',e) } try{ if(S.rooms&&S.rooms.length) rbrModel() }catch(e){} try{ rbrMJ() }catch(e){} try{ ldOutSync() }catch(e){}
   // v2.71: on a scanned job the size follows the edit at once — the strip, Manual S and the Plan move with the Manual J (a size tapped by hand still wins)
   try{ if(S.plan&&S.plan.g&&S.plan.g.geo&&S.sys&&S.tonsAuto!==false){ const w=tonsAutoPick(); if(w&&w!==S.tons){ buildTons(); if(S.rooms&&S.rooms.length) rbrModel(); try{ rbrMJ() }catch(e){} if(cur>3) renderTiers() } } }catch(e){}
-  try{ if(cur>3) renderCompare() }catch(e){} }
+  try{ if(cur>3) renderCompare() }catch(e){} try{ PLAN_LOAD_KEY=planLoadKey() }catch(e){} }
 // the scan fills the picks in (an export that carries them) — assumed until the SM touches one
+// v2.74 — THE PLANNED LOAD (Stephen 2026-10-04: "on the plan page, if i change the ducts, of course, assume its R-8 so if it wasnt, that should change the load all
+// the way thru, also if i add insulation to r38, 49 or 60 that should also change the load all the way thru right, at least for the new design, since theres whats
+// there and what were planning and those may even influence the choice in equipment"). What is there stays S.plan.g.mj — the Existing tab's Manual J tile and the
+// MANUAL J line. What the plan changes — the attic topped up on the Plan's Attic tiles, a New duct system laid in R-8 flex (never worse than the ducts there: a
+// sealed attic or a crawlspace keeps its own number; Enlarge return and the added runs keep the old ducts' rating) — runs the SAME engine (FCLoad.house) on the
+// same inputs with those two swapped, and THAT number designs the system: the size, Manual S, the room shares, the room air, Options, the Summary and the
+// ServiceTitan text read mjDesign(). One engine — never a second load formula. On a job with no scan the plan's attic is the existing two-answer rule made live.
+var MJP_CACHE=null, PLAN_LOAD_KEY=null, PLAN_DUCT_ID='attic_r8';
+// the duct option the load uses today — the pick, else the sealed-attic default, else the config's assumed default (the same order as FCLoad's pick)
+function ldDuctToday(C){ C=C||ldCfg(); if(!C) return null; const ld=ldState(); const A=C.assumedDefaults||{}; const ty=($('#in_type')||{}).value||'unknown';
+  const sid=ty==='spray'&&(C.attic||{}).sealedAtticDuctOptionID; const id=ld.duct||sid||A.ductOptionID; return (C.ductOptions||[]).find(x=>x.id===id)||null }
+// what the plan changes in the load: {atticR, ductId, words} or null
+function ldPlanDelta(){ const C=ldCfg(); if(!C) return null; const d={}, words=[];
+  const i=insulState(S.fix); if(i.target!=null&&(!i.known||i.Rf>i.R)){ d.atticR=i.Rf; words.push('R-'+fmt(i.Rf)+' attic') }
+  if(newDuctSystem()){ const t=ldDuctToday(C), n=(C.ductOptions||[]).find(x=>x.id===PLAN_DUCT_ID); if(n&&t&&t.id!==n.id&&(+t.coolingGainPct||0)>(+n.coolingGainPct||0)){ d.ductId=n.id; words.push('R-8 ducts') } }
+  if(!words.length) return null; d.words=words; return d }
+// the engine on today's inputs with the plan's swaps (and, for the size call, another attic R) — cached on the inputs themselves
+function mjLoadAt(d,atticR){ if(typeof FCLoad==='undefined') return null; const inp=fcLoadInputs(); if(!inp||!inp.rooms.length||(inp.noGeo&&inp.noGeo.length)) return null;
+  if(atticR!=null) inp.attic={R:atticR,where:inp.attic.where==='none'?'floor':inp.attic.where};
+  if(d&&d.ductId) inp.ductId=d.ductId;
+  const key=LD_EFF_KEY+'|'+JSON.stringify(Object.assign({},inp,{cfg:null})); MJP_CACHE=MJP_CACHE||new Map(); if(MJP_CACHE.has(key)) return MJP_CACHE.get(key);
+  let R=null; try{ R=FCLoad.house(inp) }catch(e){ R=null } if(!(R&&R.complete&&R.mjT>0)) R=null;
+  if(MJP_CACHE.size>40) MJP_CACHE.clear(); MJP_CACHE.set(key,R); return R }
+// the plan's Manual J, shaped like S.plan.g.mj (+ the room loads by the scan's room id, the words, today's) — null when the plan changes nothing in the load
+function mjPlanned(){ const G=S.plan&&S.plan.g; if(!G||!G.geo) return null; const d=ldPlanDelta(); if(!d) return null; const R=mjLoadAt(d,d.atticR!=null?d.atticR:null); if(!R) return null;
+  const C=ldCfg()||{}; const cpt=(C.equipment||{}).cfmPerTon||designCpt(); const sold=rbrSold(R.mjT), sys=sold*cpt; const rooms={};
+  (R.rooms||[]).forEach(x=>{ if(x.ns||x.cool==null) return; rooms[x.id]={cool:x.cool,heat:x.heat,cfm:+(x.share*sys).toFixed(2),fc:true,plan:true} });
+  const T=(G.mj&&G.mj.cool>0)?G.mj:null;
+  return {cool:R.cool,sens:R.sens,lat:R.lat,heat:R.heat,mjT:R.mjT,recT:sold,cfm:sys,fc:true,plan:true,basis:'Fit Check load engine — the plan',occ:R.occupants,words:d.words,delta:d,rooms,
+    today:T?{cool:T.cool,mjT:T.mjT||null,heat:T.heat||null}:null} }
+// THE design load — the plan's when it changes the load, else what is there
+function mjDesign(){ const G=S.plan&&S.plan.g; if(!G) return null; let P=null; try{ P=mjPlanned() }catch(e){ P=null } return P||G.mj||null }
+function rbrMjOf(r,P){ if(P===undefined){ try{ P=mjPlanned() }catch(e){ P=null } } return (P&&r&&r.gid&&P.rooms[r.gid])||(r&&r.mj)||null }
+// the engine with the attic at R (the plan's ducts kept) — a scanned job's "or N ton + R-38 attic" reads this, never the 30 % ceiling-share rule
+function mjAtR(Rt){ const G=S.plan&&S.plan.g; if(!G||!G.geo) return null; const d=ldPlanDelta(); const i=insulState(); const R=mjLoadAt(d,Math.max(+Rt||0,(d&&d.atticR)||0,i.known?i.R:0)); return R?R.mjT:null }
+function rbrInsPct(c,target){ if(c&&c.scan&&RM&&RM.mjRaw>0){ const t=mjAtR(target); return t!=null?Math.max(0,1-t/RM.mjRaw):0 } return rbrInsCut(c?c.R:null,target) }
+// the size the load gives (loadTons0), plus what the plan did (plan: the words) and the size the house would get as it sits (today) when they differ
+function loadTons(){ const L=loadTons0(); if(!L) return L; try{ let plan=null, today=null;
+    if(RM&&RM.mjPlan&&S.rooms&&S.rooms.length&&/^Manual J/.test(String(L.why||''))){ plan=RM.mjPlan.slice(); const t0=RM.mjToday&&RM.mjToday.mjT;
+      if(t0>0){ const s0=rbrSold(t0), rec=rbrRecTons(), i0=insulState(), next=RBR_TONS.find(t=>t>s0)||null; today=(rec&&s0===rec&&t0>s0+1e-9&&i0.known&&i0.R<R_MIN&&next)?next:s0 } }
+    else if(L.planAttic!=null){ plan=['R-'+fmt(L.planAttic)+' attic']; today=L.todayT!=null?L.todayT:null }
+    L.plan=plan; L.today=today }catch(e){} return L }
+// the Plan follows the load: a tile that moves the design load re-runs the rooms and the size (a size tapped by hand still wins — buildTons keeps it)
+function planLoadKey(){ let a=0, b=null; try{ const m=mjDesign(); a=m&&m.cool>0?Math.round(m.cool):0 }catch(e){} try{ const L=loadTons(); b=L?L.tons:null }catch(e){} return a+'|'+b }
+function planLoadFollow(){ const k=planLoadKey(); if(PLAN_LOAD_KEY==null||k===PLAN_LOAD_KEY){ PLAN_LOAD_KEY=k; return false }
+  try{ if(S.rooms&&S.rooms.length) rbrModel() }catch(e){}
+  try{ if(S.sys){ buildTons(); renderTiers() } }catch(e){}
+  try{ rbrMJ() }catch(e){} try{ ldOutSync() }catch(e){} PLAN_LOAD_KEY=planLoadKey(); return true }
 function ldFromScan(G){ const H=G&&G.home; if(!H) return; const ld=ldState(); S.home.ldSrc=S.home.ldSrc||{};
   const ids=H.ids||{}; LD_KEYS.forEach(k=>{ if(ids[k]&&(!ld[k]||S.home.ldSrc[k]==='scan')){ ld[k]=ids[k]; S.home.ldSrc[k]='scan' } else if(!ids[k]&&S.home.ldSrc[k]==='scan'){ ld[k]=null; S.home.ldSrc[k]=null } });   /* a pick the previous scan filled in and this one does not carry goes back to assumed */
   if(H.occ!=null&&(ld.occ==null||S.home.ldSrc.occ==='scan')){ ld.occ=H.occ; S.home.ldSrc.occ='scan' } else if(H.occ==null&&S.home.ldSrc.occ==='scan'){ ld.occ=null; S.home.ldSrc.occ=null }
@@ -10813,6 +10879,7 @@ function go(n){
   // (a chip tapped on step 3 still wins — that turns the auto pick off). Without this the office sat on the old size while
   // the pack, booting from the same job, sized itself fresh — and the two disagreed on the unit and the score.
   else if(n>3){ try{ const w=tonsAutoPick(); if(w&&w!==S.tons){ buildTons(); renderTiers() } }catch(e){} }
+  if(n>3){ try{ PLAN_LOAD_KEY=planLoadKey() }catch(e){} }   /* v2.74: what the Plan follows from here */
   if(n>3){ if(!view.touched) resetView(); renderCompare(); if(n===5) setTimeout(draw,50) }
   if(n===7||n===8) renderPackTabs(); // the story and the tech pack are re-rendered from live state, never cached
   if(n===9){ try{ renderOptions() }catch(e){ console.error('options',e) } } // v2.47 — the plans, graded live against the house as it is now
