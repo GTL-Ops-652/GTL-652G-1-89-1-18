@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-10-05 v2.75 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-10-05 v2.76 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -1485,6 +1485,7 @@ body.night .sbud,body.night .rair{background:#1f2d3d;border-color:#334152}body.n
       <div class="field hidden" id="exGr2F"><label>Second grille size <small>W × H</small></label><input id="ex_gr2" placeholder="20x20"></div>
       <div class="field"><label>&nbsp;</label><div class="chips"><button class="chip sm" data-gr="14x14">14×14</button><button class="chip sm" data-gr="16x16">16×16</button><button class="chip sm" data-gr="20x20">20×20</button><button class="chip sm" data-gr="20x25">20×25</button><button class="chip sm" data-gr="20x30">20×30</button><button class="chip sm" data-gr="20x40">20×40</button></div></div>
     </div>
+    <div class="row" id="exFiltRow"><div class="field"><label>Filter in it today</label><div class="chips" id="exFiltChips"><button type="button" class="chip sm" data-exf="p1">1&Prime; MERV 8</button><button type="button" class="chip sm" data-exf="p1_11">1&Prime; MERV 11</button><button type="button" class="chip sm" data-exf="g3">3&Prime; top hat</button><button type="button" class="chip sm" data-exf="m4">4&Prime; media at the unit</button><button type="button" class="chip sm" data-exf="none">None</button><span class="asm" id="exFiltAsm">assumed</span></div></div></div>
     </div></div></details>
 
     <details class="dpane" id="dpSup"><summary>Supply plenum</summary>
@@ -2938,7 +2939,9 @@ $$('[data-pitch]').forEach(b=>b.onclick=()=>{ set('rf_pitch',b.dataset.pitch); r
 $$('[data-jk]').forEach(b=>b.onclick=()=>{const [w,d]=b.dataset.jk.split(','); set('jk_w',w); set('jk_d',d); $$('[data-jk]').forEach(x=>x.classList.toggle('on',x===b)); standDiag()});
 $$('[data-gr]').forEach(b=>b.onclick=()=>{set('ex_gr',b.dataset.gr);$$('[data-gr]').forEach(x=>x.classList.toggle('on',x===b));refreshOld()});
 // v2.26: duct material / filter chips for the Manual D prediction — stored in S.f like a field, defaults flex / flex / flex / 1" pleated
-function syncMatChips(){ $$('[data-mat]').forEach(b=>{ const [k,v]=b.dataset.mat.split(':'); const dflt=k==='dr_filt'?'auto':'flex'; b.classList.toggle('on',((k==='dr_filt'&&S.fix&&S.fix.filt)||S.f[k]||dflt)===v) }) }
+function syncMatChips(){ $$('[data-mat]').forEach(b=>{ const [k,v]=b.dataset.mat.split(':'); const dflt=k==='dr_filt'?'auto':'flex'; b.classList.toggle('on',((k==='dr_filt'&&S.fix&&S.fix.filt)||S.f[k]||dflt)===v) }); try{ exFiltSync() }catch(e){} }
+// v2.76 — THE FILTER IN THE OLD GRILLE TODAY (assumed 1" MERV 8): the old ducts are predicted with the filter that is in them, never the Auto pick
+$$('[data-exf]').forEach(b=>b.onclick=()=>{ S.f.ex_filt=b.dataset.exf; save(); exFiltSync(); refreshOld(); if(cur>3) renderCompare() });
 $$('[data-mat]').forEach(b=>b.onclick=()=>{ const [k,v]=b.dataset.mat.split(':'); S.f[k]=v; if(k==='dr_filt'&&S.fix) delete S.fix.filt; save(); syncMatChips(); refreshOld(); if(cur>3) renderCompare() }); syncMatChips();
 $$('#cabFurn .chip').forEach(b=>b.onclick=()=>{$('#oF_w').value=b.dataset.w;S.f.oF_w=b.dataset.w;save();$$('#cabFurn .chip').forEach(x=>x.classList.toggle('on',x===b));refreshOld()});
 $$('#afue .chip').forEach(b=>{b.classList.toggle('on',b.dataset.v===S.afue);b.onclick=()=>{S.afue=b.dataset.v;save();$$('#afue .chip').forEach(x=>x.classList.toggle('on',x===b));renderTiers()}});
@@ -3109,7 +3112,7 @@ function foldSums(){
   try{ dtSync() }catch(e){}
 }
 // v2.66 — THE UNIT & DUCTS TILES: what each piece is (or that it is assumed), coloured by the same tests the airflow read uses
-function dtSync(){ const G=$('#dtGrid'); if(!G) return; const pk=isPkg(), A=window.AFR||{};
+function dtSync(){ try{ exFiltSync() }catch(e){} const G=$('#dtGrid'); if(!G) return; const pk=isPkg(), A=window.AFR||{};
   const set=(sel,txt,st)=>{ const b=G.querySelector(sel); if(!b) return; const v=b.querySelector('.xv'); if(v) v.textContent=txt; ['ok','warn','bad','asm','need','na'].forEach(c=>b.classList.toggle('is-'+c,st===c)) };
   const val=id=>String(($('#'+id)||{}).value||'').trim(); const X=s=>s.replace(/\s*[x*]\s*/i,'×');
   $('#dtEq').classList.toggle('hidden',!!pk); $('#dtPk').classList.toggle('hidden',!pk);
@@ -3648,6 +3651,19 @@ const OP_NAME={coil:'Coil',filter:'Filter',regs:'Registers',gr:'Return grille',d
 // the parts a design is held at: the layout, the indoor, the faces, the filter, the dampers — taken the moment the first part is flipped
 function holdOf(fix){ const h=fix&&!fix.__noScope&&fix.hold; if(!h||typeof h!=='object') return null; if(h.sys!==S.sys||h.tons!==S.tons||h.star!==S.star) return null; return h }
 function filtPick(fix){ const f=fix===undefined?S.fix:fix; return (f&&!f.__noScope&&f.filt)||S.f.dr_filt||'auto' }
+// v2.76 — THE OLD DUCTS AS THEY SIT (Stephen 2026-10-05: "until we add or change anything in the setup or ducts, that should predict the new equipment on the
+// old ducts"). filtPick / dampersOn stay what Manual D DESIGNS with; the predicted point reads what is really in the system: the filter in the old grille
+// (Existing · Filter grille, assumed 1" MERV 8) until the plan puts a new grille in (then the design's filter) or the Air path picks one; balancing dampers
+// only when the plan lays new branches (New duct system, + Supply) or the Air path turns them on — old ducts have none.
+function exfKeys(){ return ['p1','p1_11','g3','m4','none'] }   /* a function, not a const: syncMatChips runs at boot, above this line (no TDZ) */
+function exFilt(){ const k=S.f&&S.f.ex_filt; return exfKeys().includes(k)?k:'p1' }
+function exFiltSync(){ const k=exFilt(), asm=!(S.f&&exfKeys().includes(S.f.ex_filt)); $$('[data-exf]').forEach(b=>{ b.classList.toggle('on',b.dataset.exf===k); if(b.dataset.exf==='m4') b.classList.toggle('hidden',isPkg()) }); const a=$('#exFiltAsm'); if(a) a.classList.toggle('hidden',!asm) }
+function opFilt(fix,grNew){ const f=fix===undefined?S.fix:fix; if(f&&!f.__noScope&&f.filt) return {k:f.filt,src:'plan'}; if(f&&!f.__noScope&&grNew) return {k:S.f.dr_filt||'auto',src:'grille'}; return {k:exFilt(),src:'today'} }
+function opDamp(fix){ const f=fix===undefined?S.fix:fix; if(!f||f.__noScope) return false; if(f.damper==='on'||f.damper==='off') return f.damper==='on'; return (newDuctSystem()||addList(f,'addSup').length>0)?dampersKnob():false }
+const FILT_SHORT={p1:'1″ MERV 8',p1_11:'1″ MERV 11',g3:'3″ top hat',m4:'4″ media',none:'No filter',auto:'Auto'};
+// the label a spot carries on the 3D: the velocity at the predicted CFM, over its Table 3-1 maximum or not, and the static it takes (the physics, never a cap)
+function opSpotTag(c,Q,sp,Qd){ const v=Math.round(Q/(c.area/144)); const dp=sp&&sp[c.slot]!=null?sp[c.slot]:null; const over=c.vmax&&v>c.vmax+0.5, overD=!over&&c.vmax&&c.vel>c.vmax+0.5&&Qd>Q;
+  return ` · ${v} fpm${over?` · over its ${c.vmax}`:''}${dp!=null&&dp>=0.005?` · ${dp.toFixed(2)}″`:''}${overD?` · over its ${c.vmax} at ${CFM(Qd)} CFM`:''}` }
 function holdParts(){ const o=curOpt(); if(!o) return null; return {sys:S.sys,tons:S.tons,star:S.star,cfg:isPkg()?null:supNew(),coil:o.coil||null,furn:o.furn||null,ahu:o.ahu||null,reg:regFor(S.fix),filt:filtPick(S.fix),damper:dampersOn(S.fix)} }
 function holdTake(){ if(holdOf(S.fix)) return; const p=holdParts(); if(p) S.fix.hold=p }
 function holdTidy(){ const h=holdOf(S.fix); if(!h){ if(S.fix&&S.fix.hold) delete S.fix.hold; return } const p=holdParts(); if(!p) return;
@@ -3670,14 +3686,15 @@ function opSystem(o,M,ov){ ov=ov||{}; const md=M&&M.md; if(!md) return null; con
   const coilAt=Q=>{ const k=mdCoil(Q,o,T); return k.inside?MD_WET*Math.pow(Q/Qd,1.8):k.dp };
   // the filter — the pick (or the what-if) at the face it sits in
   const grC=cOf('grille'), grA=grC&&grC.area>0?grC.area:(md.grille&&md.grille.area)||400;
-  const filtOn=md.dpd.filterK!=='inc'; let fk=ov.filt!=null?ov.filt:filtPick(fix); if(fk==='auto') fk=(mdFiltPick(Qd,grA,T,'auto')||{}).k||'p1_11'; if(fk==='m4'&&!filtOk('m4')) fk='p1_11';
-  const filtAt=Q=>filtOn?mdFiltDrop(Q,grA,fk,T).dp:0;
+  const fo=ov.filt!=null?{k:ov.filt,src:'plan'}:opFilt(fix,!!(grC&&grC.fixed)); const fkey=fo.k;   /* v2.76: the filter that is really there */
+  const filtOn=md.dpd.filterK!=='inc'; let fk=fkey; if(fk==='auto') fk=(mdFiltPick(Qd,grA,T,'auto')||{}).k||'p1_11'; if(fk==='m4'&&!filtOk('m4')&&fo.src!=='today') fk='p1_11';
+  const filtAt=Q=>filtOn?mdFiltDrop(Q,grA,fk,T).dp:0; const filtInGr=filtOn&&fk!=='m4'&&fk!=='none';
   // the registers — 0.03" at 500 fpm through the free area, with the square of the velocity
   const rc=cOf('regs'); const regK=ov.reg||regFor(fix); let regA=null;
   if(rc){ const core=rc.core||(rc.area/(rc.free||0.75)); regA=ov.reg?core*REG_FACE[ov.reg].free:rc.area }
   const regAt=Q=>regA>0?OP_REG*Math.pow((Q/(regA/144))/OP_REG_V,2):REG_FACE[regK].dp*Math.pow(Q/Qd,2);
   const grAt=Q=>OP_GR*Math.pow((Q/(grA/144))/OP_GR_V,2);
-  const damp=ov.damper!=null?!!ov.damper:dampersOn(fix);
+  const damp=ov.damper!=null?!!ov.damper:opDamp(fix);   /* v2.76: old ducts have no balancing dampers */
   const damperAt=Q=>damp?MD_DPD.damper*Math.pow(Q/Qd,2):0;
   // the ducts on the Manual D worksheet's lengths and fittings, each run at its own size
   const brRe=/^branch run|take-off|in the branch|register boot/i; const sumL=(items,f)=>(items||[]).filter(f).reduce((s,x)=>s+(+x[1]||0),0);
@@ -3689,14 +3706,17 @@ function opSystem(o,M,ov){ ov=ov||{}; const md=M&&M.md; if(!md) return null; con
   let netAt=null; if(N){ const P=N.paths.map(p=>({q:Math.max(1,p.q),L:Math.max(1e-4,(p.loss||0)-(p.faceX||0))})); const Qn=Math.max(1,(RM.A&&RM.A.Qd)||P.reduce((s,p)=>s+p.q,0));
     const crit=Math.max(...P.map(p=>p.L)); const kq=P.reduce((s,p)=>s+p.q*Math.pow(p.L,-1/1.9),0);
     netAt=Q=>damp?crit*Math.pow(Q/Qn,1.9):Math.pow((Q/Qn)/Math.max(1e-9,kq/P.reduce((s,p)=>s+p.q,0)),1.9)*1; }
-  const supAt=Q=>netAt?netAt(Q):(opDuctP(Q,Gsup,mat.sup,Ltr)+(Gbr?opDuctP(Q,Gbr,mat.br,Lbr):opDuctP(Q,Gsup,mat.sup,Lbr)));
+  const supTr=Q=>netAt?netAt(Q):opDuctP(Q,Gsup,mat.sup,Ltr), supBr=Q=>netAt?0:(Gbr?opDuctP(Q,Gbr,mat.br,Lbr):opDuctP(Q,Gsup,mat.sup,Lbr));
+  const supAt=Q=>netAt?netAt(Q):(supTr(Q)+supBr(Q));
   const retAt=Q=>opDuctP(Q,Gret,mat.ret,Lret);
   // the holes at the roof line on a package — a squeeze charges what its velocity pressure adds over the duct feeding it
   const holes=comps.filter(c=>/^(penR|elbR|elbS|penS)$/.test(c.slot)&&!c.newMetal&&c.area>0);
   const holeAt=Q=>holes.reduce((s,c)=>{ const fa=c.feed&&c.feed.area>0?c.feed.area:c.area; return s+Math.max(0,opVp(Q/(c.area/144))-opVp(Q/(fa/144))) },0);
   const f=Q=>{ const it={coil:coilAt(Q),filter:filtAt(Q),regs:regAt(Q),gr:grAt(Q),damper:damperAt(Q),sup:supAt(Q),ret:retAt(Q),holes:holeAt(Q)};
-    let t=0; for(const k in it){ it[k]=Math.max(0,it[k]||0); t+=it[k] } return {total:t,items:it} };
-  f.fk=fk; f.regK=regK; f.damp=damp; f.net=!!N; f.filtOn=filtOn; return f }
+    let t=0; for(const k in it){ it[k]=Math.max(0,it[k]||0); t+=it[k] }
+    const spots={grille:it.gr+(filtInGr?it.filter:0),ret:it.ret,sup:netAt?it.sup:Math.max(0,supTr(Q)),takeoff:netAt?0:Math.max(0,supBr(Q)),regs:it.regs};   /* v2.76: what each spot takes at Q — the 3D labels */
+    return {total:t,items:it,spots} };
+  f.fk=fk; f.fkey=fkey; f.fsrc=fo.src; f.regK=regK; f.damp=damp; f.net=!!N; f.filtOn=filtOn; return f }
 // THE POINT: the blower's tap against the system curve (the held tap while the ducts are held and the blower is the same one)
 function opPoint(o,M,ov){ if(!ov&&M&&M.pt) return M.pt; try{ const md=M&&M.md; if(!md||!md.B) return null; const sys=opSystem(o,M,ov); if(!sys) return null; const B=md.B, T=M.tons;
     const h=md.hold&&md.hold.tap&&(md.hold.furn||null)===(o.furn||null)&&(md.hold.ahu||null)===(o.ahu||null)?md.hold:null;
@@ -3705,7 +3725,7 @@ function opPoint(o,M,ov){ if(!ov&&M&&M.pt) return M.pt; try{ const md=M&&M.md; i
     if(vs&&sys(Qset).total<=(B.hold||0.8)+1e-9) Q=Qset;
     else { let lo=40, hi=Math.max(fan(0),Qset)*1.6+200; for(let i=0;i<60;i++){ const m=(lo+hi)/2; if(fan(sys(m).total)>m) lo=m; else hi=m } Q=(lo+hi)/2 }
     const S1=sys(Q); const esp=S1.total; beyond=esp>tmax+1e-9;
-    return {Q:Math.round(Q),esp:Math.round(esp*1000)/1000,perTon:Math.round(Math.round(Q)/T),items:S1.items,tap,vs,Qset:Math.round(Qset),held:!!md.hold,heldTap:!!h,beyond,tmax,fan,sys,fk:sys.fk,regK:sys.regK,damp:sys.damp,net:sys.net,filtOn:sys.filtOn,T,B} }catch(e){ try{ console.warn('Fit Check: operating point',e) }catch(_){} return null } }
+    return {Q:Math.round(Q),esp:Math.round(esp*1000)/1000,perTon:Math.round(Math.round(Q)/T),items:S1.items,tap,vs,Qset:Math.round(Qset),held:!!md.hold,heldTap:!!h,beyond,tmax,fan,sys,fk:sys.fk,fkey:sys.fkey,fsrc:sys.fsrc,spots:S1.spots,regK:sys.regK,damp:sys.damp,net:sys.net,filtOn:sys.filtOn,T,B} }catch(e){ try{ console.warn('Fit Check: operating point',e) }catch(_){} return null } }
 // v2.75 — the CFM the system as drawn moves at a given static (its own curve, the same one the point sits on)
 function opQAt(pt,e){ if(!pt||!pt.sys) return pt?pt.Q:0; let lo=1, hi=Math.max(2,pt.Q); for(let i=0;i<50;i++){ const m=(lo+hi)/2; if(pt.sys(m).total>e) hi=m; else lo=m } return Math.round((lo+hi)/2) }
 const e2s=v=>(Math.round((+v||0)*100)/100).toFixed(2);   /* v2.75: one rounding for the start-up static everywhere */
@@ -3713,7 +3733,7 @@ const espCls=e=>e==null?'':(e<=spGoal()+0.005?'ok':(e<=spLimit()+0.005?'warn':'b
 function opCls(op){ if(!op) return {q:'',s:''}; return {q:op.perTon<OP_FREEZE?'bad':(op.perTon>=cptFloor()-0.5?'ok':(op.perTon>=cptFloor()-40?'warn':'bad')), s:op.esp<=spGoal()+0.005?'ok':(op.esp<=spLimit()+0.005?'warn':'bad')} }
 function opItemsTxt(op){ return Object.keys(OP_NAME).filter(k=>op.items[k]>0.0049).map(k=>`${OP_NAME[k].toLowerCase()} ${op.items[k].toFixed(2)}`).join(' + ') }
 function opStTxt(o,M){ const op=opPoint(o,M); if(!op) return ''; const h=M.md&&M.md.hold;
-  return `PREDICTED AT START-UP (the system as drawn on ${op.vs?'setting':'tap'} ${op.tap}): ${CFM(op.Q)} CFM (${op.perTon}/ton) at ${e2s(op.esp)}" w.c. — ${opItemsTxt(op)}${op.vs&&op.esp>(op.B.hold||0.8)?' · past the constant-airflow hold':''}${op.perTon<OP_FREEZE?` · UNDER ${OP_FREEZE} CFM/TON — COIL FREEZE RISK (ADP: below ${OP_FREEZE} CFM per 12,000 BTUH)`:''}${h?` · DUCTS HELD as drawn for ${holdWords(h)}`:''}` }
+  return `PREDICTED AT START-UP (the system as drawn on ${op.vs?'setting':'tap'} ${op.tap}): ${CFM(op.Q)} CFM (${op.perTon}/ton) at ${e2s(op.esp)}" w.c. — ${opItemsTxt(op)}${op.filtOn&&op.fk&&op.fsrc==='today'?` · filter: ${(FILT_SHORT[op.fk]||op.fk).replace(/″/g,'"')} (today's)`:''}${op.vs&&op.esp>(op.B.hold||0.8)?' · past the constant-airflow hold':''}${op.perTon<OP_FREEZE?` · UNDER ${OP_FREEZE} CFM/TON — COIL FREEZE RISK (ADP: below ${OP_FREEZE} CFM per 12,000 BTUH)`:''}${h?` · DUCTS HELD as drawn for ${holdWords(h)}`:''}` }
 // ---- the card under the 3D
 let OP_LAST=null;
 function opGaugeSvg(esp){ const W=150, H=92, cx=75, cy=80, R=62, max=Math.max(1,Math.ceil((esp+0.05)*10)/10); const ang=v=>Math.PI*(1-Math.min(v,max)/max);
@@ -3752,12 +3772,13 @@ function opCardHtml(o,M,M0){ const op=opPoint(o,M); if(!op) return ''; const op0
    <div class="opfoot"><span>Manual D design point <b>${CFM(md.over?md.Qp:md.Qd)} CFM</b> @ <b>${(md.over?md.espP:md.espD).toFixed(2)}″</b></span>${op0?`<span>New unit on today's ducts <b>${CFM(op0.Q)} CFM</b> @ <b>${e2s(op0.esp)}″</b></span>`:''}</div></div>` }
 // ---- the Air path tiles: each one shows what it does to the point before it is tapped
 function opDeltaTxt(op,alt){ if(!op||!alt) return ''; const dq=alt.Q-op.Q, de=alt.esp-op.esp; if(Math.abs(dq)>=5) return `<em class="${dq>0?'dg':'db'}">${dq>0?'+':'−'}${CFM(Math.abs(dq))} CFM</em>`; if(Math.abs(de)>=0.005) return `<em class="${de<0?'dg':'db'}">${de>0?'+':'−'}${Math.abs(de).toFixed(2)}″</em>`; return 'same' }
-function airPathHtml(o,M,T,G){ const op=opPoint(o,M); if(!op) return ''; const reg=op.regK, fk=filtPick(S.fix), dmp=op.damp;
+function airPathHtml(o,M,T,G){ const op=opPoint(o,M); if(!op) return ''; const reg=op.regK, fk=op.fkey||filtPick(S.fix), dmp=op.damp, ftoday=op.fsrc==='today';
   const alt=ov=>opPoint(o,M,ov); const cur=(on,v)=>on?v:'';
   const regT=['stamped','bar'].map(k=>{ const on=reg===k; return T(` data-reg="${k}"`,k==='bar'?'i-regbar':'i-regst',k==='bar'?'Bar type':'Stamped',on?op.items.regs.toFixed(2)+'″':opDeltaTxt(op,alt({reg:k})),on?'on':'',false,k==='bar'?'Bar-type aluminum registers — 88% free area':'Stamped-face steel registers — 75% free area','#0f8b8b') }).join('');
   let filtT=''; if(!op.filtOn) filtT=T(' data-filt="inc"','i-filt','In the unit','table','on fixed',false,'This blower table is measured with its own filter','#6a52b3');
-  else { const FO=[['auto','i-auto','Auto'],['p1','i-filt','1″ MERV 8'],['p1_11','i-filt','1″ MERV 11'],['g3','i-filt3','3″ top hat'],['m4','i-filt4','4″ media']].filter(x=>x[0]!=='m4'||filtOk('m4'));
-    filtT=FO.map(([k,ico,lbl])=>{ const on=fk===k; return T(` data-filt="${k}"`,ico,lbl,on?op.items.filter.toFixed(2)+'″':opDeltaTxt(op,alt({filt:k})),on?'on':'',false,k==='auto'?'The lowest-drop filter that fits — '+(FILT_NAME[op.fk]||op.fk):(FILT_NAME[k]||k),'#6a52b3') }).join('') }
+  else { const FO=[['auto','i-auto','Auto'],['p1','i-filt','1″ MERV 8'],['p1_11','i-filt','1″ MERV 11'],['g3','i-filt3','3″ top hat'],['m4','i-filt4','4″ media']].filter(x=>x[0]!=='m4'||filtOk('m4')||(ftoday&&fk==='m4'));
+    if(!FO.some(x=>x[0]===fk)) FO.push([fk,'i-filt',FILT_SHORT[fk]||fk]);   /* v2.76: today's filter always has its tile */
+    filtT=FO.map(([k,ico,lbl])=>{ const on=fk===k; return T(` data-filt="${k}"`,ico,lbl,on?op.items.filter.toFixed(2)+'″'+(ftoday?' · today':''):opDeltaTxt(op,alt({filt:k})),on?'on':'',false,k==='auto'?'The lowest-drop filter that fits — '+(FILT_NAME[op.fk]||op.fk):(FILT_NAME[k]||k),'#6a52b3') }).join('') }
   const dmpT=[[true,'i-damp','Dampers'],[false,'i-damp0','No dampers']].map(([v,ico,lbl])=>{ const on=dmp===v; return T(` data-damp="${v?'on':'off'}"`,ico,lbl,on?(v?op.items.damper.toFixed(2)+'″':'—'):opDeltaTxt(op,alt({damper:v})),on?'on':'',false,v?'A balancing damper on every branch — every room gets its share':'No balancing dampers — less static, the short runs take more air','#c77700') }).join('');
   const row=(lab,body)=>`<div class="airrow"><span class="plab">${lab}</span><div class="xtg ptg apt">${body}</div></div>`;
   return G('pgAir','Air path',row('Registers',regT)+row('Filter',filtT)+row('Dampers',dmpT)) }
@@ -5163,8 +5184,8 @@ function wireViewer(V){ const c=V.cv; let dr=null, pn=null, raf=0, st=0; if(c.da
 function buildScene(){
   scene=[]; sceneFloor=z=>0; sceneLines=null; if(!vwSecondary) syncMoveUi(); const GHOST='#9aa6b2', FURN='#3678A0', HATCH='#ffd166', SPACE='#77B2D0', METAL='#d9e2ec';
   if(isPkg()){ const row=rowsFor()[S.star]; if(!row) return draw(); const o=pick(S.star,row); const n=pkgDims(o.unit), old=oldPkg(); const j=judgePkg(o.unit); const A=j.A||alignState(o); const pos=A.pos;
-    const AM=flowModel(o,S.fix); const comp=slot=>AM?AM.comps.find(c=>c.slot===slot):null; const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null; const tkTag=c=>` · ${c.spec.n} runs · ${CFM(Math.round(AM.design/Math.max(1,c.spec.n)))} CFM each`; // v2.33 — never a capacity sum on a set of branches
-    const flowTag=c=>c?(c.newMetal?' · sized to the unit':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?tkTag(c):` · max ${CFM(c.max)} CFM`)):''; // v2.4 airflow colouring
+    const AM=flowModel(o,S.fix); const comp=slot=>AM?AM.comps.find(c=>c.slot===slot):null; const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null; const SPT=(AM&&AM.pt&&AM.pt.sys)?AM.pt.sys(AM.pt.Q).spots:null, QPT=AM&&AM.pt?AM.pt.Q:null; const tkTag=c=>` · ${c.spec.n} runs · ${CFM(Math.round((QPT||AM.design)/Math.max(1,c.spec.n)))} CFM each${SPT&&SPT.takeoff>=0.005?` · ${SPT.takeoff.toFixed(2)}″`:''}`; // v2.33 — never a capacity sum on a set of branches
+    const flowTag=c=>c?(c.newMetal?' · sized to the unit':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?tkTag(c):(QPT?opSpotTag(c,QPT,SPT,AM.design):` · max ${CFM(c.max)} CFM`))):'';   /* v2.76: the physics at the spot, not a cap */ // v2.4 airflow colouring
     const deck=A.stand.h||0; const isCurb=A.curb, pitched=isPitched(); const st=A.stand;
     // roof frame: the roof, jack, metal and the old unit stay where they were measured; the stand (and the new unit riding on it) is drawn at its relocated spot
     const so=standShift(), dk=deck+so.y; const exR=(A.ex||[]).map(op=>Object.assign({},op,{x:op.x+so.x,z:op.z+so.y})); const moved=!!(so.x||so.y);
@@ -5384,7 +5405,8 @@ function buildScene(){
     if(AM){ const F=E[o.furn||o.ahu], C=o.coil?E[o.coil]:null;
       const comp=s=>AM.comps.find(c=>c.slot===s); const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null;
       const NEWM='#a9d9bd', METAL='#d9e2ec'; const isNew=c=>!!(c&&(c.fixed||c.newMetal));
-      const tag=c=>!c?'':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?` · ${c.spec.n} runs · ${CFM(Math.round(AM.design/Math.max(1,c.spec.n)))} CFM each`:` · max ${CFM(c.effMax!=null?c.effMax:c.max)} CFM`);
+      const SPT=AM.pt&&AM.pt.sys?AM.pt.sys(AM.pt.Q).spots:null, QPT=AM.pt?AM.pt.Q:null;   /* v2.76: the physics at the spot, not a cap */
+      const tag=c=>!c?'':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?` · ${c.spec.n} runs · ${CFM(Math.round((QPT||AM.design)/Math.max(1,c.spec.n)))} CFM each${SPT&&SPT.takeoff>=0.005?` · ${SPT.takeoff.toFixed(2)}″`:''}`:(QPT?opSpotTag(c,QPT,SPT,AM.design):` · max ${CFM(c.effMax!=null?c.effMax:c.max)} CFM`));
       const isRet=c=>!!(c&&c.side==='r'); const tone=(c,nw)=>flowCol(c)||(isRet(c)?(nw?RET_NEW:RET_OLD):(nw?NEWM:METAL)); // v2.56: the return side violet, new or existing
       const put=(x,y,z,dx,dy,dz,c,label,cyl,la)=>sceneAdd({x,y,z,dx,dy,dz,cyl:cyl||undefined,color:tone(c,isNew(c)),alpha:flowCol(c)?.85:(isNew(c)?.82:.6),noshadow:true,cls:c?c.cls:'',nw:isNew(c),la:la||[0.5,1,0.5],label:label||null});
       const bendDuct=(C,u,v,cs,R,c)=>pushBend(C,u,v,{a:cs.a,h:cs.b,round:!!cs.round},R,tone(c,isNew(c)),flowCol(c)?.85:(isNew(c)?.82:.6),{cls:c?c.cls:'',nw:isNew(c)}); // v2.44 a radiused elbow in the duct's own colour
@@ -6114,8 +6136,8 @@ function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); i
     S.scope=S.scope||{}; S.scope[k]=!S.scope[k]; if(k==='ducts'&&S.scope[k]) holdClear(); done() });
   // v2.73 — THE AIR PATH: a flip holds the ducts and moves the predicted point
   el.querySelectorAll('[data-reg]').forEach(btn=>btn.onclick=()=>{ const v=btn.dataset.reg; if(!REG_FACE[v]||regFor(S.fix)===v) return; holdTake(); S.fix.reg=v; S.fix.regPlan=true; holdTidy(); if(S.rooms&&S.rooms.length){ try{ rbrModel() }catch(e){} } done() });
-  el.querySelectorAll('[data-filt]').forEach(btn=>btn.onclick=()=>{ const v=btn.dataset.filt; if(v==='inc'||filtPick(S.fix)===v) return; holdTake(); S.fix.filt=v; holdTidy(); try{ syncMatChips() }catch(e){} done() });
-  el.querySelectorAll('[data-damp]').forEach(btn=>btn.onclick=()=>{ const v=btn.dataset.damp==='on'; if(dampersOn(S.fix)===v) return; holdTake(); S.fix.damper=v?'on':'off'; holdTidy(); done() });
+  el.querySelectorAll('[data-filt]').forEach(btn=>btn.onclick=()=>{ const v=btn.dataset.filt; if(v==='inc'||btn.classList.contains('on')||(S.fix&&S.fix.filt===v)) return; holdTake(); S.fix.filt=v; holdTidy(); try{ syncMatChips() }catch(e){} done() });
+  el.querySelectorAll('[data-damp]').forEach(btn=>btn.onclick=()=>{ const v=btn.dataset.damp==='on'; if(opDamp(S.fix)===v) return; holdTake(); S.fix.damper=v?'on':'off'; holdTidy(); done() });
   el.querySelectorAll('input[data-scope]').forEach(cb=>cb.onchange=()=>{ const k=cb.dataset.scope; S.scope=S.scope||{}; S.scope[k]=cb.checked; save(); renderCompare() });
   if(!P) return;
   if(S.rooms&&S.rooms.length){ try{ rbrModel(); rbrPlan2D() }catch(e){} } // the room design follows the equipment the SM is quoting
