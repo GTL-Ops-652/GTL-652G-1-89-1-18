@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-10-05 v2.77 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-10-05 v2.78 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -3901,21 +3901,20 @@ function gradeComps(comps,design,needs){
   return comps;
 }
 // ============================================================ v2.28 · COMFORT SCORE v5 — "airflow is all that matters" (Stephen 2026-09-13)
-// v2.77 (Stephen 2026-10-05, ONE LOGIC — his pick "CFM + static"): both numbers come off the one Manual D operating point. A strong blower forces air through
-// chokepoints — the CFM holds up and the static climbs — so the airflow points also fall by (line ÷ static)² when the start-up static is over the line (⚙︎ Accept
-// up to, 0.70″ — or the floor this equipment sets on its own when even Manual D's ducts cannot get under it).
+// v2.78 (Stephen 2026-10-05): the score is the CFM alone, off the one Manual D operating point — "it's all about can we deliver the cfm or btus needed
+// to properly cool the home or room. High static, means less air movement right off the blower chart, so they're one and the same." The static is already
+// in the CFM (the point is where the blower's chart meets the system), so it is never scored a second time (v2.77's (line ÷ static)² factor is gone).
 // The air-conditioning side is one number: the CFM per ton the ductwork lets the unit deliver, against the 390/ton floor — full at the floor
 // and above (450 is the aim, not a scoring line), falling with the square below it (pressure goes with the square of the flow). Every
 // chokepoint fixed raises the CFM; nothing else is scored. Caps at 85; the attic is the last 15 and never touches the airflow.
 function comfortScore(m){
   const cpt=m.delivered/Math.max(m.tons,0.5); const need=(m.need2!=null?m.need2:m.needs)/Math.max(m.tons,0.5); // v2.42: the floor, or the blower's own ceiling when that is lower
-  const sf=(m.esp!=null&&m.line>0&&m.esp>m.line)?m.line/m.esp:1;   /* v2.77: the static off the same point — over the line, the blower is forcing it */
-  const ac=85*Math.pow(clamp(cpt/Math.max(need,1),0,1)*sf,2);
+  const ac=85*Math.pow(clamp(cpt/Math.max(need,1),0,1),2);   /* v2.78: the CFM the point delivers against what the house needs — nothing else */
   const R=m.ins.Rf; const ins= R==null?7.5:15*clamp(R/R_MIN,0,1);
   const scored=m.comps.filter(c=>!c.newMetal); const removed=m.removed||0;
   const unfixed=m.comps.filter(c=>!c.newMetal&&(c.cls==='bad'||c.neck)); const ductDone=!unfixed.length;
   const total=ac+ins;
-  return {total:Math.round(total),air:Math.round(ac),ins:Math.round(ins),ac:Math.round(ac),acMax:85,cap:100,caps:[],unfixed:unfixed.length,ductDone,shortButClean:ductDone&&cpt<cptFloor()-0.5,unknownIns:R==null,cpt:Math.round(cpt),sf:Math.round(sf*1000)/1000,
+  return {total:Math.round(total),air:Math.round(ac),ins:Math.round(ins),ac:Math.round(ac),acMax:85,cap:100,caps:[],unfixed:unfixed.length,ductDone,shortButClean:ductDone&&cpt<cptFloor()-0.5,unknownIns:R==null,cpt:Math.round(cpt),
     spots:scored.length+removed,clear:scored.filter(c=>c.cls==='ok'&&!c.neck).length+removed,removed};
 }
 const SCORE_PARTS=[['air','Airflow',85],['ins','Insulation',15]];
@@ -5931,7 +5930,7 @@ function exportPdf(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M)
       <tr class="base"><td></td><td><i>New ${sys.toLowerCase()} on the ductwork as it is</i></td><td class="num">${CFM(M0.delivered)}</td><td class="num">${M0.perTon}</td><td class="num">${M0.ins.known?'R-'+fmt(M0.ins.R):'—'}</td><td class="num"><b>${M0.score.total}</b></td></tr>${rows}
       <tr class="total"><td></td><td><b>Goettl design</b></td><td class="num"><b>${CFM(M.delivered)}</b> — floor ${CFM(M.needs)}</td><td class="num"><b>${M.perTon}</b></td><td class="num"><b>${M.ins.known?'R-'+fmt(M.ins.Rf):'—'}</b></td><td class="num"><b>${M.score.total}</b> / 100</td></tr></tbody></table>
     <div class="ptwo"><div><h2>Install scope</h2><div class="pscope">${isPkg()?[['reuse','Keep the existing stand / elbow / jack setup'],['curb_old','Redesign to a curb — reuse the existing drops'],['curb','Redesign to a curb — new plenum drops']].map(([k,l])=>`<div>${(S.fix.install||'reuse')===k?'☑':'☐'} ${l}</div>`).join(''):''}${scopeState().items.map(i=>`<div class="${i.na?'na':''}">${i.on?'☑':'☐'} ${i.l}${i.auto?' <small>(automatic — penetration enlarged)</small>':''}${i.air&&i.on?' <small>(sized to the unit)</small>':''}</div>`).join('')}</div></div>
-    <div><h2>Comfort score</h2><div class="pscore2">${SCORE_PARTS.map(([k,l,mx])=>`<div><span>${l}</span><i><b style="width:${Math.round(M.score[k]/mx*100)}%"></b></i><span class="num">${M0.score[k]} → <b>${M.score[k]}</b> / ${mx}</span></div>`).join('')}</div><p class="pnote">Airflow: the CFM per ton the unit delivers at the ACCA Manual D operating point, against the ${cptFloor()}/ton floor — and the static it runs at, against the ${spLimit().toFixed(2)}″ line; every chokepoint opened lifts the one and lowers the other; the air conditioning side caps at 85. Insulation: the attic against R-38, the last 15. 100 means both are met.</p></div></div>
+    <div><h2>Comfort score</h2><div class="pscore2">${SCORE_PARTS.map(([k,l,mx])=>`<div><span>${l}</span><i><b style="width:${Math.round(M.score[k]/mx*100)}%"></b></i><span class="num">${M0.score[k]} → <b>${M.score[k]}</b> / ${mx}</span></div>`).join('')}</div><p class="pnote">Airflow: the CFM per ton the unit delivers at the ACCA Manual D operating point, against the ${cptFloor()}/ton floor — high static is less air off the blower chart, so the CFM already carries it; every chokepoint opened lifts it; the air conditioning side caps at 85. Insulation: the attic against R-38, the last 15. 100 means both are met.</p></div></div>
     <h2>Where the air chokes — today vs proposed</h2>
     <table class="ptbl"><thead><tr><th>Component</th><th>Today</th><th class="num">At start-up</th><th></th><th>Proposed</th><th class="num">At start-up</th><th></th></tr></thead><tbody>${compRows}</tbody></table>
     ${M.md?`<h2>ACCA Manual D — Friction Rate Worksheet</h2>${mdWorksheetHtml(M).replace(/<details class="adv mdws"><summary>[^]*?<\/summary>/,'<div class="mdws">').replace(/<\/details>\s*$/,'</div>')}`:''}
@@ -6243,9 +6242,7 @@ function issuePairs(o){
     if(M0.perTon<cptFloor()&&!M0.blowerBound){ const bl=!!M.blowerBound; const done=M.perTon>=cptFloor()||bl; // v2.42: everything the blower can push, delivered, is a pass
       push('Airflow per ton',`${M0.perTon} CFM/ton`,`Under the ${cptFloor()}/ton floor — the coil is starved and the far rooms never get their air.`,
         done,`${M.perTon} CFM/ton`, done?(bl?`Every spot passes — ${CFM(M.delivered)} CFM at start-up, all this blower can push.`:`Inside the ${cptFloor()}–${cptAim()} band — every spot opened to its size.`):'Still under the floor.',M0.perTon<cptFloor()*0.9?'bad':'warn') }
-    if(M0.esp!=null&&M0.esp>M0.line+0.005){ const done=M.esp!=null&&M.esp<=M.line+0.005;   /* v2.77: the static off the same Manual D point (Stephen: CFM + static) */
-      push('Static at start-up',f2s(M0.esp),`Over the ${f2s(M0.line)} line — the blower forces the air through: louder, harder on the motor.`,
-        done,M.esp!=null?f2s(M.esp):'—', done?`Inside the ${f2s(M.line)} line.`:'Still over the line.', M0.esp>M0.line*1.15?'bad':'warn','static') }
+    /* v2.78: no "Static at start-up" pair — high static is less air off the blower chart, so the Airflow per ton pair already says it (Stephen 2026-10-05) */
     if(M0.bal&&M0.bal.ratio!=null&&M0.bal.ratio<1&&M0.bal.cls!=='ok'){ const leads=!!(M.bal&&(M.bal.ratio>=1||M.bal.cls==='ok')); const both=!!(M.bal&&M.bal.ret>=M.needs&&M.bal.sup>=M.needs); const done=leads||both; // v2.27: a return side at a lower static than the supply is the return flowing slower — answered // v2.24: both sides carrying what the unit needs answers it — the rule of thumb is a preference, not a chokepoint
       push('Supply vs return',`return ${M0.bal.rPct}% · supply ${M0.bal.sPct}% of Manual D's max velocity`,
         'More supply than return — the unit cannot give out what it cannot pull in.',
@@ -6365,8 +6362,7 @@ function planRows(E){ const rows=S.plans.filter(p=>E[p.id]).sort((a,b)=>E[b.id].
 // airflow part of the comfort score, on its own scale) — and WEAR & TEAR, off the attic: at code (R-49, 2021 IECC as Clark County adopted it)
 // it is 100, because the system does not run as much and lasts longer; below code it falls in a straight line (R-38 = 78, R-19 = 39).
 function optScores(M){ const cpt=M.delivered/Math.max(M.tons,0.5),   /* v2.77: the one Manual D CFM — the comfort score's own airflow */ need=(M.need2!=null?M.need2:M.needs)/Math.max(M.tons,0.5);
-  const sf=(M.esp!=null&&M.line>0&&M.esp>M.line)?M.line/M.esp:1;   /* v2.77: CFM + static off the one point, as the comfort score */
-  const air=Math.round(100*Math.pow(clamp(cpt/Math.max(need,1),0,1)*sf,2)); const R=M.ins&&M.ins.Rf;
+  const air=Math.round(100*Math.pow(clamp(cpt/Math.max(need,1),0,1),2));   /* v2.78: the CFM alone, as the comfort score */ const R=M.ins&&M.ins.Rf;
   return {air, wear:R==null?null:Math.round(100*clamp(R/R_CODE,0,1)), R} }
 function optScoresHtml(M){ const s=optScores(M);
   return `<div class="osc2"><div title="The air the system gets against what it needs — 100 is every CFM it needs"><span>System airflow</span><b class="${scoreCls(s.air)}">${s.air}</b></div>`
@@ -6395,7 +6391,7 @@ const planName=p=>String((p&&p.name)||('Plan '+((p&&p.letter)||''))).trim();
 function planMatch(){ const s=planSig(planCapture()); return (S.plans||[]).find(p=>planSig(p.d)===s)||null }
 function planApproved(){ const p=planById(S.planApproved); if(!p) return null; return {p,same:planSig(p.d)===planSig(planCapture())&&(p.apStar==null||p.apStar===S.star)} } // v2.62: the unit is part of what was approved
 function planLetter(){ const used=S.plans.map(p=>p.letter); return 'ABCDEFGH'.split('').find(l=>!used.includes(l))||'X' }
-function planTierAuto(M){ if(M.score.total>=100) return 'perfect'; if((M.blowerBound||M.delivered>=M.need2-0.5)&&!(M.esp!=null&&M.esp>M.line+0.005)) return 'compromise'; return 'minimum' }   /* v2.77: the one Manual D point — the air it needs inside the static line */
+function planTierAuto(M){ if(M.score.total>=100) return 'perfect'; if(M.blowerBound||M.delivered>=M.need2-0.5) return 'compromise'; return 'minimum' }   /* v2.78: the one Manual D point — the air it needs (the static is already in the CFM) */
 function planTier(p,E){ return PLAN_TIER[p&&p.tier]||PLAN_TIER[E&&E.M?planTierAuto(E.M):'minimum'] }
 function planPriceNum(p){ const m=String((p&&p.price)||'').replace(/[, ]/g,'').match(/\d+(\.\d+)?/); return m?parseFloat(m[0]):null }
 function planPriceTxt(p){ const v=planPriceNum(p); if(v==null) return String((p&&p.price)||'').trim(); return '$'+Math.round(v).toLocaleString() }
