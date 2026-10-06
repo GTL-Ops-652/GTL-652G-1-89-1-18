@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-10-05 v2.76 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-10-05 v2.77 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -1944,13 +1944,6 @@ body.night .sbud,body.night .rair{background:#1f2d3d;border-color:#334152}body.n
     <div class="field"><label>Largest round duct <small>in &middot; built-in 20</small></label><input type="number" id="thr_maxD" step="2"></div>
     <div class="field"><label><input type="checkbox" id="thr_damper"> Balancing dampers on the branches <small>Manual D 0.03" each</small></label></div>
   </div>
-  <h3>Airflow caps <small class="note">max CFM through a spot &mdash; the Goettl method</small></h3>
-  <div class="row">
-    <div class="field"><label>Return grille <small>CFM per sq in &middot; built-in 2.0</small></label><input type="number" id="thr_gr" step="0.1"></div>
-    <div class="field"><label>Return duct <small>fpm &middot; built-in 900</small></label><input type="number" id="thr_retv" step="50"></div>
-    <div class="field"><label>Supply trunk <small>fpm &middot; built-in 900</small></label><input type="number" id="thr_supv" step="50"></div>
-    <div class="field"><label>Jack / transition / plenum openings <small>fpm &middot; built-in 900</small></label><input type="number" id="thr_opv" step="50"></div>
-  </div>
   <h3>Sizing &amp; rooms</h3>
   <div class="row">
     <div class="field"><label>Sq ft per ton &mdash; standard &amp; pre-1980 <small>built-in 400</small></label><input type="number" id="thr_sfStd" step="10"></div>
@@ -3126,9 +3119,9 @@ function dtSync(){ try{ exFiltSync() }catch(e){} const G=$('#dtGrid'); if(!G) re
   { const g=val('ex_gr'), n=parseInt(val('ex_gr_n'))||1, g2=val('ex_gr2'); const scan=!!(S.plan&&S.plan.rets&&S.plan.rets.length); set('[data-pane="dpGr"]',g?(n>1?n+' × ':'')+X(g)+(n>1&&g2&&g2!==g?' +':''):'—',!g?'need':A.gr?'warn':(isAuto('ex_gr')&&!scan?'asm':'ok')) }
   { const a=plenAns('sup'); const r=val('ex_sup_rect'), d=val('ex_sup_d'), n=parseInt(val('ex_sup_n'))||1; const t0=a==='sq'?(r?X(r)+(pk?'':(supOld()==='trunk'?' · '+fmt(trunkFtOld())+' ft':' · '+fmt(splenOld())+'″')):''):(d?(n>1?n+' × ':'')+'Ø'+d+'″':'');
     set('[data-pane="dpSup"]',t0||'—',!t0?'need':A.sup?'warn':((a==='sq'?isAuto('ex_sup_rect'):isAuto('ex_sup_d'))||plenIsAsm('sup')?'asm':'ok')) }
-  { let n=0; try{ const s=takeoffSpec(val('ex_tk')); n=s?s.items.length:0 }catch(e){} set('[data-pane="dpTk"]',n?n+' run'+(n>1?'s':''):'—',n?'ok':'need') }
+  { let n=0; try{ const s=takeoffSpec(val('ex_tk')); n=s?s.items.length:0 }catch(e){} set('[data-pane="dpTk"]',n?n+' run'+(n>1?'s':''):'—',n?(A.tk?'warn':'ok'):'need') }   /* v2.77: amber when Manual D's branches are bigger */
   { const tb=G.querySelector('[data-pane="dpTk"]'), on=tkApplies(); if(tb) tb.classList.toggle('hidden',!on); const tp=$('#dpTk'); if(!on&&tp&&tp.open) tp.open=false }   // v2.67: a round-supply package has no take-offs
-  { set('[data-pane="dpReg"]',regOld()==='bar'?'Bar type':'Stamped',(val('ex_reg')||S.regOld)?'ok':'asm') }
+  { set('[data-pane="dpReg"]',regOld()==='bar'?'Bar type':'Stamped',A.reg?'warn':((val('ex_reg')||S.regOld)?'ok':'asm')) }   /* v2.77: amber when the faces are over Manual D's limit */
   { const v=['dr_ret','dr_sup','dr_br'].map(num); const asm=['dr_ret','dr_sup','dr_br'].some(isAuto); set('[data-pane="advRuns"]',v.every(x=>x!=null)?v.map(fmt).join(' · ')+' ft':'—',v.every(x=>x==null)?'na':asm?'asm':'ok') }
   $$('#dtGrid [data-pane]').forEach(b=>{ const p=$('#'+b.dataset.pane), on=!!(p&&p.open); b.classList.toggle('on',on); b.setAttribute('aria-expanded',on?'true':'false') }) }
 function dtWire(){ try{ plenWire() }catch(e){} const G=$('#dtGrid'); if(!G||G.dataset.wired) return; G.dataset.wired='1';
@@ -3151,21 +3144,11 @@ function refreshOld(){
   const e=oldEnv(); const [l1,l2,l3]=labels();
   { const has=!!(e&&(e.a||e.b||e.c)); const oe=$('#oldEnv'); oe.innerHTML=has?`Existing assembly ≈ <b>${fmt(e.a)}" ${l1}</b> · <b>${fmt(e.b)}" ${l2}</b> · <b>${fmt(e.c)}" ${l3}</b>`:''; oe.style.display=has?'':'none' }   /* v2.66: no "enter what you can" line */
 }
-// ============================================================ airflow: static pressure + return sizing (v2.2)
-// Round return Ø → tons it will carry (Goettl rule of thumb: 14"→2, 16"→3 (2.5 ok), 18"→4 (3.5 ok), 20"→5); in-between sizes interpolate on area.
-const RET_RULE=[[10,1],[12,1.5],[14,2],[16,3],[18,4],[20,5],[22,6],[24,7]];
-// Typical blower airflow vs external static, averaged across the major brands' blower tables, normalised to 100% (400 CFM/ton) at the 0.5" rating point.
-const AIRFLOW_CURVE={ psc:[[0.1,1.08],[0.3,1.04],[0.5,1],[0.6,0.95],[0.7,0.88],[0.8,0.8],[0.9,0.71],[1,0.62],[1.2,0.45],[1.5,0.25]],
-  ct_ecm:[[0.1,1.06],[0.3,1.03],[0.5,1],[0.6,0.97],[0.7,0.93],[0.8,0.87],[0.9,0.8],[1,0.72],[1.2,0.55],[1.5,0.35]],
-  vs_ecm:[[0.1,1],[0.5,1],[0.7,0.99],[0.8,0.97],[0.9,0.93],[1,0.86],[1.2,0.7],[1.5,0.45]] };
+// ============================================================ the static measured on the old system (a fact) — v2.77: the airflow read is Manual D's (airToday)
 const MOTOR_NAME={psc:'PSC',ct_ecm:'constant-torque ECM',vs_ecm:'variable-speed ECM'};
 function interp(tbl,x){ if(x<=tbl[0][0]) return tbl[0][1]; for(let i=1;i<tbl.length;i++){ if(x<=tbl[i][0]){ const [x0,y0]=tbl[i-1],[x1,y1]=tbl[i]; return y0+(y1-y0)*(x-x0)/(x1-x0) } } return tbl[tbl.length-1][1] }
-// v2.4/v2.6: return capacity comes from the velocity cap (⚙︎ Return duct fpm, default 900 = the Goettl 14→2T / 16→3T / 18→4T / 20→5T rule). RET_RULE is kept only as the size ladder.
 const RET_SIZES=[10,12,14,16,18,20,22,24];
 const roundArea=d=>Math.PI*d*d/4;
-function retCapacity(d){ if(!d) return 0; return roundArea(d)/144*accaTyp('ret')/400 } // v2.22: ACCA return main, 600 fpm design
-function areaCapacity(sqin){ return sqin/144*accaTyp('ret')/400 }
-function retSizeFor(tons){ const r=RET_SIZES.find(d=>retCapacity(d)>=tons-1e-9); return r||null }
 const tons1=t=>String(Math.round(t*10)/10);
 function oldTons(){ const v=parseFloat($('#ex_tons').value); if(v) return v;
   const pk=decodePkg(($('#oldPkgModel').value||'').toUpperCase().replace(/\s+/g,'')); if(pk&&pk.ton) return pk.ton/12;
@@ -3183,43 +3166,32 @@ function motorType(){ const v=$('#ex_motor').value; if(v&&v!=='auto') return v;
 }
 function airflowState(){ const sp=num('ex_sp'); const tons=oldTons(); const motor=motorType(); const d=parseFloat($('#ex_ret_d').value)||null; const n=Math.max(1,parseInt($('#ex_ret_n').value)||1);
   const rect=($('#ex_ret_rect').value||'').match(/(\d+(?:\.\d+)?)\s*[x×*]\s*(\d+(?:\.\d+)?)/i);
-  let retCap=null, retDesc=null;
-  if(rect&&!(d&&retDualSplit())){ const w=parseFloat(rect[1]), h=parseFloat(rect[2]); const eq=1.3*Math.pow(w*h,0.625)/Math.pow(w+h,0.25); retCap=areaCapacity(w*h)*n;   /* v2.72 re-cut: on a split the rectangle is the return PLENUM — the duct (the round) is what carries the air */ retDesc=`${n>1?n+' × ':''}${rect[1]}×${rect[2]} rectangular (≈${fmt(eq)}" round equivalent)` } // capacity on the actual area; ASHRAE equivalent round shown for reference
-  else if(d){ retCap=retCapacity(d)*n; retDesc=`${n>1?n+' × ':''}${d}" round` }
-  let spCls=null, spTxt=null, factor=null, cfm=null; const hi=S.thr.sp||0.7;
-  if(sp!=null){ spCls= sp<=hi?'ok':'bad'; factor=interp(AIRFLOW_CURVE[motor],sp); cfm=tons?Math.round(tons*400*factor/10)*10:null; spTxt= sp<=0.5?'healthy (design point is 0.5")':(sp<=hi?`higher than the 0.5" design point but within limits (up to ${hi}") — the air moves a little faster and the system runs a bit louder; lowering it would help`:`HIGH (over ${hi}") — the ductwork is choking the unit`) }
-  return {sp,spCls,spTxt,factor,cfm,tons,motor,retCap,retDesc,hi};
+  let retDesc=null;
+  if(rect&&!(d&&retDualSplit())){ const w=parseFloat(rect[1]), h=parseFloat(rect[2]); const eq=1.3*Math.pow(w*h,0.625)/Math.pow(w+h,0.25); /* v2.72 re-cut: on a split the rectangle is the return PLENUM — the duct (the round) is what carries the air */ retDesc=`${n>1?n+' × ':''}${rect[1]}×${rect[2]} rectangular (≈${fmt(eq)}" round equivalent)` } // capacity on the actual area; ASHRAE equivalent round shown for reference
+  else if(d){ retDesc=`${n>1?n+' × ':''}${d}" round` }
+  let spCls=null, spTxt=null; const hi=S.thr.sp||0.7;
+  if(sp!=null){ spCls= sp<=hi?'ok':'bad'; spTxt= sp<=0.5?'healthy (design point is 0.5")':(sp<=hi?`higher than the 0.5" design point but within limits (up to ${hi}") — the air moves a little faster and the system runs a bit louder; lowering it would help`:`HIGH (over ${hi}") — the ductwork is choking the unit`) }
+  return {sp,spCls,spTxt,tons,motor,retDesc,hi};   /* v2.77: no generic-blower CFM and no "carries N ton" — the airflow is Manual D's (airToday) */
 }
 function recoText(){ return `<b>Recommend ductwork remediation:</b> find and enlarge the lowest chokepoint (undersized return, filter grille, tight plenum or elbow)${isPkg()?', add new roof penetrations for larger supply/return plenums':', open up the return drop / supply plenum'}, and/or enlarge the trunk ductwork. More tonnage into this duct system as-is makes it worse.` }
+// v2.77 — ONE LOGIC: the Existing tab reads the same Manual D model as everything else — the new unit on today's ducts. The static measured on the
+// old system is a fact about the old unit and is said as one; there is no generic-blower CFM and no "carries N ton" read any more.
+function airToday(){ try{ const o=curOpt(); return o?flowModel(o,TODAY):null }catch(e){ return null } }
 function airflowRead(){ const el=$('#airflowRead'); if(!el) return; const a=airflowState(); const parts=[];
-  if(a.sp==null) parts.push('Enter the static you measured across the old unit to get an airflow read.');
-  else { parts.push(`<b>Static ${a.sp.toFixed(2)}" w.c.</b> — ${a.spTxt}.`);
-    if(a.cfm) parts.push(`At that static a typical ${MOTOR_NAME[a.motor]} blower on a ${tons1(a.tons)}-ton system moves ≈ <b>${a.cfm.toLocaleString()} CFM</b> (${Math.round(400*a.factor)} CFM/ton, ${a.factor>=1?'+':''}${Math.round((a.factor-1)*100)}% vs the 400/ton design).`);
-    if(a.sp>a.hi) parts.push(recoText()); }
-  if(a.retDesc) parts.push(`Return ${a.retDesc} carries up to <b>${tons1(a.retCap)} ton</b> at the ACCA return-main design velocity (${accaTyp('ret')} fpm; ${accaMax('ret')} fpm absolute max)${a.tons&&a.retCap<a.tons-0.01?` — already undersized for the existing ${tons1(a.tons)}-ton system`:''}.`);
-  const gr=fixSpec(grilleBase()); let grShort=false; if(gr){ const t=gr.area/144*accaTyp('grille')/400; grShort=!!(a.tons&&t<a.tons-0.01); parts.push(`Return grille ${gr.size} (${sqinTxt(gr.area)}) carries up to <b>${tons1(t)} ton</b> at the ACCA filter-face limit (${accaTyp('grille')} fpm gross = ${(accaTyp('grille')/144).toFixed(2)} CFM/sq in)${grShort?' — undersized today':''}.`) }
-  const sd=ductSpec(parseFloat($('#ex_sup_d').value)||null,$('#ex_sup_rect').value,$('#ex_sup_n').value); let supShort=false; if(sd){ const t=sd.area/144*accaTyp('sup')/400; supShort=!!(a.tons&&t<a.tons-0.01); parts.push(`Supply ${sd.size} (${sqinTxt(sd.area)}) carries up to <b>${tons1(t)} ton</b> at the ACCA supply-trunk design velocity (${accaTyp('sup')} fpm; ${accaMax('sup')} fpm max)${supShort?' — undersized today':''}.`) }
-  window.AFR={sp:a.spCls, ret:!!(a.tons&&a.retCap!=null&&a.retCap<a.tons-0.01), gr:grShort, sup:supShort};   /* v2.66: the duct tiles go amber off these */
-  el.className='msg '+(a.spCls==='bad'?'bad':((a.tons&&a.retCap!=null&&a.retCap<a.tons-0.01)||grShort||supShort?'warn':'')); el.innerHTML=parts.join(' ');
+  if(a.sp==null) parts.push('Enter the static you measured across the old unit — it is a fact about the old system.');
+  else { parts.push(`<b>Static ${a.sp.toFixed(2)}" w.c.</b> measured on the old system — ${a.spTxt}.`); if(a.sp>a.hi) parts.push(recoText()); }
+  const M0=airToday(); const bad=M0?M0.comps.filter(c=>!c.newMetal&&(c.cls==='bad'||c.neck)):[];
+  if(M0){ parts.push(`ACCA Manual D — the new unit on today's ducts: <b>${CFM(M0.delivered)} CFM</b> (${M0.perTon}/ton) at ${f2s(M0.esp)} at start-up.`);
+    bad.forEach(c=>parts.push(`${c.name.replace(/ \(.*$/,'')} ${strip(c.size)}: ${spotTxt(c,M0)}.`)); if(!bad.length) parts.push('No chokepoints on today\'s ducts.') }
+  window.AFR={sp:a.spCls, ret:bad.some(c=>c.slot==='ret'), gr:bad.some(c=>c.slot==='grille'), sup:bad.some(c=>c.slot==='sup'), tk:bad.some(c=>c.slot==='takeoff'), reg:bad.some(c=>c.slot==='regs')};   /* v2.66: the duct tiles go amber off these — v2.77: Manual D's chokepoints */
+  el.className='msg '+(a.spCls==='bad'?'bad':(bad.length?'warn':'')); el.innerHTML=parts.join(' ');
 }
-// verdict for the tonnage being sold: return capacity + static remediation. Same for every option at a tonnage, so it renders once as a banner and as a small pill on each card.
-function airflowVerdict(tons){ const a=airflowState(); const out={cls:'na',lines:[],pill:null,shorts:[]};
-  if(a.retCap!=null&&tons){ if(a.retCap<tons-0.01){ out.cls='warn'; out.pill='Enlarge return'; const need=retSizeFor(tons); out.shorts.push(`Return ${a.retDesc} carries ${tons1(a.retCap)} ton — enlarge to ${need?need+'"':'a larger size'} for ${tons1(tons)} ton`); out.lines.push(`<b>Return:</b> ${a.retDesc} carries ${tons1(a.retCap)} ton; selling ${tons1(tons)} ton → <b>enlarge the return to ${need?need+'" round':'a larger size'}</b> (or add a second return).`) } else out.lines.push(`<b>Return:</b> ${a.retDesc} is good for ${tons1(tons)} ton.`) }
-  if(a.sp!=null&&a.sp>a.hi){ out.cls='bad'; out.pill=out.pill?'Return + ductwork':'Ductwork'; out.shorts.unshift(`Static ${a.sp.toFixed(2)}" — over ${a.hi}": ductwork remediation recommended (see top of page)`); out.lines.unshift(`<b>Static ${a.sp.toFixed(2)}" w.c.</b> on the old system is over ${a.hi}" — ${recoText()}`) }
-  else if(a.sp!=null&&a.sp>0.5){ if(out.cls==='na') out.cls='ok'; out.lines.push(`<b>Static ${a.sp.toFixed(2)}"</b> — higher than the 0.5" design point but within limits; a little faster air and a bit more noise. Lowering it would help, no remediation required.`) }
-  else if(a.sp!=null&&out.cls==='na'&&out.lines.length) out.cls='ok';
-  return out;
-}
-function airPill(tons){ const v=airflowVerdict(tons); return v.pill?`<span class="status warn" title="${v.shorts.join(' · ')}">${v.pill} ↑</span>`:'' }
-function airMsg(tons){ const v=airflowVerdict(tons); return v.shorts.length?`<div class="msg ${v.cls==='bad'?'bad':'warn'}">${v.shorts.join('<br>')}</div>`:'' }
-function airCompareHtml(){ const v=airflowVerdict(S.tons?tonNum(S.tons):null); const a=airflowState(); const lines=[...v.lines]; if(a.cfm&&a.sp!=null) lines.push(`Old system at ${a.sp.toFixed(2)}": ≈ ${a.cfm.toLocaleString()} CFM on a typical ${MOTOR_NAME[a.motor]} blower (${Math.round(400*a.factor)} CFM/ton).`); return lines.length?`<div class="msg ${v.cls==='bad'?'bad':(v.cls==='warn'?'warn':'')}" style="margin-top:10px"><b>Airflow.</b> ${lines.join(' ')}</div>`:'' }
-function airSummaryLines(){ const strip=s=>String(s).replace(/<[^>]+>/g,''); const v=airflowVerdict(S.tons?tonNum(S.tons):null); const a=airflowState(); const L=[]; if(a.sp!=null) L.push(`Static: ${a.sp.toFixed(2)}" w.c. — ${strip(a.spTxt)}${a.cfm?` · est. ${a.cfm} CFM on a ${tons1(a.tons)}-ton ${MOTOR_NAME[a.motor]} (${Math.round(400*a.factor)} CFM/ton)`:''}`); v.lines.forEach(l=>L.push(strip(l))); return L }
-function renderAirBanner(){ const el=$('#airBanner'); if(!el) return; const v=airflowVerdict(S.tons?tonNum(S.tons):null); if(!v.lines.length){ el.classList.add('hidden'); el.innerHTML=''; return }
-  el.classList.remove('hidden'); el.innerHTML=`<div class="banner ${v.cls==='na'?'ok':v.cls}" style="font-weight:500">${v.lines.join('<br>')}</div>`; }
+function airSummaryLines(){ const a=airflowState(); const L=[]; if(a.sp!=null) L.push(`Static measured on the old system: ${a.sp.toFixed(2)}" w.c. — ${String(a.spTxt).replace(/<[^>]+>/g,'')}`); return L }
+
 
 // ============================================================ v2.4 attic airflow model: chokepoints, operating point, insulation, comfort score
 // A "component" is one place the air squeezes through: return grille(s) → return duct → roof jack (return drop) → transition/elbow return opening → UNIT → transition supply opening → jack (supply drop) → supply trunk.
-// max CFM through a component = area × cap (velocity caps in ⚙︎). Red = max below the design CFM (tons × 400), orange = within 15% of it.
+// v2.77: each component is graded on Manual D Table 3-1 velocity at the design airflow (gradeComps) and read at the operating point (spotAt) — never as a CFM cap.
 const parseWH=t=>{ const m=String(t||'').match(/(\d+(?:\.\d+)?)\s*[x×*]\s*(\d+(?:\.\d+)?)/i); return m?{w:parseFloat(m[1]),h:parseFloat(m[2])}:null };
 const sqinTxt=a=>`${Math.round(a)} sq in`;
 function ductSpec(round,rect,n){ n=Math.max(1,parseInt(n)||1); if(round){ return {kind:'round',d:round,n,area:roundArea(round)*n,size:`${n>1?n+' × ':''}Ø${fmt(round)}"`} } const r=parseWH(rect); if(r){ return {kind:'rect',w:r.w,h:r.h,n,area:r.w*r.h*n,size:`${n>1?n+' × ':''}${fmt(r.w)}×${fmt(r.h)}`} } return null }
@@ -3662,8 +3634,18 @@ function opFilt(fix,grNew){ const f=fix===undefined?S.fix:fix; if(f&&!f.__noScop
 function opDamp(fix){ const f=fix===undefined?S.fix:fix; if(!f||f.__noScope) return false; if(f.damper==='on'||f.damper==='off') return f.damper==='on'; return (newDuctSystem()||addList(f,'addSup').length>0)?dampersKnob():false }
 const FILT_SHORT={p1:'1″ MERV 8',p1_11:'1″ MERV 11',g3:'3″ top hat',m4:'4″ media',none:'No filter',auto:'Auto'};
 // the label a spot carries on the 3D: the velocity at the predicted CFM, over its Table 3-1 maximum or not, and the static it takes (the physics, never a cap)
-function opSpotTag(c,Q,sp,Qd){ const v=Math.round(Q/(c.area/144)); const dp=sp&&sp[c.slot]!=null?sp[c.slot]:null; const over=c.vmax&&v>c.vmax+0.5, overD=!over&&c.vmax&&c.vel>c.vmax+0.5&&Qd>Q;
-  return ` · ${v} fpm${over?` · over its ${c.vmax}`:''}${dp!=null&&dp>=0.005?` · ${dp.toFixed(2)}″`:''}${overD?` · over its ${c.vmax} at ${CFM(Qd)} CFM`:''}` }
+function opSpotTag(c,Q,sp,Qd){ const v=Math.round(Q/(c.area/144)); const dp=sp&&sp[c.slot]!=null?sp[c.slot]:null; const over=c.vmax&&v>c.vmax+0.5, overD=!over&&!c.mdShort&&c.vmax&&c.vel>c.vmax+0.5&&Qd>Q;
+  return ` · ${v} fpm${over?` · over its ${c.vmax}`:''}${dp!=null&&dp>=0.005?` · ${dp.toFixed(2)}″`:''}${c.mdShort?` · Manual D ${c.mdSize}`:''}${overD?` · over its ${c.vmax} at ${CFM(Qd)} CFM`:''}` }
+// v2.77 — ONE LOGIC (Stephen 2026-10-05: "one logic, and thats manual d from ACCA"). A spot reads at the Manual D operating point: the speed the air
+// really moves through it and the static it takes there, against Manual D's Table 3-1 maximum velocity. A Table 3-1 maximum is a velocity limit that
+// flags a chokepoint and sizes its fix — it is never a CFM on the screen, in an export or in the score.
+function spotAt(c,M){ const P=M&&M.pt; if(!c||!P||!(c.area>0)) return null; const v=Math.round(P.Q/(c.area/144)); const dp=P.spots&&P.spots[c.slot]!=null?P.spots[c.slot]:null;
+  const vm=c.vmax||null; const over=!!(vm&&v>vm+0.5); const md=!!c.mdShort; const overD=!over&&!md&&!!(vm&&c.vel>vm+0.5); return {v,dp,vm,over,overD,md,mdSize:c.mdSize||null,Qd:M.design,pct:vm?Math.round(v/vm*100):null} }
+function spotTxt(c,M,short){ const s=spotAt(c,M); if(!s) return '—'; const dp=s.dp!=null&&s.dp>=0.005?` · ${s.dp.toFixed(2)}″`:'';
+  return `${s.v.toLocaleString()} fpm${dp}${s.over?` — over Manual D's ${s.vm}`:''}${s.md?` — smaller than the ${s.mdSize} Manual D sizes for this unit`:(s.overD?` — over Manual D's ${s.vm} at the ${CFM(s.Qd)} CFM design`:(short||!s.vm||s.over?'':` — Manual D max ${s.vm}`))}` }
+function mdSizeTxt(slot,md){ const s=md&&md.sizes; if(!s) return ''; if(slot==='ret') return rdTxt(s.ret); if(slot==='sup') return rdTxt(s.sup); if(slot==='takeoff') return `${s.br.nRuns} × Ø${s.br.d}"`; return '' }
+// an added run's share of the operating point — a parallel path shares the air as D^2.642 (the Manual D duct equation in Q / G)
+function addRunAt(M,kind,a){ const P=M&&M.pt; if(!P||!a||!(a.d>0)) return null; const cs=M.comps||[]; const c=kind==='r'?cs.find(x=>x.slot==='ret'):(cs.find(x=>x.slot==='takeoff')||cs.find(x=>x.slot==='sup')); const G=c?opG(c.mdSpec||c.spec):null; if(!G||!(G.g>0)) return null; return Math.round(P.Q*Math.pow(a.d,2.642)/G.g) }
 function holdParts(){ const o=curOpt(); if(!o) return null; return {sys:S.sys,tons:S.tons,star:S.star,cfg:isPkg()?null:supNew(),coil:o.coil||null,furn:o.furn||null,ahu:o.ahu||null,reg:regFor(S.fix),filt:filtPick(S.fix),damper:dampersOn(S.fix)} }
 function holdTake(){ if(holdOf(S.fix)) return; const p=holdParts(); if(p) S.fix.hold=p }
 function holdTidy(){ const h=holdOf(S.fix); if(!h){ if(S.fix&&S.fix.hold) delete S.fix.hold; return } const p=holdParts(); if(!p) return;
@@ -3714,7 +3696,7 @@ function opSystem(o,M,ov){ ov=ov||{}; const md=M&&M.md; if(!md) return null; con
   const holeAt=Q=>holes.reduce((s,c)=>{ const fa=c.feed&&c.feed.area>0?c.feed.area:c.area; return s+Math.max(0,opVp(Q/(c.area/144))-opVp(Q/(fa/144))) },0);
   const f=Q=>{ const it={coil:coilAt(Q),filter:filtAt(Q),regs:regAt(Q),gr:grAt(Q),damper:damperAt(Q),sup:supAt(Q),ret:retAt(Q),holes:holeAt(Q)};
     let t=0; for(const k in it){ it[k]=Math.max(0,it[k]||0); t+=it[k] }
-    const spots={grille:it.gr+(filtInGr?it.filter:0),ret:it.ret,sup:netAt?it.sup:Math.max(0,supTr(Q)),takeoff:netAt?0:Math.max(0,supBr(Q)),regs:it.regs};   /* v2.76: what each spot takes at Q — the 3D labels */
+    const spots={grille:it.gr+(filtInGr?it.filter:0),ret:it.ret,sup:netAt?it.sup:Math.max(0,supTr(Q)),takeoff:netAt?0:Math.max(0,supBr(Q)),regs:it.regs}; holes.forEach(c=>{ const fa=c.feed&&c.feed.area>0?c.feed.area:c.area; spots[c.slot]=Math.max(0,opVp(Q/(c.area/144))-opVp(Q/(fa/144))) });   /* v2.77: each roof-line hole its own drop */   /* v2.76: what each spot takes at Q — the 3D labels */
     return {total:t,items:it,spots} };
   f.fk=fk; f.fkey=fkey; f.fsrc=fo.src; f.regK=regK; f.damp=damp; f.net=!!N; f.filtOn=filtOn; return f }
 // THE POINT: the blower's tap against the system curve (the held tap while the ducts are held and the blower is the same one)
@@ -3853,16 +3835,24 @@ function mdWorksheetHtml(M){ const md=M&&M.md; if(!md) return ''; const f2=v=>v.
 function mdWorksheetTxt(M){ const md=M&&M.md; if(!md) return ''; const s=md.sizes; const g=grTxt(s.grille,'x');
   return `MANUAL D WORKSHEET: ESP ${md.espD.toFixed(2)} · ${md.vs?'setting':'tap'} ${md.tap} ${CFM(md.Qd)} CFM (${md.perTonD}/ton) · DPD filter ${md.dpd.filter.toFixed(2)} (${md.dpd.filterName}) + coil ${md.dpd.coil.toFixed(2)} + register ${md.dpd.reg.toFixed(2)} (${REG_FACE[md.reg||'stamped'].short}) + grille ${md.dpd.gr.toFixed(2)} + damper ${md.dpd.damper.toFixed(2)} = ${md.dpd.total.toFixed(2)} · ASP ${Math.max(0,md.asp).toFixed(2)} · TEL supply ${md.tel.sup.total} (${md.tel.sup.duct} ft duct + ${md.tel.sup.fit} ft EL fittings) + return ${md.tel.ret.total} (${md.tel.ret.duct} duct + ${md.tel.ret.fit} EL) = ${md.tel.total} ft (EL = equivalent length of a fitting, not its size) · FR ${md.fr.toFixed(3)} (${md.frFlag==='ok'?'inside 0.06–0.18':md.frFlag}) · SIZES: grille ${g}, return ${rdTxt(s.ret,'"')} ${md.mat.ret}, ${(md.dn&&RM&&RM.net)?'supply '+dnWsTxt(RM.net):`supply trunk ${rdTxt(s.sup,'"')} ${md.mat.sup}, ${s.br.nRuns} x ${s.br.d}" ${md.mat.br} branches (${s.br.q} CFM each)`}${s.regs?`, ${s.regs.n} x ${s.regs.w}x${s.regs.h} ${REG_FACE[s.regs.face].short} register faces (${s.regs.vel} fpm through the free area)`:''}${md.notes.length?' · NOTES: '+md.notes.join(' / '):''}` }
 const mdTons=q=>{ const t=Math.round(q/400*10)/10; return Number.isInteger(t)?String(t):t.toFixed(1) };
-// ============================================================ the airflow model — what the ductwork PASSES, graded per Table 3-1
-// The unit only gets about what the tightest chokepoint passes (Stephen's rule): the manufacturer's table says what the blower would move,
-// the Table 3-1 maximum velocity of the tightest open spot says what the duct will take. Chokepoints are the only thing between the two —
-// fix one and the CFM rises to the next; fix them all and the unit moves what its table says. Nothing else is scored (Stephen 2026-09-13).
+// ============================================================ the airflow model — ONE LOGIC: ACCA Manual D (v2.77)
+// Stephen 2026-10-05: "we do a manual J on the house to determine the needed BTUs, then we do a manual S, to determine what equipment can work, then we
+// enter whats in the home now … then from that and the unit choice, we see how the airflow is effected … and we see the score, and cfm, max due to choke
+// points. then as we solve the choke points, the cfm increases to whatever the manual D calculates with that blower and that ductwork setup." The CFM is the
+// Manual D operating point (opPoint) — the selected unit's blower table against the system as drawn, every chokepoint's drop at the speed the air really
+// moves. The score grades that CFM and nothing else. Table 3-1 flags the chokepoints and sizes their fixes; it never caps, holds or replaces the CFM.
 const TODAY={__noScope:1}; // v2.12: "today" is the system as it sits — no proposed fixes and no install scope. Pass this, never a bare {}, for the before-picture.
 function flowModel(o,fix){ fix=fix||{}; const tons=S.tons?tonNum(S.tons):null; if(!tons||!o) return null;
   const a=airflowState(); const motor=newMotorType(o);
   const comps0=buildComps(o,fix); const md=manualD(o,{tons,comps:comps0,fix});
   const design= md?md.Qd:Math.round(tons*cptAim()); const needs=Math.round(tons*cptFloor()); const aim=Math.round(tons*cptAim());
   const comps=gradeComps(comps0,design,needs);
+  // v2.77 — A DUCT SMALLER THAN MANUAL D'S SIZE IS A CHOKEPOINT (Stephen 2026-10-05: "if a supply or return, or frankly any part of a duct system is too small,
+  // thats chokes the system in real life … if i enter ductwork thats too small, the 3d should show bad chokepoints, the static is higher, and the cfm lower").
+  // Manual D sizes every duct by the friction rate and holds it inside Table 3-1; Table 3-1 alone is only half of it — a Ø14" return can sit under 700 fpm and
+  // still be smaller than the Ø16" Manual D gives this unit. Ducts (return · supply · take-offs) are graded against Manual D's own size; a face (grille ·
+  // registers) against Manual D's face limit; a roof-line hole against the duct through it (the neck).
+  if(md) comps.forEach(c=>{ if(c.newMetal||!/^(ret|sup|takeoff)$/.test(c.slot)) return; const need=mdAreaFor(c.slot,{md,comps}); if(need&&c.area<need-0.5){ c.mdShort=true; c.mdNeed=Math.round(need); c.mdSize=mdSizeTxt(c.slot,md); c.cls='bad' } });
   const scoredC=comps.filter(c=>!c.newMetal); // v2.25: new metal built for this unit is never the neck
   const removed= fix.__noScope?0:buildComps(o,TODAY).filter(c=>!c.newMetal&&!comps.some(d=>d.slot===c.slot)).length;
   // what the blower brings to the duct: on TODAY with a reading, the new unit's table at the static you measured (clamped to the table); otherwise the table at the limit
@@ -3874,9 +3864,8 @@ function flowModel(o,fix){ fix=fix||{}; const tons=S.tons?tonNum(S.tons):null; i
   // the registers, the grille, the dampers, the roof holes and every duct at its own size, on the Manual D duct equation). TODAY is the new unit on today's ducts.
   // The Table 3-1 velocity check still flags the chokepoints — they are what puts the static up — but it no longer caps the CFM (that was the second model).
   const pt=md?opPoint(o,{md,tons,fix,comps}):null;
-  const delivered= pt?pt.Q:(function(){ const d0=choke?Math.min(Qb,choke.effMax):Qb; return necked.length?Math.min(d0,...necked.map(c=>c.effMax)):d0 })();   /* no blower table → no start-up point */
-  const esp= pt?pt.esp:null; const line= Math.max(spLimit(), md&&md.over?md.espP:0);   /* the static the score holds the system to: the ⚙︎ line (0.70″), or the floor this equipment sets on its own */
-  const Qline= (pt&&esp>line+0.0005)?opQAt(pt,line):delivered;   /* the air the system as drawn moves at that line — over it, the rest is bought with static the blower should not be pushing */
+  if(!pt) return null;   /* v2.77 — ONE LOGIC: no blower table, no Manual D, no airflow number (every unit the lineup offers has one — 2,520 checked) */
+  const delivered=pt.Q; const esp=pt.esp; const line=Math.max(spLimit(), md.over?md.espP:0);   /* the static line — the gauge's amber / red, never a second CFM */
   // v2.42 — THE BLOWER'S CEILING IS A PASS (Stephen 2026-09-20): when the most the unit's blower can push on any tap is under the
   // 390/ton floor and the ductwork passes every bit of it, the design has done all it can — that is a green pass and full airflow
   // points, not a red "under the floor". The floor the ducts are held to is therefore the smaller of the unit's need and its blower.
@@ -3885,15 +3874,14 @@ function flowModel(o,fix){ fix=fix||{}; const tons=S.tons?tonNum(S.tons):null; i
   // the two sides: the rule of thumb is the return flowing a little slower than the supply
   const sideCap=kk=>{ const cs=scoredC.filter(c=>c.side===kk); return cs.length?Math.min(...cs.map(c=>c.effMax)):null };
   const bal={ret:sideCap('r'),sup:sideCap('s')}; bal.ratio=(bal.ret!=null&&bal.sup)?bal.ret/bal.sup:null;
+  bal.rPct=bal.ret?Math.round(delivered/bal.ret*100):null; bal.sPct=bal.sup?Math.round(delivered/bal.sup*100):null;   /* v2.77: each side's tightest spot as a share of its Manual D max velocity at the operating point — the words; the ratio is the same check */
   const rm=comps.find(c=>c.slot==='ret'), sm=comps.find(c=>c.slot==='sup'); bal.vRet=rm?rm.vel:null; bal.vSup=sm?sm.vel:null; bal.slower=(bal.vRet!=null&&bal.vSup!=null)?bal.vRet<=bal.vSup+1e-9:null;
   bal.cls= bal.ratio==null?'':(bal.ratio>=1?'ok':((bal.slower&&bal.ratio>=0.85)?'ok':(bal.ratio>=0.9?'warn':'bad')));
   const ins=insulState(fix);
-  // the GRADE: the air the system delivers while it stays inside Manual D's limits — the start-up CFM, held to what it moves at the static line and to what every
-  // spot passes at its Table 3-1 maximum velocity (a spot over it is a chokepoint: noise, a loaded filter — Manual D sizes it out). The CFM SHOWN is always the start-up point.
-  const Qs=Math.min(delivered,Qline,choke?choke.effMax:Infinity,...necked.map(c=>c.effMax));
-  const score=comfortScore({tons,design,needs,need2,delivered:Qs,comps,ins,removed}); score.esp=esp; score.line=line; score.Qline=Qline; score.Qs=Qs;   /* v2.75 */
+  // v2.77 — the score grades the ONE Manual D CFM. (v2.75 held it to the tightest spot's Table 3-1 max and the 0.70" line — a second model; gone.)
+  const score=comfortScore({tons,design,needs,need2,delivered,esp,line,comps,ins,removed}); score.esp=esp; score.line=line;
   const sameBlower= a.sp!=null && a.motor===motor; const sameTon= a.tons!=null && Math.abs(a.tons-tons)<=0.5;
-  return {tons,design,needs,need2,blowerCap,blowerBound,aim,nomQ:tons*400,motor,comps,choke,chokes,necked,bal,op:{Q:delivered,basis:pt?'start-up':basis},pt,esp,line,Qline,Qs,Qb,basis,sameBlower,sameTon,delivered,perTon:Math.round(delivered/tons),ratio:delivered/design,ratioNeed:delivered/need2,ins,score,sp:a.sp,fix,md,pred:!!md};
+  return {tons,design,needs,need2,blowerCap,blowerBound,aim,nomQ:tons*400,motor,comps,choke,chokes,necked,bal,op:{Q:delivered,basis:'start-up'},pt,esp,line,Qb,basis,sameBlower,sameTon,delivered,perTon:Math.round(delivered/tons),ratio:delivered/design,ratioNeed:delivered/need2,ins,score,sp:a.sp,fix,md,pred:!!md};
 }
 // the airflow verdict class for a model: green when the ducts deliver the floor — or everything the blower can push
 function airCls(M){ if(!M) return ''; if(M.blowerBound) return 'ok'; return cptCls(M.perTon) }
@@ -3913,17 +3901,21 @@ function gradeComps(comps,design,needs){
   return comps;
 }
 // ============================================================ v2.28 · COMFORT SCORE v5 — "airflow is all that matters" (Stephen 2026-09-13)
+// v2.77 (Stephen 2026-10-05, ONE LOGIC — his pick "CFM + static"): both numbers come off the one Manual D operating point. A strong blower forces air through
+// chokepoints — the CFM holds up and the static climbs — so the airflow points also fall by (line ÷ static)² when the start-up static is over the line (⚙︎ Accept
+// up to, 0.70″ — or the floor this equipment sets on its own when even Manual D's ducts cannot get under it).
 // The air-conditioning side is one number: the CFM per ton the ductwork lets the unit deliver, against the 390/ton floor — full at the floor
 // and above (450 is the aim, not a scoring line), falling with the square below it (pressure goes with the square of the flow). Every
 // chokepoint fixed raises the CFM; nothing else is scored. Caps at 85; the attic is the last 15 and never touches the airflow.
 function comfortScore(m){
   const cpt=m.delivered/Math.max(m.tons,0.5); const need=(m.need2!=null?m.need2:m.needs)/Math.max(m.tons,0.5); // v2.42: the floor, or the blower's own ceiling when that is lower
-  const ac=85*Math.pow(clamp(cpt/Math.max(need,1),0,1),2);
+  const sf=(m.esp!=null&&m.line>0&&m.esp>m.line)?m.line/m.esp:1;   /* v2.77: the static off the same point — over the line, the blower is forcing it */
+  const ac=85*Math.pow(clamp(cpt/Math.max(need,1),0,1)*sf,2);
   const R=m.ins.Rf; const ins= R==null?7.5:15*clamp(R/R_MIN,0,1);
   const scored=m.comps.filter(c=>!c.newMetal); const removed=m.removed||0;
   const unfixed=m.comps.filter(c=>!c.newMetal&&(c.cls==='bad'||c.neck)); const ductDone=!unfixed.length;
   const total=ac+ins;
-  return {total:Math.round(total),air:Math.round(ac),ins:Math.round(ins),ac:Math.round(ac),acMax:85,cap:100,caps:[],unfixed:unfixed.length,ductDone,shortButClean:ductDone&&cpt<cptFloor()-0.5,unknownIns:R==null,cpt:Math.round(cpt),
+  return {total:Math.round(total),air:Math.round(ac),ins:Math.round(ins),ac:Math.round(ac),acMax:85,cap:100,caps:[],unfixed:unfixed.length,ductDone,shortButClean:ductDone&&cpt<cptFloor()-0.5,unknownIns:R==null,cpt:Math.round(cpt),sf:Math.round(sf*1000)/1000,
     spots:scored.length+removed,clear:scored.filter(c=>c.cls==='ok'&&!c.neck).length+removed,removed};
 }
 const SCORE_PARTS=[['air','Airflow',85],['ins','Insulation',15]];
@@ -3940,7 +3932,7 @@ const WHY={
   takeoff:'The branches are where the air leaves the trunk for the rooms. Not enough branch area and the trunk pressurises; the rooms at the end of the run starve first.',
   tkadd:'More branch area lets the trunk empty — pressure drops, airflow rises, and the rooms at the end of the run finally get their share.',
   reg:'The register is the last thing the air passes. A bar-type face has far more open area than a stamped one, so the same vent puts more air into the room at the same pressure — and it is quieter doing it.',
-  regs:'The register faces are the last squeeze in the line. Too small for the air a run carries and the face itself caps the room — the air speeds up through the slots, the vent whistles, and no duct fix upstream can get past it. Bigger faces, or faces with more open area, let every run deliver what the duct brings.',
+  regs:'The register faces are the last squeeze in the line. Too small for the air a run carries and the face is a squeeze of its own — the air speeds up through the slots, the vent whistles, and the static it adds holds the whole system back. Bigger faces, or faces with more open area, take that static out.',
   addsup:'One more supply run is the cheapest way to take static out when the ductwork cannot all be replaced. It is a second way out of the plenum: the trunk and the branches that stay carry less, the pressure drops, the airflow climbs — and the room it feeds gets air of its own.',
   addret:'A second return with its own filter grille lets the unit breathe from two places. The air is pulled through twice the filter face at half the speed, the return side runs at a lower static and the blower delivers more CFM — without tearing out the return that is there.',
   insul:'Insulation is not airflow — it is the load. Under R-38 the ceiling pours heat into the rooms all afternoon, so even a perfect system runs longer to hold the temperature.',
@@ -3954,7 +3946,7 @@ const WHY={
   default:'Air moves in series — every squeeze point adds backpressure the blower has to fight. Opening this one lowers the static and lets more air through everywhere.'};
 function whyFor(k){ return WHY[k]||(k&&k.indexOf('scope:')===0?WHY['scope:ducts']:WHY.default) }
 function scoreCls(t){ return t>=80?'ok':(t>=60?'warn':'bad') }
-// v2.28 — NO STATIC IS PREDICTED. The reading on the old unit is a fact about today's ducts and is shown as such; the design is Manual D at
+// v2.28 (superseded v2.73–v2.77: the static and the CFM ARE predicted — the Manual D operating point, one logic). The reading on the old unit is a fact; the design is Manual D at
 // a stated design point, and what is quoted is the CFM (per ton) off the manufacturer's table at the limit.
 function staticMeasTxt(M){ return (M&&M.sp!=null)?M.sp.toFixed(2)+'"':'—' } // the reading taken on the OLD system — a fact about today's ducts, shown on Today only
 function cptCls(pt){ return pt>=cptFloor()?'ok':(pt>=cptFloor()*0.9?'warn':'bad') } // CFM per ton against the floor
@@ -4094,7 +4086,7 @@ function rbrRegSummary(){ if(!(S.rbrNew&&RM&&S.rooms&&S.rooms.length)) return nu
   if(RM.keepN) b.push(`${RM.keepN} existing kept in place`); if(RM.barN) b.push(`${RM.barN} existing swapped to bar type (same cutout)`); if(RM.enlN) b.push(`${RM.enlN} enlarged`); if(RM.newN) b.push(`${RM.newN} new square (${REG_FACE[regNew()].short})`);
   if(RM.bootN) b.push(`${RM.bootN} new boot${RM.bootN>1?'s':''}`); return b.join(' · ') }
 function equipExtraHtml(o,M){ return equipMsRow(o)+equipExtraHtml0(o,M) }   /* v2.70: the Manual S row first */
-function equipExtraHtml0(o,M){ const reg=REG_FACE[regNew()]; const rb=M&&M.comps&&M.comps.find(c=>c.slot==='regs'); const rs=rbrRegSummary(); if(rs&&rb&&rb.rbr) return `<tr><td>Registers</td><td><b>Room by room</b> — ${rs}${rb?` (the faces pass ${CFM(rb.maxAbs)} CFM)`:''}</td></tr>`+((o&&o.upsize)?equipUpsizeRow(o):''); let h=`<tr><td>Registers</td><td><b>${S.fix.regs&&rb?rb.spec.size+' ':''}${reg.name}</b>${regNew()!==regOld()?` — replacing the ${REG_FACE[regOld()].short} registers there today`:(S.fix.regs?' — new faces sized to the runs':' — the faces there today stay')}${rb&&(S.fix.regs||regNew()!==regOld())?` (they pass ${CFM(rb.maxAbs)} CFM)`:''}</td></tr>`; // v2.45: the faces ride along
+function equipExtraHtml0(o,M){ const reg=REG_FACE[regNew()]; const rb=M&&M.comps&&M.comps.find(c=>c.slot==='regs'); const rs=rbrRegSummary(); if(rs&&rb&&rb.rbr) return `<tr><td>Registers</td><td><b>Room by room</b> — ${rs}${rb?` (the faces: ${spotTxt(rb,M,true)} at start-up)`:''}</td></tr>`+((o&&o.upsize)?equipUpsizeRow(o):''); let h=`<tr><td>Registers</td><td><b>${S.fix.regs&&rb?rb.spec.size+' ':''}${reg.name}</b>${regNew()!==regOld()?` — replacing the ${REG_FACE[regOld()].short} registers there today`:(S.fix.regs?' — new faces sized to the runs':' — the faces there today stay')}${rb&&(S.fix.regs||regNew()!==regOld())?` (${spotTxt(rb,M,true)} at start-up)`:''}</td></tr>`; // v2.45: the faces ride along
   const u=o&&o.upsize; if(u) h+=equipUpsizeRow(o);
   return h }
 function equipUpsizeRow(o){ const u=o.upsize; return `<tr><td>Indoor picked</td><td><b>${u.toTxt}</b> (${u.cabTo}) in place of the guide's default ${u.fromTxt} (${u.cabFrom}): <b>${u.m1.perTonD!=null?u.m1.perTonD:'—'} CFM per ton</b> across the coil${u.m1.espD!=null?' at '+u.m1.espD.toFixed(2)+'"':''} instead of ${u.m0.perTonD!=null?u.m0.perTonD:'—'}. ${UPSIZE_WHY}</td></tr>` }
@@ -5184,8 +5176,8 @@ function wireViewer(V){ const c=V.cv; let dr=null, pn=null, raf=0, st=0; if(c.da
 function buildScene(){
   scene=[]; sceneFloor=z=>0; sceneLines=null; if(!vwSecondary) syncMoveUi(); const GHOST='#9aa6b2', FURN='#3678A0', HATCH='#ffd166', SPACE='#77B2D0', METAL='#d9e2ec';
   if(isPkg()){ const row=rowsFor()[S.star]; if(!row) return draw(); const o=pick(S.star,row); const n=pkgDims(o.unit), old=oldPkg(); const j=judgePkg(o.unit); const A=j.A||alignState(o); const pos=A.pos;
-    const AM=flowModel(o,S.fix); const comp=slot=>AM?AM.comps.find(c=>c.slot===slot):null; const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null; const SPT=(AM&&AM.pt&&AM.pt.sys)?AM.pt.sys(AM.pt.Q).spots:null, QPT=AM&&AM.pt?AM.pt.Q:null; const tkTag=c=>` · ${c.spec.n} runs · ${CFM(Math.round((QPT||AM.design)/Math.max(1,c.spec.n)))} CFM each${SPT&&SPT.takeoff>=0.005?` · ${SPT.takeoff.toFixed(2)}″`:''}`; // v2.33 — never a capacity sum on a set of branches
-    const flowTag=c=>c?(c.newMetal?' · sized to the unit':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?tkTag(c):(QPT?opSpotTag(c,QPT,SPT,AM.design):` · max ${CFM(c.max)} CFM`))):'';   /* v2.76: the physics at the spot, not a cap */ // v2.4 airflow colouring
+    const AM=flowModel(o,S.fix); const comp=slot=>AM?AM.comps.find(c=>c.slot===slot):null; const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null; const SPT=(AM&&AM.pt&&AM.pt.sys)?AM.pt.sys(AM.pt.Q).spots:null, QPT=AM&&AM.pt?AM.pt.Q:null; const tkTag=c=>` · ${c.spec.n} runs · ${CFM(Math.round((QPT||AM.design)/Math.max(1,c.spec.n)))} CFM each${SPT&&SPT.takeoff>=0.005?` · ${SPT.takeoff.toFixed(2)}″`:''}${c.mdShort?` · Manual D ${c.mdSize}`:''}`; // v2.33 — never a capacity sum on a set of branches
+    const flowTag=c=>c?(c.newMetal?' · sized to the unit':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?tkTag(c):(QPT?opSpotTag(c,QPT,SPT,AM.design):''))):'';   /* v2.76: the physics at the spot, not a cap */ // v2.4 airflow colouring
     const deck=A.stand.h||0; const isCurb=A.curb, pitched=isPitched(); const st=A.stand;
     // roof frame: the roof, jack, metal and the old unit stay where they were measured; the stand (and the new unit riding on it) is drawn at its relocated spot
     const so=standShift(), dk=deck+so.y; const exR=(A.ex||[]).map(op=>Object.assign({},op,{x:op.x+so.x,z:op.z+so.y})); const moved=!!(so.x||so.y);
@@ -5372,7 +5364,7 @@ function buildScene(){
               la:[0.5,side>0?1:0,0.5],label: it.down?`Ø${fmt(d)}" down to floor ${it.down} (${RM&&RM.down?CFM((RM.down.find(x=>x.fl+1===it.down)||{}).cfm||0):''} CFM)`:i===0?(rbrTk?`Take-offs — ${(RM&&RM.vents)||tk.length} runs, room by room (new)`:`Take-offs ${cT.size}${flowTag(cT)}`):(nw&&!it.rbr?`+ added ${it.d?'Ø'+fmt(it.d)+'"':fmt(it.w)+'×'+fmt(it.h)} (new — off the trunk)`:null)}),'z',side,'s') }) }   // v2.46: the duct down is a take-off, not a run to a register
         if(!tk.length) [0.25,0.55,0.85].forEach((f,i)=>{ const bx=xa+len*f; const side=i%2?1:-1; fl(sceneAdd({x:bx-3,y:yT+scs.b/2-3,z:side>0?zc+scs.a/2:zc-scs.a/2-16,dx:6,dy:6,dz:16,cyl:'z',color:METAL,alpha:.5,noshadow:true}),'z',side,'s') }); } }
       // what the unit wants vs what it gets
-      scene.push({marker:true,nofit:true,x:px+n.l+6,y:py+n.h*0.75,z:pz+n.w+4,dx:0,dy:0,dz:0,stat:true,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:AM.blowerBound?`blower max ${CFM(AM.Qb)} CFM · gets all of it${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
+      scene.push({marker:true,nofit:true,x:px+n.l+6,y:py+n.h*0.75,z:pz+n.w+4,dx:0,dy:0,dz:0,stat:true,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:AM.blowerBound?`gets ${CFM(AM.delivered)} CFM — all this blower can push${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
     }
     return draw(); }
   const row=rowsFor()[S.star]; if(!row) return draw(); const o=pick(S.star,row); const ev=evaluate(o); const env=ev.env, old=oldEnv(); const sp=spaceVals(); const h=isHoriz();
@@ -5406,7 +5398,7 @@ function buildScene(){
       const comp=s=>AM.comps.find(c=>c.slot===s); const flowCol=c=>c?(c.cls==='bad'?'#CD1E1F':(c.cls==='warn'?'#e07b12':null)):null;
       const NEWM='#a9d9bd', METAL='#d9e2ec'; const isNew=c=>!!(c&&(c.fixed||c.newMetal));
       const SPT=AM.pt&&AM.pt.sys?AM.pt.sys(AM.pt.Q).spots:null, QPT=AM.pt?AM.pt.Q:null;   /* v2.76: the physics at the spot, not a cap */
-      const tag=c=>!c?'':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?` · ${c.spec.n} runs · ${CFM(Math.round((QPT||AM.design)/Math.max(1,c.spec.n)))} CFM each${SPT&&SPT.takeoff>=0.005?` · ${SPT.takeoff.toFixed(2)}″`:''}`:(QPT?opSpotTag(c,QPT,SPT,AM.design):` · max ${CFM(c.effMax!=null?c.effMax:c.max)} CFM`));
+      const tag=c=>!c?'':(c.slot==='takeoff'&&c.spec&&c.spec.n>1?` · ${c.spec.n} runs · ${CFM(Math.round((QPT||AM.design)/Math.max(1,c.spec.n)))} CFM each${SPT&&SPT.takeoff>=0.005?` · ${SPT.takeoff.toFixed(2)}″`:''}${c.mdShort?` · Manual D ${c.mdSize}`:''}`:(QPT?opSpotTag(c,QPT,SPT,AM.design):''));
       const isRet=c=>!!(c&&c.side==='r'); const tone=(c,nw)=>flowCol(c)||(isRet(c)?(nw?RET_NEW:RET_OLD):(nw?NEWM:METAL)); // v2.56: the return side violet, new or existing
       const put=(x,y,z,dx,dy,dz,c,label,cyl,la)=>sceneAdd({x,y,z,dx,dy,dz,cyl:cyl||undefined,color:tone(c,isNew(c)),alpha:flowCol(c)?.85:(isNew(c)?.82:.6),noshadow:true,cls:c?c.cls:'',nw:isNew(c),la:la||[0.5,1,0.5],label:label||null});
       const bendDuct=(C,u,v,cs,R,c)=>pushBend(C,u,v,{a:cs.a,h:cs.b,round:!!cs.round},R,tone(c,isNew(c)),flowCol(c)?.85:(isNew(c)?.82:.6),{cls:c?c.cls:'',nw:isNew(c)}); // v2.44 a radiused elbow in the duct's own colour
@@ -5581,7 +5573,7 @@ function buildScene(){
           if(yTop-yBot>1) fl(sceneAdd({x:xc-D/2,y:yBot,z:zd-D/2,dx:D,dy:yTop-yBot,dz:D,cyl:'y',color:RET_NEW,alpha:.82,noshadow:true,cls:'ok',nw:true}),'y',dn?1:-1,'r');
           flV(sceneAdd({x:xc-g[0]/2,y:gy2-1.4,z:zd-g[1]/2,dx:g[0],dy:1.2,dz:g[1],color:RET_NEW,alpha:.95,noshadow:true,cls:'ok',nw:true,la:[0.5,0,0.5],label:`+ added grille ${g[0]}×${g[1]} + filter (new)`}),'in',[0,-1,0],'r','') }) } }
       if(deferRuns){ try{ deferRuns() }catch(e){ try{ console.error('Fit Check: supply runs',e) }catch(_){} } }   // v2.58: the new duct system, laid now the return is in place
-      scene.push({marker:true,nofit:true,x:Lx+8,y:Hy*0.8,z:zc+Wz/2+6,dx:0,dy:0,dz:0,stat:true,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:AM.blowerBound?`blower max ${CFM(AM.Qb)} CFM · gets all of it${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
+      scene.push({marker:true,nofit:true,x:Lx+8,y:Hy*0.8,z:zc+Wz/2+6,dx:0,dy:0,dz:0,stat:true,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:AM.blowerBound?`gets ${CFM(AM.delivered)} CFM — all this blower can push${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
     } }
   draw();
 }
@@ -5612,9 +5604,6 @@ function addRunFrom(kind){ const r=kind==='r'; if(isPkg()&&S.setup!=='separate'&
   return isPkg()?(r?'the return drop':'the supply drop'):(r?'the return plenum':'the supply plenum') } // Stephen 2026-09-25: with new plenums the added duct runs from the new plenum
 function addRetGrille(d){ const L=[[14,14],[20,20],[20,30],[20,40],[20,50]]; const need=2*roundArea(d); return (L.find(([w,h])=>w*h>=need-0.5)||L[L.length-1]).slice() } // the face at 300 fpm carries what its duct does at 600
 function addRunFace(d){ const L=[[8,7],[9,8],[10,9],[12,11],[14,13]]; return (L.find(([s,nk])=>nk>=d)||L[L.length-1])[0] } // the Goettl square face that takes the run's neck (REG_SQ)
-function addRunCfm(kind,a){ const ar=roundArea(a.d)/144;
-  if(kind==='r'){ const g=(a.g&&a.g[0]>0)?a.g:addRetGrille(a.d); return Math.round(Math.min(ar*tab31('ret',compMat('ret'))[1], g[0]*g[1]/144*MD_FACE_MAX)) }
-  const s=addRunFace(a.d); return Math.round(Math.min(ar*tab31('sup',compMat('sup'))[1], ar*tab31('takeoff',compMat('takeoff'))[1], s*s*REG_FACE[regFor(S.fix)].free/144*MD_TAB31.face.sup)) }
 function addRunSize(o,kind){ const key=kind==='r'?'addRet':'addSup', list=kind==='r'?ADD_RET_D:ADD_SUP_D, slots=kind==='r'?['grille','ret']:['sup','takeoff','regs'];
   const had=Object.prototype.hasOwnProperty.call(S.fix,key), cur=(S.fix[key]||[]).slice(); let pick=null;
   const clear=M=>!!M&&M.comps.filter(c=>slots.includes(c.slot)&&!c.newMetal&&!c.rbr).every(c=>c.cls==='ok');
@@ -5690,22 +5679,22 @@ function proposedChanges(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); 
   const inst=S.fix.install||'reuse'; if(inst==='curb'){ const pr=c1('penR'), ps=c1('penS'); L.push({k:'install',txt:'New curb install design — cut two enlarged roof holes, set the curb, reattach the existing supply and return in the attic',undo:()=>{S.fix.install='reuse'}}); L.push({k:'plenums',txt:`New plenums through the roof to the attic, sized to the unit${pr&&ps?` (return ${pr.size.replace(' (unit opening)','')} · supply ${ps.size.replace(' (unit opening)','')})`:''} — roof penetrations score perfect`,undo:()=>{S.fix.install='reuse'}}) }
   else if(inst==='curb_old') L.push({k:'install',txt:'New curb install design — set the curb over the existing roof penetrations and reuse the existing supply and return drops',undo:()=>{S.fix.install='reuse'}});
   { const add=takeoffSpec(tkAddVal()); if(add&&!S.fix.takeoff){ const b=M.comps.find(c=>c.slot==='takeoff');
-      L.push({k:'tkadd',txt:`Add supply take-offs: <b>${add.size}</b> on top of what is there${b?` — branches now carry ${CFM(b.max)} CFM`:''}`,undo:()=>{ set('new_tk_add','') }}) } }
-  [['grille','Filter grille'],['ret','Return duct'],['sup',isPkg()?'Supply duct':'Supply plenum / trunk'],['takeoff','Supply take-offs'],['penR','Roof penetration — return'],['penS','Roof penetration — supply'],['elbR',(isCurbSetup()?'Curb':'Elbow')+' opening — return'],['elbS',(isCurbSetup()?'Curb':'Elbow')+' opening — supply']].forEach(([sl,nm])=>{ if(!S.fix[sl]) return; if(inst==='curb'&&/^(pen|elb)/.test(sl)) return; /* new plenums replace the penetrations AND the elbow / curb openings */ if(inst!=='reuse'&&/^elb/.test(sl)) return; /* v2.25: any curb removes the elbow */ const a=c0(sl), b=c1(sl); if(sl==='takeoff'&&b&&M.md){ const br=M.md.sizes.br; const per=Math.round(M.design/Math.max(1,(b.spec&&b.spec.n)||br.nRuns)); const vel=Math.round(per/(roundArea(br.d)/144)); const aVel=a?Math.round(M.design/Math.max(1,(a.spec&&a.spec.n)||1)/((a.area/Math.max(1,(a.spec&&a.spec.n)||1))/144)):null; L.push({k:sl,txt:`${nm}: ${a?a.size+(aVel?` (${CFM(Math.round(M.design/((a.spec&&a.spec.n)||1)))} CFM per run at ${aVel.toLocaleString()} fpm)`:''):'none'} → <b>${b.size}</b> — <b>${CFM(per)} CFM per run</b> at ${vel.toLocaleString()} fpm${(()=>{ const ra=c0('regs'), rb=c1('regs'); return (rb&&!S.fix.regs&&rb.est&&(!ra||ra.spec.size!==rb.spec.size))?` · new <b>${rb.spec.size}</b> cans and ${REG_FACE[rb.face].short} registers to take the bigger necks`:'' })()} <span class="note" style="text-transform:none;letter-spacing:0">— together they carry the ${CFM(M.design)} the unit puts out</span>`,undo:()=>{delete S.fix[sl]}}); return }
+      L.push({k:'tkadd',txt:`Add supply take-offs: <b>${add.size}</b> on top of what is there${b?` — the branches run ${spotTxt(b,M,true)} at start-up`:''}`,undo:()=>{ set('new_tk_add','') }}) } }
+  [['grille','Filter grille'],['ret','Return duct'],['sup',isPkg()?'Supply duct':'Supply plenum / trunk'],['takeoff','Supply take-offs'],['penR','Roof penetration — return'],['penS','Roof penetration — supply'],['elbR',(isCurbSetup()?'Curb':'Elbow')+' opening — return'],['elbS',(isCurbSetup()?'Curb':'Elbow')+' opening — supply']].forEach(([sl,nm])=>{ if(!S.fix[sl]) return; if(inst==='curb'&&/^(pen|elb)/.test(sl)) return; /* new plenums replace the penetrations AND the elbow / curb openings */ if(inst!=='reuse'&&/^elb/.test(sl)) return; /* v2.25: any curb removes the elbow */ const a=c0(sl), b=c1(sl); if(sl==='takeoff'&&b&&M.md){ const br=M.md.sizes.br; const per=Math.round(M.delivered/Math.max(1,(b.spec&&b.spec.n)||br.nRuns)); const vel=Math.round(per/(roundArea(br.d)/144)); const aVel=a?Math.round(M0.delivered/Math.max(1,(a.spec&&a.spec.n)||1)/((a.area/Math.max(1,(a.spec&&a.spec.n)||1))/144)):null;   /* v2.77: the start-up air, each side its own */ L.push({k:sl,txt:`${nm}: ${a?a.size+(aVel?` (${CFM(Math.round(M0.delivered/((a.spec&&a.spec.n)||1)))} CFM per run at ${aVel.toLocaleString()} fpm)`:''):'none'} → <b>${b.size}</b> — <b>${CFM(per)} CFM per run</b> at ${vel.toLocaleString()} fpm${(()=>{ const ra=c0('regs'), rb=c1('regs'); return (rb&&!S.fix.regs&&rb.est&&(!ra||ra.spec.size!==rb.spec.size))?` · new <b>${rb.spec.size}</b> cans and ${REG_FACE[rb.face].short} registers to take the bigger necks`:'' })()} <span class="note" style="text-transform:none;letter-spacing:0">— together they carry the ${CFM(M.delivered)} CFM the unit moves at start-up</span>`,undo:()=>{delete S.fix[sl]}}); return }
     if(sl==='grille'&&b&&M.md&&M.md.sizes.grille&&M.md.sizes.grille.kept&&M.md.sizes.grille.add){ const ad=M.md.sizes.grille.add; // v2.32 — the grille that is there stays; a second duct and a small grille go in beside it. v2.58: only when there IS a second grille — a grille kept as it is (big enough on its own, e.g. a two-grille fix left over from a bigger tonnage) has no .add, and reading ad.w there threw, which stopped renderCompare before the design strip was drawn (Stephen 2026-09-27: the curb buttons gone, the split rows showing on a package)
-      L.push({k:sl,txt:`${nm}: keep the <b>${a?a.size:''}</b> that is there and add a second return duct with a <b>${ad.w}×${ad.h}</b> grille beside it — <b>${sqinTxt(b.area)}</b> of filter face together (max ${CFM(b.max)} CFM)`,undo:()=>{delete S.fix[sl]}}); return }
-    L.push({k:sl,txt:`${nm}: ${a?a.size+' (max '+CFM(a.max)+' CFM)':'none'} → <b>${b?b.size:''}</b> (max ${b?CFM(b.max):'—'} CFM)${b&&b.spec&&b.spec.add?(a&&a.spec&&a.spec.kind==='round'&&b.spec.d===a.spec.d&&b.spec.n===a.spec.n?' — keep the existing run and add ':(b.spec.kind==='round'&&b.spec.d===MD_MAX_D&&!b.spec.add.some(x=>x.d>MD_MAX_D)?' — 20" is the biggest round duct Goettl runs, so the rest goes in a second run beside it: ':' — main run plus '))+b.spec.add.map(x=>x.size).join(' + '):''}${b?` <span class="note" style="text-transform:none;letter-spacing:0">— one way to get ${sqinTxt(b.area)}; anything equivalent works</span>`:''}`,undo:()=>{delete S.fix[sl]}}) });
+      L.push({k:sl,txt:`${nm}: keep the <b>${a?a.size:''}</b> that is there and add a second return duct with a <b>${ad.w}×${ad.h}</b> grille beside it — <b>${sqinTxt(b.area)}</b> of filter face together (${spotTxt(b,M,true)} at start-up)`,undo:()=>{delete S.fix[sl]}}); return }
+    L.push({k:sl,txt:`${nm}: ${a?a.size+' ('+spotTxt(a,M0,true)+')':'none'} → <b>${b?b.size:''}</b> (${b?spotTxt(b,M,true):'—'})${b&&b.spec&&b.spec.add?(a&&a.spec&&a.spec.kind==='round'&&b.spec.d===a.spec.d&&b.spec.n===a.spec.n?' — keep the existing run and add ':(b.spec.kind==='round'&&b.spec.d===MD_MAX_D&&!b.spec.add.some(x=>x.d>MD_MAX_D)?' — 20" is the biggest round duct Goettl runs, so the rest goes in a second run beside it: ':' — main run plus '))+b.spec.add.map(x=>x.size).join(' + '):''}${b?` <span class="note" style="text-transform:none;letter-spacing:0">— one way to get ${sqinTxt(b.area)}; anything equivalent works</span>`:''}`,undo:()=>{delete S.fix[sl]}}) });
   // v2.45 — new register FACES (sized up): one line that names the faces and the type; the face-type line below is for a swap on the faces that stay
-  if(S.fix.regs){ const a=c0('regs'), b=c1('regs'); if(b){ const per=b.spec&&b.spec.n?CFM(Math.round(b.maxAbs/b.spec.n)):null;
-    L.push({k:'regs',txt:`Supply registers: ${a?a.size.replace(/ \(assumed.*\)$/,'')+' (the faces pass '+CFM(a.maxAbs)+' CFM)':'none'} → <b>${b.size}</b> (${CFM(b.maxAbs)} CFM${per?`, ${per} per face`:''}) <span class="note" style="text-transform:none;letter-spacing:0">— Goettl square faces, one per run, ${MD_REG_REC} fpm through the free area</span>`,undo:()=>{ delete S.fix.regs }}) } }
+  if(S.fix.regs){ const a=c0('regs'), b=c1('regs'); if(b){ const per=b.spec&&b.spec.n?CFM(Math.round(M.delivered/b.spec.n)):null;
+    L.push({k:'regs',txt:`Supply registers: ${a?a.size.replace(/ \(assumed.*\)$/,'')+' ('+spotTxt(a,M0,true)+')':'none'} → <b>${b.size}</b> (${spotTxt(b,M,true)}${per?`, ${per} CFM per face`:''}) <span class="note" style="text-transform:none;letter-spacing:0">— Goettl square faces, one per run, ${MD_REG_REC} fpm through the free area</span>`,undo:()=>{ delete S.fix.regs }}) } }
   // v2.47 — the added runs: one line each, with what the run carries on its own
   addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d);
-    L.push({k:'addsup',txt:`Add a supply run: one new <b>Ø${fmt(a.d)}"</b> off ${addRunFrom('s')} to its own <b>${s}×${s}</b> ${REG_FACE[regFor(S.fix)].short} register — the ducts that are there stay <span class="note" style="text-transform:none;letter-spacing:0">— up to ${CFM(addRunCfm('s',a))} CFM more supply, less static on the rest</span><div class="obal" style="margin-top:6px"><b>Not fully balanced.</b> ${addSupNote(M,true)}</div>`,undo:()=>{ S.fix.addSup=(S.fix.addSup||[]).filter(x=>x!==a); if(!S.fix.addSup.length) delete S.fix.addSup }}) });
+    L.push({k:'addsup',txt:`Add a supply run: one new <b>Ø${fmt(a.d)}"</b> off ${addRunFrom('s')} to its own <b>${s}×${s}</b> ${REG_FACE[regFor(S.fix)].short} register — the ducts that are there stay <span class="note" style="text-transform:none;letter-spacing:0">— ${(r=>r!=null?`${CFM(r)} CFM of the start-up air through it, `:'')(addRunAt(M,'s',a))}less static on the rest</span><div class="obal" style="margin-top:6px"><b>Not fully balanced.</b> ${addSupNote(M,true)}</div>`,undo:()=>{ S.fix.addSup=(S.fix.addSup||[]).filter(x=>x!==a); if(!S.fix.addSup.length) delete S.fix.addSup }}) });
   addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d);
-    L.push({k:'addret',txt:`Add a return: one new <b>Ø${fmt(a.d)}"</b> return duct with its own <b>${g[0]}×${g[1]}</b> filter grille, into ${addRunFrom('r')} — the return that is there stays <span class="note" style="text-transform:none;letter-spacing:0">— up to ${CFM(addRunCfm('r',a))} CFM more return, less static</span>`,undo:()=>{ S.fix.addRet=(S.fix.addRet||[]).filter(x=>x!==a); if(!S.fix.addRet.length) delete S.fix.addRet }}) });
+    L.push({k:'addret',txt:`Add a return: one new <b>Ø${fmt(a.d)}"</b> return duct with its own <b>${g[0]}×${g[1]}</b> filter grille, into ${addRunFrom('r')} — the return that is there stays <span class="note" style="text-transform:none;letter-spacing:0">— ${(r=>r!=null?`${CFM(r)} CFM of the start-up air through it, `:'')(addRunAt(M,'r',a))}less static</span>`,undo:()=>{ S.fix.addRet=(S.fix.addRet||[]).filter(x=>x!==a); if(!S.fix.addRet.length) delete S.fix.addRet }}) });
   if(S.fix.insul&&S.fix.insul!=='none'&&M.ins.known&&M.ins.R<M.ins.Rf) L.push({k:'insul',txt:`Top up attic insulation R-${fmt(M.ins.R)} → <b>R-${fmt(M.ins.Rf)}</b> (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`,undo:()=>{S.fix.insul='none'}});
   if(regNew()!==regOld()&&!S.fix.regs){ const a=REG_FACE[regOld()], b=REG_FACE[regNew()]; const ca=c0('regs'), cb=c1('regs'); // v2.44 — the register face is part of the design; it reads last, after the install, the metal and the insulation
-    L.push({k:'reg',txt:`Supply registers: ${a.short} → <b>${b.short}</b> (${b.name})${b.free>a.free?` — about ${Math.round((b.free/a.free-1)*100)}% more free area and ≈${Math.round((1-b.dp/a.dp)*100)}% less drop at the face: more air out of every vent`:''}${ca&&cb?` <span class="note" style="text-transform:none;letter-spacing:0">— the ${cb.spec.n} faces there pass ${CFM(ca.maxAbs)} → ${CFM(cb.maxAbs)} CFM</span>`:''}`,undo:()=>{ delete S.fix.reg; if(regNew()!==regOld()) S.fix.reg=regOld() }}) } // v2.45: undo = back to the faces as found, no override left behind
+    L.push({k:'reg',txt:`Supply registers: ${a.short} → <b>${b.short}</b> (${b.name})${b.free>a.free?` — about ${Math.round((b.free/a.free-1)*100)}% more free area and ≈${Math.round((1-b.dp/a.dp)*100)}% less drop at the face: more air out of every vent`:''}${ca&&cb?` <span class="note" style="text-transform:none;letter-spacing:0">— the ${cb.spec.n} faces there: ${spotTxt(ca,M0,true)} → ${spotTxt(cb,M,true)} at start-up</span>`:''}`,undo:()=>{ delete S.fix.reg; if(regNew()!==regOld()) S.fix.reg=regOld() }}) } // v2.45: undo = back to the faces as found, no override left behind
   return L }
 function renderAirCard(o){ const el=$('#airCard'); if(!el) return; const M=flowModel(o,S.fix); if(!M){ el.classList.add('hidden'); el.innerHTML=''; return } el.classList.remove('hidden');
   // v2.42 — the card is the chokepoint table and the proposed changes, nothing else (Stephen 2026-09-20: the per-piece notes, the red static
@@ -5718,13 +5707,13 @@ function renderAirCard(o){ const el=$('#airCard'); if(!el) return; const M=flowM
     <div class="dim ${airCls(M)}"><div class="lbl">Airflow</div><div class="val">${arrow(M0.delivered,M.delivered,CFM)}</div><div class="sub"><b>${M.perTon} CFM/ton</b>${M.esp!=null?` at ${anyFix&&M0.esp!=null&&Math.abs(M0.esp-M.esp)>=0.005?f2s(M0.esp)+' → ':''}<b class="${espCls(M.esp)}">${f2s(M.esp)}</b>`:''}${M.blowerBound?' — all this blower can push':` · works at ${cptFloor()}–${cptAim()}`}</div></div>
     <div class="dim ${M.chokes.length?'bad':'ok'}"><div class="lbl">Chokepoints</div><div class="val">${arrow(M0.chokes.length,M.chokes.length,v=>String(v))}</div><div class="sub">${M.chokes.length?M.chokes.map(c=>c.name.replace(/ \(.*$/,'').replace(/^Roof penetration — /,'roof hole — ')).join(' · '):'every spot passes'}</div></div>
     <div class="dim ${ins.known?(ins.Rf<19?'bad':(ins.Rf<R_MIN?'warn':'ok')):''}"><div class="lbl">Attic insulation</div><div class="val">${ins.known?arrow(ins.R,ins.Rf,v=>'R-'+fmt(v)):'—'}</div><div class="sub">${ins.known?`min R-${R_MIN}`:'enter depth on step 1'}</div></div></div>`;
-  // one compact row per squeeze point: what it is · size · what it passes · verdict · Fix ▸
+  // one compact row per squeeze point: what it is · size · the speed and the drop at the operating point (v2.77) · verdict · Fix ▸
   const row=c=>{ const act=(c.cls!=='ok'&&!c.newMetal)?`<button class="btn sm" data-autofix="${c.slot}">Fix ▸</button>`:'';
     const per=(c.slot==='takeoff'&&c.spec&&c.spec.n>1);
-    return `<tr class="${c.cls}"><td><b>${c.name.replace(/ \(off the (plenum|trunk)\)/,'')}</b>${c.fixed?' <span class="est" style="color:var(--ok)">proposed</span>':''}${c.newMetal?' <span class="est" style="color:var(--ok)">new</span>':''}${c.neck?`<br><span class="note" style="color:var(--bad);font-weight:700">smaller than the ${c.feed.size} duct through it</span>`:''}</td><td>${c.size.replace(' (same as the duct)','').replace(' (unit opening)','')}${per?`<br><span class="note">${CFM(Math.round(M.design/c.spec.n))} CFM per run</span>`:''}</td><td class="num">${c.newMetal?'—':(per?`${CFM(Math.round(c.maxAbs/c.spec.n))} per run<br><span class="note">${c.spec.n} runs carry ${CFM(M.design)} together — the air the unit puts out</span>`:(c.slot==='regs'&&c.spec&&c.spec.n>1?`${CFM(c.maxAbs)}<br><span class="note">${CFM(Math.round(c.maxAbs/c.spec.n))} per face · ${Math.round(c.free*100)}% free area</span>`:CFM(c.maxAbs)))}</td><td><span class="status ${c.cls}">${c.newMetal?'sized to the unit':statusTxt(c,M)}</span></td><td>${act}</td></tr>` };
+    return `<tr class="${c.cls}"><td><b>${c.name.replace(/ \(off the (plenum|trunk)\)/,'')}</b>${c.fixed?' <span class="est" style="color:var(--ok)">proposed</span>':''}${c.newMetal?' <span class="est" style="color:var(--ok)">new</span>':''}${c.neck?`<br><span class="note" style="color:var(--bad);font-weight:700">smaller than the ${c.feed.size} duct through it</span>`:''}</td><td>${c.size.replace(' (same as the duct)','').replace(' (unit opening)','')}${per?`<br><span class="note">${CFM(Math.round(M.delivered/c.spec.n))} CFM per run</span>`:''}</td><td class="num">${c.newMetal?'—':(()=>{ const s=spotAt(c,M); if(!s) return '—'; return `${s.v.toLocaleString()} fpm${s.dp!=null&&s.dp>=0.005?` · ${s.dp.toFixed(2)}″`:''}<br><span class="note">${s.md?`Manual D: ${s.mdSize}`:`Manual D max ${s.vm}`}${s.overD?` · over it at the ${CFM(s.Qd)} CFM design`:''}${c.slot==='regs'?` · ${Math.round(c.free*100)}% free area`:''}</span>` })()}</td><td><span class="status ${c.cls}">${c.newMetal?'sized to the unit':statusTxt(c,M)}</span></td><td>${act}</td></tr>` };
   const rowsR=M.comps.filter(c=>c.side==='r'), rowsS=M.comps.filter(c=>c.side==='s');
   const side=lbl=>`<tr class="side"><td colspan="5"><b>${lbl}</b></td></tr>`;
-  const table=`<div style="overflow-x:auto;margin-top:10px"><table class="airtbl compact" style="width:100%;border-collapse:collapse"><thead><tr style="color:var(--muted);text-align:left"><th>Where the air squeezes</th><th>Size</th><th class="num">Max (CFM)</th><th></th><th></th></tr></thead><tbody>${(rowsR.length?side('Return side'):'')+rowsR.map(row).join('')+(rowsS.length?side('Supply side'):'')+rowsS.map(row).join('')}</tbody></table></div>`;
+  const table=`<div style="overflow-x:auto;margin-top:10px"><table class="airtbl compact" style="width:100%;border-collapse:collapse"><thead><tr style="color:var(--muted);text-align:left"><th>Where the air squeezes</th><th>Size</th><th class="num">At start-up</th><th></th><th></th></tr></thead><tbody>${(rowsR.length?side('Return side'):'')+rowsR.map(row).join('')+(rowsS.length?side('Supply side'):'')+rowsS.map(row).join('')}</tbody></table></div>`;
   const changes=proposedChanges(o); const necks=M.comps.filter(c=>c.neck);
   const checklist=`<div class="chk"><div class="row" style="justify-content:space-between;align-items:center"><h3 style="margin:0">Proposed changes → score <b style="color:${sc.total>=80?'var(--ok)':(sc.total>=60?'#a35300':'var(--bad)')}">${sc.total}</b></h3><span class="note">airflow ${CFM(M0.delivered)} → <b>${CFM(M.delivered)} CFM</b> (${M.perTon}/ton${M.esp!=null?' at '+f2s(M.esp):''})</span></div>
     ${changes.length?`<ol class="chklist">${changes.map((c,i)=>`<li><span class="tick">✓</span><span>${c.txt.replace(/ <span class="note"[^>]*>[^]*?<\/span>/g,'')}</span><button class="x" data-undo="${i}" title="remove">✕</button></li>`).join('')}</ol>`:'<p class="note" style="margin:6px 0 0">Nothing proposed yet — <b>Fix ▸</b> on a red row, or <b>Design to 100</b> under the 3D.</p>'}
@@ -5814,8 +5803,8 @@ function stepEffects(o){ // walk the steps backwards, undoing one item at a time
   const raw=proposedChanges(o);
   // v2.24 story order = build order: the install method, then the holes at the roof line (so a duct never gets opened into a hole
   // that is still small — that transient neck used to show a step LOSING airflow), then grille → return → supply → branches, insulation last.
-  // v2.28 — the story is the CFM, so the steps run TIGHTEST CHOKEPOINT FIRST (what today's system passes at that spot, Table 3-1): each
-  // step frees the air the previous one exposed. Ties go inside out (elbow hole → roof hole → duct) so a duct never opens into a hole
+  // v2.28 — the story is the CFM, so the steps run TIGHTEST CHOKEPOINT FIRST (v2.77: the spot furthest over its Manual D velocity limit on
+  // today's ducts — area × max velocity ascending is the same order): each step frees the air the previous one exposed. Ties go inside out (elbow hole → roof hole → duct) so a duct never opens into a hole
   // still too small for it. The install method leads, insulation closes.
   const M0=flowModel(o,TODAY); const cap1=k=>{ const c=M0&&M0.comps.find(x=>x.slot===k); return c?c.effMax:1e9 }; const cap=k=>k==='addsup'?Math.min(cap1('sup'),cap1('takeoff'),cap1('regs')):(k==='addret'?Math.min(cap1('grille'),cap1('ret')):cap1(k)); // v2.47: an added run sits with the tightest spot it bypasses
   const RANK={install:0,plenums:0,elbR:2,elbS:2,penR:3,penS:3,grille:4,ret:5,addret:5.5,sup:6,addsup:6.5,takeoff:7,tkadd:7,regs:8,reg:8,insul:9}; const rk=i=>RANK[i.k]!=null?RANK[i.k]:(String(i.k).indexOf('scope:')===0?1:8);
@@ -5895,8 +5884,8 @@ function installSteps(o,M){ const md=M&&M.md; if(!md) return []; const S_=[]; co
   S_.push({h:'Filter',t:`${fl.filterName.replace(/ — the lowest drop$/,'')}${fl.filterK==='m4'||gKept?'':` · grille ${grTxt(md.sizes.grille)}`}${(P?P.items.filter:fl.filter)>0?` — ${f2s(P?P.items.filter:fl.filter)} at ${CFM(P?P.Q:md.Qd)} CFM${gKept&&fl.filterK!=='m4'?` through the ${grTxt(md.sizes.grille)} grille the design is sized with`:''}`:''}.`});
   { const rc=(M.comps||[]).find(c=>c.slot==='ret'), gc=(M.comps||[]).find(c=>c.slot==='grille'); const rNew=!rc||rc.fixed||rc.newMetal, gNew=!gc||gc.fixed||gc.newMetal;   /* v2.72 re-cut: the crew installs the plan — a kept return / grille is kept */
     const Q=md.over?md.Qp:md.Qd; const rTxt=rNew?`${rdTxt(md.sizes.ret)} ${md.mat.ret} return${md.sizes.ret.capped?' (20″ max — the second run beside it)':''} into ${isPkg()?'the unit':'the return plenum'}`
-      :`Keep the ${strip(rc.size)} return${rc.effMax&&rc.effMax<Q-0.5?` — over its Table 3-1 max (${CFM(rc.effMax)} CFM) at the ${CFM(Q)} CFM Manual D design point; the design calls for ${rdTxt(md.sizes.ret)} (Enlarge return on the Plan)`:''}`;
-    const gTxt=gNew?`${grTxt(md.sizes.grille)} filter grille`:`keep the ${strip(gc.size)} filter grille${gc.effMax&&gc.effMax<Q-0.5?` — over its Table 3-1 max (${CFM(gc.effMax)} CFM); the design calls for ${grTxt(md.sizes.grille)}`:''}`;
+      :`Keep the ${strip(rc.size)} return${(rc.cls==='bad'||rc.neck)?` — ${spotTxt(rc,M)}; the design calls for ${rdTxt(md.sizes.ret)} (Enlarge return on the Plan)`:''}`;
+    const gTxt=gNew?`${grTxt(md.sizes.grille)} filter grille`:`keep the ${strip(gc.size)} filter grille${(gc.cls==='bad'||gc.neck)?` — ${spotTxt(gc,M)}; the design calls for ${grTxt(md.sizes.grille)}`:''}`;
     S_.push({h:'Return',t:`${rTxt}; ${gTxt}.`}) }
   const N=(S.rbrNew&&RM&&RM.net)?RM.net:null;
   if(N){ const roots=N.edges.filter(e=>e.root); const coll=roots.map(e=>e.d+'″').join(' · '); const tys=Object.values(N.nodes).filter(n=>n.t==='ty').map(n=>'TY '+n.name.replace(/x/g,'×'));
@@ -5926,7 +5915,7 @@ function exportPdf(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M)
   const unit=o.unit||[o.furn,o.coil,o.ahu].filter(Boolean).join(' + '); const sg=v=>v>0?'+'+v:String(v);
   const tile=(l,a,b,cls)=>`<div class="pt ${cls||''}"><div class="pl">${l}</div><div class="pv">${a} <span class="arrow">→</span> <b>${b}</b></div></div>`;
   const rows=steps.map((s_,i)=>`<tr><td class="num">${i+1}</td><td><div class="pc">${s_.txt.replace(/ — one way to get.*$/,'')}</div><div class="pw">${whyFor(s_.k)}</div></td><td class="num">${CFM(s_.cfm)}<small>${s_.dCfm>0?` +${s_.dCfm}`:''}</small></td><td class="num">${Math.round(s_.cfm/M.tons)}</td><td class="num">${s_.R!=null?'R-'+fmt(s_.R):'—'}</td><td class="num"><b>${s_.score}</b><small>${s_.dScore>0?` +${s_.dScore}`:''}</small></td></tr>`).join('');
-  const c0=sl=>M0.comps.find(c=>c.slot===sl); const compRows=M.comps.map(c=>{ const a=c0(c.slot); const pill=(x,mm)=>x?`<span class="pill ${x.cls}">${statusTxt(x,mm||M)}</span>`:'—'; return `<tr><td>${c.name.replace(/^New plenum — (\w+).*/,'Roof penetration — $1 (new plenum)')}</td><td>${a?a.size:'—'}</td><td class="num">${a?CFM(a.maxAbs):'—'}</td><td>${pill(a,M0)}</td><td>${c.size}</td><td class="num">${CFM(c.maxAbs)}</td><td>${pill(c,M)}</td></tr>` }).join('');
+  const c0=sl=>M0.comps.find(c=>c.slot===sl); const compRows=M.comps.map(c=>{ const a=c0(c.slot); const pill=(x,mm)=>x?`<span class="pill ${x.cls}">${statusTxt(x,mm||M)}</span>`:'—'; return `<tr><td>${c.name.replace(/^New plenum — (\w+).*/,'Roof penetration — $1 (new plenum)')}</td><td>${a?a.size:'—'}</td><td class="num">${a?spotTxt(a,M0,true):'—'}</td><td>${pill(a,M0)}</td><td>${c.size}</td><td class="num">${spotTxt(c,M,true)}</td><td>${pill(c,M)}</td></tr>` }).join('');
   const html=`<div class="ph"><div><div class="pbrand">Goettl Air Conditioning &amp; Plumbing · Las Vegas</div><h1>Recommended Design</h1><div class="psub">${sys} · ${unit} · ${tons1(M.tons)} ton · needs ${CFM(M.needs)} CFM${(()=>{ const ap=planApproved(); return ap&&ap.same?' · approved option: '+tpEsc(planName(ap.p)):'' })()}</div></div><div class="pdate">${new Date().toLocaleDateString()}<br><span>Customer: ______________________</span></div></div>
     <div class="pscore"><div class="ps ${scoreCls(M0.score.total)}"><div class="pl">New AC on today's ducts</div><div class="big">${M0.score.total}</div><div class="pl2">${M0.chokes.length} chokepoint${M0.chokes.length===1?'':'s'}</div></div><div class="parrow">→</div><div class="ps ${scoreCls(M.score.total)}"><div class="pl">Goettl design</div><div class="big">${M.score.total}</div><div class="pl2">${M.chokes.length} chokepoint${M.chokes.length===1?'':'s'}</div></div>
       <div class="ptiles">${tile('Airflow',CFM(M0.delivered)+' CFM',CFM(M.delivered)+' CFM',airCls(M))}${tile('CFM per ton',M0.perTon,M.perTon+` <small>(works at ${cptFloor()}–${cptAim()})</small>`,airCls(M))}${M.esp!=null&&M0.esp!=null?tile('Static',f2s(M0.esp),f2s(M.esp),espCls(M.esp)):''}${M.ins.known?tile('Attic insulation','R-'+fmt(M.ins.R),'R-'+fmt(M.ins.Rf)):''}${tile('Chokepoints',M0.chokes.length,M.chokes.length)}</div></div>
@@ -5935,18 +5924,18 @@ function exportPdf(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); if(!M)
     <div class="pshots"><div><div class="pcap">Today — where it chokes</div>${shotBefore?`<img src="${shotBefore}">`:''}</div><div><div class="pcap">Proposed — as built</div>${shotAfter?`<img src="${shotAfter}">`:''}</div></div>
     ${mdReportHtml(o,M,{h:'h2'})}
     <h2>The equipment</h2>
-    <table class="ptbl"><tbody><tr><td>System</td><td><b>${sys}</b></td></tr><tr><td>Model${unit.indexOf('+')>0?'s':''}</td><td><b>${unit}</b></td></tr><tr><td>Size</td><td><b>${tons1(M.tons)} ton</b>${M.md?` — <b>${CFM(M.md.Qp)} CFM</b> ${M.md.over?`at ${M.md.espP.toFixed(2)}" (${M.md.perTonP} CFM per ton) — over the ${spLimit().toFixed(2)}" line, the lowest static it reaches`:`at the ${M.md.espP.toFixed(2)}" design static (${M.md.perTonP} CFM per ton)`}`:''}</td></tr>${equipExtraHtml(o,M)}</tbody></table>
+    <table class="ptbl"><tbody><tr><td>System</td><td><b>${sys}</b></td></tr><tr><td>Model${unit.indexOf('+')>0?'s':''}</td><td><b>${unit}</b></td></tr><tr><td>Size</td><td><b>${tons1(M.tons)} ton</b>${M.md?` — <b>${CFM(M.delivered)} CFM</b> at start-up (${M.perTon} CFM per ton at ${f2s(M.esp)}) · Manual D design point ${CFM(M.md.Qd)} CFM at ${f2s(M.md.espD)}`:''}</td></tr>${equipExtraHtml(o,M)}</tbody></table>
     <h2>Why each fix matters — and what it does</h2>
-    <p class="pnote">Air moves in series: every squeeze point caps the airflow at what it passes at the size it is. Each fix opens that spot to its Manual D size and lets more air through, and the comfort score climbs with it. The airflow quoted is the manufacturer's blower table read at the design static the ducts are sized for (the ${spGoal().toFixed(2)}" aim, stepped up to ${spLimit().toFixed(2)}" at most).</p>
+    <p class="pnote">Air moves in series: every squeeze point adds static at the speed the air moves through it, and the blower moves what its table gives at that static — the ACCA Manual D operating point. Each fix opens that spot to its Manual D size, the static falls and more air moves, and the comfort score climbs with it. The airflow quoted is the manufacturer's blower table read at the design static the ducts are sized for (the ${spGoal().toFixed(2)}" aim, stepped up to ${spLimit().toFixed(2)}" at most).</p>
     <table class="ptbl pstep"><thead><tr><th class="num">#</th><th>Change — and why it matters</th><th class="num">Airflow after</th><th class="num">CFM / ton</th><th class="num">Attic</th><th class="num">Score</th></tr></thead><tbody>
       <tr class="base"><td></td><td><i>New ${sys.toLowerCase()} on the ductwork as it is</i></td><td class="num">${CFM(M0.delivered)}</td><td class="num">${M0.perTon}</td><td class="num">${M0.ins.known?'R-'+fmt(M0.ins.R):'—'}</td><td class="num"><b>${M0.score.total}</b></td></tr>${rows}
       <tr class="total"><td></td><td><b>Goettl design</b></td><td class="num"><b>${CFM(M.delivered)}</b> — floor ${CFM(M.needs)}</td><td class="num"><b>${M.perTon}</b></td><td class="num"><b>${M.ins.known?'R-'+fmt(M.ins.Rf):'—'}</b></td><td class="num"><b>${M.score.total}</b> / 100</td></tr></tbody></table>
     <div class="ptwo"><div><h2>Install scope</h2><div class="pscope">${isPkg()?[['reuse','Keep the existing stand / elbow / jack setup'],['curb_old','Redesign to a curb — reuse the existing drops'],['curb','Redesign to a curb — new plenum drops']].map(([k,l])=>`<div>${(S.fix.install||'reuse')===k?'☑':'☐'} ${l}</div>`).join(''):''}${scopeState().items.map(i=>`<div class="${i.na?'na':''}">${i.on?'☑':'☐'} ${i.l}${i.auto?' <small>(automatic — penetration enlarged)</small>':''}${i.air&&i.on?' <small>(sized to the unit)</small>':''}</div>`).join('')}</div></div>
-    <div><h2>Comfort score</h2><div class="pscore2">${SCORE_PARTS.map(([k,l,mx])=>`<div><span>${l}</span><i><b style="width:${Math.round(M.score[k]/mx*100)}%"></b></i><span class="num">${M0.score[k]} → <b>${M.score[k]}</b> / ${mx}</span></div>`).join('')}</div><p class="pnote">Airflow: the CFM per ton the ductwork lets the unit deliver, against the ${cptFloor()}/ton floor — every chokepoint opened lifts it; the air conditioning side caps at 85. Insulation: the attic against R-38, the last 15. 100 means both are met.</p></div></div>
+    <div><h2>Comfort score</h2><div class="pscore2">${SCORE_PARTS.map(([k,l,mx])=>`<div><span>${l}</span><i><b style="width:${Math.round(M.score[k]/mx*100)}%"></b></i><span class="num">${M0.score[k]} → <b>${M.score[k]}</b> / ${mx}</span></div>`).join('')}</div><p class="pnote">Airflow: the CFM per ton the unit delivers at the ACCA Manual D operating point, against the ${cptFloor()}/ton floor — and the static it runs at, against the ${spLimit().toFixed(2)}″ line; every chokepoint opened lifts the one and lowers the other; the air conditioning side caps at 85. Insulation: the attic against R-38, the last 15. 100 means both are met.</p></div></div>
     <h2>Where the air chokes — today vs proposed</h2>
-    <table class="ptbl"><thead><tr><th>Component</th><th>Today</th><th class="num">Max (CFM)</th><th></th><th>Proposed</th><th class="num">Max (CFM)</th><th></th></tr></thead><tbody>${compRows}</tbody></table>
+    <table class="ptbl"><thead><tr><th>Component</th><th>Today</th><th class="num">At start-up</th><th></th><th>Proposed</th><th class="num">At start-up</th><th></th></tr></thead><tbody>${compRows}</tbody></table>
     ${M.md?`<h2>ACCA Manual D — Friction Rate Worksheet</h2>${mdWorksheetHtml(M).replace(/<details class="adv mdws"><summary>[^]*?<\/summary>/,'<div class="mdws">').replace(/<\/details>\s*$/,'</div>')}`:''}
-    <p class="pfoot">Every squeeze point is graded against <b>ACCA Manual D (3rd ed.) Table 3-1</b> velocity limits at the design airflow, recommended / maximum fpm, rigid or flexible duct: supply trunk ${MD_TAB31.sup.metal.join('/')} rigid · ${MD_TAB31.sup.flex.join('/')} flex; supply branches ${MD_TAB31.br.metal.join('/')} rigid · ${MD_TAB31.br.flex.join('/')} flex; return trunk ${MD_TAB31.ret.metal.join('/')}; filter grille face ${MD_TAB31.face.filt} fpm recommended (graded a chokepoint above ${MD_FACE_MAX}); the roof-line openings as metal. A spot over its maximum caps the airflow at what it passes. Proposed sizes follow Manual D's Friction Rate Worksheet: the manufacturer's blower table at the ${spGoal().toFixed(2)}" design static, less the device pressure drops (filter and coil from manufacturer data; register, grille and damper at Manual D's 0.03" defaults), over the total effective length of the longest supply and return paths (the actual duct runs plus Manual D Appendix 3 fitting equivalent lengths — a fitting's equivalent length is the straight duct that would cost the same pressure as its turn, not the fitting's size), gives the friction rate; each section is the smallest standard size that holds it — Manual D duct equation for galvanized, ASHRAE roughness for flex pulled tight — and stays inside Table 3-1. The airflow quoted is the same blower table read at that design static (never past ${spLimit().toFixed(2)}"). Duct runs and fittings not taped are assumed from the tonnage and marked. Final numbers are verified at start-up. Comfort score: airflow 85 (full at ${cptFloor()} CFM/ton) · insulation 15. Las Vegas minimum attic insulation R-38; 2021 IECC (Clark County) new-construction R-49.</p>`;
+    <p class="pfoot">Every squeeze point is graded against <b>ACCA Manual D (3rd ed.) Table 3-1</b> velocity limits at the design airflow, recommended / maximum fpm, rigid or flexible duct: supply trunk ${MD_TAB31.sup.metal.join('/')} rigid · ${MD_TAB31.sup.flex.join('/')} flex; supply branches ${MD_TAB31.br.metal.join('/')} rigid · ${MD_TAB31.br.flex.join('/')} flex; return trunk ${MD_TAB31.ret.metal.join('/')}; filter grille face ${MD_TAB31.face.filt} fpm recommended (graded a chokepoint above ${MD_FACE_MAX}); the roof-line openings as metal. A spot over its maximum is a chokepoint: the static it takes at the speed the air really moves is in the operating point the airflow is read at. Proposed sizes follow Manual D's Friction Rate Worksheet: the manufacturer's blower table at the ${spGoal().toFixed(2)}" design static, less the device pressure drops (filter and coil from manufacturer data; register, grille and damper at Manual D's 0.03" defaults), over the total effective length of the longest supply and return paths (the actual duct runs plus Manual D Appendix 3 fitting equivalent lengths — a fitting's equivalent length is the straight duct that would cost the same pressure as its turn, not the fitting's size), gives the friction rate; each section is the smallest standard size that holds it — Manual D duct equation for galvanized, ASHRAE roughness for flex pulled tight — and stays inside Table 3-1. The airflow quoted is the same blower table read at that design static (never past ${spLimit().toFixed(2)}"). Duct runs and fittings not taped are assumed from the tonnage and marked. Final numbers are verified at start-up. Comfort score: airflow 85 (full at ${cptFloor()} CFM/ton) · insulation 15. Las Vegas minimum attic insulation R-38; 2021 IECC (Clark County) new-construction R-49.</p>`;
   let box=$('#printReport'); if(!box){ box=document.createElement('div'); box.id='printReport'; document.body.appendChild(box) } box.innerHTML=html+rbrExportBlock(); try{ box.querySelectorAll('.ipwrap').forEach(rbrPlanZoomWire) }catch(e){}
   const done=()=>{ document.body.classList.remove('printing'); const pb=$('#printReport .pbar'); if(pb) pb.remove() };
   // v2.24: on an iPhone / iPad running Fit Check from the home screen there is no print dialog — the report opens as a full-screen
@@ -6191,7 +6180,7 @@ function renderPlanHero(o){ const el=$('#planHero'); if(!el) return;
     : nch ? `${nch} chokepoint${nch>1?'s':''} left — <b>Design to 100</b> under the 3D sizes them all.`
     : sc>=100 ? `Every spot passes — ${M.perTon} CFM/ton — attic at R-38 or better.`
     : (M.score.ac>=85 ? `Air side complete (85 of 85). The last ${100-sc} point${100-sc===1?'':'s'} ${M.ins.known?'are the attic — Fix insulation.':'need the insulation entered on step 1.'}`
-    : (M.blowerBound ? `Every spot passes — the ducts deliver all ${CFM(M.Qb)} CFM this blower can push.` : 'No chokepoints left.'));
+    : (M.blowerBound ? `Every spot passes — ${CFM(M.delivered)} CFM at start-up, all this blower can push.` : 'No chokepoints left.'));
   /* v2.68 (Stephen 2026-10-02: "the big section, saying Comfort score shrink that to one line, get rid of the additional notes, but keep the line showing % to completion") */
   el.innerHTML=`<div class="hero compact ${cls}"><div class="hrow"><div class="hk">Step 2 · The plan</div>
     <div class="hv">Comfort score ${sc0} → ${sc}</div>
@@ -6222,7 +6211,7 @@ function designDetailsHtml(o){
   addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d); add('Added supply run', `Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}×${s} register — the ducts that are there stay. ${addSupNote(M)}`) });
   addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); add('Added return', `Ø${fmt(a.d)}" return duct + ${g[0]}×${g[1]} filter grille into ${addRunFrom('r')} — the return that is there stays`) });
   if(M) [['grille'],['ret'],['sup'],['takeoff'],['regs'],['penR'],['penS']].forEach(([sl])=>{ const c=M.comps.find(x=>x.slot===sl); if(!c) return;
-    if(!(S.fix[sl]||c.newMetal||c.scopeNew||(sl==='regs'&&regNew()!==regOld()))) return; add(c.name, `${c.size} — ${sl==='regs'?'the faces pass '+CFM(c.maxAbs)+' CFM':'carries '+CFM(c.max)+' CFM'}`) });
+    if(!(S.fix[sl]||c.newMetal||c.scopeNew||(sl==='regs'&&regNew()!==regOld()))) return; add(c.name, `${c.size} — ${spotTxt(c,M)} at start-up`) });
   if(M&&M.ins&&M.ins.known&&M.ins.Rf>M.ins.R) add('Attic insulation', `top up R-${fmt(M.ins.R)} → R-${fmt(M.ins.Rf)} (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`);
   const sc=scopeState(); if(sc.lines.length) add('Crew replaces', sc.lines.join(' · '));
   return L.length?`<h2>Build details</h2><div class="kv" id="planDetails">${L.join('')}</div>`:'';
@@ -6238,12 +6227,14 @@ function issuePairs(o){
     const inst=(S.fix&&S.fix.install)||'reuse'; const replaced=sl=>(inst==='curb'&&/^(pen|elb)/.test(sl))||(inst!=='reuse'&&/^elb/.test(sl)); // v2.25: a spot the curb redesign removes outright is answered, not "not addressed"
     M0.comps.forEach(a=>{ if(a.cls==='ok'&&!a.neck) return; const b=c1(a.slot); const gone=!b&&replaced(a.slot); const ok=gone||!!(b&&b.cls==='ok'&&!b.neck);
       /* v2.68: plain words — a presentation to a client */
+      const s0=spotAt(a,M0), s1=b?spotAt(b,M):null;   /* v2.77: the speed of the air, at each side's own operating point — never a capacity */
       const why = a.neck ? `Smaller than the ${a.feed?a.feed.size:'duct'} through it — the air has to squeeze through.`
-        : (a.cls==='bad' ? `Sized for ${CFM(a.max)} CFM. This unit needs ${CFM(M0.needs)}.`
-                         : `Sized for the ${CFM(M0.needs)} CFM floor, not the ${CFM(M0.design)} we design to.`);
+        : (s0&&s0.over ? `The air hits ${s0.v.toLocaleString()} fpm here — Manual D allows ${s0.vm}.`
+          : (a.mdShort ? `Smaller than the ${a.mdSize} Manual D sizes for this unit.`
+                       : `At its ${CFM(M0.design)} CFM design it would hit ${(a.vel||0).toLocaleString()} fpm — Manual D allows ${a.vmax}.`));
       push(a.name, a.size, why, ok, b?b.size:(gone?'Removed':'—'),
         ok ? (gone?(/^elb/.test(a.slot)?'The new curb takes the elbow out.':'Replaced by a new plenum sized to the unit.')
-                 :(b.newMetal?(/^pen/.test(a.slot)?'New plenum sized to the unit\'s own opening.':'New metal sized to this unit.'):`Opened up — sized for ${CFM(b.max)} CFM.`))
+                 :(b.newMetal?(/^pen/.test(a.slot)?'New plenum sized to the unit\'s own opening.':'New metal sized to this unit.'):(s1?`Opened up — ${s1.v.toLocaleString()} fpm, inside Manual D's ${s1.vm}.`:'Opened up.')))
            : 'Not fixed yet — <b>Fix ▸</b> or <b>Fix to 100</b> on the Plan tab.',
         (a.cls==='warn'&&!a.neck)?'warn':'bad', a.slot) });
     if(M0.ins.known&&M0.ins.R<R_MIN){ const done=M.ins.Rf>=R_MIN;
@@ -6251,12 +6242,15 @@ function issuePairs(o){
         done,'R-'+fmt(M.ins.Rf), done?`Topped up — about ${Math.round(M.ins.gain*100)}% less heat through the ceiling.`:'Not in the design yet — the Attic tiles on the Plan tab.','warn','insul') }
     if(M0.perTon<cptFloor()&&!M0.blowerBound){ const bl=!!M.blowerBound; const done=M.perTon>=cptFloor()||bl; // v2.42: everything the blower can push, delivered, is a pass
       push('Airflow per ton',`${M0.perTon} CFM/ton`,`Under the ${cptFloor()}/ton floor — the coil is starved and the far rooms never get their air.`,
-        done,`${M.perTon} CFM/ton`, done?(bl?`Every spot passes — all ${CFM(M.Qb)} CFM this blower can push.`:`Inside the ${cptFloor()}–${cptAim()} band — every spot opened to its size.`):'Still under the floor.',M0.perTon<cptFloor()*0.9?'bad':'warn') }
+        done,`${M.perTon} CFM/ton`, done?(bl?`Every spot passes — ${CFM(M.delivered)} CFM at start-up, all this blower can push.`:`Inside the ${cptFloor()}–${cptAim()} band — every spot opened to its size.`):'Still under the floor.',M0.perTon<cptFloor()*0.9?'bad':'warn') }
+    if(M0.esp!=null&&M0.esp>M0.line+0.005){ const done=M.esp!=null&&M.esp<=M.line+0.005;   /* v2.77: the static off the same Manual D point (Stephen: CFM + static) */
+      push('Static at start-up',f2s(M0.esp),`Over the ${f2s(M0.line)} line — the blower forces the air through: louder, harder on the motor.`,
+        done,M.esp!=null?f2s(M.esp):'—', done?`Inside the ${f2s(M.line)} line.`:'Still over the line.', M0.esp>M0.line*1.15?'bad':'warn','static') }
     if(M0.bal&&M0.bal.ratio!=null&&M0.bal.ratio<1&&M0.bal.cls!=='ok'){ const leads=!!(M.bal&&(M.bal.ratio>=1||M.bal.cls==='ok')); const both=!!(M.bal&&M.bal.ret>=M.needs&&M.bal.sup>=M.needs); const done=leads||both; // v2.27: a return side at a lower static than the supply is the return flowing slower — answered // v2.24: both sides carrying what the unit needs answers it — the rule of thumb is a preference, not a chokepoint
-      push('Supply vs return',`${CFM(M0.bal.ret)} return / ${CFM(M0.bal.sup)} supply`,
+      push('Supply vs return',`return ${M0.bal.rPct}% · supply ${M0.bal.sPct}% of Manual D's max velocity`,
         'More supply than return — the unit cannot give out what it cannot pull in.',
-        done, M.bal?`${CFM(M.bal.ret)} return / ${CFM(M.bal.sup)} supply`:'—',
-        leads?'The return now leads the supply.':(both?`Both sides carry more than the ${CFM(M.needs)} CFM the unit needs.`:'Still supply-heavy — open the return first.'),'warn') }
+        done, M.bal?`return ${M.bal.rPct}% · supply ${M.bal.sPct}% of Manual D's max velocity`:'—',
+        leads?'The return now leads the supply.':(both?`Both sides inside Manual D's velocity limits at the ${CFM(M.needs)} CFM floor.`:'Still supply-heavy — open the return first.'),'warn') }
   }
   if(S.tkEndOld==='bad'&&!(!isPkg()&&supOld()==='plenum_coil'))
     push('Supply take-off placement','Branches run to the very end of the plenum',
@@ -6370,8 +6364,9 @@ function planRows(E){ const rows=S.plans.filter(p=>E[p.id]).sort((a,b)=>E[b.id].
 // v2.48 — TWO MORE SCORES on every option (Stephen 2026-09-25): SYSTEM AIRFLOW — the air the system gets against what it needs, 0–100 (the
 // airflow part of the comfort score, on its own scale) — and WEAR & TEAR, off the attic: at code (R-49, 2021 IECC as Clark County adopted it)
 // it is 100, because the system does not run as much and lasts longer; below code it falls in a straight line (R-38 = 78, R-19 = 39).
-function optScores(M){ const cpt=(M.Qs!=null?M.Qs:M.delivered)/Math.max(M.tons,0.5),   /* v2.75: the start-up CFM, docked past the static line — the comfort score's own airflow */ need=(M.need2!=null?M.need2:M.needs)/Math.max(M.tons,0.5);
-  const air=Math.round(100*Math.pow(clamp(cpt/Math.max(need,1),0,1),2)); const R=M.ins&&M.ins.Rf;
+function optScores(M){ const cpt=M.delivered/Math.max(M.tons,0.5),   /* v2.77: the one Manual D CFM — the comfort score's own airflow */ need=(M.need2!=null?M.need2:M.needs)/Math.max(M.tons,0.5);
+  const sf=(M.esp!=null&&M.line>0&&M.esp>M.line)?M.line/M.esp:1;   /* v2.77: CFM + static off the one point, as the comfort score */
+  const air=Math.round(100*Math.pow(clamp(cpt/Math.max(need,1),0,1)*sf,2)); const R=M.ins&&M.ins.Rf;
   return {air, wear:R==null?null:Math.round(100*clamp(R/R_CODE,0,1)), R} }
 function optScoresHtml(M){ const s=optScores(M);
   return `<div class="osc2"><div title="The air the system gets against what it needs — 100 is every CFM it needs"><span>System airflow</span><b class="${scoreCls(s.air)}">${s.air}</b></div>`
@@ -6400,7 +6395,7 @@ const planName=p=>String((p&&p.name)||('Plan '+((p&&p.letter)||''))).trim();
 function planMatch(){ const s=planSig(planCapture()); return (S.plans||[]).find(p=>planSig(p.d)===s)||null }
 function planApproved(){ const p=planById(S.planApproved); if(!p) return null; return {p,same:planSig(p.d)===planSig(planCapture())&&(p.apStar==null||p.apStar===S.star)} } // v2.62: the unit is part of what was approved
 function planLetter(){ const used=S.plans.map(p=>p.letter); return 'ABCDEFGH'.split('').find(l=>!used.includes(l))||'X' }
-function planTierAuto(M){ if(M.score.total>=100) return 'perfect'; if(M.blowerBound||(M.Qs!=null?M.Qs:M.delivered)>=M.need2-0.5) return 'compromise'; return 'minimum' }   /* v2.75: the air it needs without being strangled */
+function planTierAuto(M){ if(M.score.total>=100) return 'perfect'; if((M.blowerBound||M.delivered>=M.need2-0.5)&&!(M.esp!=null&&M.esp>M.line+0.005)) return 'compromise'; return 'minimum' }   /* v2.77: the one Manual D point — the air it needs inside the static line */
 function planTier(p,E){ return PLAN_TIER[p&&p.tier]||PLAN_TIER[E&&E.M?planTierAuto(E.M):'minimum'] }
 function planPriceNum(p){ const m=String((p&&p.price)||'').replace(/[, ]/g,'').match(/\d+(\.\d+)?/); return m?parseFloat(m[0]):null }
 function planPriceTxt(p){ const v=planPriceNum(p); if(v==null) return String((p&&p.price)||'').trim(); return '$'+Math.round(v).toLocaleString() }
@@ -6786,7 +6781,7 @@ function tpStoryHtml(o){
     <table><tbody>
       <tr><td>System</td><td><b>${tpEsc(sysName)}</b></td></tr>
       <tr><td>Model${unit.indexOf('+')>0?'s':''}</td><td><b>${tpEsc(unit)}</b></td></tr>
-      <tr><td>Size</td><td><b>${tons1(M.tons)} ton</b>${M.md?` — <b>${CFM(M.md.Qp)} CFM</b> ${M.md.over?`at ${M.md.espP.toFixed(2)}" (${M.md.perTonP} CFM per ton) — over the ${spLimit().toFixed(2)}" line, the lowest static it reaches`:`at the ${M.md.espP.toFixed(2)}" design static (${M.md.perTonP} CFM per ton)`}`:''}</td></tr>${equipExtraHtml(o,M)}
+      <tr><td>Size</td><td><b>${tons1(M.tons)} ton</b>${M.md?` — <b>${CFM(M.delivered)} CFM</b> at start-up (${M.perTon} CFM per ton at ${f2s(M.esp)}) · Manual D design point ${CFM(M.md.Qd)} CFM at ${f2s(M.md.espD)}`:''}</td></tr>${equipExtraHtml(o,M)}
     </tbody></table>
     <p class="tpfoot">${tpEsc([meta.name,meta.sm].filter(Boolean).join(' · '))}${meta.name||meta.sm?' · ':''}${new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})} · Goettl Air Conditioning &amp; Plumbing · Las Vegas</p>
   </div>
@@ -6851,7 +6846,7 @@ function tpPackHtml(o){
   const steps=stepEffects(o);
   const c0=sl=>M0.comps.find(c=>c.slot===sl);
   const compRows=M.comps.map(c=>{ const a=c0(c.slot); const pill=(x,mm)=>x?`<span class="tpill ${x.cls}">${statusTxt(x,mm||M)}</span>`:'—';
-    return `<tr><td>${c.name}</td><td>${a?a.size:'—'}</td><td class="num">${a?CFM(a.maxAbs):'—'}</td><td>${pill(a,M0)}</td><td>${c.size}</td><td class="num">${CFM(c.maxAbs)}</td><td>${pill(c,M)}</td></tr>` }).join('');
+    return `<tr><td>${c.name}</td><td>${a?a.size:'—'}</td><td class="num">${a?spotTxt(a,M0,true):'—'}</td><td>${pill(a,M0)}</td><td>${c.size}</td><td class="num">${spotTxt(c,M,true)}</td><td>${pill(c,M)}</td></tr>` }).join('');
   const stepRows=steps.map((s_,i)=>`<tr><td class="num">${i+1}</td><td>${s_.txt.replace(/ — one way to get.*$/,'')}<div class="pnote">${whyFor(s_.k)}</div></td><td class="num">${CFM(s_.cfm)}${s_.dCfm>0?` <small>+${s_.dCfm}</small>`:''}</td><td class="num">${Math.round(s_.cfm/M.tons)}</td><td class="num">${s_.R!=null?'R-'+fmt(s_.R):'—'}</td><td class="num"><b>${s_.score}</b>${s_.dScore>0?` <small>+${s_.dScore}</small>`:''}</td></tr>`).join('');
   const scope=`<div class="scope">${isPkg()?[['reuse','Keep the existing stand / elbow / jack setup'],['curb_old','Redesign to a curb — reuse the existing drops'],['curb','Redesign to a curb — new plenum drops']].map(([k,l])=>`<div>${(S.fix.install||'reuse')===k?'☑':'☐'} ${l}</div>`).join(''):''}${scopeState().items.map(i=>`<div class="${i.na?'na':''}">${i.on?'☑':'☐'} ${i.l}</div>`).join('')}</div>`;
   const mdws=M.md?mdWorksheetHtml(M).replace(/<details class="adv mdws"><summary>[^]*?<\/summary>/,'<div class="mdws">').replace(/<\/details>\s*$/,'</div>'):'';
@@ -6868,7 +6863,7 @@ function tpPackHtml(o){
   ${M.md?`<div class="card"><h2>The design — Manual J · S · D</h2>${mdReportHtml(o,M,{h:'h3'})}</div>`:''}
   <div class="card">
     <h2>Where the air chokes — today vs proposed</h2>
-    <div style="overflow-x:auto"><table><thead><tr><th>Component</th><th>Today</th><th class="num">Passes</th><th></th><th>Proposed</th><th class="num">Passes</th><th></th></tr></thead><tbody>${compRows}</tbody></table></div>
+    <div style="overflow-x:auto"><table><thead><tr><th>Component</th><th>Today</th><th class="num">At start-up</th><th></th><th>Proposed</th><th class="num">At start-up</th><th></th></tr></thead><tbody>${compRows}</tbody></table></div>
   </div>
   <div class="card">
     <h2>What each change buys</h2>
@@ -7030,7 +7025,7 @@ function fcStaticHtml(o,shots,optShots){
     <table><tbody>
       <tr><td>System</td><td><b>${tpEsc(sysName)}</b></td></tr>
       <tr><td>Model${unit.indexOf('+')>0?'s':''}</td><td><b>${tpEsc(unit)}</b></td></tr>
-      <tr><td>Size</td><td><b>${tons1(M.tons)} ton</b>${M.md?` — <b>${CFM(M.md.Qp)} CFM</b> ${M.md.over?`at ${M.md.espP.toFixed(2)}" (${M.md.perTonP} CFM per ton) — over the ${spLimit().toFixed(2)}" line, the lowest static it reaches`:`at the ${M.md.espP.toFixed(2)}" design static (${M.md.perTonP} CFM per ton)`}`:''}</td></tr>${equipExtraHtml(o,M)}
+      <tr><td>Size</td><td><b>${tons1(M.tons)} ton</b>${M.md?` — <b>${CFM(M.delivered)} CFM</b> at start-up (${M.perTon} CFM per ton at ${f2s(M.esp)}) · Manual D design point ${CFM(M.md.Qd)} CFM at ${f2s(M.md.espD)}`:''}</td></tr>${equipExtraHtml(o,M)}
     </tbody></table>
     <p class="tpfoot">${tpEsc([meta.name,meta.sm].filter(Boolean).join(' · '))}${meta.name||meta.sm?' · ':''}${new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'})} · Goettl Air Conditioning &amp; Plumbing · Las Vegas</p>
   </div>
@@ -7512,10 +7507,10 @@ function summaryText(o){
     if(supNew()!=='trunk') L.push(`Supply plenum: ${fmt(splenOld())}" today → ${fmt(splenNew())}" proposed${supNew()==='plenum_coil'?' · plenum coil — take-offs spaced evenly end to end':` · take-offs toward the beginning, last ${TKTAIL}" left clear`}`);
     if(S.tkEndOld==='bad'&&supOld()!=='plenum_coil') L.push('EXISTING: take-offs run to the end of the plenum — the last 8–12" should be clear'); }
   if(isPkg()&&S.tkEndOld==='bad') L.push('EXISTING: take-offs run to the end of the supply trunk — the last 8–12" should be clear');
-  { const Mr=flowModel(o,S.fix), M0r=flowModel(o,TODAY); const ra=M0r&&M0r.comps.find(c=>c.slot==='regs'), rb=Mr&&Mr.comps.find(c=>c.slot==='regs'); // v2.45: the faces and what they pass ride along
-    const faces=c=>c?` ${c.spec.size}${c.est?' (assumed)':''}, the faces pass ${CFM(c.maxAbs)} CFM`:'';
-    const rs=rbrRegSummary(); if(rs&&rb&&rb.rbr) L.push(`Supply registers: room by room — ${rs}; the faces pass ${CFM(rb.maxAbs)} CFM`); else   // v2.46
-    L.push(`Supply registers: ${REG_FACE[regOld()].short} today${faces(ra)}${(regNew()!==regOld()||S.fix.regs)?` → ${REG_FACE[regNew()].short.toUpperCase()} proposed${S.fix.regs&&rb?` — new faces ${rb.spec.size}, pass ${CFM(rb.maxAbs)} CFM`:(rb&&ra&&rb.maxAbs!==ra.maxAbs?` — the faces pass ${CFM(rb.maxAbs)} CFM`:'')}${regNew()!==regOld()?` (${REG_FACE[regNew()].name} — less friction at the face, more CFM per vent)`:''}`:' — kept'}`) } // v2.44 · v2.45
+  { const Mr=flowModel(o,S.fix), M0r=flowModel(o,TODAY); const ra=M0r&&M0r.comps.find(c=>c.slot==='regs'), rb=Mr&&Mr.comps.find(c=>c.slot==='regs'); // v2.45: the faces ride along — v2.77: at the operating point, never a capacity
+    const faces=c=>c?` ${c.spec.size}${c.est?' (assumed)':''}, ${spotTxt(c,M0r,true)} at start-up`:'';
+    const rs=rbrRegSummary(); if(rs&&rb&&rb.rbr) L.push(`Supply registers: room by room — ${rs}; the faces run ${spotTxt(rb,Mr,true)}`); else   // v2.46
+    L.push(`Supply registers: ${REG_FACE[regOld()].short} today${faces(ra)}${(regNew()!==regOld()||S.fix.regs)?` → ${REG_FACE[regNew()].short.toUpperCase()} proposed${S.fix.regs&&rb?` — new faces ${rb.spec.size}, ${spotTxt(rb,Mr,true)} at start-up`:(rb&&ra&&rb.maxAbs!==ra.maxAbs?` — ${spotTxt(rb,Mr,true)} at start-up`:'')}${regNew()!==regOld()?` (${REG_FACE[regNew()].name} — less friction at the face, more CFM per vent)`:''}`:' — kept'}`) } // v2.44 · v2.45
   airSummaryLines().forEach(l=>L.push(l));
   { const M=flowModel(o,S.fix); if(M){ const M0=flowModel(o,TODAY); const strip=t=>String(t).replace(/<[^>]+>/g,''); const inst=S.fix.install||'reuse';
     L.push(`COMFORT SCORE: ${M0.score.total}${M.score.total!==M0.score.total?` → ${M.score.total} with proposed fixes`:''} (${scoreBreak(M.score)})`);
@@ -7523,11 +7518,11 @@ function summaryText(o){
     if(M.md){ L.push(`MANUAL D: ${mdStatementTxt(M)}${M0.sp!=null?` · old system measured ${M0.sp.toFixed(2)}"`:''}`); { const pt=opStTxt(o,M); if(pt) L.push(pt) } L.push(mdWorksheetTxt(M)); L.push(mdBudgetTxt(M)); roomAirTxt(M).forEach(x=>L.push(x)); installTxt(o,M).forEach(x=>L.push(x)) }   /* v2.72 */
     if(inst!=='reuse') L.push(`Install proposal: ${inst==='curb'?'NEW CURB — two enlarged roof holes, new plenum drops to the attic, existing ducts reattached':'NEW CURB over the existing roof penetrations — existing drops reused'}`);
     { const sc=scopeState(); if(sc.lines.length) L.push(`INSTALL SCOPE: ${sc.lines.join(' · ')}`); }
-    if(M.bal&&M.bal.ratio!=null) L.push(`Supply vs return: return side ${CFM(M.bal.ret)} CFM at its tightest vs supply ${CFM(M.bal.sup)} → ${M.bal.ratio>=1?'return leads (good)':'MORE SUPPLY THAN RETURN — open the return side'}`);
+    if(M.bal&&M.bal.ratio!=null) L.push(`Supply vs return: the return side's tightest spot at ${M.bal.rPct}% of its Manual D max velocity vs the supply's ${M.bal.sPct}% → ${M.bal.ratio>=1?'return leads (good)':'MORE SUPPLY THAN RETURN — open the return side'}`);
     { const add=takeoffSpec(tkAddVal()); if(add&&!S.fix.takeoff) L.push(`Proposed added supply take-offs: ${add.size}`) }
-    addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d); L.push(`ADDED SUPPLY RUN: Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}x${s} register (up to ${CFM(addRunCfm('s',a))} CFM) — existing ducts stay. NOT FULLY BALANCED: one added run carries the extra air — customer picks where it goes (a room that never got enough air, the kitchen or the master)`) });
-    addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); L.push(`ADDED RETURN: Ø${fmt(a.d)}" return duct + ${g[0]}x${g[1]} filter grille into ${addRunFrom('r')} (up to ${CFM(addRunCfm('r',a))} CFM) — existing return stays`) });
-    M.comps.forEach(c=>L.push(`  ${c.name}: ${strip(c.size)} · ${sqinTxt(c.area)}${c.newMetal?' · manufacturer connection, sized to the unit → OK':` · ${c.vel} fpm · max ${CFM(c.max)} CFM → ${statusTxt(c,M).toUpperCase()}`}${c.neck?` (smaller than the ${strip(c.feed.size)} duct through it — must be enlarged)`:''}${c.fixed?' (PROPOSED)':''}${c.newMetal?' (NEW)':''}`));
+    addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d); L.push(`ADDED SUPPLY RUN: Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}x${s} register (${(r=>r!=null?CFM(r)+' CFM of the start-up air':'a parallel path')(addRunAt(M,'s',a))}) — existing ducts stay. NOT FULLY BALANCED: one added run carries the extra air — customer picks where it goes (a room that never got enough air, the kitchen or the master)`) });
+    addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); L.push(`ADDED RETURN: Ø${fmt(a.d)}" return duct + ${g[0]}x${g[1]} filter grille into ${addRunFrom('r')} (${(r=>r!=null?CFM(r)+' CFM of the start-up air':'a parallel path')(addRunAt(M,'r',a))}) — existing return stays`) });
+    M.comps.forEach(c=>L.push(`  ${c.name}: ${strip(c.size)} · ${sqinTxt(c.area)}${c.newMetal?' · manufacturer connection, sized to the unit → OK':` · ${spotTxt(c,M)} at start-up → ${statusTxt(c,M).toUpperCase()}`}${c.neck?` (smaller than the ${strip(c.feed.size)} duct through it — must be enlarged)`:''}${c.fixed?' (PROPOSED)':''}${c.newMetal?' (NEW)':''}`));
     if(M.ins.known) L.push(`Insulation: R-${fmt(M.ins.R)}${M.ins.src&&M.ins.src!=='entered'?' ('+M.ins.src+')':''}${M.ins.R<R_MIN?' — UNDER R-38 minimum':''}${M.ins.target?` → top up to R-${M.ins.target} (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`:''}`); } }
   { const P=issuePairs(o); if(P.length){ L.push(''); L.push('WHAT WAS WRONG → HOW THIS DESIGN FIXES IT');
       P.forEach(x=>L.push(`- ${strip(x.t)} (${strip(x.was)}): ${strip(x.wasWhy)} ${x.fixed?'FIXED → '+strip(x.now)+' — '+strip(x.nowWhy):'STILL OPEN — '+strip(x.nowWhy)}`)) } }
@@ -10087,7 +10082,7 @@ function rbrMJ(){
       // v2.36: when we hold the smaller unit on a load just over it, say so and make it
       // conditional on the envelope — a stretch is only honest on an insulated house.
       (str?`<br><br>${rbrStretchHtml(str)}`:'')+
-      (A.live&&!fits?`<br><br><b style="color:var(--bad)">The ${tons1(A.tons)}-ton being quoted is under what the house asks for.</b> It delivers ${Math.round(RM.pct*100)}% of the air the rooms need — the duct design still balances, but every room is short by the same share.`:'')+
+      (A.live&&!fits?`<br><br><b style="color:var(--bad)">The ${tons1(A.tons)}-ton being quoted is under what the house asks for.</b> Its design air is ${Math.round(RM.pct*100)}% of what the rooms need — the duct design still balances, but every room is short by the same share.`:'')+
     '</div>';
   el.innerHTML='<div class="sizeband v66 v71">'+tiles+hero+'<div class="mth why">'+why+'</div></div>';   /* v2.66: no "Why this size" on the tab — the script goes out in the ServiceTitan text on the Summary (SIZE CALL / STRETCH CALL) */
 }
@@ -10324,7 +10319,8 @@ function rbrOut(){
   const A=RM.A, pct=Math.round(RM.pct*100), cls=pct>=95?'ok':(pct>=85?'warn':'bad');
   const dn=RM.down||[];
   const downTxt=dn.length?` · ${dn.map(x=>`floor ${x.fl+1} gets <b>${CFM(x.cfm)} CFM</b> down ${rdTxt(x)}${x.entered?'':' (assumed)'}${x.short>0?` — <b>${CFM(x.short)} short</b>, that air goes upstairs`:''}`).join(' · ')} · the rooms upstairs share <b>${CFM(RM.Qup)}</b>${RM.spill>0?` (${CFM(RM.spill)} more than they ask for)`:''}`:'';
-  $('#rbrBanner').innerHTML=`<div class="banner ${cls}">${dn.length?'The house wants':'Rooms want'} ${CFM(RM.needTot)} CFM · the ${rbrEsc(A.name)} delivers ${CFM(A.Qd)} · <b>${pct}% of design</b>${downTxt}<br><span style="font-weight:600;font-size:12.5px">Every room is designed to its share of the ${CFM(dn.length?RM.Qup:A.Qd)} CFM ${dn.length?'that reaches its floor':'the unit puts out'} at the ${A.esp.toFixed(2)}" design static. At Goettl's ${spLimit().toFixed(2)}" limit the house carries ${CFM(A.Qp)} CFM and every can holds the same share of it.</span></div>`;
+  const MO=(function(){ try{ const o=curOpt(); return o?flowModel(o,S.fix):null }catch(e){ return null } })();   /* v2.77: the operating point — one logic */
+  $('#rbrBanner').innerHTML=`<div class="banner ${cls}">${dn.length?'The house wants':'Rooms want'} ${CFM(RM.needTot)} CFM · the ${rbrEsc(A.name)} is designed to ${CFM(A.Qd)} · <b>${pct}% of design</b>${MO?` · at start-up <b>${CFM(MO.delivered)} CFM</b> at ${f2s(MO.esp)}`:''}${downTxt}<br><span style="font-weight:600;font-size:12.5px">Every room is designed to its share of the ${CFM(dn.length?RM.Qup:A.Qd)} CFM ${dn.length?'that reaches its floor':'the unit puts out'} at the ${A.esp.toFixed(2)}" design static${MO?` — at start-up every room gets the same share of the ${CFM(MO.delivered)} CFM the system really moves`:''}.</span></div>`;
   const st=$('#rbrStorey'); if(st){ st.style.display=dn.length?'':'none'; st.innerHTML=dn.length?`<b>Two storeys:</b> the rooms here are the <b>top floor</b> — that is where the room-by-room load is done. ${dn.map(x=>`Floor ${x.fl+1} is one duct down: ${fcDownNote(x)}`).join(' ')}`:'' }
   $('#rbrVentVal').textContent=RM.cap;
   $('#rbrVentSub').innerHTML=`sizes a vent only on a room set to <b>Add vent</b> · <b>${RM.vents} vent${RM.vents===1?'':'s'}</b> in the house — ${rbrVentWords()}${S.vstep!==0?` · <span class="status ${S.vstep>0?'warn':'na'}">${S.vstep>0?'+':''}${S.vstep} step${Math.abs(S.vstep)===1?'':'s'}</span>`:''}`;
@@ -10930,7 +10926,7 @@ function go(n){
   syncPackNav(n); // v2.39 — the pack's own three tabs (7 story · 5 the Plan tab itself · 8 tech pack)
   $('#prev').style.visibility=n===1?'hidden':'visible'; $('#next').textContent=n===6?'Start over':'Next ›';
   if(rooms){ try{ if(S.rooms&&S.rooms.length&&RM&&RM.A) rbrOut() }catch(e){} setTimeout(()=>{ try{ rbrGrid() }catch(e){} },30);   /* v2.72 re-cut: the plan, the pick list and the banner as the design is now */ window.scrollTo({top:0,behavior:'smooth'}); return }   /* v2.65: the Rooms tab is step 1's — nothing is assumed, no output is built; the grid fits its real width once it is on screen */
-  if(n>1){ autoAssume(); relabelStand(); refreshOld() }
+  if(n>1){ autoAssume(); relabelStand(); refreshOld() } else if(n===1){ try{ airflowRead(); dtSync() }catch(e){} }   /* v2.77: Existing reads Manual D's chokepoints on today's ducts */
   if(n===5||n===4){buildTons();renderTiers()} // v2.62: the strip on the Plan tab and the tier cards on Will it Fit
   if(n>3&&!S.tons){buildTons();renderTiers()} // jumped straight to an output tab — make sure there is a tonnage and a lineup behind it
   // v2.43 — the tonnage follows the load on EVERY output tab, not only when step 3 is open: measure the rooms on step 1
@@ -10979,14 +10975,12 @@ function settingsFill(){ const D=designState(), dd=designDefaults(); const src=d
   const s=$('#dsSrc'); if(s){ s.textContent=src==='scan'?'from the Room Scan':(src==='set'?'edited here':'built-in'); s.className='dsrc '+(src||'def') }
   const T=S.thr||{}; const put=(id,v)=>{ const el=$('#'+id); if(el) el.value=(v==null||v==='')?'':v }; put('thr_maxD',T.maxD);
   put('thr_spGoal',T.spGoal); put('thr_sp',T.sp); put('thr_cptFloor',T.cptFloor); put('thr_msMin',T.msMin); put('thr_indKeep',T.indKeep); $('#thr_damper').checked=dampersKnob();
-  put('thr_gr',T.gr); put('thr_retv',T.retv); put('thr_supv',T.supv); put('thr_opv',T.opv);
   put('thr_sfStd',T.sfStd); put('thr_sfHiEff',T.sfHiEff); put('thr_stretchHalf',T.stretchHalf); put('thr_stretchFull',T.stretchFull); put('thr_ventBase',T.ventBase); put('thr_ventMax',T.ventMax); put('thr_pushMax',T.pushMax);
   put('thr_tight',T.tight); put('thr_acc',T.acc); put('thr_al1',T.al1); put('thr_al3',T.al3); put('thr_ovh',T.ovh) }
 function settingsRead(){ const T=S.thr||(S.thr={}); const num_=id=>{ const v=parseFloat(($('#'+id)||{}).value); return isFinite(v)?v:null }; const setK=(k,id,d)=>{ const v=num_(id); if(v==null||v===d) delete T[k]; else T[k]=v };
   const dv={}; ['outC','inC','outH','inH','cpt','hcpt'].forEach((k,i)=>{ const v=num_(['ds_outC','ds_inC','ds_outH','ds_inH','thr_cpt','ds_hcpt'][i]); dv[k]=v==null?null:v });
   { const D=designState(); const was=JSON.stringify(['outC','inC','outH','inH','cpt','hcpt'].map(k=>D[k]||null)); const now=JSON.stringify(['outC','inC','outH','inH','cpt','hcpt'].map(k=>dv[k])); if(was!==now){ ['outC','inC','outH','inH','cpt','hcpt'].forEach(k=>{ if(dv[k]==null) delete D[k]; else D[k]=dv[k] }); D.src=Object.keys(D).some(k=>k!=='src'&&+D[k]>0)?'set':null; if(!D.src) delete D.src; LD_EFF=null } }
   setK('maxD','thr_maxD',THR_DEF.maxD); setK('spGoal','thr_spGoal',THR_DEF.spGoal); setK('sp','thr_sp',THR_DEF.sp); setK('cptFloor','thr_cptFloor',THR_DEF.cptFloor); setK('msMin','thr_msMin',THR_DEF.msMin); setK('indKeep','thr_indKeep',THR_DEF.indKeep); T.damper=!!$('#thr_damper').checked;
-  setK('gr','thr_gr',THR_DEF.gr); setK('retv','thr_retv',THR_DEF.retv); setK('supv','thr_supv',THR_DEF.supv); setK('opv','thr_opv',THR_DEF.opv);
   setK('sfStd','thr_sfStd',THR_DEF.sfStd); setK('sfHiEff','thr_sfHiEff',THR_DEF.sfHiEff); setK('stretchHalf','thr_stretchHalf',THR_DEF.stretchHalf); setK('stretchFull','thr_stretchFull',THR_DEF.stretchFull); setK('ventBase','thr_ventBase',THR_DEF.ventBase); setK('ventMax','thr_ventMax',THR_DEF.ventMax); setK('pushMax','thr_pushMax',THR_DEF.pushMax);
   setK('tight','thr_tight',THR_DEF.tight); setK('acc','thr_acc',THR_DEF.acc); setK('al1','thr_al1',THR_DEF.al1); setK('al3','thr_al3',THR_DEF.al3); setK('ovh','thr_ovh',THR_DEF.ovh);
   ['tight','acc','al1','al3','ovh','sp','gr','retv','supv','opv'].forEach(k=>{ if(T[k]==null) T[k]=THR_DEF[k] });   /* the older readers index S.thr.k straight */
