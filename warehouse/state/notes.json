@@ -628,5 +628,103 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-10-01"
+ },
+ "adj|2026-10-02|3256|Vegas HVAC Warehouse": {
+  "note": "Adjusting Negative Quantity Before Updating to Physical Count",
+  "ts": 1791210698614,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3258|Vegas HVAC Warehouse": {
+  "note": "13 on cage as of 9/8/26 adjusting for physical inventory",
+  "ts": 1791210779932,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3267|Open Box Warehouse HVAC": {
+  "note": "packaged unit replaced on job 555637 high limit switch repaired and put in open box 9/11",
+  "ts": 1791210835791,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3288|Vegas Plumbing Warehouse": {
+  "note": "Adjustment for Vegas Plumbing Warehouse count #1023",
+  "ts": 1791210867062,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3289|Plumbing Equipment": {
+  "note": "Adjustment for plumbing equipment count",
+  "ts": 1791210970732,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3291|Vegas HVAC Warehouse": {
+  "note": "EOM warehouse count",
+  "ts": 1791210998304,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3294|Vegas Safety Stock": {
+  "note": "inventory count 1029 curbs flipped on previous count",
+  "ts": 1791211018406,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-03|561585-004|Open Box Warehouse HVAC": {
+  "note": "wrong warehouse location used, corrected",
+  "ts": 1791211105426,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3268|LAS-557038-SVC-H_127 Leo Bermudez III": {
+  "note": "Inventory Count for Leo 9/14",
+  "ts": 1791211141038,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3275|LAS-578161-SVC-H_104 David Guerrero": {
+  "note": "Adjustment for 104, David Guerrero 9/21",
+  "ts": 1791211163475,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3257|LAS-177293-CFT-H_122 Kalif Silva-Giersdorf": {
+  "note": "Inventory count for Kalif 9/8",
+  "ts": 1791211183155,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3272|LAS-535396-SVC-P_433 Halbert Castro-Galaviz": {
+  "note": "Adjustment for 433 Halvert, count 1016 9/17",
+  "ts": 1791211208646,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3269|LAS-177287-EMT-H_111 Kevin Urrutia": {
+  "note": "Count performed by Dallin 9/16",
+  "ts": 1791211251224,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "fleet|anom|2026-10-04|578097": {
+  "note": "change in valuation",
+  "ts": 1791215056386,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
  }
 }
