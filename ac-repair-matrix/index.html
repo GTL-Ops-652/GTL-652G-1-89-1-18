@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>AC Repair Matrix</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Step-by-step diagnosis and repair for straight-cool split air conditioners, with a PT chart for R-22, R-410A, R-454B and R-32.">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./icon-192.png">
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#003963">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Repair Matrix">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Roboto+Slab:wght@600;700&display=swap">
+<style>
+/* Layout: one 640px column of step cards under a sticky Goettl-blue bar; the answer buttons are the focal point. */
+:root{
+  --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;
+  --bg:#f3f6f9;--surface:#fff;--surface-2:#f4f7f9;--ink:#0b2340;--muted:#5b6b7c;--line:#dfe6ee;--tint:#eaf3f8;
+  --heading:#003963;--label:#3678A0;--bar:#003963;--on-bar:#fff;
+  --btn:#003963;--on-btn:#fff;--btn-hover:#fff;--on-btn-hover:#003963;
+  --red-text:#CD1E1F;--on-red:#fff;
+  --ok:#1f7a45;--okbg:#e6f5ec;--ok-fill:#1f7a45;--warn:#9a4d00;--warnbg:#fdf0e3;--badbg:#fbe9e9;--badline:#f0c4c4;
+  --hl:#fff6d6;--hl-line:#d8b94a;--hl-ink:#4a3a00;--hl-strong:#fff1bf;
+  --focus:#77B2D0;--chip-ink:#000426;
+  --grad:linear-gradient(135deg,#77B2D0 0%,#3678A0 50%,#003963 100%);
+  --shadow:0 4px 14px rgba(0,30,60,.10);
+  --sans:"Sofia Pro",Montserrat,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --serif:"Helserif","Roboto Slab","Zilla Slab",Georgia,serif;
+  --r:12px;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#07121e;--surface:#0e1c2b;--surface-2:#0b1724;--ink:#e3ecf4;--muted:#9fb2c4;--line:#21374c;--tint:#12304a;
+  --heading:#bfdcee;--label:#8cc2de;--bar:#002b4b;
+  --btn:#2f6f98;--btn-hover:#0e1c2b;--on-btn-hover:#bfdcee;--red-text:#ff8d8d;
+  --ok:#7bd9a1;--okbg:#123526;--warn:#ffbe7a;--warnbg:#3a2611;--badbg:#341417;--badline:#6e2c30;
+  --hl:#2f2810;--hl-line:#8a7330;--hl-ink:#f1e2a6;--hl-strong:#4a3d10;
+  --shadow:0 4px 14px rgba(0,0,0,.45);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#07121e;--surface:#0e1c2b;--surface-2:#0b1724;--ink:#e3ecf4;--muted:#9fb2c4;--line:#21374c;--tint:#12304a;
+  --heading:#bfdcee;--label:#8cc2de;--bar:#002b4b;
+  --btn:#2f6f98;--btn-hover:#0e1c2b;--on-btn-hover:#bfdcee;--red-text:#ff8d8d;
+  --ok:#7bd9a1;--okbg:#123526;--warn:#ffbe7a;--warnbg:#3a2611;--badbg:#341417;--badline:#6e2c30;
+  --hl:#2f2810;--hl-line:#8a7330;--hl-ink:#f1e2a6;--hl-strong:#4a3d10;
+  --shadow:0 4px 14px rgba(0,0,0,.45);color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.4;-webkit-text-size-adjust:100%}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+.ghost{visibility:hidden}
+
+/* Header */
+header{position:sticky;top:0;z-index:20;background:var(--bar);color:var(--on-bar);box-shadow:0 2px 10px rgba(0,0,0,.25);
+  padding:calc(8px + env(safe-area-inset-top)) max(10px,env(safe-area-inset-right)) 8px max(10px,env(safe-area-inset-left))}
+.bar{max-width:640px;margin:0 auto;display:flex;align-items:center;gap:6px}
+.hbtn{flex:none;width:44px;height:44px;border:0;border-radius:10px;background:transparent;color:var(--on-bar);display:grid;place-items:center}
+.hbtn:hover{background:rgba(255,255,255,.12)}
+.hbtn svg{width:26px;height:26px}
+.htitle{flex:1;min-width:0;text-align:center}
+.htitle small{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
+.htitle strong{display:block;font-family:var(--serif);font-size:20px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+main{max-width:640px;margin:0 auto;padding:16px 16px calc(32px + env(safe-area-inset-bottom))}
+.review-banner{background:var(--hl);border-bottom:1px solid var(--hl-line);color:var(--hl-ink);font-size:14px;text-align:center;padding:8px 16px}
+
+/* Step */
+.step-head{margin:4px 0 14px}
+.chip{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--label);background:var(--tint);border-radius:999px;padding:4px 10px}
+.chip.new{color:var(--hl-ink);background:var(--hl-strong);margin-left:6px}
+h1{font-family:var(--serif);font-size:26px;line-height:1.2;margin:8px 0 0;color:var(--heading);text-wrap:balance}
+h1:focus{outline:none}
+h2{font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:22px 0 8px}
+.intro{margin:10px 0 0}
+.diag{margin:14px 0 4px;background:var(--surface);border-left:6px solid var(--red);border-radius:var(--r);padding:12px 14px;box-shadow:var(--shadow)}
+.diag b{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--red-text)}
+.diag span{display:block;font-family:var(--serif);font-size:19px;line-height:1.25;color:var(--heading);margin-top:2px}
+.warn{display:flex;gap:10px;align-items:flex-start;margin:12px 0 0;background:var(--badbg);border:1px solid var(--badline);border-radius:var(--r);padding:10px 12px;font-weight:600}
+.warn svg{flex:none;width:22px;height:22px;color:var(--red-text);margin-top:1px}
+
+ol.tasks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
+.task{width:100%;display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:12px;box-shadow:var(--shadow)}
+.task .n{flex:none;width:28px;height:28px;border-radius:50%;background:var(--btn);color:var(--on-btn);font-weight:700;font-size:14px;display:grid;place-items:center;margin-top:-2px}
+.task[aria-pressed="true"]{background:var(--surface-2);color:var(--muted)}
+.task[aria-pressed="true"] .n{background:var(--ok-fill)}
+.task[aria-pressed="true"] .n::before{content:"✓"}
+.task[aria-pressed="true"] .n span{display:none}
+.tasks-hint{font-size:13px;color:var(--muted);margin:6px 2px 0}
+
+.notes{margin:12px 0 0;background:var(--tint);border-radius:var(--r);padding:10px 14px}
+.notes p{margin:6px 0}
+.notes b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--label)}
+.review{margin:14px 0 0;background:var(--hl);border:1px dashed var(--hl-line);border-radius:var(--r);padding:10px 14px;font-size:14px;color:var(--hl-ink)}
+.review b{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase}
+
+.q{display:flex;gap:12px;align-items:center;margin:22px 0 10px}
+.q .mark{flex:none;width:40px;height:40px;border-radius:10px;background:var(--red);color:var(--on-red);font-family:var(--serif);font-weight:700;font-size:22px;display:grid;place-items:center}
+.q p{margin:0;font-weight:700;font-size:18px;line-height:1.3;color:var(--heading)}
+.answers{display:grid;gap:10px}
+.answer{position:relative;display:flex;align-items:center;gap:10px;width:100%;min-height:56px;text-align:left;border:2px solid var(--btn);background:var(--btn);color:var(--on-btn);border-radius:var(--r);padding:12px 14px;font-weight:600;font-size:16px}
+.answer:hover{background:var(--btn-hover);color:var(--on-btn-hover)}
+.answer span{flex:1}
+.answer svg{flex:none;width:20px;height:20px}
+.answer.suggested{box-shadow:0 0 0 4px var(--focus)}
+.answer .tag{position:absolute;top:-10px;right:12px;background:var(--lb);color:var(--chip-ink);font-size:11px;font-style:normal;font-weight:700;letter-spacing:.06em;text-transform:uppercase;border-radius:999px;padding:2px 8px}
+.answer.secondary{background:var(--surface);color:var(--heading)}
+.answer.secondary:hover{background:var(--tint)}
+.answer.cta{background:var(--red);border-color:var(--red);color:var(--on-red)}
+.answer.cta:hover{background:var(--surface);color:var(--red-text)}
+.copybox{margin:0;padding:10px 12px;border:1px dashed var(--line);border-radius:10px;background:var(--surface);font-size:14px;user-select:all;-webkit-user-select:all;overflow-wrap:anywhere}
+
+/* Tools */
+.tool{margin:16px 0 0;background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;box-shadow:var(--shadow)}
+.tool h3{margin:0 0 10px;font-size:15px;color:var(--heading)}
+.fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.field{min-width:0}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--muted);margin-bottom:4px}
+.field .in{display:flex;align-items:center;border:1.5px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+.field .in:focus-within{border-color:var(--btn)}
+.field input{flex:1;min-width:0;width:100%;border:0;padding:10px;font-size:17px;background:transparent;outline:none}
+.field .unit{padding:0 10px;color:var(--muted);font-size:14px}
+.out{margin-top:12px;display:grid;gap:8px}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border-top:1px solid var(--line);padding-top:8px}
+.row .k{color:var(--muted);font-size:14px}
+.row .v{font-weight:700;text-align:right;font-variant-numeric:tabular-nums}
+.row .v small{display:block;font-weight:500;color:var(--muted);font-size:13px}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:13px;font-weight:700}
+.pill.ok{background:var(--okbg);color:var(--ok)}
+.pill.low,.pill.high{background:var(--warnbg);color:var(--warn)}
+.hint{font-size:13px;color:var(--muted);margin:8px 0 0}
+.hint.todo{color:var(--warn);font-weight:600}
+
+.seg{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--tint);border-radius:10px;padding:4px;margin-bottom:12px}
+.seg button{border:0;border-radius:8px;background:transparent;padding:8px 2px;font-weight:700;font-size:14px;color:var(--heading)}
+.seg button[aria-checked="true"]{background:var(--btn);color:var(--on-btn)}
+
+/* Trail */
+.trail{margin:26px 0 0;font-size:13px;color:var(--muted)}
+.trail ol{list-style:none;display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 0;padding:0}
+.trail li{display:flex;align-items:center;gap:4px}
+.trail li+li::before{content:"›";color:var(--gray)}
+.trail button{border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:3px 9px;font-size:13px;color:var(--heading)}
+.trail button[aria-current="step"]{background:var(--btn);color:var(--on-btn);border-color:var(--btn)}
+
+/* Home */
+.hero{background:var(--grad);color:var(--on-bar);border-radius:16px;padding:22px 18px;box-shadow:var(--shadow)}
+.hero h1{color:var(--on-bar);font-size:30px;margin:0}
+.hero p{margin:8px 0 18px;font-size:17px}
+.hero .answer{border-color:var(--on-bar)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-top:14px;box-shadow:var(--shadow)}
+.card h2{margin:0 0 8px}
+.card ul{margin:0;padding-left:20px}
+.card li{margin:4px 0}
+.card a{color:var(--label)}
+details.index summary{cursor:pointer;font-weight:700;color:var(--heading);list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:32px}
+details.index summary::-webkit-details-marker{display:none}
+details.index summary::after{content:"+";font-size:22px;color:var(--label)}
+details.index[open] summary::after{content:"–"}
+.index h3{font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:14px 0 4px}
+.index a{display:flex;gap:10px;padding:8px 4px;border-top:1px solid var(--line);color:var(--ink);text-decoration:none}
+.index a b{flex:none;width:52px;color:var(--label)}
+.index a:hover{background:var(--tint)}
+footer{margin:28px 0 0;text-align:center;font-size:13px;color:var(--muted);display:grid;gap:6px;justify-items:center}
+footer p{margin:0}
+.linkbtn{border:1px solid var(--line);background:var(--surface);color:var(--heading);border-radius:999px;padding:6px 14px;font-size:13px;font-weight:600}
+
+/* PT dialog */
+dialog#pt{border:0;padding:0;width:min(560px,100vw);max-width:100vw;max-height:100dvh;height:min(760px,100dvh);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.35);background:var(--bg);color:var(--ink)}
+dialog#pt::backdrop{background:rgba(0,4,38,.55)}
+@media (max-width:600px){dialog#pt{width:100vw;height:100dvh;border-radius:0}}
+.pt{display:flex;flex-direction:column;height:100%}
+.pt-head{display:flex;align-items:center;gap:8px;background:var(--bar);color:var(--on-bar);padding:calc(8px + env(safe-area-inset-top)) 10px 8px 16px}
+.pt-head strong{flex:1;font-family:var(--serif);font-size:20px}
+.pt-body{flex:1;overflow:auto;padding:14px 16px calc(20px + env(safe-area-inset-bottom))}
+table.ptt{width:100%;border-collapse:collapse;background:var(--surface);border-radius:var(--r);overflow:hidden;font-variant-numeric:tabular-nums}
+.ptt th{position:sticky;top:-14px;background:var(--bar);color:var(--on-bar);font-size:13px;padding:8px;text-align:right}
+.ptt th:first-child,.ptt td:first-child{text-align:left}
+.ptt td{padding:6px 8px;text-align:right;border-top:1px solid var(--line)}
+.ptt tr.hit td{background:var(--hl-strong);color:var(--hl-ink);font-weight:700}
+
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--bar);color:var(--on-bar);padding:10px 16px;border-radius:999px;font-size:14px;box-shadow:var(--shadow)}
+</style>
+</head>
+<body>
+<header>
+  <div class="bar">
+    <button class="hbtn" id="back" aria-label="Back"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg></button>
+    <button class="hbtn" id="home" aria-label="Home"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11l8-7 8 7"/><path d="M6 10v9h12v-9"/></svg></button>
+    <div class="htitle"><small>AC Repair Matrix</small><strong id="htitle">Welcome</strong></div>
+    <span class="hbtn" aria-hidden="true"></span>
+    <button class="hbtn" id="ptbtn" aria-label="Open PT chart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4"/><path d="M8 19h8"/><path d="M12 5V3"/></svg></button>
+  </div>
+</header>
+<div id="review-banner" class="review-banner" hidden>Review mode: each step shows what changed from the 2014 matrix.</div>
+<main id="main"><noscript>The AC Repair Matrix needs JavaScript turned on.</noscript></main>
+
+<dialog id="pt" aria-labelledby="pt-title">
+  <div class="pt">
+    <div class="pt-head"><strong id="pt-title">PT Chart</strong>
+      <button class="hbtn" id="ptclose" aria-label="Close PT chart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    </div>
+    <div class="pt-body" id="ptbody"></div>
+  </div>
+</dialog>
+
+<script src="./pt-data.js"></script>
+<script src="./matrix.js"></script>
+<script>
+"use strict";
+
+/* ── Small helpers ─────────────────────────────────────────── */
+const $ = (sel, el = document) => el.querySelector(sel);
+function h(tag, props, ...kids) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v == null || v === false) continue;
+    if (k === "class") el.className = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else if (k === "svg") el.innerHTML = v;            // static icon markup only
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const kid of kids.flat(Infinity)) {
+    if (kid == null || kid === false) continue;
+    el.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+  }
+  return el;
+}
+const ICON = {
+  chev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5l7 7-7 7"/></svg>',
+  warn: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l10 18H2z"/><path d="M12 10v5M12 18v.5"/></svg>',
+};
+const store = {   // per-device conveniences only; the page works without it
+  get(k, d) { try { const v = localStorage.getItem("acrm." + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { localStorage.setItem("acrm." + k, JSON.stringify(v)); } catch {} },
+};
+const session = {
+  get(k, d) { try { const v = sessionStorage.getItem("acrm." + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+  set(k, v) { try { sessionStorage.setItem("acrm." + k, JSON.stringify(v)); } catch {} },
+};
+function toast(msg) {
+  const t = h("div", { class: "toast", role: "status" }, msg);
+  document.body.append(t); setTimeout(() => t.remove(), 2200);
+}
+function ghost(el, on) {   // hide a header button but keep its space so the title stays centered
+  el.classList.toggle("ghost", on);
+  el.tabIndex = on ? -1 : 0;
+  if (on) el.setAttribute("aria-hidden", "true"); else el.removeAttribute("aria-hidden");
+}
+
+/* ── Refrigerant + PT math ─────────────────────────────────── */
+const REFS = { R22: "R-22", R410A: "R-410A", R454B: "R-454B", R32: "R-32" };
+let refrigerant = REFS[store.get("ref")] ? store.get("ref") : "R410A";
+const refListeners = new Set();
+function setRefrigerant(r) {
+  refrigerant = r; store.set("ref", r);
+  for (const fn of [...refListeners]) fn();
+}
+// side: "liquid" (bubble, for head and subcooling) or "vapor" (dew, for suction and superheat)
+function curve(ref, side) {
+  const d = PT_DATA[ref];
+  return Array.isArray(d) ? d : (side === "liquid" ? d.bubble : d.dew);
+}
+function psigAt(ref, tF, side) {
+  const c = curve(ref, side), i = (tF - PT_DATA.tMin) / PT_DATA.step;
+  if (!(i >= 0 && i <= c.length - 1)) return null;
+  const lo = Math.floor(i), hi = Math.min(lo + 1, c.length - 1);
+  return c[lo] + (c[hi] - c[lo]) * (i - lo);
+}
+function satTemp(ref, psig, side) {
+  const c = curve(ref, side);
+  if (!(psig >= c[0] && psig <= c[c.length - 1])) return null;
+  let lo = 0, hi = c.length - 1;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (c[m] <= psig) lo = m; else hi = m; }
+  const f = c[hi] === c[lo] ? 0 : (psig - c[lo]) / (c[hi] - c[lo]);
+  return PT_DATA.tMin + (lo + f) * PT_DATA.step;
+}
+const fmtT = t => t == null ? "—" : `${Math.round(t)}°F`;
+const fmtP = p => p == null ? "—" : `${Math.round(p)}`;
+const num = v => { const n = parseFloat(v); return Number.isFinite(n) ? n : null; };
+const classify = (v, lo, hi) => v < lo ? "low" : v > hi ? "high" : "normal";
+const LABEL = { low: "Low", normal: "Normal", high: "High" };
+const pill = (cls, text) => h("span", { class: "pill " + (cls === "normal" ? "ok" : cls) }, text);
+
+/* ── Navigation ────────────────────────────────────────────── */
+// Steps live in the URL as a bare token (#18, #28k, #end) so a link can open any step.
+const NODES = new Map(MATRIX.nodes.map(n => [n.id, n]));
+let REVIEW = new URLSearchParams(location.search).has("review") || store.get("review", false);
+const readings = session.get("readings", {});   // gauge readings carry from step to step
+let trail = session.get("trail", []);
+
+function stepLabel(id) {
+  if (id === "end") return "End test";
+  if (id === "done") return "Done";
+  return "Step " + id.toUpperCase();
+}
+const currentId = () => { const id = decodeURIComponent(location.hash.slice(1)); return NODES.has(id) ? id : null; };
+const go = id => { location.hash = id; };
+
+function updateTrail(id) {
+  if (trail[trail.length - 1] === id) return;
+  if (trail[trail.length - 2] === id) trail.pop();           // browser back
+  else trail.push(id);
+  session.set("trail", trail);
+}
+
+/* ── Views ─────────────────────────────────────────────────── */
+let firstRender = true;
+function render() {
+  const id = currentId();
+  const node = id && NODES.get(id);
+  if (node) updateTrail(id);
+  for (const fn of [...refListeners]) if (!fn.persistent) refListeners.delete(fn);
+  $("#main").replaceChildren(node ? (node.type === "done" ? doneView(node) : stepView(node)) : homeView());
+  $("#htitle").textContent = node ? stepLabel(node.id) : "Welcome";
+  ghost($("#back"), !node);
+  ghost($("#home"), !node);
+  $("#review-banner").hidden = !REVIEW;
+  window.scrollTo(0, 0);
+  // Move focus to the new heading so screen readers announce the step (not on first load).
+  if (!firstRender) $("#main h1")?.focus({ preventScroll: true });
+  firstRender = false;
+}
+
+function stepView(n) {
+  const answerEls = (n.answers || []).map(a =>
+    h("button", { class: "answer" + (a.to === "end" || a.to === "done" ? " cta" : ""), "data-to": a.to, onclick: () => go(a.to) },
+      h("span", null, a.label), h("i", { svg: ICON.chev, "aria-hidden": "true" })));
+  // Tools call suggest(id) to highlight the answer that matches the readings.
+  function suggest(to) {
+    for (const b of answerEls) {
+      const on = to != null && b.dataset.to === to;
+      if (on === b.classList.contains("suggested")) continue;
+      b.classList.toggle("suggested", on);
+      if (on) b.prepend(h("em", { class: "tag" }, "Matches your readings"));
+      else b.querySelector(".tag")?.remove();
+    }
+  }
+  let taskNo = 0;
+  return h("article", null,
+    h("div", { class: "step-head" },
+      h("span", { class: "chip" }, stepLabel(n.id)),
+      REVIEW && n.isNew ? h("span", { class: "chip new" }, "New in 2026") : null,
+      h("h1", { tabindex: "-1" }, n.title),
+      n.diagnosis ? h("div", { class: "diag" }, h("b", null, "Diagnosis"), h("span", null, n.diagnosis)) : null,
+      n.intro ? h("p", { class: "intro" }, n.intro) : null),
+    (n.warn || []).map(w => h("div", { class: "warn", role: "note" }, h("i", { svg: ICON.warn, "aria-hidden": "true" }), h("span", null, w))),
+    n.tasks?.length ? [
+      h("h2", null, n.type === "fix" ? "Repair" : "Do this"),
+      h("ol", { class: "tasks" }, n.tasks.map(t => h("li", null,
+        h("button", { class: "task", "aria-pressed": "false", onclick: toggleTask },
+          h("span", { class: "n" }, h("span", null, ++taskNo)), h("span", null, t))))),
+      h("p", { class: "tasks-hint" }, "Tap a task to check it off."),
+    ] : null,
+    n.notes?.length ? h("div", { class: "notes" }, h("b", null, "Notes"), n.notes.map(t => h("p", null, t))) : null,
+    n.tool ? TOOLS[n.tool](suggest) : null,
+    REVIEW && n.updated ? h("div", { class: "review" }, h("b", null, "Changed from 2014"), n.updated) : null,
+    n.ask ? h("div", { class: "q" }, h("span", { class: "mark", "aria-hidden": "true" }, "Q"), h("p", null, n.ask)) : h("h2", null, "Next"),
+    h("div", { class: "answers", role: "group", "aria-label": "Answers" }, answerEls),
+    trailView());
+}
+function toggleTask(e) {
+  const b = e.currentTarget;
+  b.setAttribute("aria-pressed", b.getAttribute("aria-pressed") === "true" ? "false" : "true");
+}
+
+function trailView() {
+  if (trail.length < 2) return null;
+  return h("nav", { class: "trail", "aria-label": "Your path" }, "Your path",
+    h("ol", null, trail.map((t, i) => h("li", null,
+      h("button", { "aria-current": i === trail.length - 1 ? "step" : null,
+        onclick: () => { if (i === trail.length - 1) return; trail = trail.slice(0, i + 1); session.set("trail", trail); go(t); } },
+        t === "end" ? "End" : t === "done" ? "Done" : t.toUpperCase())))));
+}
+
+function doneView(n) {
+  const path = "AC Repair Matrix path: " + trail.map(stepLabel).join(" → ");
+  const copybox = h("p", { class: "copybox", hidden: true });
+  return h("article", null,
+    h("div", { class: "hero" },
+      h("h1", { tabindex: "-1" }, "Fixed."),
+      h("p", null, "Good work. Before you leave the job:")),
+    h("ol", { class: "tasks", style: "margin-top:14px" }, n.tasks.map((t, i) => h("li", null,
+      h("button", { class: "task", "aria-pressed": "false", onclick: toggleTask },
+        h("span", { class: "n" }, h("span", null, i + 1)), h("span", null, t))))),
+    h("div", { class: "answers", style: "margin-top:22px" },
+      h("button", { class: "answer secondary", onclick: () => copyText(path, copybox) },
+        h("span", null, "Copy the path for your job notes")),
+      copybox,
+      h("button", { class: "answer cta", onclick: startOver },
+        h("span", null, "Start a new diagnosis"), h("i", { svg: ICON.chev, "aria-hidden": "true" }))),
+    trailView());
+}
+function copyText(text, fallbackEl) {
+  navigator.clipboard.writeText(text).then(() => toast("Path copied"), () => {
+    // Clipboard refused: show the text selected so it can be copied by hand.
+    fallbackEl.textContent = text; fallbackEl.hidden = false;
+    const r = document.createRange(); r.selectNodeContents(fallbackEl);
+    const s = getSelection(); s.removeAllRanges(); s.addRange(r);
+  });
+}
+function startOver() {
+  trail = []; session.set("trail", trail);
+  for (const k of Object.keys(readings)) delete readings[k];
+  session.set("readings", readings);
+  go(MATRIX.start);
+}
+
+function homeView() {
+  const resume = trail.length > 1 ? trail[trail.length - 1] : null;
+  const groups = { check: [], fix: [] };
+  for (const n of MATRIX.nodes) groups[n.type]?.push(n);
+  const link = n => h("a", { href: "#" + n.id }, h("b", null, n.id.toUpperCase()), h("span", null, n.title));
+  return h("div", null,
+    h("section", { class: "hero" },
+      h("h1", { tabindex: "-1" }, "AC Repair Matrix"),
+      h("p", null, "Step-by-step diagnosis and repair for straight-cool split systems."),
+      h("div", { class: "answers" },
+        h("button", { class: "answer cta", onclick: startOver },
+          h("span", null, "Start at Step 1"), h("i", { svg: ICON.chev, "aria-hidden": "true" })),
+        resume ? h("button", { class: "answer secondary", onclick: () => go(resume) }, h("span", null, "Resume at " + stepLabel(resume))) : null)),
+    h("section", { class: "card" },
+      h("h2", null, "How it works"),
+      h("ul", null,
+        h("li", null, "Do the tasks on each step, then tap the answer that matches what you find."),
+        h("li", null, "Every branch ends in a diagnosis and the repair steps. Most calls take 7 steps or fewer."),
+        h("li", null, "Finish with the temperature split. If it's not in range, restart: some calls have more than one problem."),
+        h("li", null, "Tap the gauge (top right) any time for the PT chart."))),
+    h("section", { class: "card" },
+      h("h2", null, "Refrigerant"),
+      refPicker(),
+      h("p", { class: "hint" }, "Used by the pressure calculators and the PT chart. You can change it on any step.")),
+    h("section", { class: "card" },
+      h("details", { class: "index" },
+        h("summary", null, "Jump to a step"),
+        h("h3", null, "Checks"), groups.check.map(link),
+        h("h3", null, "Repairs"), groups.fix.map(link),
+        h("h3", null, "Finish"), link(NODES.get("end")))),
+    REVIEW ? h("section", { class: "card" },
+      h("h2", null, "Changes from 2014"),
+      h("ul", null, MATRIX.nodes.filter(n => n.updated).map(n =>
+        h("li", null, h("a", { href: "#" + n.id }, stepLabel(n.id)), (n.isNew ? " (new): " : ": ") + n.updated)))) : null,
+    h("footer", null,
+      h("button", { class: "linkbtn", "aria-pressed": String(REVIEW),
+        onclick: () => { REVIEW = !REVIEW; store.set("review", REVIEW); render(); } },
+        REVIEW ? "Hide changes from 2014" : "Show changes from 2014"),
+      h("p", null, "Written by Stephen Gamst, 2014. Updated for Goettl, 2026."),
+      h("p", null, "We Do Things The Right Way, Not The Easy Way.®")));
+}
+
+/* ── Inputs and refrigerant picker ─────────────────────────── */
+// persistent: keep listening across page renders (the PT dialog lives outside #main)
+function refPicker(onChange, persistent = false) {
+  const btns = Object.entries(REFS).map(([k, label]) =>
+    h("button", { role: "radio", "aria-checked": String(k === refrigerant), onclick: () => setRefrigerant(k) }, label));
+  const sync = () => { btns.forEach((b, i) => b.setAttribute("aria-checked", String(Object.keys(REFS)[i] === refrigerant))); onChange?.(); };
+  sync.persistent = persistent;
+  refListeners.add(sync);
+  return h("div", { class: "seg", role: "radiogroup", "aria-label": "Refrigerant" }, btns);
+}
+function field(key, label, unit, onInput) {
+  const id = "f-" + key;
+  return h("div", { class: "field" },
+    h("label", { for: id }, label),
+    h("div", { class: "in" },
+      h("input", { id, type: "number", inputmode: "decimal", step: "any", value: readings[key] ?? "",
+        oninput: e => { readings[key] = e.target.value; session.set("readings", readings); onInput(); } }),
+      unit ? h("span", { class: "unit" }, unit) : null));
+}
+const row = (k, v, sub) => h("div", { class: "row" }, h("span", { class: "k" }, k), h("span", { class: "v" }, v, sub ? h("small", null, sub) : null));
+
+/* ── Calculators ───────────────────────────────────────────── */
+// Step 18 pressure combinations → the answer they point to.
+const PRESSURE_PATH = { "low|high": "19", "low|normal": "20", "low|low": "21", "high|low": "22",
+  "normal|high": "18b", "high|high": "18b", "normal|normal": "18a" };
+
+const TOOLS = {
+  targets(suggest) {
+    const out = h("div", { class: "out", "aria-live": "polite" });
+    const update = () => {
+      const ref = refrigerant, amb = num(readings.ambient), seer = num(readings.seer);
+      const suc = num(readings.suction), head = num(readings.head);
+      const [eLo, eHi] = FIELD_RULES.evapSat;
+      const rows = [row("Normal suction", `${eLo}–${eHi}°F`, `${fmtP(psigAt(ref, eLo, "vapor"))}–${fmtP(psigAt(ref, eHi, "vapor"))} psig`)];
+      let headRange = null, todo = false;
+      if (amb != null && seer != null) {
+        const c = ctoaTarget(seer);
+        if (Array.isArray(c) && c.length === 2) headRange = [amb + c[0], amb + c[1]]; else todo = true;
+      }
+      rows.push(headRange
+        ? row("Target head", `${fmtT(headRange[0])}–${fmtT(headRange[1])}`, `${fmtP(psigAt(ref, headRange[0], "liquid"))}–${fmtP(psigAt(ref, headRange[1], "liquid"))} psig`)
+        : row("Target head", "—", todo ? "" : "Enter ambient and efficiency"));
+      let sClass = null, hClass = null;
+      if (suc != null) {
+        const t = satTemp(ref, suc, "vapor");
+        sClass = t == null ? null : classify(t, eLo, eHi);
+        rows.push(row("Your suction", t == null ? "Out of range" : [fmtT(t) + " ", pill(sClass, LABEL[sClass])], `${suc} psig ${REFS[ref]}`));
+      }
+      if (head != null) {
+        const t = satTemp(ref, head, "liquid");
+        hClass = t == null || !headRange ? null : classify(t, headRange[0], headRange[1]);
+        rows.push(row("Your head", t == null ? "Out of range" : [fmtT(t) + " ", hClass ? pill(hClass, LABEL[hClass]) : null], `${head} psig ${REFS[ref]}`));
+      }
+      const to = sClass && hClass ? PRESSURE_PATH[sClass + "|" + hClass] ?? null : null;
+      if (sClass && hClass && !to) rows.push(h("p", { class: "hint" }, "That combination isn't in the matrix. Re-check your readings, ambient and refrigerant."));
+      if (todo) rows.push(h("p", { class: "hint todo" }, "Head target isn't set up yet: ctoaTarget() in matrix.js needs its rule."));
+      out.replaceChildren(...rows);
+      suggest(to);
+    };
+    const el = h("section", { class: "tool" }, h("h3", null, "Pressure targets"),
+      refPicker(update),
+      h("div", { class: "fields" },
+        field("ambient", "Outdoor ambient", "°F", update),
+        field("seer", "SEER / SEER2", "", update),
+        field("suction", "Suction", "psig", update),
+        field("head", "Head (liquid)", "psig", update)),
+      out);
+    queueMicrotask(update);
+    return el;
+  },
+
+  shsc(suggest) {
+    const out = h("div", { class: "out", "aria-live": "polite" });
+    const S = FIELD_RULES.superheat, C = FIELD_RULES.subcool;
+    const update = () => {
+      const ref = refrigerant, rows = [];
+      const suc = num(readings.suction), sl = num(readings.suctionLine), liq = num(readings.head), ll = num(readings.liquidLine);
+      if (suc != null && sl != null) {
+        const sat = satTemp(ref, suc, "vapor");
+        if (sat == null) rows.push(row("Superheat", "Out of range"));
+        else { const sh = sl - sat; const c = classify(sh, S.min, S.max);
+          rows.push(row("Superheat", [`${sh.toFixed(1)}°F `, pill(c, LABEL[c])], `Suction saturation ${fmtT(sat)}`)); }
+      } else rows.push(row("Superheat", "—", "Enter suction psig and line temp"));
+      if (liq != null && ll != null) {
+        const sat = satTemp(ref, liq, "liquid");
+        if (sat == null) rows.push(row("Subcooling", "Out of range"));
+        else { const sc = sat - ll; const c = classify(sc, C.min, C.max);
+          rows.push(row("Subcooling", [`${sc.toFixed(1)}°F `, pill(c, LABEL[c])], `Liquid saturation ${fmtT(sat)}`)); }
+      } else rows.push(row("Subcooling", "—", "Enter liquid psig and line temp"));
+      rows.push(h("p", { class: "hint" }, `Use the manufacturer's targets first. Fallback: about ${S.target}°F superheat and ${C.target}°F subcooling, both between ${S.min} and ${S.max}°F.`));
+      out.replaceChildren(...rows);
+      suggest(null);
+    };
+    const el = h("section", { class: "tool" }, h("h3", null, "Superheat and subcooling"),
+      refPicker(update),
+      h("div", { class: "fields" },
+        field("suction", "Suction", "psig", update),
+        field("suctionLine", "Suction line temp", "°F", update),
+        field("head", "Liquid", "psig", update),
+        field("liquidLine", "Liquid line temp", "°F", update)),
+      out);
+    queueMicrotask(update);
+    return el;
+  },
+
+  split(suggest) {
+    const out = h("div", { class: "out", "aria-live": "polite" });
+    const [lo, hi] = FIELD_RULES.deltaT;
+    const update = () => {
+      const r = num(readings.returnT), s = num(readings.supplyT);
+      if (r == null || s == null) { out.replaceChildren(row("Split", "—", `Target ${lo}–${hi}°F`)); suggest(null); return; }
+      const d = r - s, c = classify(d, lo, hi);
+      const rows = [row("Split", [`${d.toFixed(1)}°F `, pill(c, LABEL[c])], `Target ${lo}–${hi}°F`)];
+      if (c === "high") rows.push(h("p", { class: "hint" }, "A split above range usually means low airflow. Check the filter, blower speed and static pressure."));
+      out.replaceChildren(...rows);
+      suggest(c === "normal" ? "done" : c === "low" ? "1" : null);
+    };
+    const el = h("section", { class: "tool" }, h("h3", null, "Temperature split"),
+      h("div", { class: "fields" },
+        field("returnT", "Return air", "°F", update),
+        field("supplyT", "Supply air", "°F", update)),
+      out);
+    queueMicrotask(update);
+    return el;
+  },
+};
+
+/* ── PT chart dialog ───────────────────────────────────────── */
+function ptView() {
+  const conv = h("div", { class: "out", "aria-live": "polite" });
+  const tbody = h("tbody");
+  const thead = h("thead");
+  let pIn = "", tIn = "";
+  const update = () => {
+    const ref = refrigerant, blend = !Array.isArray(PT_DATA[ref]);
+    const rows = [];
+    const p = num(pIn), t = num(tIn);
+    if (p != null) rows.push(blend
+      ? row(`${p} psig`, `${fmtT(satTemp(ref, p, "liquid"))} liquid`, `${fmtT(satTemp(ref, p, "vapor"))} vapor`)
+      : row(`${p} psig`, fmtT(satTemp(ref, p, "liquid"))));
+    if (t != null) rows.push(blend
+      ? row(`${t}°F`, `${fmtP(psigAt(ref, t, "liquid"))} psig liquid`, `${fmtP(psigAt(ref, t, "vapor"))} psig vapor`)
+      : row(`${t}°F`, `${fmtP(psigAt(ref, t, "liquid"))} psig`));
+    if (blend) rows.push(h("p", { class: "hint" }, "R-454B has glide. Use liquid (bubble) for subcooling and vapor (dew) for superheat."));
+    rows.push(h("p", { class: "hint" }, "Gauge pressures at sea level. At Las Vegas elevation (about 2,000 ft) a plain gauge reads about 1 psi higher for the same saturation temperature. Digital gauges with altitude compensation correct for this."));
+    conv.replaceChildren(...rows);
+
+    thead.replaceChildren(h("tr", null, h("th", null, "°F"),
+      blend ? [h("th", null, "Liquid psig"), h("th", null, "Vapor psig")] : h("th", null, REFS[ref] + " psig")));
+    const hit = t != null ? Math.round(t) : null;
+    const frag = document.createDocumentFragment();
+    const liq = curve(ref, "liquid"), vap = curve(ref, "vapor");
+    for (let i = 0; i < liq.length; i++) {
+      const tf = PT_DATA.tMin + i * PT_DATA.step;
+      frag.append(h("tr", { class: tf === hit ? "hit" : null }, h("td", null, tf),
+        h("td", null, liq[i].toFixed(1)), blend ? h("td", null, vap[i].toFixed(1)) : null));
+    }
+    tbody.replaceChildren(frag);
+  };
+  const ptField = (id, label, unit, set) =>
+    h("div", { class: "field" }, h("label", { for: id }, label),
+      h("div", { class: "in" }, h("input", { id, type: "number", inputmode: "decimal", step: "any",
+        oninput: e => { set(e.target.value); update(); } }), h("span", { class: "unit" }, unit)));
+  const picker = refPicker(update, true);
+  update();
+  return [picker,
+    h("div", { class: "tool", style: "margin-top:0" }, h("h3", null, "Convert"),
+      h("div", { class: "fields" },
+        ptField("pt-psig", "Pressure", "psig", v => pIn = v),
+        ptField("pt-temp", "Temperature", "°F", v => tIn = v)), conv),
+    h("h2", null, "Saturation table"),
+    h("table", { class: "ptt" }, thead, tbody)];
+}
+
+/* ── Wire up ───────────────────────────────────────────────── */
+$("#back").addEventListener("click", () => {
+  if (trail.length > 1) history.back(); else location.hash = "";
+});
+$("#home").addEventListener("click", () => { location.hash = ""; });
+const dlg = $("#pt");
+$("#ptbody").append(...ptView());
+$("#ptbtn").addEventListener("click", () => dlg.showModal());
+$("#ptclose").addEventListener("click", () => dlg.close());
+dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
+window.addEventListener("hashchange", render);
+render();
+
+/* sw:start — offline support for the hub install (removed from the claude.ai preview build) */
+if ("serviceWorker" in navigator && (location.protocol === "https:" || location.hostname === "localhost")) {
+  navigator.serviceWorker.register("./sw.js").catch(() => {});
+}
+/* sw:end */
+</script>
+</body>
+</html>
