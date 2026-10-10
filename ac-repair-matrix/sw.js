@@ -1,10 +1,11 @@
 /* AC Repair Matrix — service worker.
-   Caches the app so it opens with no signal (attics, rooftops).
-   Pages: network first (4 s), then the saved copy. Other files: saved copy first, refreshed in the background.
-   Change BUILD on every deploy so phones pick up the new content. */
-const BUILD = '2026-10-10.2';
+   Keeps a copy of the app so it opens with no signal (attics, rooftops).
+   Everything is network first (4 s), then the saved copy, so an online phone always gets the
+   current build and an offline one gets the last build it saw, never a mix of the two.
+   Change BUILD on every deploy. */
+const BUILD = '2026-10-10.3';
 const CACHE = 'acrm-' + BUILD;
-const SHELL = ['./', './index.html', './matrix.js', './pt-data.js', './manifest.webmanifest',
+const SHELL = ['./', './index.html', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './icon-512-maskable.png', './apple-touch-icon.png'];
 
 self.addEventListener('install', e => {
@@ -21,24 +22,17 @@ self.addEventListener('activate', e => {
 self.addEventListener('fetch', e => {
   const req = e.request;
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return;
-  e.respondWith(req.mode === 'navigate' ? page(req) : asset(req, e));
+  e.respondWith(networkFirst(req));
 });
 
-async function page(req) {
+async function networkFirst(req) {
   const cache = await caches.open(CACHE);
   try {
     const res = await Promise.race([fetch(req), new Promise((_, no) => setTimeout(() => no(new Error('timeout')), 4000))]);
-    if (res.ok) cache.put('./index.html', res.clone());
+    if (res.ok) cache.put(req.mode === 'navigate' ? './index.html' : req, res.clone());
     return res;
   } catch {
-    return (await cache.match('./index.html')) || Response.error();
+    const hit = req.mode === 'navigate' ? await cache.match('./index.html') : await cache.match(req, { ignoreSearch: true });
+    return hit || Response.error();
   }
-}
-
-async function asset(req, e) {
-  const cache = await caches.open(CACHE);
-  const hit = await cache.match(req, { ignoreSearch: true });
-  const fresh = fetch(req).then(res => { if (res.ok) cache.put(req, res.clone()); return res; }).catch(() => null);
-  if (hit) { e.waitUntil(fresh); return hit; }
-  return (await fresh) || Response.error();
 }
