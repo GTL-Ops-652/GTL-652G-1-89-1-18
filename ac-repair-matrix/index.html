@@ -64,6 +64,10 @@ header{position:sticky;top:0;z-index:20;background:var(--bar);color:var(--on-bar
 .htitle{flex:1;min-width:0;text-align:center}
 .htitle small{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;opacity:.8}
 .htitle strong{display:block;font-family:var(--serif);font-size:20px;line-height:1.2;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sysbar{max-width:640px;margin:6px auto 0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.sysbar .grp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:3px;background:rgba(255,255,255,.12);border-radius:10px;padding:3px}
+.sysbar button{border:0;border-radius:8px;background:transparent;color:var(--on-bar);padding:7px 2px;font-weight:700;font-size:13px}
+.sysbar button[aria-checked="true"]{background:var(--on-bar);color:var(--bar)}
 
 main{max-width:640px;margin:0 auto;padding:16px 16px calc(32px + env(safe-area-inset-bottom))}
 .review-banner{background:var(--hl);border-bottom:1px solid var(--hl-line);color:var(--hl-ink);font-size:14px;text-align:center;padding:8px 16px}
@@ -91,6 +95,13 @@ ol.tasks{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .task[aria-pressed="true"] .n span{display:none}
 .tasks-hint{font-size:13px;color:var(--muted);margin:6px 2px 0}
 
+.parts{margin:12px 0 0;background:var(--surface);border:1px solid var(--line);border-left:6px solid var(--mb);border-radius:var(--r);padding:10px 14px}
+.parts b{display:block;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--label)}
+.setup-group{margin-top:14px}
+.tool>.setup-group:first-child{margin-top:0}
+.setup-group h3{margin:0 0 6px;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.seg.three{grid-template-columns:repeat(3,minmax(0,1fr));margin-bottom:0}
+.seg.two,.seg.grid2{grid-template-columns:repeat(2,minmax(0,1fr));margin-bottom:0}
 .notes{margin:12px 0 0;background:var(--tint);border-radius:var(--r);padding:10px 14px}
 .notes p{margin:6px 0}
 .notes b{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--label)}
@@ -194,6 +205,7 @@ table.ptt{width:100%;border-collapse:collapse;background:var(--surface);border-r
     <span class="hbtn" aria-hidden="true"></span>
     <button class="hbtn" id="ptbtn" aria-label="Open PT chart"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="13" r="8"/><path d="M12 13l4-4"/><path d="M8 19h8"/><path d="M12 5V3"/></svg></button>
   </div>
+  <div class="sysbar" id="sysbar" aria-label="System type"></div>
 </header>
 <div id="review-banner" class="review-banner" hidden>Review mode: each step shows what changed from the 2014 matrix.</div>
 <main id="main"><noscript>The AC Repair Matrix needs JavaScript turned on.</noscript></main>
@@ -291,12 +303,60 @@ const NODES = new Map(MATRIX.nodes.map(n => [n.id, n]));
 let REVIEW = new URLSearchParams(location.search).has("review") || store.get("review", false);
 const readings = session.get("readings", {});   // gauge readings carry from step to step
 let trail = session.get("trail", []);
+// System = layout (split | pkg) × heat (gas | hp). Older saves stored one "system" value.
+const OLD_SYSTEM = { split: ["split", "gas"], hp: ["split", "hp"], pkg: ["pkg", "gas"] }[store.get("system")];
+let layout = LAYOUTS[store.get("layout")] ? store.get("layout") : OLD_SYSTEM?.[0] ?? "split";
+let heat = HEATS[store.get("heat")] ? store.get("heat") : OLD_SYSTEM?.[1] ?? "gas";
+const combo = () => layout + "-" + heat;
+const systemLabel = () => `${LAYOUTS[layout]} ${heat === "hp" ? "heat pump" : "gas"}`;
+let equip = EQUIPMENT[store.get("equip")] ? store.get("equip") : "single";
+let rvMode = RV_MODES[store.get("rv")] ? store.get("rv") : "o";   // heat pump reversing valve: O unless switched to B
+
+// Pick this system's / equipment's version of a content value (see the notes at the top of matrix.js),
+// then swap in {outdoor}-style terms. Returns null when the value doesn't apply.
+// Most specific key wins: exact system, layout, heat, equipment, reversing valve, then `all`.
+const pick = x => x[combo()] ?? x[layout] ?? x[heat] ?? x[equip] ?? x[rvMode] ?? x.all ?? null;
+function v(x) {
+  while (x && typeof x === "object" && !Array.isArray(x) && !("label" in x)) x = pick(x);
+  if (typeof x !== "string") return x;
+  return x.replace(/\{(\w+)\}/g, (m, k) => {
+    const term = TERMS[k.toLowerCase()];
+    const t = term && pick(term);
+    if (!t) return m;
+    return k[0] === k[0].toUpperCase() ? t[0].toUpperCase() + t.slice(1) : t;
+  });
+}
+const list = arr => (arr || []).map(v).filter(Boolean);
+const forSystem = n => !n.systems || n.systems.some(k => k === combo() || k === layout || k === heat);
 
 function stepLabel(id) {
+  if (id === "0") return "Setup";
   if (id === "end") return "End test";
   if (id === "done") return "Done";
   return "Step " + id.toUpperCase();
 }
+const shortLabel = id => id === "0" ? "Setup" : id === "end" ? "End" : id === "done" ? "Done" : id.toUpperCase();
+
+function renderSysbar() {
+  const grp = (key, title, entries, current, set) => h("div", { class: "grp", role: "radiogroup", "aria-label": title },
+    Object.entries(entries).map(([k, label]) =>
+      h("button", { role: "radio", "aria-checked": String(k === current), "data-pick": key + ":" + k, onclick: () => set(k) }, label)));
+  $("#sysbar").replaceChildren(grp("layout", "Split or package", LAYOUTS, layout, setLayout), grp("heat", "Gas or heat pump", HEATS, heat, setHeat));
+}
+function saveSystem(keep) { store.set("layout", layout); store.set("heat", heat); renderSysbar(); render({ keep }); }
+function setLayout(k) { layout = k; saveSystem("layout:" + k); }
+function setHeat(k) { heat = k; saveSystem("heat:" + k); }
+function setSystem(c) { [layout, heat] = c.split("-"); saveSystem("system:" + c); }
+function setEquip(k) { equip = k; store.set("equip", k); render({ keep: "equip:" + k }); }
+function setRv(k) { rvMode = k; store.set("rv", k); render({ keep: "rv:" + k }); }
+// A row of radio-style toggle buttons; `key` ties the buttons to render({ keep }) refocusing.
+const toggleGroup = (key, title, entries, current, set, cls = "three") => h("div", { class: "setup-group" },
+  h("h3", null, title),
+  h("div", { class: "seg " + cls, role: "radiogroup", "aria-label": title }, entries.map(([k, label]) =>
+    h("button", { role: "radio", "aria-checked": String(k === current), "data-pick": key + ":" + k, onclick: () => set(k) }, label))));
+const rvToggle = () => [
+  toggleGroup("rv", "Reversing valve", Object.entries(RV_MODES).map(([k, m]) => [k, m.label]), rvMode, setRv, "two"),
+  h("p", { class: "hint" }, RV_MODES[rvMode].hint)];
 const currentId = () => { const id = decodeURIComponent(location.hash.slice(1)); return NODES.has(id) ? id : null; };
 const go = id => { location.hash = id; };
 
@@ -309,7 +369,8 @@ function updateTrail(id) {
 
 /* ── Views ─────────────────────────────────────────────────── */
 let firstRender = true;
-function render() {
+// opts.keep: re-render in place after a toggle (keep scroll, refocus the toggle with that data-pick)
+function render(opts = {}) {
   const id = currentId();
   const node = id && NODES.get(id);
   if (node) updateTrail(id);
@@ -319,6 +380,7 @@ function render() {
   ghost($("#back"), !node);
   ghost($("#home"), !node);
   $("#review-banner").hidden = !REVIEW;
+  if (opts.keep) { document.querySelector(`[data-pick="${opts.keep}"]`)?.focus({ preventScroll: true }); return; }
   window.scrollTo(0, 0);
   // Move focus to the new heading so screen readers announce the step (not on first load).
   if (!firstRender) $("#main h1")?.focus({ preventScroll: true });
@@ -326,40 +388,51 @@ function render() {
 }
 
 function stepView(n) {
-  const answerEls = (n.answers || []).map(a =>
-    h("button", { class: "answer" + (a.to === "end" || a.to === "done" ? " cta" : ""), "data-to": a.to, onclick: () => go(a.to) },
+  const answers = (n.answers || []).map(a => ({ label: v(a.label), to: v(a.to), match: a.match || [] })).filter(a => a.label && a.to);
+  const answerEls = answers.map(a =>
+    h("button", { class: "answer" + (a.to === "end" || a.to === "done" || n.type === "setup" ? " cta" : ""), "data-match": a.match.join(","), onclick: () => go(a.to) },
       h("span", null, a.label), h("i", { svg: ICON.chev, "aria-hidden": "true" })));
-  // Tools call suggest(id) to highlight the answer that matches the readings.
-  function suggest(to) {
+  // Tools call suggest(result) to highlight the answer whose `match` lists that result; returns whether one matched.
+  function suggest(result) {
+    let matched = false;
     for (const b of answerEls) {
-      const on = to != null && b.dataset.to === to;
+      const on = result != null && b.dataset.match.split(",").includes(result);
+      matched ||= on;
       if (on === b.classList.contains("suggested")) continue;
       b.classList.toggle("suggested", on);
       if (on) b.prepend(h("em", { class: "tag" }, "Matches your readings"));
       else b.querySelector(".tag")?.remove();
     }
+    return matched;
   }
+  const tasks = list(n.tasks), notes = list(n.notes), warn = list(n.warn), parts = v(n.parts);
+  const ask = v(n.ask), diagnosis = v(n.diagnosis), intro = v(n.intro), updated = v(n.updated);
+  const tool = n.tool ? TOOLS[n.tool](suggest) : null;
+  const toolFirst = n.tool === "rvmode";   // a toggle that rewrites the tasks goes above them
   let taskNo = 0;
   return h("article", null,
     h("div", { class: "step-head" },
       h("span", { class: "chip" }, stepLabel(n.id)),
       REVIEW && n.isNew ? h("span", { class: "chip new" }, "New in 2026") : null,
-      h("h1", { tabindex: "-1" }, n.title),
-      n.diagnosis ? h("div", { class: "diag" }, h("b", null, "Diagnosis"), h("span", null, n.diagnosis)) : null,
-      n.intro ? h("p", { class: "intro" }, n.intro) : null),
-    (n.warn || []).map(w => h("div", { class: "warn", role: "note" }, h("i", { svg: ICON.warn, "aria-hidden": "true" }), h("span", null, w))),
-    n.tasks?.length ? [
+      h("h1", { tabindex: "-1" }, v(n.title)),
+      diagnosis ? h("div", { class: "diag" }, h("b", null, "Diagnosis"), h("span", null, diagnosis)) : null,
+      intro ? h("p", { class: "intro" }, intro) : null),
+    warn.map(w => h("div", { class: "warn", role: "note" }, h("i", { svg: ICON.warn, "aria-hidden": "true" }), h("span", null, w))),
+    toolFirst ? tool : null,
+    tasks.length ? [
       h("h2", null, n.type === "fix" ? "Repair" : "Do this"),
-      h("ol", { class: "tasks" }, n.tasks.map(t => h("li", null,
+      h("ol", { class: "tasks" }, tasks.map(t => h("li", null,
         h("button", { class: "task", "aria-pressed": "false", onclick: toggleTask },
           h("span", { class: "n" }, h("span", null, ++taskNo)), h("span", null, t))))),
       h("p", { class: "tasks-hint" }, "Tap a task to check it off."),
     ] : null,
-    n.notes?.length ? h("div", { class: "notes" }, h("b", null, "Notes"), n.notes.map(t => h("p", null, t))) : null,
-    n.tool ? TOOLS[n.tool](suggest) : null,
-    REVIEW && n.updated ? h("div", { class: "review" }, h("b", null, "Changed from 2014"), n.updated) : null,
-    n.ask ? h("div", { class: "q" }, h("span", { class: "mark", "aria-hidden": "true" }, "Q"), h("p", null, n.ask)) : h("h2", null, "Next"),
-    h("div", { class: "answers", role: "group", "aria-label": "Answers" }, answerEls),
+    parts ? h("div", { class: "parts" }, h("b", null, "Parts · " + EQUIPMENT[equip].label), parts) : null,
+    notes.length ? h("div", { class: "notes" }, h("b", null, "Notes"), notes.map(t => h("p", null, t))) : null,
+    toolFirst ? null : tool,
+    REVIEW && updated ? h("div", { class: "review" }, h("b", null, "Changed from 2014"), updated) : null,
+    ask ? h("div", { class: "q" }, h("span", { class: "mark", "aria-hidden": "true" }, "Q"), h("p", null, ask)) : h("h2", null, "Next"),
+    answerEls.length ? h("div", { class: "answers", role: "group", "aria-label": "Answers" }, answerEls)
+      : h("p", { class: "hint todo" }, "This step's answers aren't set up yet (matrix.js)."),
     trailView());
 }
 function toggleTask(e) {
@@ -373,17 +446,19 @@ function trailView() {
     h("ol", null, trail.map((t, i) => h("li", null,
       h("button", { "aria-current": i === trail.length - 1 ? "step" : null,
         onclick: () => { if (i === trail.length - 1) return; trail = trail.slice(0, i + 1); session.set("trail", trail); go(t); } },
-        t === "end" ? "End" : t === "done" ? "Done" : t.toUpperCase())))));
+        shortLabel(t))))));
 }
 
 function doneView(n) {
-  const path = "AC Repair Matrix path: " + trail.map(stepLabel).join(" → ");
+  const setup = [systemLabel(), heat === "hp" ? "reversing valve " + rvMode.toUpperCase() : null, EQUIPMENT[equip].label, REFS[refrigerant]];
+  const path = `AC Repair Matrix (${setup.filter(Boolean).join(", ")}): ` +
+    trail.filter(t => t !== "0").map(stepLabel).join(" → ");
   const copybox = h("p", { class: "copybox", hidden: true });
   return h("article", null,
     h("div", { class: "hero" },
       h("h1", { tabindex: "-1" }, "Fixed."),
       h("p", null, "Good work. Before you leave the job:")),
-    h("ol", { class: "tasks", style: "margin-top:14px" }, n.tasks.map((t, i) => h("li", null,
+    h("ol", { class: "tasks", style: "margin-top:14px" }, list(n.tasks).map((t, i) => h("li", null,
       h("button", { class: "task", "aria-pressed": "false", onclick: toggleTask },
         h("span", { class: "n" }, h("span", null, i + 1)), h("span", null, t))))),
     h("div", { class: "answers", style: "margin-top:22px" },
@@ -412,27 +487,25 @@ function startOver() {
 function homeView() {
   const resume = trail.length > 1 ? trail[trail.length - 1] : null;
   const groups = { check: [], fix: [] };
-  for (const n of MATRIX.nodes) groups[n.type]?.push(n);
-  const link = n => h("a", { href: "#" + n.id }, h("b", null, n.id.toUpperCase()), h("span", null, n.title));
+  for (const n of MATRIX.nodes) if (forSystem(n)) groups[n.type]?.push(n);
+  const link = n => h("a", { href: "#" + n.id }, h("b", null, shortLabel(n.id)), h("span", null, v(n.title)));
   return h("div", null,
     h("section", { class: "hero" },
       h("h1", { tabindex: "-1" }, "AC Repair Matrix"),
-      h("p", null, "Step-by-step diagnosis and repair for straight-cool split systems."),
+      h("p", null, "Step-by-step cooling diagnosis and repair for split AC, heat pump and package systems."),
       h("div", { class: "answers" },
         h("button", { class: "answer cta", onclick: startOver },
-          h("span", null, "Start at Step 1"), h("i", { svg: ICON.chev, "aria-hidden": "true" })),
+          h("span", null, "Start a diagnosis"), h("i", { svg: ICON.chev, "aria-hidden": "true" })),
         resume ? h("button", { class: "answer secondary", onclick: () => go(resume) }, h("span", null, "Resume at " + stepLabel(resume))) : null)),
     h("section", { class: "card" },
       h("h2", null, "How it works"),
       h("ul", null,
+        h("li", null, "Pick the system first: split or package, gas or heat pump. The two toggles under the title switch it any time."),
+        h("li", null, "Airflow gets checked (static pressure) before any refrigerant work. You can't dial in a charge with the wrong airflow."),
         h("li", null, "Do the tasks on each step, then tap the answer that matches what you find."),
-        h("li", null, "Every branch ends in a diagnosis and the repair steps. Most calls take 7 steps or fewer."),
+        h("li", null, "Every branch ends in a diagnosis, the repair steps and which parts to use. Most calls take 7 steps or fewer."),
         h("li", null, "Finish with the temperature split. If it's not in range, restart: some calls have more than one problem."),
         h("li", null, "Tap the gauge (top right) any time for the PT chart."))),
-    h("section", { class: "card" },
-      h("h2", null, "Refrigerant"),
-      refPicker(),
-      h("p", { class: "hint" }, "Used by the pressure calculators and the PT chart. You can change it on any step.")),
     h("section", { class: "card" },
       h("details", { class: "index" },
         h("summary", null, "Jump to a step"),
@@ -447,7 +520,6 @@ function homeView() {
       h("button", { class: "linkbtn", "aria-pressed": String(REVIEW),
         onclick: () => { REVIEW = !REVIEW; store.set("review", REVIEW); render(); } },
         REVIEW ? "Hide changes from 2014" : "Show changes from 2014"),
-      h("p", null, "Written by Stephen Gamst, 2014. Updated for Goettl, 2026."),
       h("p", null, "We Do Things The Right Way, Not The Easy Way.®")));
 }
 
@@ -461,23 +533,60 @@ function refPicker(onChange, persistent = false) {
   refListeners.add(sync);
   return h("div", { class: "seg", role: "radiogroup", "aria-label": "Refrigerant" }, btns);
 }
-function field(key, label, unit, onInput) {
+function field(key, label, unit, onInput, placeholder) {
   const id = "f-" + key;
   return h("div", { class: "field" },
     h("label", { for: id }, label),
     h("div", { class: "in" },
-      h("input", { id, type: "number", inputmode: "decimal", step: "any", value: readings[key] ?? "",
+      h("input", { id, type: "number", inputmode: "decimal", step: "any", value: readings[key] ?? "", placeholder,
         oninput: e => { readings[key] = e.target.value; session.set("readings", readings); onInput(); } }),
       unit ? h("span", { class: "unit" }, unit) : null));
 }
 const row = (k, v, sub) => h("div", { class: "row" }, h("span", { class: "k" }, k), h("span", { class: "v" }, v, sub ? h("small", null, sub) : null));
 
 /* ── Calculators ───────────────────────────────────────────── */
-// Step 18 pressure combinations → the answer they point to.
-const PRESSURE_PATH = { "low|high": "19", "low|normal": "20", "low|low": "21", "high|low": "22",
-  "normal|high": "18b", "high|high": "18b", "normal|normal": "18a" };
-
 const TOOLS = {
+  setup() {
+    const systems = Object.keys(LAYOUTS).flatMap(l => Object.keys(HEATS).map(ht =>
+      [l + "-" + ht, `${LAYOUTS[l]} ${ht === "hp" ? "heat pump" : "gas"}`]));
+    return h("section", { class: "tool" },
+      toggleGroup("system", "System", systems, combo(), setSystem, "grid2"),
+      heat === "hp" ? rvToggle() : null,
+      toggleGroup("equip", "Equipment", Object.entries(EQUIPMENT).map(([k, e]) => [k, e.label]), equip, setEquip),
+      h("p", { class: "hint" }, EQUIPMENT[equip].hint, " ", h("b", null, PARTS_RULE[equip])),
+      h("div", { class: "setup-group" }, h("h3", null, "Refrigerant"), refPicker()));
+  },
+
+  rvmode() {
+    return h("section", { class: "tool" }, rvToggle());
+  },
+
+  static(suggest) {
+    const out = h("div", { class: "out", "aria-live": "polite" });
+    const update = () => {
+      const r = num(readings.staticReturn), s = num(readings.staticSupply);
+      const max = num(readings.staticMax) ?? FIELD_RULES.staticMax;
+      if (r == null || s == null) {
+        out.replaceChildren(row("Total external static", "—", `Rated max ${max} in. w.c.`));
+        suggest(null); return;
+      }
+      const tesp = Math.abs(r) + Math.abs(s), c = tesp > max ? "high" : "normal";
+      const rows = [row("Total external static", [`${tesp.toFixed(2)} in. w.c. `, pill(c, c === "high" ? "High" : "OK")], `Rated max ${max} in. w.c.`)];
+      if (c === "high") rows.push(h("p", { class: "hint" }, Math.abs(r) > Math.abs(s) ? "Most of it is on the return side: filter or return duct." : "Most of it is on the supply side: coil or supply duct."));
+      out.replaceChildren(...rows);
+      suggest(c);
+    };
+    const el = h("section", { class: "tool" }, h("h3", null, "Static pressure"),
+      h("div", { class: "fields" },
+        field("staticReturn", "Return static", "in. w.c.", update),
+        field("staticSupply", "Supply static", "in. w.c.", update),
+        field("staticMax", "Rated max", "in. w.c.", update, String(FIELD_RULES.staticMax))),
+      h("p", { class: "hint" }, "Enter both readings as positive numbers. Leave rated max blank to use " + FIELD_RULES.staticMax + "."),
+      out);
+    queueMicrotask(update);
+    return el;
+  },
+
   targets(suggest) {
     const out = h("div", { class: "out", "aria-live": "polite" });
     const update = () => {
@@ -504,11 +613,11 @@ const TOOLS = {
         hClass = t == null || !headRange ? null : classify(t, headRange[0], headRange[1]);
         rows.push(row("Your head", t == null ? "Out of range" : [fmtT(t) + " ", hClass ? pill(hClass, LABEL[hClass]) : null], `${head} psig ${REFS[ref]}`));
       }
-      const to = sClass && hClass ? PRESSURE_PATH[sClass + "|" + hClass] ?? null : null;
-      if (sClass && hClass && !to) rows.push(h("p", { class: "hint" }, "That combination isn't in the matrix. Re-check your readings, ambient and refrigerant."));
+      const result = sClass && hClass ? sClass + "|" + hClass : null;
+      if (result && !suggest(result)) rows.push(h("p", { class: "hint" }, "That combination isn't in the matrix. Re-check your readings, ambient and refrigerant."));
+      if (!result) suggest(null);
       if (todo) rows.push(h("p", { class: "hint todo" }, "Head target isn't set up yet: ctoaTarget() in matrix.js needs its rule."));
       out.replaceChildren(...rows);
-      suggest(to);
     };
     const el = h("section", { class: "tool" }, h("h3", null, "Pressure targets"),
       refPicker(update),
@@ -566,7 +675,7 @@ const TOOLS = {
       const rows = [row("Split", [`${d.toFixed(1)}°F `, pill(c, LABEL[c])], `Target ${lo}–${hi}°F`)];
       if (c === "high") rows.push(h("p", { class: "hint" }, "A split above range usually means low airflow. Check the filter, blower speed and static pressure."));
       out.replaceChildren(...rows);
-      suggest(c === "normal" ? "done" : c === "low" ? "1" : null);
+      suggest(c);
     };
     const el = h("section", { class: "tool" }, h("h3", null, "Temperature split"),
       h("div", { class: "fields" },
@@ -635,7 +744,8 @@ $("#ptbody").append(...ptView());
 $("#ptbtn").addEventListener("click", () => dlg.showModal());
 $("#ptclose").addEventListener("click", () => dlg.close());
 dlg.addEventListener("click", e => { if (e.target === dlg) dlg.close(); });
-window.addEventListener("hashchange", render);
+window.addEventListener("hashchange", () => render());
+renderSysbar();
 render();
 
 /* sw:start — offline support for the hub install (removed from the claude.ai preview build) */

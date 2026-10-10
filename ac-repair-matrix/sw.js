@@ -2,7 +2,7 @@
    Caches the app so it opens with no signal (attics, rooftops).
    Pages: network first (4 s), then the saved copy. Other files: saved copy first, refreshed in the background.
    Change BUILD on every deploy so phones pick up the new content. */
-const BUILD = '2026-10-10.1';
+const BUILD = '2026-10-10.2';
 const CACHE = 'acrm-' + BUILD;
 const SHELL = ['./', './index.html', './matrix.js', './pt-data.js', './manifest.webmanifest',
   './icon-192.png', './icon-512.png', './icon-512-maskable.png', './apple-touch-icon.png'];
