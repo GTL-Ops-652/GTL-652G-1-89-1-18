@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-10-11 v2.80 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-10-11 v2.81 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -5066,7 +5066,7 @@ function pkReturnRoute(o){ PK_RET=null; const {dR,dS,cR,cG,rcs,yT,ceilY,RT,net,d
   const UR=(net&&net.r)||0, LU=q=>UR?uUnrotP([ux,uy],q,UR):q;   /* v2.61: RT comes in the unit's own frame (fcRetL); the network's points are turned into it */
   const xS=dS.x+dS.w/2, zS=dS.z+dS.d/2, xR=dR.x+dR.w/2, zR=dR.z+dR.d/2; const gx=xS-(RT[1]-uy)*12, gz=zS+(RT[0]-ux)*12; const yC=yT+rcs.b/2; const D=Math.max(rcs.a,rcs.b);
   if(Math.hypot(gx-xR,gz-zR)<D*1.2) return false;   // the grille right under the drop: the drop's own boot (the old path handles it)
-  const sup=[]; if(net&&net.edges) net.edges.forEach(e=>{ if(!e.segs||!e.segs.length) return; const P=dnRoutePts(e.segs,10).map(q0=>{ const q=LU(q0); return [xS-(q[1]-uy)*12,zS+(q[0]-ux)*12] }); for(let i=1;i<P.length;i++) sup.push([P[i-1],P[i]]) });
+  const sup=[]; if(net&&net.edges) net.edges.forEach(e=>{ if(!e.segs||!e.segs.length) return; const P=dnRoutePts(e.segs,10).map(q0=>{ const q=LU(q0); return [xS-(q[1]-uy)*12,zS+(q[0]-ux)*12] }); let tot=0; const cum=[0]; for(let i=1;i<P.length;i++){ tot+=Math.hypot(P[i][0]-P[i-1][0],P[i][1]-P[i-1][1]); cum.push(tot) } for(let i=1;i<P.length;i++){ const s=[P[i-1],P[i]]; s.end=Math.min(cum[i],tot-cum[i-1])<24; sup.push(s) } });   /* v2.81: s.end — within 2 ft of the run's end */
   const X=(a,b,c,d)=>{ const r=(p,q,s)=>(q[0]-p[0])*(s[1]-p[1])-(q[1]-p[1])*(s[0]-p[0]); const d1=r(c,d,a),d2=r(c,d,b),d3=r(a,b,c),d4=r(a,b,d); return ((d1>0)!==(d2>0))&&((d3>0)!==(d4>0)) };
   const box={x0:dS.x-D/2-3,x1:dS.x+dS.w+D/2+3,z0:dS.z-D/2-3,z1:dS.z+dS.d+D/2+3}; const box0={x0:dS.x-D/2-0.5,x1:dS.x+dS.w+D/2+0.5,z0:dS.z-D/2-0.5,z1:dS.z+dS.d+D/2+0.5};
   const inB=(B,a,b,skip)=>{ for(let k=0;k<=40;k++){ const x=a[0]+(b[0]-a[0])*k/40, z=a[1]+(b[1]-a[1])*k/40; if(skip&&Math.hypot(x-a[0],z-a[1])<D) continue; if(x>B.x0&&x<B.x1&&z>B.z0&&z<B.z1) return true } return false };
@@ -5078,8 +5078,8 @@ function pkReturnRoute(o){ PK_RET=null; const {dR,dS,cR,cG,rcs,yT,ceilY,RT,net,d
   const tyP=[]; if(net&&net.nodes) Object.values(net.nodes).forEach(n=>{ if(n.t==='ty'||n.t==='box'){ const q=LU([n.x,n.y]); tyP.push([xS-(q[1]-uy)*12,zS+(q[0]-ux)*12]) } });
   const supP=[]; sup.forEach(([p,q])=>{ const l=Math.hypot(q[0]-p[0],q[1]-p[1]); const m=Math.max(1,Math.ceil(l/6)); for(let k=0;k<m;k++) supP.push([p[0]+(q[0]-p[0])*k/m,p[1]+(q[1]-p[1])*k/m]) });
   const segD=(a,b,c)=>{ const dx=b[0]-a[0], dz=b[1]-a[1], L2=dx*dx+dz*dz||1; const k=Math.max(0,Math.min(1,((c[0]-a[0])*dx+(c[1]-a[1])*dz)/L2)); return Math.hypot(a[0]+dx*k-c[0],a[1]+dz*k-c[1]) };
-  const score=pts=>{ let c=0, h=0, L=0, o=0, t=0, n=0; for(let i=1;i<pts.length;i++){ const a=pts[i-1], b=pts[i]; L+=Math.hypot(b[0]-a[0],b[1]-a[1]); sup.forEach(s=>{ if(X(a,b,s[0],s[1])) c++ }); h+=hitBox(a,b,i===1); o+=overCan(a,b);
-      tyP.forEach(q=>{ if(segD(a,b,q)<D/2+14) t++ }); supP.forEach(q=>{ if(segD(a,b,q)<D/2+6) n++ }) } return {c,h,o,t,n,L,s:c*10+h*150+o*60+t*60+n*1.5+L/100} };
+  const score=pts=>{ let c=0, ce=0, h=0, L=0, o=0, t=0, n=0; for(let i=1;i<pts.length;i++){ const a=pts[i-1], b=pts[i]; L+=Math.hypot(b[0]-a[0],b[1]-a[1]); sup.forEach(s=>{ if(X(a,b,s[0],s[1])){ c++; if(s.end) ce++ } }); h+=hitBox(a,b,i===1); o+=overCan(a,b);
+      tyP.forEach(q=>{ if(segD(a,b,q)<D/2+14) t++ }); supP.forEach(q=>{ if(segD(a,b,q)<D/2+6) n++ }) } return {c,ce,h,o,t,n,L,s:c*10+ce*60+h*150+o*60+t*60+n*1.5+L/100} };
   const zOff=(gz>=zS?1:-1)*(Math.max(dS.d,dS.w)/2+D+12)+zS, xOff=(gx>=xS?1:-1)*(Math.max(dS.d,dS.w)/2+D+12)+xS;
   const Lb=D*1.3; const xLs=[], zLs=[]; [1,2,3.5].forEach(m=>{ xLs.push(Math.min(xR,gx)-Lb*m,Math.max(xR,gx)+Lb*m); zLs.push(Math.min(zR,gz)-Lb*m,Math.max(zR,gz)+Lb*m) });   /* v2.58: a grille nearly in line with the drop — step out past it so every leg has room for its bends */
   const cands=[[[xR,zR],[gx,zR],[gx,gz]],[[xR,zR],[xR,gz],[gx,gz]],[[xR,zR],[xR,zOff],[gx,zOff],[gx,gz]],[[xR,zR],[xOff,zR],[xOff,gz],[gx,gz]]]
@@ -5788,7 +5788,7 @@ function buildScene(){
       // v2.52 — a new duct system is a reducing trunk off the plenum (drawn below, the way the 2D designs it), not one take-off per register: only a duct down to a lower floor still lands on the plenum itself
       const tree=treeS; if(tree) tkItems=tkItems.filter(it=>it.down); // v2.53: decided above, before the supply drew
       { const slots=Math.max(1,Math.ceil(tkItems.length/2)); const maxD=tkItems.reduce((m,it)=>Math.max(m,it.d||Math.max(it.w||0,it.h||0)),8); const span=Math.max(tkBase.len-maxD,8);
-        { const mid0=(!tkItems.length&&tkBase.mid!=null)?tkBase.mid:null; const off0=tkItems.length?maxD+16:0; armBase= tkBase.along==='x'?{x:mid0!=null?mid0:tkBase.x0+maxD/2+off0+8}:{x:tkBase.x0} } // v2.55: where the plan's unit centre sits on the scene's x — the arms' base, and the return route's // the collars' centres run from TKHEAD + half a collar past the start to half a collar short of the tail
+        { const mid0=(!tkItems.length&&tkBase.mid!=null)?tkBase.mid:null; const off0=tkItems.length?maxD+16:0; armBase= tkBase.along==='x'?{x:(tree&&tree.net&&tree.rbr&&tkBase.box&&tkBase.box.kind==='h')?(tkBase.box.x0+tkBase.box.x1)/2:(mid0!=null?mid0:tkBase.x0+maxD/2+off0+8)}:{x:tkBase.x0} }   /* v2.81: a room design's frame is the plenum's middle (dnDraw3D) — the return run maps on the same point */ // v2.55: where the plan's unit centre sits on the scene's x — the arms' base, and the return route's // the collars' centres run from TKHEAD + half a collar past the start to half a collar short of the tail
         // a plenum gets them at a natural pitch starting at the discharge end (compressed only if they will not fit); a long trunk spreads them out
         const step= slots<2?0 : (tkBase.spread? Math.max(7,span/(slots-1)) : Math.min(Math.max(9,maxD+4), span/(slots-1)));
         const isAdd=takeoffAdded();
@@ -6419,7 +6419,7 @@ function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); i
 // v2.57 — THE LAYOUT PICKER · v2.67: three picture tiles — Auto · Wye Tree · Stepped Trunk (the Remote Box is gone, Stephen 2026-10-01). Each says what the
 // worst room gets in that layout; one line under them says why Auto picks what it picks, and one more if the layout had to bend to a hard rule. Sticky per plan.
 function dnPickerHtml(){ const RN=(S.rbrNew&&S.rooms&&S.rooms.length&&RM)?RM.dn:null; const want=dnLayoutKey(); const auto=RN?RN.auto:{k:'wye',reason:'No room layout — the runs are dealt round the plenum; Wye Tree.'};
-  const worst=k=>{ const N=RN&&RN.nets[k]; if(!N||!N.worst) return ''; const pct=Math.round(N.worst.pct*100); return pct>=100?'every room full':`worst room ${pct}%` };
+  const worst=k=>{ const N=RN&&RN.nets[k]; if(!N||!N.worst) return ''; const pct=Math.round(N.worst.pct*100); return `${dnFt(N)} ft · `+(pct>=100?'every room full':`worst room ${pct}%`) };   /* v2.81: the feet of duct first */
   const tip=k=>{ const N=RN&&RN.nets[k]; if(!N||!N.worst) return ''; const w=N.worst; return `${w.room} gets ${CFM(Math.round(w.got))} of the ${CFM(Math.round(w.q))} CFM it is designed for in the ${dnName(k)} — ${dnTrunkWord(N)}` };
   const star=k=>auto.k===k?'★ ':'';
   const T=(k,ico,lbl,xv,ttl)=>`<button type="button" class="${want===k?'on':''}" data-lay="${k}" style="--tc:#0f8b8b"${ttl?` title="${tpEsc(ttl)}"`:''}><svg class="ico"><use href="#${ico}"/></svg><b>${lbl}</b><span class="xv">${xv||''}</span></button>`;
@@ -8727,17 +8727,42 @@ function rbrRegLbl(g){ const f=REG_FACE[g.face].short, p=g.push?` · pushed to $
 let RM=null;
 // v2.57 — the Manual D worksheet reads the chosen layout's real lengths and fittings (DN_TEL — the critical path). Its friction rate sizes the ducts,
 // which move the layout, which moves the path: rbrModel runs until the path it was sized on is the path it produced (two passes, three at most).
-let DN_TEL=null, DN_ESP=null;
+let DN_TEL=null, DN_ESP=null, DN_LEAN=false;
 // v2.72 — a room whose run still cannot carry its share once its leg has grown (a trunk held at the collar cap, a run held at 20") gets more static: the design
 // steps 0.05" at a time (the 0.70" line at most) while that helps; the best pass stands.
-function rbrModel(){ let out=null, used=DN_TEL?DN_TEL.total:null; DN_ESP=null; let best=null;
-  for(let pass=0;pass<7;pass++){ out=rbrModel1(); const N=RM&&RM.net; if(!(S.rbrNew&&N&&N.tel)) break;
-    const t=N.tel.total, same=used!=null&&Math.abs(t-used)<=1; DN_TEL={total:t,items:N.tel.items.map(x=>x.slice()),lay:N.lay};
-    if(!same){ used=t; continue }
-    const w=N.worst?N.worst.pct:1, esp=RM.A&&RM.A.esp; if(!best||w>best.w+0.005) best={w,esp:DN_ESP};
-    if(w<0.995&&esp!=null&&esp<spLimit()-1e-9&&(best.esp===DN_ESP)){ DN_ESP=Math.round((esp+0.05)*100)/100; continue }
-    if(best.esp!==DN_ESP){ DN_ESP=best.esp; out=rbrModel1(); const N2=RM&&RM.net; if(N2&&N2.tel) DN_TEL={total:N2.tel.total,items:N2.tel.items.map(x=>x.slice()),lay:N2.lay} }
+// v2.81 — the passes that only settle the friction rate or step the static build the layout in use alone (DN_LEAN); the pass that stands is then built in full,
+// on exactly the inputs it had — the same network, every layout on the tiles beside it. A friction rate that swings between two layouts (sized on one path, the
+// network laid takes the other, and back) is settled on the pass sized on a run at least as long as the one it laid — never sized short — and remembered with
+// the path it laid (DN_TEL.out). A call whose first pass sees exactly the house the last one did (the same network inputs — dnAll's key — and the same static
+// line) goes straight to the pass that stood (RB_MEMO): the render path asks for the model several times a tap.
+const RB_MEMO=new Map();
+function rbrModel(){ let out=null, used=DN_TEL?DN_TEL.total:null; DN_ESP=null; let best=null, lean=false, telIn=null, wasLean=false, hist=[], runs=0, k0=null, last=null;
+  const run=l=>{ telIn=DN_TEL; DN_LEAN=!!l; try{ out=rbrModel1() } finally { DN_LEAN=false } runs++; wasLean=!!(l&&RM&&RM.dn&&RM.dn.lean); if(!wasLean) last={telIn,esp:DN_ESP} };
+  const telOf=N=>({total:N.tel.total,items:N.tel.items.map(x=>x.slice()),lay:N.lay});
+  for(let pass=0;pass<7;pass++){ const tIn=DN_TEL; run(lean); const N=RM&&RM.net; if(!(S.rbrNew&&N&&N.tel)) break; lean=true;
+    if(pass===0&&RM.dn&&RM.dn.key){ k0=RM.dn.key+'|'+spLimit(); const m=RB_MEMO.get(k0); if(m){ if(!m.single){ DN_ESP=m.esp; DN_TEL=m.telIn; run(false) } DN_TEL=m.telOut; return out } }
+    const t=N.tel.total, same=used!=null&&(Math.abs(t-used)<=1||!!(tIn&&tIn.out!=null&&Math.abs(t-tIn.out)<=1)); DN_TEL=telOf(N);
+    if(!same){ hist.push({tIn,t}); const cyc=hist.length>=2&&hist.slice(0,-1).some(h=>h.tIn&&Math.abs(h.tIn.total-t)<=1);
+      const st=cyc?hist.filter(h=>h.tIn&&h.t<=h.tIn.total+1).sort((a,b)=>b.tIn.total-a.tIn.total)[0]:null;
+      if(!st){ used=t; continue }
+      DN_TEL=Object.assign({},st.tIn,{out:st.t}); used=st.tIn.total; run(lean); hist=[]; const Ns=RM&&RM.net; if(!(Ns&&Ns.tel)) break; DN_TEL=Object.assign({},st.tIn,{out:Ns.tel.total}) }
+    const Nw=RM.net; const w=Nw.worst?Nw.worst.pct:1, esp=RM.A&&RM.A.esp; if(!best||w>best.w+0.005) best={w,esp:DN_ESP};
+    if(w<0.995&&esp!=null&&esp<spLimit()-1e-9&&(best.esp===DN_ESP)){ DN_ESP=Math.round((esp+0.05)*100)/100; hist=[]; continue }
+    if(best.esp!==DN_ESP){ DN_ESP=best.esp; run(false); const N2=RM&&RM.net; if(N2&&N2.tel) DN_TEL=telOf(N2) }
     break }
+  if(wasLean){ const keep=DN_TEL; DN_TEL=telIn; run(false); DN_TEL=keep }
+  if(k0&&last){ RB_MEMO.set(k0,{single:runs===1,esp:last.esp,telIn:last.telIn,telOut:DN_TEL}); if(RB_MEMO.size>12) RB_MEMO.delete(RB_MEMO.keys().next().value) }
+  // Settled, Auto's pick — made the first time it saw the house — must still be the least duct the tiles show. When
+  // another tile shows less, Auto lays that one out and settles it too; each layout is tried once, and the one that stands furthest under the others is kept.
+  // A pick that later settles on a rule it misses (another tile 10 or more under it) is looked at again — twice at most per house as laid out.
+  { const RN=RM&&RM.dn; const m=RN&&RN.amk&&!RN.lean?DN_AUTO_MEMO.get(RN.amk):null; const k=RN&&RN.chosen, H=k&&RN.nets[k];
+    if(m&&H&&k!=='box'){
+      const oth=Object.keys(RN.nets).filter(x=>x!==k&&x!=='box'&&RN.nets[x]); const c=x=>dnAutoCost(RN.nets[x]);
+      if(m.done&&oth.length&&(m.resets||0)<2&&c(k)-Math.min(...oth.map(c))>10){ m.done=false; m.tried={}; m.resets=(m.resets||0)+1 }   /* settled since on a rule it misses: look again (twice at most) */
+      if(dnLayoutKey()==='auto'&&!m.done){
+        if(!oth.length) m.done=true; else { const ob=oth.reduce((a,x)=>c(x)<c(a)?x:a); const mg=c(k)-c(ob); m.tried=m.tried||{}; m.tried[k]=mg;
+          if(mg<=0.5) m.done=true; else { const nx=oth.filter(x=>!(x in m.tried)).sort((a,b)=>c(a)-c(b))[0]; if(nx){ m.k=nx; return rbrModel() }
+            const bt=Object.keys(m.tried).reduce((a,x)=>m.tried[x]<m.tried[a]?x:a); m.done=true; if(bt!==k){ m.k=bt; return rbrModel() } } } } } }
   return out }
 function rbrModel1(){
   const B=rbrBuild()||RBR_BUILD.standard, A=rbrAir(), cap=rbrCap(), top=fcTop();
@@ -8943,8 +8968,8 @@ function rbrMaterials(){ const can={},gr={},swap={},boot={},reuse={}; const bump
 //          walls only). The rest of the house is a Wye Tree.
 // Direct plenum runs (1–2 rooms within ~15 ft) supplement any layout. Auto picks by where the unit sits (centrality · spread); any chip
 // overrides (S.layout, a plan key). Everything here is PLAN FEET (x east, y south on the sheet) unless it says inches.
-const DN_LAY={wye:{k:'wye',name:'Wye Tree'},step:{k:'step',name:'Stepped Trunk'},box:{k:'box',name:'Remote Box'}};
-const DN_ORDER=['wye','step','box'];
+const DN_LAY={back:{k:'back',name:'Shortest Tree'},wye:{k:'wye',name:'Wye Tree'},step:{k:'step',name:'Stepped Trunk'},box:{k:'box',name:'Remote Box'}};   // v2.81: the Shortest Tree is Auto's (Stephen 2026-10-11)
+const DN_ORDER=['back','wye','step','box'];
 const DN_CAPS=[[2,3,12],[3,4,14],[4,5,16],[99,6,16]];   // tons up to → collars on the plenum · largest collar (Stephen's table, 2026-09-27: 2 · 2.5–3 · 3.5–4 · 5)
 function dnCap(t){ t=+t||3; const r=DN_CAPS.find(c=>t<=c[0]+1e-9)||DN_CAPS[DN_CAPS.length-1]; return {n:r[1],max:r[2]} }
 const DN_MIN=6, DN_TRUNK_MIN=10, DN_DIRECT_FT=15, DN_LONG_FT=25;
@@ -9231,14 +9256,172 @@ function dnOptGroups1(seed,U,o){ // seed: arrays of registers (a one-register ar
   return G.map(g=>({set:g,topo:gEst(g).topo})) }
 // the network's own cost, laid out and routed: its duct weighted by size, a TY rule it misses, a run it could not route round the equipment, a room short of air
 function dnNetCost(N){ if(!N) return 1e9; let c=0; N.edges.forEach(e=>{ c+=(e.len||0)*dnW(e.q||0); if(e.obsHit) c+=30 });
-  N.checks.forEach(k=>{ if(!k.ok) c+=k.hard?1e4:(/^ty/.test(k.k)?60:25) });   /* a TY rule missed outweighs a few feet of duct */ if(N.worst&&N.worst.pct<1) c+=(1-N.worst.pct)*300; return c }
+  N.checks.forEach(k=>{ if(!k.ok) c+=k.hard?1e4:(/^ty/.test(k.k)?60:25) });   /* a TY rule missed outweighs a few feet of duct */ c+=(N.backN||0)*30+(N.crossN||0)*15+N.edges.filter(e=>e.kink).length*20;   /* v2.81: every backtrack, every crossing, every kink */ if(N.worst&&N.worst.pct<1) c+=(1-N.worst.pct)*300; return c }
+// v2.81 — THE SHORTEST TREE: THINK BACKWARDS (Stephen 2026-10-11: "i dont like it when it passes a room, and then circles way back to drop the duct in, or
+// if it comes out the left side, then feeds the whole right side … build in some rules like try to combine ducts into the most logical way, like think
+// backwards, and whats the way to design it with the least length"). The tree is grown from the registers back to the unit, the way water runs to a drain:
+// every register starts as its own run straight back to the plenum face its room is on; two runs join only where the join saves duct (a foot of big duct
+// counts more than a foot of small — dnW), at the point where the two would naturally meet (the weighted Fermat point of the two and the face), and never
+// where a room would end up behind the TY that feeds it — followed back from any register, the duct only ever heads toward the unit. The biggest saving
+// joins first, then the next, until no join saves duct and the collars are no more than the tonnage takes. Every TY is then slid to where its own runs are
+// shortest, on the same rules. His three calls the same day: a full side gets a longer new plenum first, then the top, then two trunks combined (never the
+// far side); Auto is this tree — the Wye Tree and the Stepped Trunk stay as styles to force, on the same rules; a foot of big duct counts more.
+const DN_BK={tyPen:2.5,colPen:2.5,tol:0.5,minRoot:4.5,minTy:3.2,minCan:2.5,inlineDeg:22,obsM:0.9};
+function dnBkLeaf(g){ return {p:[g.x,g.y],q:g.q,reg:g,L:[g],lv:0,id:g.id} }
+// every register a node feeds is ahead of it, seen from where its air comes from (a TY never sits past a room it feeds)
+function dnBkAhead(p,L,from,tol){ const v=dv.sub(p,from), l=dv.len(v); if(l<1e-6) return false; const u=[v[0]/l,v[1]/l]; const t=tol==null?DN_BK.tol:tol; return L.every(g=>dv.dot(dv.sub([g.x,g.y],p),u)>=-t) }
+// the weighted Fermat point (Weiszfeld): where the runs meeting at a TY are shortest, each foot weighted by the air it carries
+function dnBkFermat(pts,ws){ let x=0,y=0,s=0; pts.forEach((p,i)=>{ x+=p[0]*ws[i]; y+=p[1]*ws[i]; s+=ws[i] }); let m=[x/s,y/s];
+  for(let it=0;it<80;it++){ let sx=0,sy=0,sw=0,hit=-1; for(let i=0;i<pts.length;i++){ const d=dv.dist(m,pts[i]); if(d<1e-6){ hit=i; break } sx+=ws[i]*pts[i][0]/d; sy+=ws[i]*pts[i][1]/d; sw+=ws[i]/d }
+    if(hit>=0) return pts[hit].slice(); const n=[sx/sw,sy/sw]; const mv=dv.dist(n,m); m=n; if(mv<0.004) break } return m }
+// a TY whose trunk heads nearly straight at one of its two runs is a reducing TY (the run straight on, the other on a 45° leg); otherwise a symmetric wye
+function dnBkKind(P,m,a,b){ const v0=dv.sub(m,P), l0=dv.len(v0); if(l0<1e-6) return {inline:false}; const u=[v0[0]/l0,v0[1]/l0];
+  const ang=n=>{ const v=dv.sub(n.p,m), l=dv.len(v); return l<1e-6?0:Math.acos(Math.max(-1,Math.min(1,dv.dot(u,v)/l)))*180/Math.PI };
+  const ta=ang(a), tb=ang(b); if(Math.min(ta,tb)>DN_BK.inlineDeg) return {inline:false};
+  if(Math.max(ta,tb)<=DN_BK.inlineDeg+8){ const da=dv.dist(a.p,m), db=dv.dist(b.p,m), near=da<=db?0:1; const dn=Math.min(da,db), nr=near===0?a:b;
+    return {inline:true,run:(nr.reg&&dn<5)?near:1-near} }   /* both straight ahead: the trunk carries on to the far one and the near one peels off — unless the near one is a register too close for a 45° leg to reach without curling back: then the run drops into it and the far one sweeps past on the leg */
+  return {inline:true,run:ta<=tb?0:1} }
+// TY levels below a node (the run on through a reducing TY stays on its level — a stepped trunk is one level; a split is the next level down)
+// the trunk carries on to the run that goes on (a reducing TY's straight leg, or the TY when the other side is one register): that run stays on its level
+function dnBkRun(k,a,b){ if(k&&k.inline) return k.run; if(!a.reg&&b.reg) return 0; if(a.reg&&!b.reg) return 1; return -1 }
+function dnBkLv(k,a,b){ const ri=dnBkRun(k,a,b); if(ri>=0){ const r=ri===0?a:b, br=ri===0?b:a; return Math.max(1,r.lv,1+br.lv) } return 1+Math.max(a.lv,b.lv) }
+function dnBkOnObs(o,p){ return (o.obs||[]).some(R=>dnObsIn(R,p,R.soft?2:DN_BK.obsM)) }   /* a TY 2 ft clear of the return run, so its legs can rise over it */
+// join two runs a and b that head back to P: where they meet, what the joined run costs, or null when no point keeps every room ahead of its TY
+function dnBkMerge(P,a,b,o){ o=o||{}; const key=o.memo?(a.id<b.id?a.id+'|'+b.id:b.id+'|'+a.id)+'@'+P[0].toFixed(2)+','+P[1].toFixed(2)+(o.relax?'r':'')+(o.minRoot?'m'+o.minRoot:'')+(o.minCan?'c'+o.minCan:''):null; if(key&&o.memo.has(key)) return o.memo.get(key);
+  const qa=a.q, qb=b.q, q=qa+qb, wa=dnW(qa), wb=dnW(qb), w=dnW(q); const L=a.L.concat(b.L); const tol=o.relax?1e9:DN_BK.tol; const minR=o.relax?2.5:Math.max(o.minRoot||DN_BK.minRoot,o.minRoot===3.6?0:(q>600?7:(q>350?6:0)));   /* a bigger trunk needs more room off the plenum to bend and still run straight into its first TY */
+  const minK=n=>n.reg?(o.minCan||DN_BK.minCan):DN_BK.minTy;
+  const cands=[]; const F=dnBkFermat([P,a.p,b.p],[w,wa,wb]); cands.push(F); [0.85,0.7,0.55,0.4,0.25].forEach(t=>cands.push(dv.add(P,dv.mul(dv.sub(F,P),t))));
+  // the reducing TY: the trunk heads for one, the other peels off on a 45° leg abreast of it
+  [[a,b],[b,a]].forEach(([r,s])=>{ const v=dv.sub(r.p,P), l=dv.len(v); if(l<1e-6) return; const u=[v[0]/l,v[1]/l]; const w0=dv.sub(s.p,P); const al=dv.dot(w0,u), lat=Math.abs(dv.cr(u,w0));
+    [al-lat,al-lat*0.6,al-1.5].forEach(t=>{ if(t>0) cands.push(dv.add(P,dv.mul(u,Math.min(t,l-minK(r))))) }) });
+  // two in a row (one register straight beyond another, the way two vents in one room often sit): the TY steps off the line, so the near one takes a 45° leg
+  // and the trunk runs on past it to the far one — a TY on the line would cross its own legs or curl one back
+  [[a,b],[b,a]].forEach(([r,s])=>{ const v=dv.sub(r.p,P), l=dv.len(v); if(l<1e-6) return; const u=[v[0]/l,v[1]/l], nn=dv.perp(u); const w0=dv.sub(s.p,P); const al=dv.dot(w0,u), lat=dv.cr(u,w0); if(Math.abs(lat)>1.5||al>=l) return;
+    [2,3].forEach(off=>[1,-1].forEach(sg=>{ const t=al-off; if(t>0) cands.push(dv.add(dv.add(P,dv.mul(u,t)),dv.mul(nn,sg*off))) })) });
+  // the last resort (two runs either side of the plenum that must share a collar — a kept roof drop's arm): the TY out toward the two, as far off the plenum as
+  // its trunk needs to bend and run straight in
+  if(o.relax){ const ua=dv.unit(dv.sub(a.p,P)), ub=dv.unit(dv.sub(b.p,P)); const bs=dv.add(dv.mul(ua,wa),dv.mul(ub,wb)); const ds=[ua,ub]; if(dv.len(bs)>1e-6) ds.push(dv.unit(bs)); const r0=q>600?7:(q>350?6:DN_BK.minRoot); ds.forEach(u=>[0,1,2].forEach(t=>cands.push(dv.add(P,dv.mul(u,r0+t))))) }
+  let best=null;
+  cands.forEach(m=>{ if(!isFinite(m[0])||!isFinite(m[1])) return; const dP=dv.dist(m,P); if(dP<minR-1e-6) return; if(dv.dist(m,a.p)<minK(a)-1e-6||dv.dist(m,b.p)<minK(b)-1e-6) return;
+    { const u=dv.unit(dv.sub(m,P)); const an=n=>{ const w=dv.sub(n.p,m); return Math.acos(Math.max(-1,Math.min(1,dv.dot(u,w)/(dv.len(w)||1))))*180/Math.PI }; const nr=dv.dist(a.p,m)<=dv.dist(b.p,m)?a:b;
+      if(!o.relax&&Math.max(an(a),an(b))<=30&&nr.reg&&dv.dist(nr.p,m)<6) return }   /* both in line ahead with a register close: legs that cross or curl */
+    if(!o.relax&&dnBkOnObs(o,m)) return;
+    if(!a.reg&&!dnBkAhead(a.p,a.L,m,tol)) return; if(!b.reg&&!dnBkAhead(b.p,b.L,m,tol)) return; if(!dnBkAhead(m,L,P,tol)) return;
+    const cost=wa*dv.dist(a.p,m)+wb*dv.dist(b.p,m)+w*dP+DN_BK.tyPen+DN_BK.colPen; if(!best||cost<best.cost) best={p:m,cost} });
+  let out=null; if(best){ const k=dnBkKind(P,best.p,a,b); out={p:best.p,q,L,kids:[a,b],k,lv:dnBkLv(k,a,b),cost:best.cost,id:'('+a.id+'+'+b.id+')'} }
+  if(key) o.memo.set(key,out); return out }
+// grow the runs back to the plenum: join while a join saves duct, then — only when the collars are still more than the tonnage takes — the joins that cost least.
+// A run may head back to any face its rooms are not behind (a room straight ahead of the unit can go either side); a join keeps the faces both halves allow.
+function dnBkGrow(nodes,F,o){ const alone=n=>{ let c=1e9; n.F.forEach(i=>{ c=Math.min(c,dnW(n.q)*dv.dist(n.p,F[i].P)) }); return c+DN_BK.colPen };
+  const join=(a,b,relax,tight)=>{ let bb=null; a.F.forEach(i=>{ if(!b.F.includes(i)) return; const m=dnBkMerge(F[i].P,a,b,relax?Object.assign({},o,{relax:true}):(tight?Object.assign({},o,{minRoot:3.6,memo:o.memoT||(o.memoT=new Map())}):o)); if(m&&(!bb||m.cost<bb.cost)) bb=Object.assign({},m,{fi:i}) });
+    if(!bb) return null; const Fs=a.F.filter(i=>b.F.includes(i)&&(i===bb.fi||(dv.dist(bb.p,F[i].P)>=DN_BK.minRoot&&dnBkAhead(bb.p,bb.L,F[i].P)))); return Object.assign(bb,{F:Fs}) };
+  // no two runs crossing: a join whose new pieces would cross another run's line back to the plenum costs as much as the duct it saves
+  const port=n=>{ let bp=F[n.F[0]].P, bd=1e9; n.F.forEach(i=>{ const d=dv.dist(n.p,F[i].P); if(d<bd){ bd=d; bp=F[i].P } }); return bp };
+  const segIn=n=>n.reg?[]:n.kids.flatMap(k=>[[n.p,k.p]].concat(segIn(k))); const SG=new Map(); const segOf=n=>{ if(!SG.has(n)) SG.set(n,[[port(n),n.p]].concat(segIn(n))); return SG.get(n) };
+  const X=(a,b,c,d)=>{ const d1=dv.cr(dv.sub(b,a),dv.sub(c,a)), d2=dv.cr(dv.sub(b,a),dv.sub(d,a)), d3=dv.cr(dv.sub(d,c),dv.sub(a,c)), d4=dv.cr(dv.sub(d,c),dv.sub(b,c)); return ((d1>1e-9&&d2<-1e-9)||(d1<-1e-9&&d2>1e-9))&&((d3>1e-9&&d4<-1e-9)||(d3<-1e-9&&d4>1e-9)) };
+  const crosses=(m,i,j)=>{ const ns=[[F[m.fi].P,m.p],[m.p,m.kids[0].p],[m.p,m.kids[1].p]]; let c=0; nodes.forEach((o,k)=>{ if(k===i||k===j) return; const os=segOf(o); if(ns.some(s=>os.some(t=>X(s[0],s[1],t[0],t[1])))) c++ }); return c };
+  const best=(force,lvMax,qMax,relax,tight,cross)=>{ let bb=null; for(let i=0;i<nodes.length;i++) for(let j=i+1;j<nodes.length;j++){ const m=join(nodes[i],nodes[j],relax,tight); if(!m||m.q>qMax||m.lv>lvMax) continue;
+      const cx=crosses(m,i,j); if(cx&&!cross) continue; const sav=alone(nodes[i])+alone(nodes[j])-m.cost-(force?Math.max(0,m.q-o.maxQ*1.02)*0.25:0)-30*cx; if(!force&&sav<=0.05) continue; if(!bb||sav>bb.sav) bb={sav,i,j,m} } return bb };   /* a forced join over the collar's air: the least over first */
+  const apply=bb=>{ nodes=nodes.filter((x,k)=>k!==bb.i&&k!==bb.j).concat([bb.m]) };
+  for(let it=0;it<80;it++){ const bb=best(false,2,o.maxQ*1.02,false,false,false); if(!bb) break; apply(bb) }
+  // the collars are still more than the tonnage takes: join the least costly pair — first on every rule, then a TY 3.6 ft off the plenum (the least the rules take),
+  // a third TY level, a trunk over its collar's air (the least over first), then a join whose run crosses another, and only last one that leaves a room behind its TY
+  const Q=o.maxQ*1.02;
+  for(const [lvMax,qMax,relax,tight,cross] of [[2,Q,0,0,0],[2,Q,0,1,0],[3,Q,0,1,0],[3,1e9,0,1,0],[3,Q,0,1,1],[3,1e9,0,1,1],[9,1e9,1,0,1]]){ while(nodes.length>o.budget){ const bb=best(true,lvMax,qMax,!!relax,!!tight,!!cross); if(!bb) break; apply(bb) } }
+  nodes.forEach(n=>{ let bi=n.F[0], bc=1e9; n.F.forEach(i=>{ const c=dv.dist(n.p,F[i].P); if(c<bc){ bc=c; bi=i } }); n.fi=bi });
+  return nodes }
+// slide every TY to where its own runs are shortest (its feed and its two runs, weighted by their air), keeping every room ahead of it and its rules
+function dnBkRefine(root,P,o){ const list=[]; const walk=(n,par)=>{ if(n.reg) return; n.par=par; list.push(n); n.kids.forEach(k=>walk(k,n)) }; walk(root,null);
+  const minK=n=>n.reg?(o.minCan||DN_BK.minCan):DN_BK.minTy;
+  const okAt=(n,Pp,c)=>{ const par=n.par; if(dv.dist(c,Pp)<(par?DN_BK.minTy:DN_BK.minRoot)-1e-6) return false; if(dnBkOnObs(o,c)) return false;
+    for(const k of n.kids){ if(dv.dist(c,k.p)<minK(k)-1e-6) return false; if(!k.reg&&!dnBkAhead(k.p,k.L,c)) return false }
+    if(!dnBkAhead(c,n.L,Pp)) return false;
+    if(par){ const gp=par.par?par.par.p:P; const v=dv.sub(par.p,gp), l=dv.len(v); if(l>1e-6&&dv.dot(dv.sub(c,par.p),[v[0]/l,v[1]/l])<-DN_BK.tol) return false }   /* the TY itself ahead of the one that feeds it */
+    return true };
+  for(let it=0;it<10;it++){ let mv=0; list.forEach(n=>{ const Pp=n.par?n.par.p:P; const pts=[Pp].concat(n.kids.map(k=>k.p)), ws=[dnW(n.q)].concat(n.kids.map(k=>dnW(k.q))); const m=dnBkFermat(pts,ws);
+      for(const t of [1,0.6,0.3]){ const c=dv.add(n.p,dv.mul(dv.sub(m,n.p),t)); if(dv.dist(c,n.p)<0.02) break; if(okAt(n,Pp,c)){ mv=Math.max(mv,dv.dist(c,n.p)); n.p=c; break } } });
+    if(mv<0.05) break }
+  list.forEach(n=>{ const Pp=n.par?n.par.p:P; n.k=dnBkKind(Pp,n.p,n.kids[0],n.kids[1]); delete n.par }) }
+// where a face's runs head back to: the middle of the face's collar band, half a foot out (a top collar, a kept drop: the unit)
+function dnBkPort(pl,U,f,r){ if(!f||!f.nrm||!pl||pl.kind==='drop') return U.slice(); const W=(pl.W||20)/12; let P;
+  if(pl.kind==='h'){ const L=(pl.L||24)/12; if(f.k==='N') P=[U[0],U[1]-L/2]; else { const y=U[1]+L/2-(f.head||0)/12-Math.max(0,f.len)/24; P=[f.k==='L'?U[0]-W/2:(f.k==='R'?U[0]+W/2:U[0]),y] } }
+  else { const H=(pl.H||20)/12; P=f.k==='L'?[U[0]-W/2,U[1]]:f.k==='R'?[U[0]+W/2,U[1]]:f.k==='N'?[U[0],U[1]-H/2]:f.k==='S'?[U[0],U[1]+H/2]:U.slice() }
+  if(r) P=uRotP(U,P,r); return dv.add(P,dv.mul(f.nrm,0.5)) }
+// a collar that faces away from the rooms it feeds (the far side of the unit — "comes out the left side, then feeds the whole right side")
+function dnWrongWay(f,set,U){ if(!f||!f.nrm||!set||!set.length) return false; const v=dv.sub(dnCw(set),U); return dv.dot(f.nrm,v)<-Math.max(2,0.25*dv.len(v)) }
+function dnSameSide(a,b,U){ if(a.pref&&a.pref===b.pref) return true; return dv.dot(dv.unit(dv.sub(dnCw(a.set),U)),dv.unit(dv.sub(dnCw(b.set),U)))>0 }
+// BUILD the Shortest Tree: the registers grouped by the plenum face they look at, each group grown back to its face, the trees handed to the collars
+function dnBkBuild(N,ctx,regs){ const U=ctx.U, pl=ctx.pl, kept=pl.kind==='drop'; const cap=N.cap; const obs=dnObs(N,ctx);
+  const faces=kept?[]:(pl.faces||[]).filter(f=>f.nrm&&!f.last);
+  const F=faces.length?faces.map(f=>({face:f.k,f,P:dnBkPort(pl,U,f,ctx.r)})):[{face:kept?'W':null,f:null,P:U.slice()}];
+  const leaf=g=>{ const n=dnBkLeaf(g); n.F=F.map((x,i)=>i).filter(i=>!F[i].f||!dnWrongWay(F[i].f,[g],U)); if(!n.F.length){ let bi=0, bs=-9; const v=dv.unit(dv.sub([g.x,g.y],U)); F.forEach((x,i)=>{ const s=x.f?dv.dot(x.f.nrm,v):0; if(s>bs){ bs=s; bi=i } }); n.F=[bi] } return n };
+  const budget=kept?2:Math.max(1,cap.n-(ctx.downs||0)); const o={obs,maxQ:mdRoundCap(cap.max,ctx.fr,'flex',MD_TAB31.sup.flex[0]),budget,memo:new Map(),minCan:ctx.bkMinCan||DN_BK.minCan};   /* a trunk's air at the recommended velocity of the tonnage's largest collar — a long or bendy trunk's one-size bump still fits */
+  let nodes=dnBkGrow(regs.map(leaf),F,o);
+  // a trunk left carrying more than its collar takes, or more trunks than the collars (a kept roof drop's two arms with the rooms all round it): the registers are
+  // cut into as many groups as the collars take, the way the Wye Tree cuts them (the air as even as the rooms allow), and each group is grown back on its own —
+  // so no room starves behind an overloaded arm and the design static never has to climb to feed it (dnBuild keeps whichever network comes out better, cut or not)
+  { const Q=o.maxQ*1.02, mx=Math.max(...nodes.map(n=>n.q)); if(budget>1&&!ctx.bkNoCut&&(nodes.length>budget||mx>Q)){ const G=dnPartition(dnRegItems(regs,U),Math.min(budget,regs.length),99);
+      const gq=G?G.map(gr=>gr.reduce((s,y)=>s+y.q,0)):[]; if(G&&G.length>1&&(nodes.length>budget||Math.max(...gq)<mx-25)){ const alt=[];
+        for(const gr of G){ const r=dnBkGrow(gr.flatMap(it=>it.set).map(leaf),F,Object.assign({},o,{budget:1})); if(r.length!==1){ alt.length=0; break } alt.push(r[0]) }
+        if(alt.length===G.length){ nodes=alt; N.bkCut=G.length } } } }
+  nodes.forEach(n=>{ if(!n.reg) dnBkRefine(n,F[n.fi].P,o) });
+  const roots=nodes.map(n=>{ const G=F[n.fi]; return n.reg?{k:'direct',set:[n.reg],mode:'back',tree:n,pref:G.face,port:G.P}:{k:'trunk',set:n.L,mode:'back',tree:n,pref:G.face,port:G.P} });
+  N.direct=roots.filter(r=>r.k==='direct').map(r=>r.set[0].id); N.roots=roots; return dnFinish(N,ctx) }
+// the grown tree as the network: TYs where the joins are, each one facing its two runs (a reducing TY facing the run it carries on to)
+function dnBkNodes(N,n,level,Pp){ if(n.reg){ const g=n.reg; return dnNode(N,{t:'can',x:g.x,y:g.y,reg:g,level}) }
+  const [a,b]=n.kids; const T=n.p; const k=dnBkKind(Pp,T,a,b); const uin=dv.unit(dv.sub(T,Pp));
+  // which way the TY faces: the trunk wants to run straight in, each leg wants to head at its run — a near run at a bad angle curls, so it counts most
+  const ang=(u,v)=>Math.acos(Math.max(-1,Math.min(1,dv.dot(dv.unit(u),dv.unit(v)))))*180/Math.PI;
+  const legsOf=ax=>{ if(k.inline){ const r=n.kids[k.run], br=n.kids[1-k.run]; const s=Math.sign(dv.cr(ax,dv.sub(br.p,T)))||1; return [[r,ax],[br,dv.rot(ax,s*Math.PI/4)]] }
+    const sA=Math.sign(dv.cr(ax,dv.sub(a.p,T)))||1; let sB=Math.sign(dv.cr(ax,dv.sub(b.p,T)))||-sA; if(sB===sA) sB=-sA; return [[a,dv.rot(ax,sA*Math.PI/4)],[b,dv.rot(ax,sB*Math.PI/4)]] };
+  const score=ax=>{ let v=ang(uin,ax)*0.6; legsOf(ax).forEach(([K,lg])=>{ const w=dv.sub(K.p,T), d=dv.len(w); const dev=ang(lg,w); v+=dev+(dev>30?(dev-30)*(d<5?3:1):0) }); return v };
+  const bis=dv.add(dv.unit(dv.sub(a.p,T)),dv.unit(dv.sub(b.p,T))); const cands=[uin]; if(dv.len(bis)>0.2) cands.push(dv.unit(bis),dv.unit(dv.add(dv.unit(bis),uin)));
+  if(k.inline){ const rd=dv.unit(dv.sub(n.kids[k.run].p,T)); cands.push(rd,dv.unit(dv.add(rd,uin))) }
+  let ax=cands[0], bs=1e9; cands.forEach(c=>{ if(!isFinite(c[0])||!isFinite(c[1])) return; const v=score(c); if(v<bs-1e-9){ bs=v; ax=c } });
+  const nd=dnNode(N,{t:'ty',x:T[0],y:T[1],ax,level,sym:!k.inline,inline:!!k.inline,bk:true});
+  const side=K=>Math.sign(dv.cr(ax,dv.sub(K.p,T)))||1; const ri=dnBkRun(k,a,b);
+  if(k.inline){ const r=n.kids[k.run], br=n.kids[1-k.run]; const kb=dnBkNodes(N,br,level+1,T), kr=dnBkNodes(N,r,level,T);
+    dnEdge(N,nd,kb,{k:br.reg?'leg':'branch',leave:'branch',side:side(br)}); dnEdge(N,nd,kr,{k:r.reg?'leg':'trunk',leave:'run',side:0}) }
+  else { const sA=side(a); let sB=side(b); if(sB===sA) sB=-sA; const kA=dnBkNodes(N,a,ri===0?level:level+1,T), kB=dnBkNodes(N,b,ri===1?level:level+1,T);   /* the trunk's own carry-on stays on its level */
+    dnEdge(N,nd,kA,{k:a.reg?'leg':(ri===0?'trunk':'branch'),leave:'branch',side:sA}); dnEdge(N,nd,kB,{k:b.reg?'leg':(ri===1?'trunk':'branch'),leave:'branch',side:sB}) }
+  return nd }
+// THE THREE RULES, read off any layout once it is routed: a run that passes a room and doubles back to it, and two runs that cross on the plan
+function dnBackOf(N){ const out=[]; Object.values(N.nodes).forEach(t=>{ if(t.t!=='ty'&&t.t!=='box') return; const e=N.edges.find(x=>x.id===t.inE); if(!e) return;
+    const p0=(e.segs&&e.segs.length)?dnRoutePts(e.segs,20)[0]:[N.nodes[e.a].x,N.nodes[e.a].y]; const v=dv.sub([t.x,t.y],p0), l=dv.len(v); if(l<0.5) return; const u=[v[0]/l,v[1]/l];
+    dnLeaves(N,t).forEach(c=>{ const w=dv.sub([c.x,c.y],[t.x,t.y]); const bh=-dv.dot(w,u); if(bh>Math.max(1,0.25*dv.len(w))) out.push({ty:t.id,can:c.id,room:c.reg&&c.reg.room,ft:+bh.toFixed(1)}) }) });
+  N.edges.forEach(e=>{ if(!e.segs||e.detour) return; const tr=dnRouteInfo(e.segs).turn; if(tr>150) out.push({e:e.id,turn:Math.round(tr)}) });   /* round the equipment it turns as it must */
+  const seen=new Set(); return out.filter(x=>{ const k=x.can||x.e; if(seen.has(k)) return false; seen.add(k); return true }) }
+function dnCrossOf(N){ const cut=(pts,c)=>{ const out=pts.slice(); let left=c; while(out.length>1&&left>0){ const l=dv.dist(out[0],out[1]); if(l<=left){ out.shift(); left-=l } else { out[0]=dv.add(out[0],dv.mul(dv.sub(out[1],out[0]),left/l)); left=0 } } return out };
+  const trim=(pts,c)=>{ if(pts.length<2) return pts; return cut(cut(pts,c).reverse(),c).reverse() };   /* the ends where runs meet at a TY or a collar are not crossings */
+  const P=N.edges.filter(e=>e.segs&&e.segs.length).map(e=>{ const pts=trim(dnRoutePts(e.segs,12),0.6); let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9; pts.forEach(p=>{ x0=Math.min(x0,p[0]); y0=Math.min(y0,p[1]); x1=Math.max(x1,p[0]); y1=Math.max(y1,p[1]) }); return {e,pts,x0,y0,x1,y1} });
+  const hit=(a,b,c,d)=>{ const d1=dv.cr(dv.sub(b,a),dv.sub(c,a)), d2=dv.cr(dv.sub(b,a),dv.sub(d,a)), d3=dv.cr(dv.sub(d,c),dv.sub(a,c)), d4=dv.cr(dv.sub(d,c),dv.sub(b,c)); return ((d1>0&&d2<0)||(d1<0&&d2>0))&&((d3>0&&d4<0)||(d3<0&&d4>0)) };
+  let n=0; for(let i=0;i<P.length;i++) for(let j=i+1;j<P.length;j++){ const A=P[i], B=P[j]; if(A.pts.length<2||B.pts.length<2) continue; if(A.x1<B.x0||B.x1<A.x0||A.y1<B.y0||B.y1<A.y0) continue;
+    let x=false; for(let s=1;s<A.pts.length&&!x;s++) for(let t=1;t<B.pts.length&&!x;t++) if(hit(A.pts[s-1],A.pts[s],B.pts[t-1],B.pts[t])) x=true; if(x) n++ }
+  return n }
+function dnFt(N){ return N?Math.round(N.edges.reduce((s,e)=>s+(e.len||0),0)):0 }
+// what Auto ranks on: the duct (a foot of big duct counting more) and the rules — never the worst room's share or a collar's size, which move with the friction rate
+function dnAutoCost(N){ if(!N) return 1e9; let c=0; N.edges.forEach(e=>{ c+=(e.len||0)*dnW(e.q||0); if(e.obsHit) c+=30 });
+  N.checks.forEach(k=>{ if(k.ok||k.k==='collarMax') return; c+=k.hard?1e4:(/^ty/.test(k.k)?60:25) }); return c+(N.backN||0)*30+(N.crossN||0)*15+N.edges.filter(e=>e.kink).length*20 }
+function dnAutoMiss(N){ const m=(N.checks||[]).filter(k=>!k.ok&&k.k!=='collarMax'); if(!m.length) return ''; const w={side:'a collar on the far side',back:'a run doubles back',cross:'runs cross',tyIn:'a TY short of its straight run',tyGap:'TYs too close',tyLeg:'a leg bends off its TY',tyLvl:'a third TY level',two:'one collar carries most of the air'};
+  return m.map(k=>w[k.k]||k.k).slice(0,2).join(', ') }
+function dnAutoWhy(k,rk,geo){ const me=rk.find(x=>x.k===k); if(!me) return geo.reason; const least=rk.every(x=>x.ft>=me.ft), wl=rk.every(x=>(x.wl==null||me.wl==null||x.wl>=me.wl-0.5));
+  const others=rk.filter(x=>x.k!==k).map(x=>`${dnName(x.k)} ${x.ft} ft${x.miss?' — '+x.miss:''}`).join(' · ');
+  return `${dnName(k)} — ${least?'the least duct for the air':(wl?'the least duct for the air, a foot of big duct counting more':'the least duct that keeps the rules')}: ${me.ft} ft${others?` (${others})`:''}.` }
+function dnWl(N){ return N?N.edges.reduce((s,e)=>s+(e.len||0)*dnW(e.q||0),0):0 }
 // ---------------------------------------------------------------- BUILD one layout
 // ctx: {regs, U:[x,y] plenum centre, pl (dnPlenum), tons, fr, asp, telRet, downs (collars a duct down takes), kept (a kept drop)}
-function dnBuild(lay,ctx){ const A=dnBuild1(lay,Object.assign({},ctx)); if(lay==='step') return A; let B=null; try{ B=dnBuild1(lay,Object.assign({},ctx,{opt:true})) }catch(e){ if(e!==DN_SAME) try{ console.warn('Fit Check: grouping search',e) }catch(_){} B=null }
-  if(B&&dnNetCost(B)<dnNetCost(A)-1){ B.opt=true; return B } return A }   // v2.59: the searched grouping, when it builds the shorter network
+function dnBuild(lay,ctx){ const A=dnBuild1(lay,Object.assign({},ctx)); if(lay==='back'){ let best=A; const tryV=v=>{ try{ const X=dnBuild1(lay,Object.assign({},ctx,v)); if(X&&dnAutoCost(X)<dnAutoCost(best)-0.5){ X.vx=v; best=X } return X }catch(e){ return null } };   /* the Shortest Tree's own versions, on Auto's measure */
+    if(A.bkCut) tryV({bkNoCut:true}); const C=tryV({bkMinCan:3.5}); if(C&&C.bkCut) tryV({bkMinCan:3.5,bkNoCut:true}); return best }   /* v2.81: the Shortest Tree once more with every register 3½ ft clear of its TY — the shorter wins */ let best=A;
+  if(ctx.bkSets&&ctx.bkSets.length){ try{ const C=dnBuild1(lay,Object.assign({},ctx,{seedSets:ctx.bkSets})); if(C&&dnNetCost(C)<dnNetCost(best)-1){ C.seeded=true; C.vx={seedSets:ctx.bkSets}; best=C } }catch(e){ try{ console.warn('Fit Check: seeded layout',e) }catch(_){} } }   /* v2.81 */
+  if(lay==='step') return best; let B=null; try{ B=dnBuild1(lay,Object.assign({},ctx,{opt:true})) }catch(e){ if(e!==DN_SAME) try{ console.warn('Fit Check: grouping search',e) }catch(_){} B=null }
+  if(B&&dnNetCost(B)<dnNetCost(best)-1){ B.opt=true; B.vx={opt:true}; return B } return best }   // v2.59: the searched grouping, when it builds the shorter network
 function dnBuild1(lay,ctx){ const N=dnNet(lay); const U=ctx.U; const cap=dnCap(ctx.tons); const pl=ctx.pl; const kept=pl.kind==='drop';
   let regs=ctx.regs.map(g=>Object.assign({},g)); dnKeepOut(regs,ctx); if(ctx.box) ctx=Object.assign({},ctx,{box:Object.assign({},ctx.box,{set:ctx.box.set.map(b=>regs.find(g=>g.id===b.id)).filter(Boolean)})}); const tot=regs.reduce((s,g)=>s+g.q,0)||1; N.tot=tot; N.cap=cap; N.pl=pl; N.U=U; N.r=+ctx.r||0;
   const budget=kept?2:Math.max(1,cap.n-(ctx.downs||0));
+  if(lay==='back'){ const R=dnBkBuild(N,ctx,regs); if(R.plAuto&&!ctx.bkGrown&&pl.kind==='h'&&!pl.entered&&!ctx.noAutoLen){ try{ const R2=dnBuild1(lay,Object.assign({},ctx,{pl:dnPlenumLen(pl,R.plAuto),bkGrown:true}));
+      if(R2&&dnAutoCost(R2)<=dnAutoCost(R)+0.5){ if(!R2.plAuto){ R2.plAuto=R.plAuto; const nt=R.notes.find(x=>/^Supply plenum sized to/.test(x)); if(nt) R2.notes.push(nt) } return R2 } }catch(e){} } return R }   /* v2.81: think backwards — the registers grow their runs back to the faces they look at */
+  if(ctx.seedSets&&(lay==='wye'||lay==='step')){ const by=new Map(regs.map(g=>[g.id,g])); const sets=ctx.seedSets.map(ids=>ids.map(id=>by.get(id)).filter(Boolean)).filter(s=>s.length);   /* v2.81: the Shortest Tree's trunks, laid in this style */
+    if(sets.reduce((s,x)=>s+x.length,0)===regs.length){ N.roots=sets.map(set=>set.length===1?{k:'direct',set}:(lay==='step'?{k:'trunk',set,items:dnRoomItems(set,U),mode:'step'}:{k:'trunk',set,mode:'wye'})); N.direct=sets.filter(s=>s.length===1).map(s=>s[0].id); return dnFinish(N,ctx) } }
   // directs: the one or two registers nearest the plenum, within ~15 ft, when the trunks still get their collars
   let direct=[]; if(!kept&&budget>=3){ const byRoom=new Map(); regs.forEach(g=>{ if(!byRoom.has(g.rid)) byRoom.set(g.rid,[]); byRoom.get(g.rid).push(g) });
     const rooms=[...byRoom.values()].map(set=>({set,d:Math.max(...set.map(g=>dv.dist([g.x,g.y],U)))})).filter(r=>r.d<=DN_DIRECT_FT&&r.set.length<=2).sort((a,b)=>a.d-b.d);
@@ -9284,31 +9467,51 @@ function dnFinish(N,ctx){ const U=ctx.U, fr=ctx.fr; let pl=ctx.pl; const kept=pl
     if(dnObsHit(tn,segs,o.d,own,!h,h)){ const alt=dnDetour(tn,P,h,h?0.5:Rr+0.2,T,null,0,o.d,own,!h); if(alt) segs=alt; else pen=8 }
     const inf=dnRouteInfo(segs); return (inf.turn+(h?0:90))/90+inf.len/25+pen };
   const rankPen=f=>(f.rank||0)===1?1.2:(f.rank||0)*3; const RFC=new WeakMap();
-  const assign=(faces,q)=>{ const ord=N.roots.map(r=>({r,d:rootD(r),h:dnHeading(U,r.set)})).sort((a,b)=>b.d-a.d); if(ord.length>7) return null; q=q||pl; const obs=dnObs(N,Object.assign({},ctx,{pl:q}));
-    const C=ord.map(o=>faces.map(f=>{ let m=RFC.get(o.r); if(!m){ m={}; RFC.set(o.r,m) } const k=f.k+'/'+o.d; if(m[k]==null) m[k]=rootFaceCost(f,o,q,obs); return m[k]+rankPen(f)+(f.cap?0.15:0) }));   /* what a face costs a trunk is worked out once a build, not once a plenum length */ let best=null; const pick=Array(ord.length); const ds=faces.map(()=>[]);
+  // v2.81 (Stephen 2026-10-11: "if it comes out the left side, then feeds the whole right side, it dont make sense"): on a room design a collar leaves the side of the
+  // plenum its rooms are on — 'side' = the faces that look at the rooms, never the top; 'top' = the top too; 'any' = the old reach (the hard rule then says so)
+  const strictOn=!kept&&!ctx.noAutoLen; const ban=(f,r,mode)=>!!(strictOn&&mode&&mode!=='any'&&((mode==='side'&&f.k==='T')||dnWrongWay(f,r.set,U)));
+  const assign=(faces,q,mode)=>{ const ord=N.roots.map(r=>({r,d:rootD(r),h:dnHeading(U,r.set)})).sort((a,b)=>b.d-a.d); if(ord.length>7) return null; q=q||pl; const obs=dnObs(N,Object.assign({},ctx,{pl:q}));
+    const C=ord.map(o=>faces.map(f=>{ if(ban(f,o.r,mode)) return Infinity; let m=RFC.get(o.r); if(!m){ m={}; RFC.set(o.r,m) } const k=f.k+'/'+o.d; if(m[k]==null) m[k]=rootFaceCost(f,o,q,obs); return m[k]+rankPen(f)+(f.cap?0.15:0) }));   /* what a face costs a trunk is worked out once a build, not once a plenum length */ let best=null; const pick=Array(ord.length); const ds=faces.map(()=>[]);
     const rec=(i,sc)=>{ if(best&&sc>=best.sc-1e-9) return; if(i===ord.length){ best={sc,pick:pick.slice(),ord,dir:pick.reduce((a,j,k)=>a+C[k][j]-rankPen(faces[j])-(faces[j].cap?0.15:0),0)}; return }
-      faces.forEach((f,j)=>{ const nd=ds[j].concat([ord[i].d]); if(!dnFaceFits(f,nd)) return; ds[j].push(ord[i].d); pick[i]=j; rec(i+1,sc+C[i][j]+(ds[j].length-1)*0.35); ds[j].pop() }) };
+      faces.forEach((f,j)=>{ if(!isFinite(C[i][j])) return; const nd=ds[j].concat([ord[i].d]); if(!dnFaceFits(f,nd)) return; ds[j].push(ord[i].d); pick[i]=j; rec(i+1,sc+C[i][j]+(ds[j].length-1)*0.35); ds[j].pop() }) };
     rec(0,0); return best||false };
   const prefNeed=need0=>{ let bestDir=1e9; const got=[]; for(let L=need0;L<=Math.min(96,need0+12);L+=2){ const q=dnPlenumLen(pl,L); const A=assign(q.faces.filter(f=>!f.last),q); if(A){ got.push([L,A.dir]); bestDir=Math.min(bestDir,A.dir) } }
     const hit=got.find(g=>g[1]<=bestDir+0.5); return hit?hit[0]:need0 };
-  const place=(useLast)=>{ if(kept){ N.roots.forEach(r=>{ r.face='W'; r.fd=rootD(r) }); return true }
+  const place=(useLast,mode)=>{ if(kept){ N.roots.forEach(r=>{ r.face='W'; r.fd=rootD(r) }); return true }
     const faces=pl.faces.filter(f=>useLast||!f.last).map(f=>Object.assign({},f,{ds:[]}));
-    { const A=assign(faces); if(A===false) return false; if(A){ A.ord.forEach((o,i)=>{ const f=faces[A.pick[i]]; f.ds.push(o.d); o.r.face=f.k; o.r.fd=o.d }); N.faces=faces; return true } }
+    { const A=assign(faces,null,mode); if(A===false) return false; if(A){ A.ord.forEach((o,i)=>{ const f=faces[A.pick[i]]; f.ds.push(o.d); o.r.face=f.k; o.r.fd=o.d }); N.faces=faces; return true } }
     const order=N.roots.map(r=>({r,d:rootD(r),h:dnHeading(U,r.set)})).sort((a,b)=>b.d-a.d);
-    for(const o of order){ let best=null; faces.forEach(f=>{ if(!dnFaceFits(f,f.ds.concat([o.d]))) return; const sc=faceSc(f,o); if(!best||sc>best.sc) best={sc,f} });   /* v2.58: a face's rank outweighs where it points — the sides always before the top, the top before a last-resort face */
+    for(const o of order){ let best=null; faces.forEach(f=>{ if(!dnFaceFits(f,f.ds.concat([o.d]))) return; if(ban(f,o.r,mode)) return; const sc=faceSc(f,o); if(!best||sc>best.sc) best={sc,f} });   /* v2.58: a face's rank outweighs where it points — the sides always before the top, the top before a last-resort face */
       if(!best) return false; best.f.ds.push(o.d); o.r.face=best.f.k; o.r.fd=o.d } N.faces=faces; return true };
-  let folds=0; const capN=kept?2:N.cap.n-(ctx.downs||0);
-  while(N.roots.length>Math.max(1,capN)&&N.roots.length>1){ const rs=N.roots.filter(r=>r.k!=='box').sort((a,b)=>a.set.reduce((s,g)=>s+g.q,0)-b.set.reduce((s,g)=>s+g.q,0)); if(rs.length<2) break; const a=rs[0]; let b=rs[1], bd=1e9; rs.slice(1).forEach(r=>{ const d=dv.dist(dnCw(a.set),dnCw(r.set)); if(d<bd){ bd=d; b=r } });
-    N.roots=N.roots.filter(r=>r!==a&&r!==b).concat([{k:'trunk',set:a.set.concat(b.set),mode:N.lay==='step'?'wye':'wye',fold:true}]); folds++ }
-  let ok=place();
-  // a new duct system comes with a new supply plenum: when its length is not entered, it is sized to take its collars (never shorter than the one there)
-  if(!ok&&!kept&&pl.kind==='h'&&!pl.entered&&!ctx.noAutoLen){ const need0=Math.max(dnPlenNeed(pl,N.roots.map(rootD)),pl.base||0); const need=need0<=96?prefNeed(need0):need0; if(need<=96){   /* v2.72 re-cut: never shorter than the plenum it started as */ pl=dnPlenumLen(pl,need); ctx.pl=pl; N.pl=pl; ok=place(); if(ok){ N.plAuto=need; N.notes.push(`Supply plenum sized to ${need}" so its ${N.roots.length} collars fit, 2" edge to edge.`) } } }
-  while(!ok&&N.roots.length>1){ // FOLD: two small runs become one bigger trunk + a TY (Stephen: "fold two small runs into one bigger trunk + TY and say so")
-    const rs=N.roots.filter(r=>r.k!=='box').sort((a,b)=>a.set.reduce((s,g)=>s+g.q,0)-b.set.reduce((s,g)=>s+g.q,0)); if(rs.length<2) break; const a=rs[0]; let b=rs[1], bd=1e9; rs.slice(1).forEach(r=>{ const d=dv.dist(dnCw(a.set),dnCw(r.set)); if(d<bd){ bd=d; b=r } });
-    N.roots=N.roots.filter(r=>r!==a&&r!==b).concat([{k:'trunk',set:a.set.concat(b.set),mode:'wye',fold:true}]); folds++; ok=place() }
-  // v2.58 — no room design keeps the fit check's plenum length and folds first; but when not even one collar fits the faces the rules allow (a cased
-  // coil's end cap and its last 12" stay clear), the new plenum grows to take it before anything comes off a last-resort face
-  if(!ok&&!kept&&pl.kind==='h'&&!pl.entered&&ctx.noAutoLen){ const need=dnPlenNeed(pl,N.roots.map(rootD)); if(need<=96&&need>pl.L){ pl=dnPlenumLen(pl,need); ctx.pl=pl; N.pl=pl; ok=place(); if(ok){ N.plAuto=need; N.notes.push(`Supply plenum sized to ${need}" so ${N.roots.length>1?'its collars clear':'its collar clears'} the end cap and its last 12".`) } } }
+  let folds=0; const capN=kept?2:N.cap.n-(ctx.downs||0); const qOf=r=>r.set.reduce((s,g)=>s+g.q,0);
+  // FOLD: two small runs become one bigger trunk + a TY (Stephen: "fold two small runs into one bigger trunk + TY and say so") — v2.81: the smallest run and the
+  // nearest one on its side of the unit; two Shortest-Tree runs join the way the tree grows (where the two would meet, no room left behind the TY)
+  const fold=(a,b)=>{ if(!a||!b){ const rs=N.roots.filter(r=>r.k!=='box').sort((x,y)=>qOf(x)-qOf(y)); if(rs.length<2) return false; a=rs[0]; let bd=1e9;
+    rs.slice(1).forEach(r=>{ let d=dv.dist(dnCw(a.set),dnCw(r.set)); if(strictOn&&!dnSameSide(a,r,U)) d+=1000; if(d<bd){ bd=d; b=r } }) }
+    let nr=null; if(a.mode==='back'&&b.mode==='back'&&a.tree&&b.tree){ const P=(a.pref&&a.pref===b.pref&&a.port)?a.port:U; const o={obs:dnObs(N,ctx)}; const m=dnBkMerge(P,a.tree,b.tree,o)||dnBkMerge(P,a.tree,b.tree,Object.assign({},o,{relax:true}));
+      if(m) nr={k:'trunk',set:a.set.concat(b.set),mode:'back',tree:m,pref:a.pref===b.pref?a.pref:null,port:P,fold:true} }
+    if(!nr) nr={k:'trunk',set:a.set.concat(b.set),mode:'wye',fold:true};
+    N.roots=N.roots.filter(r=>r!==a&&r!==b).concat([nr]); folds++; return true };
+  while(N.roots.length>Math.max(1,capN)&&N.roots.length>1){ if(!fold()) break }
+  let ok=false;
+  if(strictOn){ // v2.81 (Stephen 2026-10-11): a full side gets a longer new plenum first (when its length is not typed), then the top, then two trunks combined — never the far side
+    const grow=mode=>{ if(pl.kind!=='h'||pl.entered) return false; const keep=pl; for(let L=Math.ceil(keep.L)+2;L<=96;L+=2){ pl=dnPlenumLen(keep,L); ctx.pl=pl; N.pl=pl; if(place(false,mode)){ N.plAuto=L; return true } } pl=keep; ctx.pl=pl; N.pl=pl; return false };
+    const tryAll=()=>place(false,'side')||grow('side')||place(false,'top')||grow('top');
+    // combine: the pair on one side whose join lets every collar fit (a small trunk left for the face that only takes a small one), else the smallest and its nearest
+    const foldFit=()=>{ const rs=N.roots.filter(r=>r.k!=='box'); const pairs=[]; for(let i=0;i<rs.length;i++) for(let j=i+1;j<rs.length;j++){ if(!dnSameSide(rs[i],rs[j],U)) continue; pairs.push([rs[i],rs[j],qOf(rs[i])+qOf(rs[j])+dv.dist(dnCw(rs[i].set),dnCw(rs[j].set))]) }
+      pairs.sort((x,y)=>x[2]-y[2]); for(const [a,b] of pairs.slice(0,12)){ const keep=N.roots.slice(), f0=folds; fold(a,b); if(tryAll()) return true; N.roots=keep; folds=f0 } return false };
+    ok=tryAll(); while(!ok&&N.roots.length>1){ if(foldFit()){ ok=true; break } if(!fold()) break; ok=tryAll() }
+    if(ok&&N.plAuto) N.notes.push(`Supply plenum sized to ${N.plAuto}" so its ${N.roots.length} collars fit on the side${N.roots.length>1?'s':''} their rooms are on, 2" edge to edge.`);
+    if(!ok){ ok=place(false,'any'); if(ok) N.notes.push('A collar had to leave the plenum on the side away from its rooms — nothing else would take it.') } }
+  else {
+    ok=place();
+    // a new duct system comes with a new supply plenum: when its length is not entered, it is sized to take its collars (never shorter than the one there)
+    if(!ok&&!kept&&pl.kind==='h'&&!pl.entered&&!ctx.noAutoLen){ const need0=Math.max(dnPlenNeed(pl,N.roots.map(rootD)),pl.base||0); const need=need0<=96?prefNeed(need0):need0; if(need<=96){   /* v2.72 re-cut: never shorter than the plenum it started as */ pl=dnPlenumLen(pl,need); ctx.pl=pl; N.pl=pl; ok=place(); if(ok){ N.plAuto=need; N.notes.push(`Supply plenum sized to ${need}" so its ${N.roots.length} collars fit, 2" edge to edge.`) } } }
+    while(!ok&&N.roots.length>1){ if(!fold()) break; ok=place() }   // FOLD: two small runs become one bigger trunk + a TY (Stephen: "fold two small runs into one bigger trunk + TY and say so")
+    // v2.58 — no room design keeps the fit check's plenum length and folds first; but when not even one collar fits the faces the rules allow (a cased
+    // coil's end cap and its last 12" stay clear), the new plenum grows to take it before anything comes off a last-resort face
+    if(!ok&&!kept&&pl.kind==='h'&&!pl.entered&&ctx.noAutoLen){ const need=dnPlenNeed(pl,N.roots.map(rootD)); if(need<=96&&need>pl.L){ pl=dnPlenumLen(pl,need); ctx.pl=pl; N.pl=pl; ok=place(); if(ok){ N.plAuto=need; N.notes.push(`Supply plenum sized to ${need}" so ${N.roots.length>1?'its collars clear':'its collar clears'} the end cap and its last 12".`) } } }
+  }
   if(!ok&&!kept&&pl.faces.some(f=>f.last)){ ok=place(true); if(ok&&N.roots.some(r=>(pl.faces.find(f=>f.k===r.face)||{}).last)) N.notes.push(pl.kind==='h'?'A collar had to come off the bottom of the plenum — nothing else would take it.':'A collar had to come off the top of the riser — its sides were full.') }   // v2.58: the last resort, only when nothing else fits
   N.folds=folds; if(folds) N.notes.push(`The collars did not fit the plenum's faces — ${folds===1?'two small runs were':folds+' pairs of small runs were'} folded into one bigger trunk and a TY.`);
   N.fit=ok; if(!ok&&!kept){ N.plNeed=dnPlenNeed(pl,N.roots.map(rootD)); N.notes.push(`The collars do not fit on the ${fmt(pl.L)}" plenum — it needs ${N.plNeed}".`) }
@@ -9318,6 +9521,7 @@ function dnFinish(N,ctx){ const U=ctx.U, fr=ctx.fr; let pl=ctx.pl; const kept=pl
     if(r.k==='direct'){ const g=r.set[0]; first=dnNode(N,{t:'can',x:g.x,y:g.y,reg:g,level:0}) }
     else if(r.k==='box') first=dnBoxNode(N,r.set,U);
     else if(r.mode==='step') first=dnStepFromItems(N,r.items||dnRoomItems(r.set,U),U,h);
+    else if(r.mode==='back'&&r.tree) first=dnBkNodes(N,r.tree,1,dnBkPort(pl,U,pl.faces&&pl.faces.find(f=>f.k===r.face),ctx.r));   /* v2.81: the grown tree, its TYs where the runs meet */
     else first=dnWyeGroup(N,r.set,1,U,h,false,r.topo);
     dnEdge(N,P,first,{k:r.k==='direct'?'direct':(r.k==='box'?'boxfeed':'trunk'),face:r.face||'W',root:true,fold:!!r.fold,leave:null,fd:r.fd}) });
   dnLay(N,ctx); dnSize(N,ctx); dnRefit(N,ctx); dnRepair(N,ctx); if(N.repaired){ dnSize(N,ctx); dnRefit(N,ctx) } dnPaths(N,ctx); dnFixShort(N,ctx); dnCheck(N,ctx); dnTag(N); return N }
@@ -9374,10 +9578,16 @@ function dnCollarPts(N,ctx){ const pl=ctx.pl, U=ctx.U; const W=(pl.W||20)/12, L=
     let axisDir, org; if(pl.kind==='h'){ if(fk==='L'||fk==='R'||fk==='T'||fk==='B'){ axisDir=[0,-1]; org=[U[0]+(fk==='L'?-W/2:(fk==='R'?W/2:0)),U[1]+L/2] } else { axisDir=[1,0]; org=[U[0]-W/2,U[1]-L/2] } }
     else { const H=(pl.H||20)/12; if(fk==='L'||fk==='R'){ axisDir=[0,-1]; org=[U[0]+(fk==='L'?-W/2:W/2),U[1]+H/2] } else if(fk==='T'){ axisDir=[1,0]; org=[U[0]-W/2,U[1]] } else { axisDir=[1,0]; org=[U[0]-W/2,U[1]+(fk==='N'?-H/2:H/2)] } }
     if(ctx.r){ axisDir=uRotV(axisDir,ctx.r); org=uRotP(U,org,ctx.r) }   /* v2.61: the face as the unit is turned; s along it is the same */
-    es.sort((a,b)=>dv.dot(tgt(a),axisDir)-dv.dot(tgt(b),axisDir));
+    const fN=(pl.faces.find(x=>x.k===fk)||{}).nrm; const fMid=dv.add(org,dv.mul(axisDir,((f.head||0)+(f.len||12)/2)/12));   /* v2.81: by the way each run fans out off the face */
+    const fKey=e=>{ if(!fN) return dv.dot(tgt(e),axisDir); const v=dv.sub(tgt(e),fMid); let a=Math.atan2(dv.dot(v,fN),dv.dot(v,axisDir))*180/Math.PI; if(a<-90) a+=360; return -a };
+    es.sort((a,b)=>fKey(a)-fKey(b));
     const ds=es.map(e=>e.d0||e.fd||10);   /* the sized collar once there is one — spacing is 2" edge to edge at the real sizes */ const need=dnFaceNeed(ds); const room=f.len; const span=pl.kind==='h'&&(fk!=='N')?(L*12-(f.head||0)-(f.tail||0)):(fk==='N'&&pl.kind==='h'?W*12:room);
     const gap=f.even?Math.max(DN_EDGE_IN,(span-ds.reduce((a,d)=>a+d,0))/(ds.length+1)):DN_EDGE_IN;   // a plenum coil spaces its collars evenly end to end, no end rule
     let s=f.even?(f.head||0)+gap:((fk==='N'||pl.kind!=='h')?Math.max(0,(span-need)/2):(f.head||0));   /* v2.72 re-cut: an even face's collars start past its head */
+    { const X=(a,b,c,d)=>{ const d1=dv.cr(dv.sub(b,a),dv.sub(c,a)), d2=dv.cr(dv.sub(b,a),dv.sub(d,a)), d3=dv.cr(dv.sub(d,c),dv.sub(a,c)), d4=dv.cr(dv.sub(d,c),dv.sub(b,c)); return ((d1>1e-9&&d2<-1e-9)||(d1<-1e-9&&d2>1e-9))&&((d3>1e-9&&d4<-1e-9)||(d3<-1e-9&&d4>1e-9)) };   /* v2.81: two neighbours whose lines out would cross trade places */
+      for(let pass=0;pass<es.length;pass++){ let s2=s, sw=false; const at=es.map((e,i)=>{ const d=e.d0||e.fd||10; const q=dv.add(org,dv.mul(axisDir,(s2+d/2)/12)); s2+=d+gap; return q });
+        for(let i=0;i+1<es.length;i++){ if(X(at[i],tgt(es[i]),at[i+1],tgt(es[i+1]))){ const t0=es[i]; es[i]=es[i+1]; es[i+1]=t0; sw=true; break } } if(!sw) break }
+      for(let i=0;i<es.length;i++) ds[i]=es[i].d0||es[i].fd||10 }
     es.forEach((e,i)=>{ const d=ds[i]; const mid=(s+d/2)/12; const p=dv.add(org,dv.mul(axisDir,mid)); out[e.id]={p,h:(fk==='T'||fk==='B')?null:(pl.faces.find(x=>x.k===fk)||{}).nrm||[1,0],face:fk,s:s+d/2,d}; s+=d+gap }) });
   return out }
 // NO REGISTER UNDER THE EQUIPMENT: a can cannot land under the furnace, the coil, the plenum or a riser — one that the even spacing put there slides out
@@ -9482,7 +9692,8 @@ function dnDetour(N,P0,h0,L0,B,want,Lend,d,own,ownAll){ const obs=(N._obs||[]).f
   return null }
 // a TY or a box that the layout dropped on the equipment slides off it, the shortest way out, clear of the duct and its bends
 function dnObsNodes(N){ const obs=N._obs||[]; if(!obs.length) return; Object.values(N.nodes).forEach(nd=>{ if(nd.t!=='ty'&&nd.t!=='box') return; const inE=N.edges.find(e=>e.id===nd.inE); const d=(inE&&(inE.d0||inE.d||inE.fd))||10; const m=d/24+DN_OBS_CLR+(nd.t==='box'?(nd.w||1)/2+0.2:0.8);
-    for(let pass=0;pass<3;pass++){ const R=obs.find(Q=>dnObsIn(Q,[nd.x,nd.y],m)); if(!R) break; const opts=[[R.x0-m-nd.x,0],[R.x1+m-nd.x,0],[0,R.y0-m-nd.y],[0,R.y1+m-nd.y]].sort((a,b)=>Math.hypot(...a)-Math.hypot(...b)); nd.x+=opts[0][0]+Math.sign(opts[0][0])*0.01; nd.y+=opts[0][1]+Math.sign(opts[0][1])*0.01; nd.obsMoved=true } }) }
+    const kids=(nd.outE||[]).map(id=>N.nodes[N.edges.find(e=>e.id===id).b]); const clear=v=>{ const q=[nd.x+v[0],nd.y+v[1]]; return kids.every(k=>dv.dist(q,[k.x,k.y])>=(k.t==='can'?2.5:3)-1e-6)&&!obs.some(Q=>dnObsIn(Q,q,m)) };   /* v2.81 */
+    for(let pass=0;pass<3;pass++){ const R=obs.find(Q=>dnObsIn(Q,[nd.x,nd.y],m)); if(!R) break; const opts=[[R.x0-m-nd.x,0],[R.x1+m-nd.x,0],[0,R.y0-m-nd.y],[0,R.y1+m-nd.y]].map(v=>[v[0]+Math.sign(v[0])*0.01,v[1]+Math.sign(v[1])*0.01]).sort((a,b)=>Math.hypot(...a)-Math.hypot(...b)); const o=opts.find(clear)||opts[0]; nd.x+=o[0]; nd.y+=o[1]; nd.obsMoved=true } }) }
 function dnOwnOf(N,c){ if(!c||!N._obs) return null; return N._obs.find(R=>R.k==='plen')||null }
 // trim a route's far end by L (the TY's or the box's own metal takes that much); hands back the heading it arrives on
 function dnTrimEnd(segs,L){ const out=segs.slice(); let left=L; while(left>1e-6&&out.length){ const s=out[out.length-1]; const l=dnSegLen(s); if(l<=left+1e-6){ out.pop(); left-=l; continue }
@@ -9496,7 +9707,7 @@ function dnLay(N,ctx){ const cp=dnCollarPts(N,ctx); N.collars=cp; N._obs=dnObs(N
 const dnKids=(N,nd)=>(nd.outE||[]).map(id=>N.edges.find(x=>x.id===id));
 const dnR=d=>1.5*d/12;                                    // the flex's centreline radius — drawn and designed at 1.5 D
 // ONE run: its route from where it leaves (a collar, a TY leg, a box outlet) to what it feeds, and where that node's own runs leave from
-function dnLayEdge(N,ctx,e,P0,h0,L0){ const cp=N.collars; const b=N.nodes[e.b]; const d=e.d0||e.fd||8; e.obsHit=false;
+function dnLayEdge(N,ctx,e,P0,h0,L0){ const cp=N.collars; const b=N.nodes[e.b]; const d=e.d0||e.fd||8; e.obsHit=false; e.detour=false;
   if(e.root){ const c=cp[e.id]; P0=c.p; if(c.h){ h0=c.h; L0=0.5 } else { h0=dv.unit(dv.sub([b.x,b.y],P0)); L0=Math.max(0.4,dnR(d)+0.2); if(N.pl&&N.pl.ret) h0=dnAvoidRet(N,P0,h0,L0,[b.x,b.y],d) } }
   const own=e.root&&N.pl&&N.pl.kind!=='drop'?dnOwnOf(N,cp[e.id]):null, ownAll=!!(own&&!cp[e.id].h);   /* v2.59: a collar's run starts on its own plenum (a top collar rides above it) */
   let segs;
@@ -9508,18 +9719,21 @@ function dnLayEdge(N,ctx,e,P0,h0,L0){ const cp=N.collars; const b=N.nodes[e.b]; 
     else if(b.step) want=b.axis0||b.ax;
     else if(b.freeAx) want=null;
     else if(b.inline) want=b.ax;
+    else if(b.bk&&b.ax) want=b.ax;   /* v2.81 */
     else if(b.t==='ty'&&ks.length===2){ const u1=dv.unit(dv.sub([N.nodes[ks[0].b].x,N.nodes[ks[0].b].y],[b.x,b.y])), u2=dv.unit(dv.sub([N.nodes[ks[1].b].x,N.nodes[ks[1].b].y],[b.x,b.y])); const bis=dv.add(u1,u2); if(dv.len(bis)>0.2) want=dv.unit(bis) }
     const room=dv.dist(P0,[b.x,b.y]); const Lend=Math.min(Lin+body,Math.max(0.6,room*0.6)); let full=dnRouteSmart(P0,h0,L0,[b.x,b.y],want,Lend,dnR(d));
-    if(dnObsHit(N,full,d,own,ownAll,h0)){ const alt=dnDetour(N,P0,ownAll?null:h0,L0,[b.x,b.y],want,Lend,d,own,ownAll)||dnDropFree(N,e,P0,L0,[b.x,b.y],want,Lend,d); if(alt) full=alt; else e.obsHit=true }   /* v2.59: round the equipment, never through it */
+    if(dnObsHit(N,full,d,own,ownAll,h0)){ const alt=dnDetour(N,P0,ownAll?null:h0,L0,[b.x,b.y],want,Lend,d,own,ownAll)||dnDropFree(N,e,P0,L0,[b.x,b.y],want,Lend,d); if(alt){ full=alt; e.detour=true } else e.obsHit=true }   /* v2.59: round the equipment, never through it */
     b.ax=dnEndHeading(full)||want||h0; segs=dnTrimEnd(full,body) }
-  else { segs=dnRoute(P0,h0,L0,[b.x,b.y],null,0,dnR(d)); if(dnObsHit(N,segs,d,own,ownAll,h0)){ const alt=dnDetour(N,P0,ownAll?null:h0,L0,[b.x,b.y],null,0,d,own,ownAll)||dnDropFree(N,e,P0,L0,[b.x,b.y],null,0,d); if(alt) segs=alt; else e.obsHit=true } }
+  else { segs=dnRoute(P0,h0,L0,[b.x,b.y],null,0,dnR(d)); if(dnObsHit(N,segs,d,own,ownAll,h0)){ const alt=dnDetour(N,P0,ownAll?null:h0,L0,[b.x,b.y],null,0,d,own,ownAll)||dnDropFree(N,e,P0,L0,[b.x,b.y],null,0,d); if(alt){ segs=alt; e.detour=true } else e.obsHit=true } }
   e.segs=segs; const inf=dnRouteInfo(segs); e.len=inf.len; e.turn=inf.turn; e.bends=inf.bends; e.inStraight=dnStraightEnd(segs); e.outStraight=dnStraightStart(segs);
+  e.kink=segs.some(s=>s.t==='A'&&s.r<0.5*dnR(d)&&Math.abs(s.da)>0.15);   /* v2.81: a bend squeezed under half its radius */
   if(e.root&&cp[e.id]&&(cp[e.id].face==='T'||cp[e.id].face==='B')){ e.turn+=90; e.bends++; e.len+=0.5 }   // off the top: up, and a 90° over into the attic (v2.58: off the bottom — down, and a 90° over)
   e.lift=false; if(dnCrossesUnit(N,ctx,segs)){ e.lift=true; e.turn+=90; e.bends++ }             // a run over the cabinet lifts through two gentle 45° offsets
-  // on down the tree: a TY's legs leave at 45° (a stepped trunk's run leg straight on), a box's outlets square off its side walls
-  const ks=dnKids(N,b);
+  return dnKidStarts(N,b) }
+// on down the tree: a TY's legs leave at 45° (a stepped trunk's run leg straight on), a box's outlets square off its side walls
+function dnKidStarts(N,b){ const ks=dnKids(N,b);
   if(b.t==='ty'){ const ax=b.ax; const lat=k=>{ const kd=N.nodes[k.b]; return dv.cr(ax,dv.sub([kd.x,kd.y],[b.x,b.y])) };
-    const br=ks.filter(k=>k.leave!=='run'); if(br.length===2){ let s1=Math.sign(lat(br[0]))||1, s2=Math.sign(lat(br[1]))||-s1; if(s1===s2){ if(Math.abs(lat(br[0]))<Math.abs(lat(br[1]))) s1=-s2; else s2=-s1 } br[0].side=s1; br[1].side=s2 }
+    const br=ks.filter(k=>k.leave!=='run'); if(br.length===2){ let s1=Math.sign(lat(br[0]))||1, s2=Math.sign(lat(br[1]))||-s1; if(s1===s2){ const an=(k,s)=>{ const kd=N.nodes[k.b]; const v=dv.sub([kd.x,kd.y],[b.x,b.y]), l=dv.len(v)||1; return Math.acos(Math.max(-1,Math.min(1,dv.dot(dv.rot(ax,s*Math.PI/4),v)/l))) }; if(an(br[0],1)+an(br[1],-1)<=an(br[0],-1)+an(br[1],1)){ s1=1; s2=-1 } else { s1=-1; s2=1 } }   /* v2.81: each run the leg that turns it least */ br[0].side=s1; br[1].side=s2 }
     else if(br.length===1) br[0].side=Math.sign(lat(br[0]))||1 }
   ks.forEach(k=>{ const kid=N.nodes[k.b]; let dir, org, L=0;
     if(b.t==='ty'){ const ax=b.ax; dir=k.leave==='run'?ax:dv.rot(ax,(k.side||1)*Math.PI/4); org=dv.add([b.x,b.y],dv.mul(dir,DN_TY_LEG)); L=0.35 }
@@ -9544,11 +9758,12 @@ function dnAvoidRet(N,P0,h0,L0,B,d){ const t=N.pl.ret; const C=dv.add(N.U,[t.dx,
 const DN_TY_STRAIGHT=3;                                    // ft of straight run into every TY, its own 6" inlet included (5 ft is the target on 12"+)
 function dnTyGapMin(N,a,t){ return (t.step&&a.step)?4:3 }
 function dnScore(N,es){ es=es||N.edges; let v=0, len=0;
-  es.forEach(e=>{ len+=e.len||0; const tr=(e.turn||0)-(e.lift?90:0); if(tr>100) v+=((tr-100)/30)*4; if(tr>160) v+=((tr-160)/20)*10; if(e.lift) v+=1.5; if(e.obsHit) v+=30; const t=N.nodes[e.b]; if((t.t==='ty'||t.t==='box')&&(N._obs||[]).some(R=>dnObsIn(R,[t.x,t.y],0.9))) v+=40;   /* v2.59: never through the equipment, never a TY on it */ if(t.t==='box'){ v+=Math.max(0,5-(e.inStraight+(t.len||2)/2))*6; return } if(t.t!=='ty') return;
+  es.forEach(e=>{ len+=e.len||0; if(e.kink) v+=25; const tr=(e.turn||0)-(e.lift?90:0); if(tr>100) v+=((tr-100)/30)*4; if(tr>160) v+=((tr-160)/20)*10; if(e.lift) v+=1.5; if(e.obsHit) v+=30; const t=N.nodes[e.b]; if((t.t==='ty'||t.t==='box')&&(N._obs||[]).some(R=>dnObsIn(R,[t.x,t.y],0.9))) v+=40;   /* v2.59: never through the equipment, never a TY on it */ if(t.t==='box'){ v+=Math.max(0,5-(e.inStraight+(t.len||2)/2))*6; return } if(t.t!=='ty') return;
     v+=Math.max(0,DN_TY_STRAIGHT-(e.inStraight+DN_TY_IN))*10; const a=N.nodes[e.a]; if(a.t==='ty'){ const g=dv.dist([a.x,a.y],[t.x,t.y]); v+=Math.max(0,dnTyGapMin(N,a,t)-g)*10 }
-    dnKids(N,t).forEach(k=>{ if(k.outStraight+DN_TY_LEG<1-0.05) v+=4 }) });
+    dnKids(N,t).forEach(k=>{ if(k.outStraight+DN_TY_LEG<1-0.05) v+=4 });
+    if(e.segs&&e.segs.length){ const p0=dnRoutePts(e.segs,30)[0]; const w=dv.sub([t.x,t.y],p0), l=dv.len(w); if(l>0.5){ const u=[w[0]/l,w[1]/l]; dnLeaves(N,t).forEach(c=>{ const z=dv.sub([c.x,c.y],[t.x,t.y]); if(-dv.dot(z,u)>Math.max(1,0.25*dv.len(z))) v+=12 }) } } });   /* v2.81: a room behind its TY */
   return v+len/40 }
-function dnViol(N,t){ const inE=N.edges.find(e=>e.id===t.inE); if(!inE) return false; if(t.t==='box') return inE.inStraight+(t.len||2)/2<5-0.05||dnKids(N,t).some(k=>(k.turn||0)>150); if(inE.inStraight+DN_TY_IN<DN_TY_STRAIGHT-0.05) return true;
+function dnViol(N,t){ const inE=N.edges.find(e=>e.id===t.inE); if(!inE) return false; if(inE.kink||dnKids(N,t).some(k=>k.kink)) return true;   /* v2.81 */ if(t.t==='box') return inE.inStraight+(t.len||2)/2<5-0.05||dnKids(N,t).some(k=>(k.turn||0)>150); if(inE.inStraight+DN_TY_IN<DN_TY_STRAIGHT-0.05) return true;
   const a=N.nodes[inE.a]; if(a.t==='ty'&&dv.dist([a.x,a.y],[t.x,t.y])<dnTyGapMin(N,a,t)-0.05) return true;
   return dnKids(N,t).some(k=>{ const b=N.nodes[k.b]; if((k.turn||0)>150) return true; if(b.t!=='ty') return false; return k.inStraight+DN_TY_IN<DN_TY_STRAIGHT-0.05||dv.dist([t.x,t.y],[b.x,b.y])<dnTyGapMin(N,t,b)-0.05 }) }
 // the trunk a TY sits on: its collar's run and every run below it — a move re-lays and re-scores only that trunk (the collars stay put)
@@ -9559,14 +9774,23 @@ function dnRepair(N,ctx){ const tys=()=>Object.values(N.nodes).filter(n=>n.t==='
   N.repaired=0; const nodesOf=es=>[...new Set(es.map(e=>N.nodes[e.b]))];
   const move=t=>{ const re=dnRootEdge(N,t); if(!re) return false; const es=dnSubEdges(N,re); const ns=nodesOf(es);
     const s0=ns.map(n=>[n,n.x,n.y,n.ax,n.freeAx]); const back=()=>s0.forEach(([n,x,y,ax,f])=>{ n.x=x; n.y=y; n.ax=ax; n.freeAx=f });
-    const best=dnScore(N,es); const ax0=(t.ax||[1,0]).slice(), x0=t.x, y0=t.y, f0=!!t.freeAx; let pick=null;
-    const tryAt=(dd,l,f)=>{ const p=dv.add([x0,y0],dv.add(dv.mul(ax0,dd),dv.mul(dv.perp(ax0),l))); back(); t.x=p[0]; t.y=p[1]; t.freeAx=f; dnLayRoot(N,ctx,re); const sc=dnScore(N,es); if(sc<best-1e-6&&(!pick||sc<pick.sc)) pick={sc,x:t.x,y:t.y,f} };
+    const inE=N.edges.find(e=>e.id===t.inE), pa=inE&&N.nodes[inE.a]; const paT=!!(pa&&(pa.t==='ty'||pa.t==='box')); const st=paT?N.edges.find(e=>e.id===pa.inE):null;   /* v2.81: the part a move can change */
+    const dep=paT&&pa.t==='ty'&&!pa.step&&!pa.freeAx&&!pa.inline&&!(pa.bk&&pa.ax)&&dnKids(N,pa).length===2;   /* the feeding TY faces the middle of its two runs: its own run in moves with this one */
+    const walk=(e,P0,h0,L0)=>{ dnLayEdge(N,ctx,e,P0,h0,L0).forEach(k=>walk(k,k.org,k.dir0,k.L0)) }; let relay, ses;
+    if(!paT||(dep&&st.root)){ relay=()=>dnLayRoot(N,ctx,re); ses=es }
+    else if(dep){ const up=N.edges.find(e=>e.id===N.nodes[st.a].inE); relay=()=>walk(st,st.org,st.dir0,st.L0); ses=(up?[up]:[]).concat(dnSubEdges(N,st)) }
+    else { const sib=dnKids(N,pa).filter(k=>k!==inE); const sig=k=>JSON.stringify([k.org,k.dir0,k.L0,k.side]); const s0=new Map(sib.map(k=>[k.id,sig(k)])); const dirty=new Set();
+      relay=()=>{ dnKidStarts(N,pa); walk(inE,inE.org,inE.dir0,inE.L0); sib.forEach(k=>{ if(dirty.has(k.id)||sig(k)!==s0.get(k.id)){ dirty.add(k.id); walk(k,k.org,k.dir0,k.L0) } }) }; ses=dnSubEdges(N,st) }
+    const best=dnScore(N,ses); const ax0=(t.ax||[1,0]).slice(), x0=t.x, y0=t.y, f0=!!t.freeAx; let pick=null;
+    const tryAt=(dd,l,f)=>{ const p=dv.add([x0,y0],dv.add(dv.mul(ax0,dd),dv.mul(dv.perp(ax0),l))); back(); t.x=p[0]; t.y=p[1]; t.freeAx=f; relay(); const sc=dnScore(N,ses); if(sc<best-1e-6&&(!pick||sc<pick.sc)) pick={sc,x:t.x,y:t.y,f} };
     for(let dd=-2.5;dd<=4.01;dd+=0.5) [f0,!f0].forEach(f=>{ if(t.step&&f) return; if(dd||f!==f0) tryAt(dd,0,f) });
     if(!t.step&&(!pick||pick.sc>best-0.5)) for(let dd=-1.5;dd<=3.01;dd+=0.75) [-1.5,-0.75,0.75,1.5].forEach(l=>tryAt(dd,l,f0));
     back(); if(pick){ t.x=pick.x; t.y=pick.y; t.freeAx=pick.f; N.repaired++ } dnLayRoot(N,ctx,re); return !!pick };
+  const ver={}; let gv=0; const vOf=t=>{ const re=dnRootEdge(N,t); return gv+'/'+(re?(ver[re.id]||0):0) }; const nope={};   /* v2.81: what a failed move saw */
+  const tryMove=t=>{ const k=vOf(t); if(nope[t.id]===k) return false; const re=dnRootEdge(N,t); const ok=move(t); if(ok){ if(re) ver[re.id]=(ver[re.id]||0)+1; const ie=N.edges.find(e=>e.id===t.inE); if(ie&&ie.root) gv++ } else nope[t.id]=k; return ok };
   for(let sweep=0;sweep<3;sweep++){ let moved=false;
-    for(const t of tys()){ if(!dnViol(N,t)) continue; if(move(t)) moved=true;
-      if(dnViol(N,t)){ const inE=N.edges.find(e=>e.id===t.inE); const a=inE&&N.nodes[inE.a]; if(a&&(a.t==='ty'||a.t==='box')&&move(a)) moved=true } }   /* still short: the TY that feeds it may have to give */
+    for(const t of tys()){ if(!dnViol(N,t)) continue; if(tryMove(t)) moved=true;
+      if(dnViol(N,t)){ const inE=N.edges.find(e=>e.id===t.inE); const a=inE&&N.nodes[inE.a]; if(a&&(a.t==='ty'||a.t==='box')&&tryMove(a)) moved=true } }   /* still short: the TY that feeds it may have to give */
     if(!moved) break } }
 // ---------------------------------------------------------------- SIZE: every edge by what it carries (smallest that covers it; one size up for a long or bendy run)
 function dnSize(N,ctx){ const fr=ctx.fr; const q={}; const load=nid=>{ const nd=N.nodes[nid]; if(nd.t==='can') return q[nid]=nd.reg.q; return q[nid]=(nd.outE||[]).reduce((s,id)=>s+load(N.edges.find(x=>x.id===id).b),0) };
@@ -9652,7 +9876,13 @@ function dnCheck(N,ctx){ const C=N.checks; const add=(k,ok,txt,hard)=>C.push({k,
   if(!kept){ add('fit',N.fit,N.fit?'the collars fit the plenum\'s faces, 2" edge to edge':`the collars need a ${N.plNeed||'longer'}" plenum`,true);
     { const fOf=e=>pl.faces.find(x=>x.k===e.face)||{}; const pc=pl.kind==='h'&&pl.cfg==='plenum_coil'; const bad=roots.filter(e=>pc?(e.face==='T'||e.face==='B'):(pl.kind==='h'&&e.face==='N'));
       add('faceRule',!bad.length,bad.length?(pc?'a collar off the top or bottom of a plenum coil':'a collar on the end cap of the supply plenum'):(pc?'plenum coil: collars off the front and the sides only':(pl.kind==='h'?'the end cap and its last 12" clear — collars on the sides'+(roots.some(e=>e.face==='T')?', then the top':'')+(roots.some(e=>fOf(e).last)?', one off the bottom (last resort)':''):'collars on the riser\'s sides'+(roots.some(e=>fOf(e).last)?', one off its top (last resort)':''))),true) }   // v2.58
-    const faceTooSmall=roots.filter(e=>{ const f=pl.faces.find(x=>x.k===e.face); return f&&e.d>dnFaceAcross(f)+1e-9 }); add('face',!faceTooSmall.length,faceTooSmall.length?`a Ø${faceTooSmall[0].d}" collar is taller than its face less 3"`:'every collar ≤ its face less 3"',true) }
+    const faceTooSmall=roots.filter(e=>{ const f=pl.faces.find(x=>x.k===e.face); return f&&e.d>dnFaceAcross(f)+1e-9 }); add('face',!faceTooSmall.length,faceTooSmall.length?`a Ø${faceTooSmall[0].d}" collar is taller than its face less 3"`:'every collar ≤ its face less 3"',true)
+    // v2.81 (Stephen 2026-10-11) — the side: a collar leaves the plenum on the side its rooms are on, never feeding the far side round the unit
+    if(!ctx.noAutoLen){ const wrong=roots.filter(e=>{ const f=pl.faces.find(x=>x.k===e.face); return f&&dnWrongWay(f,dnLeaves(N,N.nodes[e.b]).map(c=>c.reg),N.U) });
+      add('side',!wrong.length,wrong.length?`${wrong.length} collar${wrong.length>1?'s leave':' leaves'} the plenum on the side away from ${wrong.length>1?'their':'its'} rooms`:'every collar leaves the plenum on the side its rooms are on',true) } }
+  // v2.81 — no run passes a room and doubles back to it (every room ahead of the TY that feeds it), and no two runs cross on the plan
+  { const bk=dnBackOf(N); N.backN=bk.length; N.backs=bk; add('back',!bk.length,bk.length?`${bk.length} run${bk.length>1?'s pass':' passes'} a room and double${bk.length>1?'':'s'} back to it`:'no run passes a room and doubles back',false);
+    const cx=dnCrossOf(N); N.crossN=cx; add('cross',!cx,cx?`${cx} place${cx>1?'s':''} where two runs cross on the plan`:'no two runs cross on the plan',false) }
   const big=N.edges.filter(e=>e.d>MD_MAX_D), small=N.edges.filter(e=>e.d<DN_MIN); add('max',!big.length,big.length?`a Ø${big[0].d}" run — over 20"`:'no round over 20"',true); add('min',!small.length,small.length?`a Ø${small[0].d}" run — under 6"`:'nothing under 6"',true);
   const over=roots.filter(e=>e.over); add('collarMax',!over.length,over.length?`a trunk wants Ø${over[0].over}" — ${fmt(ctx.tons)} ton takes ${cap.max}" at most; it runs at ${cap.max}"`:`every trunk collar ≤ ${cap.max}"`,false);
   // TYs: straight run into every TY (≥ 3 ft; 5 ft on 12"+ is the target), no bend in the last 2 ft before an inlet or the first foot off a leg, TY levels ≥ 3 ft apart (a stepped trunk's 4 ft)
@@ -9679,25 +9909,52 @@ function dnMaterials(N){ const flex={}, ty={}, box={}, coll={}, damp={}, keep={}
   Object.values(N.nodes).forEach(n=>{ if(n.t==='ty') bump(ty,n.name,1); if(n.t==='box') bump(box,`${n.wIn}×${n.lIn}×${n.hIn}" insulated · Ø${n.inD}" inlet`,1) });
   return {flex,ty,box,coll,damp,keep} }
 // ---------------------------------------------------------------- the room design's hook: build the chosen layout, the other two for their chips
-function dnLayoutKey(){ return (DN_LAY[S.layout]&&(DN_BOX||S.layout!=='box'))?S.layout:'auto' }   // v2.67: a stored Remote Box reads as Auto
+function dnLayoutKey(){ return (DN_LAY[S.layout]&&S.layout!=='back'&&(DN_BOX||S.layout!=='box'))?S.layout:'auto' }   // v2.81: the Shortest Tree is Auto's   // v2.67: a stored Remote Box reads as Auto
 // what the network was laid out against — the plenum it comes off and the equipment; a 3D drawn after one of these changed rebuilds the room design first
 function dnSig(){ try{ const pl=dnPlenum(); return [pl.kind,pl.L,pl.W,pl.H,(pl.faces||[]).map(f=>f.k+f.len+'/'+f.h).join(','),S.tons,(S.fix&&S.fix.install)||'',S.orient||'',S.setup||'',S.sys||'',S.layout||'',S.pkFree||'',S.pkRet||'',S.rbrNew?1:0,unitRot()].join('|') }catch(e){ return '' } }
 function dnCtx(regs,A){ const r=unitRot(); const pl=dnRotPl(dnPlenum(),r); const U=[S.unitPos.x+3,S.unitPos.y+3];
   const downs=(RM&&RM.down)?RM.down.reduce((s,x)=>s+x.n+(x.add||[]).length,0):0;
   return {regs,U,pl,r,tons:A.tons,fr:A.fr,asp:A.asp,telRet:A.telRet,downs,pkg:isPkg()&&S.setup!=='separate',telRef:(DN_TEL&&S.rbrNew)?DN_TEL.total:null} }
-const DN_BOX=false;   // v2.67: the Remote Box is gone — Auto · Wye Tree · Stepped Trunk (Stephen 2026-10-01); dnCluster / dnBoxNode stay for the record
+const DN_BOX=false; const DN_AUTO_MEMO=new Map();   // v2.81: Auto's pick per house as laid out   // v2.67: the Remote Box is gone — Auto · Wye Tree · Stepped Trunk (Stephen 2026-10-01); dnCluster / dnBoxNode stay for the record
+// v2.81 — the networks for a house exactly as it was last seen (its registers, the air, the unit, its plenum and every keep-out, the layout asked for): the
+// render path asks for the model several times a tap and the passes that settle the friction rate ask again — each distinct set of inputs is built once
+const DN_ALL_CACHE=new Map();
 function dnAll(regs,A,downs){ const ctx=dnCtx(regs,A); if(downs!=null) ctx.downs=downs; const cl=DN_BOX?dnCluster(regs,ctx.U):null;
   const box=cl?Object.assign({},cl,{share:cl.q/(regs.reduce((s,g)=>s+g.q,0)||1)}):null; const out={auto:null,nets:{},ctx,box};
+  // v2.81 — AUTO IS THE LEAST DUCT (Stephen 2026-10-11: "whats the way to design it with the least length"; his call: Auto = think backwards): the Shortest Tree, the
+  // Wye Tree and the Stepped Trunk are built on the same rules and the one with the least duct for its air wins — a foot of big duct counting more, every rule
+  // it misses charged (dnAutoCost). The pick holds for the house as laid out — its registers, the unit and its plenum, the tonnage — so the passes that settle the
+  // friction rate never flip it (a TY rule that came and went with a
+  // collar's size between passes left the plan, the worksheet and the 3D on different layouts). The unit-position read (centrality · spread · sides) is kept for the record.
+  const want=dnLayoutKey();
+  const amk=JSON.stringify([regs.map(g=>[g.id,+(+g.x).toFixed(1),+(+g.y).toFixed(1)]),ctx.U,ctx.pl&&[ctx.pl.kind,ctx.pl.cfg,ctx.pl.L,ctx.pl.W,ctx.pl.H,ctx.pl.entered],ctx.tons,ctx.r,ctx.downs,A.name||'',!!A.live]);
+  const mem=DN_AUTO_MEMO.get(amk)||null, held=mem&&mem.k; const pre=want!=='auto'?want:(held||null);
+  const ck=JSON.stringify([regs,A,downs,Object.assign({},ctx,{regs:null}),dnObs({},ctx),fcRetC(),dnUnitRect(ctx,true),(S.rooms||[]).map(r=>[r.id||r.n,r.x,r.y,r.w,r.d,r.poly||null]),want,DN_LEAN,held||null]);
+  { const hit=DN_ALL_CACHE.get(ck); if(hit){ DN_ALL_CACHE.delete(ck); DN_ALL_CACHE.set(ck,hit); return hit } }
+  const keep=o=>{ o.key=ck; o.amk=amk; DN_ALL_CACHE.set(ck,o); if(DN_ALL_CACHE.size>24) DN_ALL_CACHE.delete(DN_ALL_CACHE.keys().next().value); return o };
+  // one layout searched (its plain build, its Shortest-Tree grouping, its grouping search, a Shortest Tree with more room at the registers), or rebuilt the way it won: its plain build, its Shortest-Tree grouping, its grouping search, a Shortest Tree with more room at the registers
+  const one=(k,fr,v)=>{ const N=dnBuild1(k,Object.assign({},ctx,{box,fr},v||{})); N.fr=fr; if(v){ N.vx=v; if(v.seedSets) N.seeded=true; if(v.opt) N.opt=true } return N };
   const build=(k,fr)=>{ try{ const N=dnBuild(k,Object.assign({},ctx,{box,fr})); N.fr=fr; return N }catch(e){ try{ console.warn('Fit Check: layout',k,e) }catch(_){} return null } };
-  const W0=build('wye',A.fr);
+  const rebuild=(k,N,fr)=>{ try{ return one(k,fr,N.vx||null) }catch(e){ try{ return one(k,fr,null) }catch(_){ return null } } };   /* off the tiles at its own friction rate, the way it won — not searched again */
+  let B0=null; const back=()=>{ if(!B0){ B0=build('back',A.fr); if(B0) ctx.bkSets=B0.edges.filter(e=>e.root).map(e=>dnLeaves(B0,B0.nodes[e.b]).map(c=>c.reg.id)) } return B0 };   /* v2.81: the Shortest Tree's trunks, offered to the Wye Tree and the Stepped Trunk */
+  // a pass that only settles the friction rate (rbrModel's DN_LEAN): the layout in use, nothing else
+  if(DN_LEAN&&pre&&pre!=='box'){ const N=pre==='back'?back():(back(),build(pre,A.fr)); if(N){ out.nets[pre]=N; out.chosen=pre; out.lean=true; out.auto={k:held||pre,reason:'',rank:[]}; return keep(out) } }
+  back(); const W0=build('wye',A.fr);
   // Remote Box: offered when a far cluster qualifies; recommended only for 3–4 registers carrying ≥ 30% of the air that a TY tree cannot reach within the TY rules
   if(box&&box.n<=4&&box.share>=0.30&&W0){ const ids=new Set(box.set.map(g=>g.id)); box.recommend=W0.checks.some(c=>!c.ok&&/^ty/.test(c.k))||W0.paths.filter(p=>ids.has(p.reg)).some(p=>p.k<0.97) }
-  out.auto=dnAuto(regs,ctx.U,box); const want=dnLayoutKey(); let chosen=want==='auto'?out.auto.k:want; if(chosen==='box'&&!box) chosen=out.auto.k==='box'?'wye':out.auto.k; out.chosen=chosen;
+  const geo=dnAuto(regs,ctx.U,box); const nets0={};
+  DN_ORDER.forEach(k=>{ if(k==='box'&&!box) return; const N=k==='wye'?W0:(k==='back'?B0:build(k,A.fr)); if(N) nets0[k]=N });
   // every layout on its own friction rate — its own longest run against the same available static (the chosen one is the worksheet's, exactly)
-  DN_ORDER.forEach(k=>{ if(k==='box'&&!box) return; let N=k==='wye'?W0:build(k,A.fr); if(!N) return;
-    if(k!==chosen&&N.tel){ const fr2=dnFrFor(A,N.tel.total); if(Math.abs(fr2-A.fr)>0.0015){ const N2=build(k,fr2); if(N2) N=N2 } } out.nets[k]=N });
+  const own={}; const ownOf=k=>{ if(own[k]) return own[k]; let N=nets0[k]; if(N&&N.tel){ const fr2=dnFrFor(A,N.tel.total); if(Math.abs(fr2-A.fr)>0.0015){ const N2=rebuild(k,N,fr2); if(N2) N=N2 } } return own[k]=N };
+  const cand=Object.keys(nets0).filter(k=>k!=='box'); const rank=f=>cand.map(k=>({k,N:f(k)})).map(x=>({k:x.k,c:dnAutoCost(x.N),ft:dnFt(x.N),wl:dnWl(x.N),miss:dnAutoMiss(x.N)})).sort((a,b)=>a.c-b.c||DN_ORDER.indexOf(a.k)-DN_ORDER.indexOf(b.k));
+  let ak, M; if(held&&nets0[held]) ak=held; else { const r0=rank(ownOf); ak=r0.length?r0[0].k:'wye';   /* the first time it sees the house: each layout as its tile shows it */
+    M={k:ak}; DN_AUTO_MEMO.set(amk,M); if(DN_AUTO_MEMO.size>40) DN_AUTO_MEMO.delete(DN_AUTO_MEMO.keys().next().value) }
+  let chosen=want==='auto'?ak:want; if(!nets0[chosen]) chosen=ak; out.chosen=chosen;
+  DN_ORDER.forEach(k=>{ if(nets0[k]) out.nets[k]=k===chosen?nets0[k]:ownOf(k) });
+  const rk=rank(k=>out.nets[k]); { const i=rk.findIndex(x=>x.k===ak); if(i>0) rk.unshift(rk.splice(i,1)[0]) }
+  out.auto=Object.assign({},geo,{k:ak,reason:dnAutoWhy(ak,rk,geo),rank:rk.map(x=>({k:x.k,ft:x.ft,cost:Math.round(x.c)}))});
   out.boxWhy=box?'':(regs.length<3?'needs 3 or more registers clustered away from the unit':'no cluster of 3–4 registers within 10 ft of a box, over 25 ft from the unit');
-  return out }
+  return keep(out) }
 // the FR each layout would carry — its own supply TEL against the same available static (the chosen one is the worksheet's exactly)
 function dnFrFor(A,tel){ const tot=(tel||0)+(A.telRet||0); if(!(tot>0)||A.asp==null) return A.fr; const fr=A.asp*100/tot; return Math.max(fr,MD_WEDGE[0]) }
 // ---- words
