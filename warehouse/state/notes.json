@@ -747,5 +747,19 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-10-16"
+ },
+ "adj|2026-10-20|3308|LAS-114003-SVC-H_100 Sam Yockey": {
+  "note": "truck count adjustment of ghost inventory count 1034",
+  "ts": 1792592789847,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-21"
+ },
+ "fleet|anom|2026-10-20|114003": {
+  "note": "truck count adjustment of ghost inventory count 1034",
+  "ts": 1792592795949,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-21"
  }
 }
