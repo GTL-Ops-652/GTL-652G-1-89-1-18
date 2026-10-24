@@ -761,5 +761,33 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-10-21"
+ },
+ "adj|2026-10-21|3308|LAS-114003-SVC-H_100 Sam Yockey": {
+  "note": "inventory count adjustment",
+  "ts": 1792765030640,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-23"
+ },
+ "adj|2026-10-22|3353|LAS-509668-SVC-H_178 Alberto Martinez": {
+  "note": "inventory count adjustment",
+  "ts": 1792765031654,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-23"
+ },
+ "adj|2026-10-02|3269|LAS-177287-SVC-H_111 Kevin Urrutia": {
+  "note": "inventory count from 9/16",
+  "ts": 1792765091758,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-23"
+ },
+ "fleet|anom|2026-10-22|509668": {
+  "note": "inventory count adjustment",
+  "ts": 1792765161429,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-23"
  }
 }
