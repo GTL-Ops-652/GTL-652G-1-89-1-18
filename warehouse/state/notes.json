@@ -789,5 +789,82 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-10-23"
+ },
+ "fleet|anom|2026-10-26|543095": {
+  "note": "see return 12347 and adjustment 3358, vehicle being retired",
+  "ts": 1793134181120,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "fleet|anom|2026-10-26|A94365": {
+  "note": "inventory count performed",
+  "ts": 1793134373822,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "fleet|anom|2026-10-26|D06767": {
+  "note": "insulation transfers for EOM",
+  "ts": 1793134427128,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "fleet|anom|2026-10-26|116698": {
+  "note": "performed inventory count",
+  "ts": 1793134553289,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "fleet|anom|2026-10-26|114072": {
+  "note": "performed inventory count",
+  "ts": 1793134740112,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "fleet|anom|2026-10-26|D06948": {
+  "note": "insulation transfers for end of month",
+  "ts": 1793134890471,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "adj|2026-10-26|3361|LAS-543112-SVC-P_405 RET": {
+  "note": "template removed for vehicle being Retired, no return to reference items previously returned",
+  "ts": 1793134937574,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "adj|2026-10-26|3357|LAS-A94365-INS-P_545 Jonathan Diaz": {
+  "note": "inventory count performed",
+  "ts": 1793134969342,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "adj|2026-10-26|3355|LAS-116698-INS-P_550 Roman Castellanos": {
+  "note": "performed inventory count",
+  "ts": 1793134981972,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "adj|2026-10-26|3359|LAS-114072-INS-P_552 Jose Herrera Alvarado": {
+  "note": "performed inventory count",
+  "ts": 1793135016806,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "adj|2026-10-26|3358|LAS-543095-SVC-H_133 RET": {
+  "note": "see return 12347 and adjustment 3358, vehicle being retired",
+  "ts": 1793135131892,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
  }
 }
