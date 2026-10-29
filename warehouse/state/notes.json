@@ -866,5 +866,19 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-10-27"
+ },
+ "adj|2026-10-27|3361|LAS-543112-SVC-P_405 RET": {
+  "note": "Template removal on van being retired, product was previously returned but not tracked to vehicle",
+  "ts": 1793200989365,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-28"
+ },
+ "fleet|anom|2026-10-27|116698": {
+  "note": "replenishment after an inventory count",
+  "ts": 1793201171720,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-28"
  }
 }
