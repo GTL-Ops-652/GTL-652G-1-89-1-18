@@ -894,5 +894,54 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-10-29"
+ },
+ "adj|2026-10-29|3407|Vegas Plumbing Warehouse": {
+  "note": "adjustment for EOM inventory count",
+  "ts": 1793411468370,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "adj|2026-10-29|3408|Vegas HVAC Warehouse": {
+  "note": "adjustment for EOM inventory count 1051",
+  "ts": 1793411494872,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "adj|2026-10-29|3409|Plumbing Equipment": {
+  "note": "adjustment for EOM inventory count 1052",
+  "ts": 1793411519628,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "fleet|anom|2026-10-29|509668": {
+  "note": "replenishment PO",
+  "ts": 1793411580269,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "fleet|anom|2026-10-29|502179": {
+  "note": "replenishment PO",
+  "ts": 1793411647620,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "fleet|anom|2026-10-29|546019": {
+  "note": "replenishment PO",
+  "ts": 1793411685988,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "adj|2026-10-29|3398|LAS-131541-SVC-P_428 RET": {
+  "note": "truck being retired return was never tracked but product was removed",
+  "ts": 1793411712430,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
  }
 }
