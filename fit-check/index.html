@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-10-31 v2.95 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-10-31 v2.96 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -1241,7 +1241,7 @@ details.eqpick>summary b.auto::after{content:'load';font-size:9px;letter-spacing
 .opstrip .opsv.ok b{color:#2bd47d}.opstrip .opsv.warn b{color:#ffb547}.opstrip .opsv.bad b{color:#ff6b6b}
 .opstrip .opsv.d{color:#9fc8e8;font-size:11.5px}.opstrip .opsv.d b{font-family:var(--sans);font-size:12px;color:#fff;font-weight:800}
 .opstrip .opsv.dim{color:#9fb3c8;font-size:11.5px}.opstrip .opsv.dim b{font-family:var(--sans);font-size:11.5px;color:#c6d6e4;font-weight:700}
-.opstrip .opsv.bal{gap:4px}.opstrip .opsv.bal b{font-size:15px}.opstrip .opsv.bal .bw{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;border-radius:999px;padding:1px 6px;margin-left:2px;background:rgba(255,255,255,.12);color:#d6e6f3}.opstrip .opsv.bal.ok .bw{background:rgba(43,212,125,.18);color:#2bd47d}.opstrip .opsv.bal.warn .bw{background:rgba(255,181,71,.18);color:#ffb547}.opstrip .opsv.bal.bad .bw{background:rgba(255,107,107,.18);color:#ff6b6b}
+.opstrip .opsv.bal{gap:4px}.opstrip .opsv.bal b{font-size:15px}.opstrip .opsv.bal .bw{font-style:normal;font-size:10px;font-weight:800;letter-spacing:.3px;text-transform:uppercase;border-radius:999px;padding:1px 6px;margin-left:2px;background:rgba(255,255,255,.12);color:#d6e6f3}.opstrip .opsv.bal.ok .bw{background:rgba(43,212,125,.18);color:#2bd47d}.opstrip .opsv.bal.warn .bw{background:rgba(255,181,71,.18);color:#ffb547}.opstrip .opsv.bal.bad .bw{background:rgba(255,107,107,.18);color:#ff6b6b}.opstrip .opsv.bal.ok.soft .bw{background:rgba(255,255,255,.12);color:#d6e6f3}.opstrip .opsv.bal.warn b,.opstrip .opsv.bal.bad b{color:#2bd47d}.opstrip .opsv.bal.warn b.sh{color:#ffb547}.opstrip .opsv.bal.bad b.sh{color:#ff6b6b}
 /* v2.95: on an iPad in landscape (the plan column takes 292 px of a 1024 px screen) the strip tightens so the supply · return chip keeps it at two lines */
 @media (min-width:1000px) and (max-width:1180px){ .opstrip{gap:5px 9px;padding:6px 10px} .opstrip .opsv b{font-size:16px} .opstrip .opsk{font-size:9.5px;letter-spacing:.6px} .opstrip .opsv{font-size:12px} .opstrip .opsv.d,.opstrip .opsv.dim,.opstrip .opsv.tap{font-size:11px} .opstrip .opsv.bal b{font-size:14px} .opstrip .opsv.dim{padding:4px 7px} }
 .opstrip .opsv.tap{margin-left:auto;font-size:11px;color:#9fc8e8}.opstrip .opsv.tap b{font-family:var(--sans);font-size:11px;color:#fff}
@@ -4344,14 +4344,22 @@ function opCardHtml(o,M,M0){ const q=M&&M.quote; if(!q) return ''; const md=M.md
 // v2.95 — SUPPLY vs RETURN on the strip (Stephen 2026-10-31: "a section showing how much cubic feet we can move thru the supply vs return, so as we
 // add supply or return we can see the balance"): each side's tightest spot — every part on that side, the new metal and the added runs included —
 // read at NCI's 700 fpm return line (the same line M.bal uses, so return = supply reads balanced). An added supply run or return grille moves it.
+// v2.96 — judged against the CONDENSER'S air, never the design air (Stephen 2026-10-31: "as long as the supply is enough to support the condenser's
+// needed cfm, then its good, and we want just a little more return also. so its not short if a 5 ton blows 2000"): the need is qReq (the Matchup
+// Guide's 400/ton — 5-ton = 2,000); a side under it is SHORT; the return aims 10 % over it (5-ton = 2,200) — a soft aim: the pill turns neutral,
+// never amber or red ("10%, but dont flag it hard"). The words (Stephen: "instead of supply short, say that if its short of the requirement, but if
+// its enough, and theres more return, say additional Return"): SHORT OF REQUIREMENT, the short side's number amber / red (the side and the gap in the tip — longer words pushed the strip to three lines at 1,200 px) · ADDITIONAL RETURN (the return has its 10 %) ·
+// RETURN AIM N (both carry the requirement, the return under its 10 %, neutral).
+const SIDE_RET_AIM=1.10;
 function sideAir(M){ if(!M||!M.comps||!M.comps.length) return null;
   const cap=kk=>{ const cs=M.comps.filter(c=>c.side===kk&&c.effMax>0); return cs.length?Math.round(Math.min(...cs.map(c=>c.effMax*((c.side==='s'&&c.vmax>NCI_VEL.ret)?NCI_VEL.ret/c.vmax:1)))):null };
   const sup=cap('s'), ret=cap('r'); if(sup==null||ret==null) return null;
-  const need=M.quote?M.quote.Q:(M.need2!=null?M.need2:M.needs); const lo=Math.min(sup,ret);
-  const short=lo<need-0.5?(ret<=sup?'return':'supply'):null; const gap=short?need-lo:0; const cls=!short?'ok':(lo>=need*0.9?'warn':'bad');   // the side that cannot carry the design air, and by how much
-  return {sup,ret,need,short,gap,cls,words:short?`the ${short} side is ${CFM(gap)} CFM short of it`:'both sides carry it'} }
-function sideAirChip(M){ const b=sideAir(M); if(!b) return '';
-  return `<span class="opsv bal ${b.cls}" title="${tpEsc(`What each side can move at NCI's 700 fpm line — its tightest spot, new metal and added runs included. The design needs ${CFM(b.need)} CFM; ${b.words}. Add a supply run or a return to move it.`)}">supply <b>${CFM(b.sup)}</b> · return <b>${CFM(b.ret)}</b> <em class="bw">${b.short?`${b.short} ${CFM(b.gap)} short`:'both carry '+CFM(b.need)}</em></span>` }
+  const need=(M.md&&M.md.Qreq)?M.md.Qreq:qReq(M.tons); const aimR=Math.round(need*SIDE_RET_AIM); const lo=Math.min(sup,ret);   // the condenser's rated air; the return's soft aim
+  const supS=sup<need-0.5, retS=ret<need-0.5; const short=(supS&&retS)?'both':(retS?'return':(supS?'supply':null)); const gap=short?need-lo:0; const soft=!short&&ret<aimR-0.5;   // the side(s) that cannot carry the condenser's air, and by how much
+  const cls=short?(lo>=need*0.9?'warn':'bad'):(soft?'ok soft':'ok');
+  return {sup,ret,need,aimR,short,supS,retS,gap,soft,cls,words:short==='both'?`the supply is ${CFM(need-sup)} CFM and the return ${CFM(need-ret)} CFM short of the requirement`:(short?`the ${short} side is ${CFM(gap)} CFM short of the requirement`:(soft?`both sides carry the requirement — the return is ${CFM(aimR-ret)} CFM under its 10 % extra`:`both sides carry the requirement and the return has ${CFM(ret-need)} CFM additional`))} }
+function sideAirChip(M){ const b=sideAir(M); if(!b) return '';   // a short side's number turns amber / red (b.sh), the side that carries the requirement stays green
+  return `<span class="opsv bal ${b.cls}" title="${tpEsc(`What each side can move at NCI's 700 fpm line — its tightest spot, new metal and added runs included. The requirement is the condenser's rated ${CFM(b.need)} CFM (${reqCpt()}/ton): the supply is good at that, the return aims 10 % over it (${CFM(b.aimR)}). ${b.words[0].toUpperCase()+b.words.slice(1)}. Add a supply run or a return to move it.`)}">supply <b${b.supS?' class="sh"':''}>${CFM(b.sup)}</b> · return <b${b.retS?' class="sh"':''}>${CFM(b.ret)}</b> <em class="bw">${b.short?'short of requirement':(b.soft?'return aim '+CFM(b.aimR):'additional return')}</em></span>` }
 function opStripHtml(o,M,M0){ const q=M&&M.quote; if(!q||!M) return ''; const op=opPoint(o,M); const sc=M.score.total, sc0=M0?M0.score.total:null; const md=M.md; const cq=q.perTon<OP_FREEZE?'bad':((md&&md.short)?'warn':(q.perTon>=cptFloor()-0.5?'ok':(q.perTon>=cptFloor()-40?'warn':'bad'))), cs=espCls(q.esp,md&&md.unitMax?md.unitMax.v:0);   /* v2.90: short of the condenser's air is amber; the static against THIS unit's max */
   return `<span class="opsk">Designed to deliver</span>`+
     `<span class="opsv q ${cq}"><b>${CFM(q.Q)}</b> CFM</span><span class="opsv ${cq}"><b>${q.perTon}</b>/ton</span>${md&&md.short?`<span class="opsv bad" title="the condenser is rated at ${CFM(md.Qreq)} CFM (${md.reqCpt}/ton) — this ${md.eqName} cannot deliver it at the design static">short of <b>${CFM(md.Qreq)}</b></span>`:''}${md&&md.unitMax?`<span class="opsv s ${q.over?'bad':cs}" title="${tpEsc('NCI\'s '+spGoal().toFixed(2)+'″ aim up to this unit\'s rated max — '+mdLimitTxt(md.B)+' · ducts sized at '+e2s(q.esp)+'″ ESP')}">${q.over?'over its max · ':''}${tpEsc(md.B&&md.B.name?md.B.name:(md.eqName||'unit'))} designed to <b>${espBandTxt(md)}</b></span>`:`<span class="opsv s ${cs}" title="${tpEsc('ducts sized at '+e2s(q.esp)+'″ ESP')}">designed to <b>${espBandTxt(md)}</b></span>`}<span class="opsv d" title="NCI's budget: the supply duct system 20 % and the return 20 % of the 0.50″ aim">ducts <b>${(q.bud?q.bud.sup:0.1).toFixed(2)} + ${(q.bud?q.bud.ret:0.1).toFixed(2)}</b></span>${sideAirChip(M)}<span class="opsv ${scoreCls(sc)}"><b>${sc}</b> score</span>`+
