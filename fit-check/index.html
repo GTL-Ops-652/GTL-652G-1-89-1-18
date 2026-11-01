@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-10-31 v2.96 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-11-01 v2.97 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -272,7 +272,7 @@ details.why>summary::before{content:'\25B8';display:inline-block;margin-right:6p
 .rrow .rname{min-width:0;display:flex;flex-direction:column;gap:2px}.rrow .rname>b{font-size:16px;font-weight:800;color:var(--ink);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.rrow .rname>small{font-size:12px;color:var(--muted);font-weight:600}
 .rrow .rnum{text-align:right;display:flex;flex-direction:column;gap:2px;white-space:nowrap}.rrow .rnum>b{font-family:var(--serif);font-size:18px;font-weight:800;color:#1f5fbf;font-variant-numeric:tabular-nums}.rrow .rnum>b.muted{color:var(--muted);font-family:inherit;font-size:15px}.rrow .rnum>small{font-size:11.5px;color:var(--muted);font-weight:600}.rrow .rnum .rflag{color:var(--bad);font-weight:800}
 .rrow .rchev{color:var(--muted);font-size:20px;line-height:1;transition:transform .15s;justify-self:end}.rrow[open] .rchev{transform:rotate(90deg)}
-.rrow .rchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}.rrow .rchip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--ink);background:#f1f4f7;border-radius:999px;padding:2px 8px 2px 6px}.rrow .rchip i{width:8px;height:8px;border-radius:50%;background:#1f5fbf;display:inline-block}.rrow .rchip.ret i{border-radius:2px;background:#c9532e}.rrow .rchip.warn i{background:#e0a05a}.rrow .rchip.none{color:var(--muted)}.rrow .rchip.none i{background:#c0b8b6}
+.rrow .rchips{display:flex;flex-wrap:wrap;gap:5px;margin-top:4px}.rrow .rchip{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:var(--ink);background:#f1f4f7;border-radius:999px;padding:2px 8px 2px 6px}.rrow .rchip i{width:8px;height:8px;border-radius:50%;background:#1f5fbf;display:inline-block}.rrow .rchip.ret i{border-radius:2px;background:#c9532e}.rrow .rchip.warn i{background:#e0a05a}.rrow .rchip.none{color:var(--muted)}.rrow .rchip.add{background:#e3f4ea;color:#1d7a45}.rrow .rchip.add i{background:#2a9d5c}.rrow .rchip.none i{background:#c0b8b6}
 .rrow .redit{display:grid;grid-template-columns:minmax(130px,1.5fr) 78px 78px auto 64px 86px auto 1fr 30px;gap:8px;align-items:center;padding:10px 12px 12px;border-top:1px solid var(--line);background:#fafcfc}
 .rrow .redit input{border:1.5px solid var(--line);border-radius:9px;padding:8px 9px;background:#fff;width:100%;font-size:16px}
 .rrow .redit input.nm{font-weight:700}
@@ -366,6 +366,7 @@ body.night .rrow{background:#1c2733;border-color:#334152}body.night .rrow.nr{bac
 .gridwrap .vdot.added{background:#e8f6ee;border-color:#1d7a45}.gridwrap .vdot.added::after{border-color:#1d7a45}
 .gridwrap .fcdrop{position:absolute;left:0;top:0;z-index:6;pointer-events:none}
 .gridwrap .tile.drop{border-color:#1d7a45!important;background:rgba(29,122,69,.22)!important;box-shadow:0 0 0 3px rgba(29,122,69,.25)}
+.gridwrap .tile.sc.sadd{padding:0;overflow:visible;background:rgba(255,255,255,.35);border-radius:4px;border:1.5px dashed #0f8b8b;z-index:3}.gridwrap .tile.sc.sadd .gbx{background:#2bb3a6;border-color:#0f8b8b}.gridwrap .tile.sc.sadd .tn{color:#0b6e6e}.gridwrap .tile.sc.sadd .tc{color:#0b6e6e}
 .gridwrap .tile.ret.sc.radd{border-color:#1d7a45;z-index:3}.gridwrap .tile.ret.sc.radd .gbx{background:#2a9d5c;border-color:#1d7a45}.gridwrap .tile.ret.sc.radd .tn{color:#1d7a45}.gridwrap .tile.ret.sc.radd .tc{color:#1d7a45}
 .rrow>.f-vm{grid-column:1/-1;grid-row:auto;order:9;border-top:1px dashed var(--line);padding-top:6px}.vmrow{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center}.vmrow .status{font-size:12px;white-space:normal}
 #planVents .vmroom{display:inline-flex;flex-wrap:wrap;gap:6px;align-items:center;margin-right:10px}
@@ -3720,7 +3721,7 @@ function ductSpec(round,rect,n){ n=Math.max(1,parseInt(n)||1); if(round){ return
 function specBoxes(sp,fbW,fbH,cap){ cap=cap||3; fbW=fbW==null?20:fbW; fbH=fbH==null?20:fbH;
   if(!sp) return [{w:fbW,h:fbH,round:false}];
   if(sp.kind==='multi'&&sp.items&&sp.items.length)
-    return sp.items.slice(0,cap).map(a=>a.d?{w:a.d,h:a.d,round:true,add:!!a.add}:{w:a.w,h:a.h,round:false,add:!!a.add});
+    return sp.items.slice(0,cap).map(a=>{ const q=a.d?{w:a.d,h:a.d,round:true,add:!!a.add}:{w:a.w,h:a.h,round:false,add:!!a.add}; if(a.addRun){ q.addRun=true; q.addI=a.addI } return q });   /* v2.97: an added run's grille keeps which run it is */
   const w=sp.kind==='round'?sp.d:sp.w, h=sp.kind==='round'?sp.d:sp.h;
   const W=isFinite(w)&&w>0?w:fbW, H=isFinite(h)&&h>0?h:fbH;
   return Array.from({length:Math.min(Math.max(1,sp.n||1),cap)},()=>({w:W,h:H,round:sp.kind==='round'})) }
@@ -3815,14 +3816,14 @@ function buildComps(o,fix){ fix=fix||{}; const C=[]; const T=S.thr;
   // never has one. A new duct system replaces the supply outright, so an added supply run means nothing on top of it. The ducts that stay are not
   // "proposed" — only the run is new (no .fixed).
   if(!fix.__noScope){ const cOf=sl=>C.find(q=>q.slot===sl);
-    addList(fix,'addSup').forEach(a=>{ const ar=roundArea(a.d), nm='Ø'+fmt(a.d)+'"';
-      const cs=cOf('sup'); if(cs){ cs.area+=ar; cs.spec=Object.assign({},cs.spec||{}); cs.spec.add=(cs.spec.add||[]).concat([ductSpec(a.d,null,1)]); cs.size+=` + ${nm} added run`; cs.added=true }
-      const ct=cOf('takeoff'); if(ct){ const items=((ct.spec&&ct.spec.items)||[]).map(x=>Object.assign({},x)).concat([{d:a.d,add:true,addRun:true,hide:isPkg()}]); const sp=takeoffFromItems(items); ct.spec=sp; ct.area=sp.area; ct.size=sp.size; ct.added=true }
+    addList(fix,'addSup').forEach((a,ai)=>{ const ar=roundArea(a.d), nm='Ø'+fmt(a.d)+'"';
+      const cs=cOf('sup'); if(cs){ cs.area+=ar; cs.spec=Object.assign({},cs.spec||{}); cs.spec.add=(cs.spec.add||[]).concat([Object.assign(ductSpec(a.d,null,1),{addRun:true,addI:ai})]); cs.size+=` + ${nm} added run`; cs.added=true }
+      const ct=cOf('takeoff'); if(ct){ const items=((ct.spec&&ct.spec.items)||[]).map(x=>Object.assign({},x)).concat([{d:a.d,add:true,addRun:true,addI:ai,hide:isPkg()}]); const sp=takeoffFromItems(items); ct.spec=sp; ct.area=sp.area; ct.size=sp.size; ct.added=true }
       const cr=cOf('regs'); if(cr&&!cr.rbr){ const s=addRunFace(a.d); const items=((cr.spec&&cr.spec.items)||[]).map(x=>Object.assign({},x)).concat([{w:s,h:s,add:true}]); const sp=takeoffFromItems(items);
         cr.spec=sp; cr.core=sp.area; cr.area=sp.area*(cr.free||REG_FACE[regFor(fix)].free); cr.size=`${sp.size} · ${(REG_FACE[cr.face]||REG_FACE[regFor(fix)]).short}${cr.est?' (assumed — matched to the take-offs)':''}`; cr.added=true } });
-    addList(fix,'addRet').forEach(a=>{ const ar=roundArea(a.d), nm='Ø'+fmt(a.d)+'"'; const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d);
-      const cr=cOf('ret'); if(cr){ cr.area+=ar; cr.spec=Object.assign({},cr.spec||{}); cr.spec.add=(cr.spec.add||[]).concat([ductSpec(a.d,null,1)]); cr.size+=` + ${nm} added return`; cr.added=true }
-      const cg=cOf('grille'); if(cg){ const items=specBoxes(cg.spec,null,null,24).map(q=>({w:q.w,h:q.h,add:!!q.add})).concat([{w:g[0],h:g[1],add:true}]); const sp=takeoffFromItems(items); cg.spec=sp; cg.area=sp.area; cg.size=sp.size; cg.added=true } }) }
+    addList(fix,'addRet').forEach((a,ai)=>{ const ar=roundArea(a.d), nm='Ø'+fmt(a.d)+'"'; const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d);
+      const cr=cOf('ret'); if(cr){ cr.area+=ar; cr.spec=Object.assign({},cr.spec||{}); cr.spec.add=(cr.spec.add||[]).concat([Object.assign(ductSpec(a.d,null,1),{addRun:true,addI:ai})]); cr.size+=` + ${nm} added return`; cr.added=true }
+      const cg=cOf('grille'); if(cg){ const items=specBoxes(cg.spec,null,null,24).map(q=>q.addRun?{w:q.w,h:q.h,add:true,addRun:true,addI:q.addI}:{w:q.w,h:q.h,add:!!q.add}).concat([{w:g[0],h:g[1],add:true,addRun:true,addI:ai}]); const sp=takeoffFromItems(items); cg.spec=sp; cg.area=sp.area; cg.size=sp.size; cg.added=true } }) }
   // On a split, an install-scope tick means that piece is being replaced — new metal sized to the unit, so it stops being a chokepoint (a new duct
   // system resolves the static and the score goes up)
   if(!isPkg()&&!fix.__noScope){ const sc=S.scope||{}; const design=S.tons?Math.round(tonNum(S.tons)*reqCpt()):null;   /* v2.90: the design air is the condenser's rated 400/ton */
@@ -5456,6 +5457,40 @@ function trunkOutRuns(base,plane,opt){ const T=opt.tree; if(!T||!T.arms||!T.arms
 // furnace on a horizontal split) lifts over the cabinet through four radiused bends and comes back down past it. Nothing here is fit-checked
 // (`nofit`); everything is `duct` for the Focus chip and tagged for the airflow.
 // A package's return drop to the RETURN tile: the route (scene inches), chosen to cross the fewest supply runs and miss the supply drop
+// v2.97 — AN ADDED RUN GOES TO ITS ROOM IN THE 3D (Stephen 2026-11-01: "even when i move it, it doesn't move on the 3d"). With a plan or a grid an
+// added return / supply run leaves its plenum or drop (P0, heading u0 — level), steps up or down to the height it runs at (yRun), runs along the
+// attic in an L — out of the unit's band first when the long leg would cross it (clr) — and comes down onto its own filter grille, or its can and
+// register, at the spot the SM put it (G = scene x, z), the room on the label. New flex in the new-metal tint (the return's violet), long-radius
+// bends, airflow streaks on it. When the house is not drawn under the unit, the room it lands in is laid in as a tinted slab with its name.
+function addRunPts(P0,u0,yRun,G,yEnd,d,clr){ const L0=Math.max(d,10); const P1=[P0[0]+u0[0]*L0,P0[1],P0[2]+u0[2]*L0]; const pts=[P0,P1];
+  if(Math.abs(yRun-P1[1])>1) pts.push([P1[0],yRun,P1[2]]); const hx=P1[0], hz=P1[2], gx=G[0], gz=G[1];
+  const inX=a=>clr&&Math.max(Math.min(hx,gx),clr.x0)<Math.min(Math.max(hx,gx),clr.x1), zIn=z=>clr&&z>clr.z0-d/2-2&&z<clr.z1+d/2+2;
+  if(Math.abs(u0[2])>0.5){ const sz=u0[2]; let zl=gz; if(inX()&&zIn(zl)) zl=sz>0?clr.z1+d/2+4:clr.z0-d/2-4; if((zl-hz)*sz<0) zl=hz;
+    pts.push([hx,yRun,zl],[gx,yRun,zl],[gx,yRun,gz]) }
+  else pts.push([gx,yRun,hz],[gx,yRun,gz]);
+  pts.push([gx,yEnd,gz]);
+  const P=[]; pts.forEach(q=>{ const l=P[P.length-1]; if(!l||Math.hypot(q[0]-l[0],q[1]-l[1],q[2]-l[2])>0.5) P.push(q) });
+  for(let i=1;i<P.length-1;){ const a=P[i-1], b=P[i], c=P[i+1]; const u=v3.unit(v3.sub(b,a)), w=v3.unit(v3.sub(c,b)); if(v3.dot(u,w)>0.999) P.splice(i,1); else i++ }   /* drop the points on a straight line */
+  const out=[P[0]]; const R0=Math.max(d*1.5,12);
+  for(let i=1;i<P.length-1;i++){ const a=P[i-1], b=P[i], c=P[i+1]; const la=Math.hypot(...v3.sub(b,a)), lc=Math.hypot(...v3.sub(c,b)); const r=Math.max(1,Math.min(R0,la*0.45,lc*0.45));
+    const u=v3.unit(v3.sub(b,a)), w=v3.unit(v3.sub(c,b)); const s=v3.sub(b,v3.mul(u,r)), e=v3.add(b,v3.mul(w,r)); const N=8;
+    for(let k=0;k<=N;k++){ const t=k/N, m=1-t; out.push([m*m*s[0]+2*m*t*b[0]+t*t*e[0],m*m*s[1]+2*m*t*b[1]+t*t*e[1],m*m*s[2]+2*m*t*b[2]+t*t*e[2]]) } }   /* a long-radius bend at every corner */
+  out.push(P[P.length-1]); return out }
+function addRunDraw(o){ const {P0,u0,yRun,G,yF,up,d,kind,face,clr}=o; const ret=kind==='r', dn=up?1:-1; const yEnd=up?yF-6:yF+2;
+  const pts=addRunPts(P0,u0,yRun,G,yEnd,d,clr); const X={nw:true,cls:'ok',duct:true,nofit:true,noshadow:true,addRun:kind};
+  const sw=dnSweep(pts,d,Object.assign({},X,{color:ret?RET_NEW:DN_FLEX,alpha:.96,la:[0.5,1,0.5],label:o.lbl||null})); if(sw){ sw.flow={path:true,dir:ret?-1:1,k:ret?'r':'s'}; if(ret) sw.edge=RET_EDGE }
+  const gx=G[0], gz=G[1], fw=face[0], fh=face[1];
+  if(ret){ fl(sceneAdd(Object.assign({},X,{x:gx-fw/2,y:up?yF-6:yF-4,z:gz-fh/2,dx:fw,dy:6,dz:fh,color:RET_NEW,alpha:.82})),'y',-dn,'r');
+    flV(sceneAdd(Object.assign({},X,{x:gx-fw/2,y:up?yF+0.4:yF-5.4,z:gz-fh/2,dx:fw,dy:1.2,dz:fh,color:RET_NEW,alpha:.95,la:[0.5,0,0.5],label:o.flbl||null})),'in',[0,dn,0],'r','') }
+  else { fl(sceneAdd(Object.assign({},X,{x:gx-fw/2,y:up?yF-6:yF-4,z:gz-fh/2,dx:fw,dy:6,dz:fh,color:DN_GALV,alpha:.9,la:[0.5,up?0:1,0.5],label:o.flbl||null})),'y',dn,'s');
+    flV(sceneAdd(Object.assign({},X,{x:gx-fw/2-1,y:up?yF+0.4:yF-5.4,z:gz-fh/2-1,dx:fw+2,dy:1.2,dz:fh+2,color:'#eef3f7',alpha:.95})),'out',[0,dn,0],'s','') }
+  if(o.slab&&o.room&&o.map&&!(o.drawn&&o.drawn.has(o.room))){ const r=o.room; if(o.drawn) o.drawn.add(r); const yP=up?yF+7:yF-7;
+    const poly=r.poly||[[r.x,r.y],[r.x+r.w,r.y],[r.x+r.w,r.y+r.d],[r.x,r.y+r.d]]; const q=poly.map(p=>{ const m=o.map(p[0],p[1]); return [m[0],yP,m[1]] }); const xs=q.map(p=>p[0]), zs=q.map(p=>p[2]);
+    scene.push({quad:q,color:'rgba(42,157,92,.16)',stroke:'rgba(29,122,69,.75)',ceil:true,x:Math.min(...xs),y:yP,z:Math.min(...zs),dx:Math.max(...xs)-Math.min(...xs),dy:0.1,dz:Math.max(...zs)-Math.min(...zs),nofit:true,duct:true,addRoom:true});
+    const c=o.map(rbrCx(r),rbrCy(r)); scene.push({marker:true,label:rbrEsc(r.n),cls:'plan',x:c[0],y:yP,z:c[1],dx:0,dy:0,dz:0,nofit:true,duct:true,addRoom:true}) } }
+// the spot of an added run in the scene: plan feet (the unit's frame) → scene x, z, off where the plan's unit centre lands (bx, bz)
+function addRunMap(bx,bz){ const ux=S.unitPos.x+3, uy=S.unitPos.y+3; const rr=unitRot(); const LU=q=>rr?uUnrotP([ux,uy],q,rr):q;
+  return {at:q=>[bx-(q[1]-uy)*12,bz+(q[0]-ux)*12], map:(x,y)=>{ const q=LU([x,y]); return [bx-(q[1]-uy)*12,bz+(q[0]-ux)*12] }} }
 function pkReturnRoute(o){ PK_RET=null; const {dR,dS,cR,cG,rcs,yT,ceilY,RT,net,duct,fl,flB,flV,flowTag,bendDuct}=o; const ux=S.unitPos.x+3, uy=S.unitPos.y+3;
   const UR=(net&&net.r)||0, LU=q=>UR?uUnrotP([ux,uy],q,UR):q;   /* RT comes in the unit's own frame (fcRetL); the network's points are turned into it */
   const xS=dS.x+dS.w/2, zS=dS.z+dS.d/2, xR=dR.x+dR.w/2, zR=dR.z+dR.d/2; const gx=xS-(RT[1]-uy)*12, gz=zS+(RT[0]-ux)*12; const yC=yT+rcs.b/2; const D=Math.max(rcs.a,rcs.b);
@@ -5930,6 +5965,11 @@ function buildScene(){
       const bendDuct=(C,u,v,csz,R,c,forceNew)=>pushBend(C,u,v,{a:csz.a,h:csz.b,round:!!csz.round},R,tone(c,!!(forceNew||isNew(c))),flowCol(c)?.85:((forceNew||isNew(c))?.8:.62),{cls:c?c.cls:'',nw:!!(forceNew||isNew(c))}); // a radiused elbow in the duct's own colour
       const cR=comp('ret'), cS=comp('sup'), cG=comp('grille');
       const rSpec=cR?cR.spec:null, sSpec=cS?cS.spec:null; const rcs=cs(rSpec,true), scs=cs(sSpec,true);
+      // v2.97: an added run with a spot on the plan is drawn to its room (below, after the supply) — the drops and the trunk carry only the others
+      const RAr=new Set(), RAs=new Set(); try{ addList(S.fix,'addRet').forEach((a,i)=>{ if(addSpotL(a,'r')) RAr.add(i) }); addList(S.fix,'addSup').forEach((a,i)=>{ if(addSpotL(a,'s')) RAs.add(i) }) }catch(e){}
+      const keepAdd=set=>x=>!(x&&x.addRun&&set.has(x.addI));
+      const rSpecD=(rSpec&&rSpec.add&&RAr.size)?Object.assign({},rSpec,{add:rSpec.add.filter(keepAdd(RAr))}):rSpec, sSpecD=(sSpec&&sSpec.add&&RAs.size)?Object.assign({},sSpec,{add:sSpec.add.filter(keepAdd(RAs))}):sSpec;
+      const cGD=(cG&&cG.spec&&cG.spec.items&&RAr.size)?Object.assign({},cG,{spec:Object.assign({},cG.spec,{items:cG.spec.items.filter(keepAdd(RAr))})}):cG;
       const pR=comp('penR'), pS=comp('penS');
       // drops through the roof: new-curb plenums under the unit; otherwise the penetrations inside the jack — round stays round, square draws square — and the ducts tie on below
       let drops=[];
@@ -5983,12 +6023,12 @@ function buildScene(){
       // assumed): along one axis, a radiused corner, along the other, a bend down onto the grille — whichever of those routes crosses the fewest
       // supply runs and stays clear of the supply drop (a detour round it when the grille sits behind it). The supply runs are laid after it and hump
       // over it. No plan: the 48" run.
-      const RTp=fcRetL(); const pkAdds=((rSpec&&rSpec.add)||[]).length||specBoxes(cG&&cG.spec?cG.spec:null,20,20).some(q=>q.add);
+      const RTp=fcRetL(); const pkAdds=((rSpecD&&rSpecD.add)||[]).length||specBoxes(cGD&&cGD.spec?cGD.spec:null,20,20).some(q=>q.add);
       let pkRetDone=false;
-      PK_RET=null; if(dR&&cR&&dS&&RTp&&!pkAdds){ try{ pkRetDone=pkReturnRoute({dR,dS,cR,cG,rcs,yT,ceilY,RT:RTp,net:pkTree&&pkTree.net,duct,fl,flB,flV,dir,flowCol,RET_NEW,flowTag,isNew,bendDuct}) }catch(e){ try{ console.error('Fit Check: package return route',e) }catch(_){} pkRetDone=false } }
+      PK_RET=null; if(dR&&cR&&dS&&RTp&&!pkAdds){ try{ pkRetDone=pkReturnRoute({dR,dS,cR,cG:cGD,rcs,yT,ceilY,RT:RTp,net:pkTree&&pkTree.net,duct,fl,flB,flV,dir,flowCol,RET_NEW,flowTag,isNew,bendDuct}) }catch(e){ try{ console.error('Fit Check: package return route',e) }catch(_){} pkRetDone=false } }
       if(dR&&cR&&!pkRetDone){ const len=48; const yC=yT+rcs.b/2; const R2=bendR(rcs,len,yC-(ceilY+4)); const xcR=dR.x+dR.w/2; const gx=(dR.R?xcR+dir*dR.R:(dir>0?dR.x+dR.w:dR.x))+dir*len+dir*R2; // where the run turns down to the grille — known before it draws, so an added return can turn there too
-        const gb=specBoxes(cG&&cG.spec?cG.spec:null,20,20); let gzz=0; const gbz=gb.map((q,i)=>{ const z=gzz+(q.h-gb[0].h)/2; gzz+=q.h+6; return z }); /* each grille 6" past the one before, whatever their sizes */ const addQ=gb.map((q,g)=>({q,g})).filter(x=>x.q.add); // a 2-grille return draws as two grilles, each at its own size; each grille's place along z is fixed first, so an added return's duct can land on its own
-        const {xa,zc,x2}=runs(dR,rSpec,rcs,cR,len,dir,`Return duct ${cR.size}${flowTag(cR)}`,'r',(a,ac,ai,xs,yo,zc,lbl)=>{ // an ADDED return — joined with a clean bend, like the other ducts:
+        const gb=specBoxes(cGD&&cGD.spec?cGD.spec:null,20,20); let gzz=0; const gbz=gb.map((q,i)=>{ const z=gzz+(q.h-gb[0].h)/2; gzz+=q.h+6; return z }); /* each grille 6" past the one before, whatever their sizes */ const addQ=gb.map((q,g)=>({q,g})).filter(x=>x.q.add); // a 2-grille return draws as two grilles, each at its own size; each grille's place along z is fixed first, so an added return's duct can land on its own
+        const {xa,zc,x2}=runs(dR,rSpecD,rcs,cR,len,dir,`Return duct ${cR.size}${flowTag(cR)}`,'r',(a,ac,ai,xs,yo,zc,lbl)=>{ // an ADDED return — joined with a clean bend, like the other ducts:
           const q=addQ[ai]; if(!q) return false; const zt=zc+gbz[q.g], ya=yo+ac.b/2, csA={a:ac.a,b:ac.b,round:!!ac.round}; const gyB=ceilY+4, xs0=dR.x+dR.w/2;   // its run starts inside the drop, stacks over the return that stays, sweeps sideways to sit beside it, then down onto its own filter grille
           const R1=bendR(csA,Math.abs(gx-xs0),(zt-zc)/2), R2b=bendR(csA,(zt-zc)/2,ya-gyB); if(zt-zc<R1+R2b-0.5||ya-gyB<R2b+2||Math.abs(gx-xs0)<R1+2) return false; // no room for the two bends — the straight run it drew before
           const xe=gx-dir*R1; fl(duct(Math.min(xs0,xe),yo,zc-ac.a/2,Math.abs(xe-xs0),ac.b,ac.a,cR,lbl,null,ac.round?'x':null,true),'x',-dir,'r');
@@ -6022,7 +6062,7 @@ function buildScene(){
             fl(sceneAdd({x:Math.min(xf,xf-dir*18),y:yD-d/2,z:zc-d/2-i*(d+3),dx:18,dy:d,dz:d,cyl:'x',color:NEWM,alpha:.85,noshadow:true,cls:'ok',nw:true,duct:true,la:[dir>0?0:1,1,0.5],label:it.down?`Ø${fmt(d)}" down to floor ${it.down} (${RM&&RM.down?CFM((RM.down.find(x=>x.fl+1===it.down)||{}).cfm||0):''} CFM)`:null}),'x',-dir,'s') });
           if(dS.plenum) base.plen={kind:'v',x0:dS.x,x1:dS.x+dS.w,y0:yT,y1:yT+Math.max(armMax,12),z0:dS.z,z1:dS.z+dS.d};
           trunkOutRuns(base,{y:ceilY,up:false},{tree,plen:base.plen,drop:base.drop,regCls:(comp('regs')||{}).cls,ins:AM.ins,ceil:ceilO,label:tree.net?dnLabel3(tree.net,nAll,per,cans[0]):lbl}) }
-        else { const len=Math.max(40,Math.min(70,(dir>0?dS.x-x0:x1-(dS.x+dS.w))-6)); const {xa,zc}=runs(dS,sSpec,scs,cS,len,-dir,`Supply trunk ${cS.size}${flowTag(cS)}`,'s');
+        else { const len=Math.max(40,Math.min(70,(dir>0?dS.x-x0:x1-(dS.x+dS.w))-6)); const {xa,zc}=runs(dS,sSpecD,scs,cS,len,-dir,`Supply trunk ${cS.size}${flowTag(cS)}`,'s');
         const cT=pkCT; const isAdd=takeoffAdded(); const rbrTk=pkRbrTk;
         if(tk.length){ const slots=Math.max(1,Math.ceil(tk.length/2)); const maxD=tk.reduce((m,it)=>Math.max(m,it.d||Math.max(it.w||0,it.h||0)),8);
           const step= slots<2?0 : Math.min(Math.max(9,maxD+4),Math.max(8,(len-12)/(slots-1)));
@@ -6031,6 +6071,13 @@ function buildScene(){
             fl(sceneAdd({x:bx-d/2,y:yT+scs.b/2-d/2,z:zz,dx:d,dy:d,dz:16,cyl:'z',color:flowCol(cT)||(nw?NEWM:METAL),alpha:flowCol(cT)?.85:(nw?.85:.55),noshadow:true,cls:cT?cT.cls:'',nw:nw||isNew(cT),
               la:[0.5,side>0?1:0,0.5],label: it.down?`Ø${fmt(d)}" down to floor ${it.down} (${RM&&RM.down?CFM((RM.down.find(x=>x.fl+1===it.down)||{}).cfm||0):''} CFM)`:i===0?(rbrTk?`Take-offs — ${(RM&&RM.vents)||tk.length} runs, room by room (new)`:`Take-offs ${cT.size}${flowTag(cT)}`):(nw&&!it.rbr?`+ added ${it.d?'Ø'+fmt(it.d)+'"':fmt(it.w)+'×'+fmt(it.h)} (new — off the trunk)`:null)}),'z',side,'s') }) }   // the duct down is a take-off, not a run to a register
         if(!tk.length) [0.25,0.55,0.85].forEach((f,i)=>{ const bx=xa+len*f; const side=i%2?1:-1; fl(sceneAdd({x:bx-3,y:yT+scs.b/2-3,z:side>0?zc+scs.a/2:zc-scs.a/2-16,dx:6,dy:6,dz:16,cyl:'z',color:METAL,alpha:.5,noshadow:true}),'z',side,'s') }); } }
+      // v2.97: the added runs with a spot on the plan — each out of its own drop, stacked over the run that is there, to the room it was put in
+      if(RAr.size||RAs.size){ const dRef=dS||dR; const M_=addRunMap(dRef.x+dRef.w/2,dRef.z+dRef.d/2); const drawn=new Set(); const house=!!(pkTree&&pkTree.rbr);
+        const out=(dp,G,yA)=>{ const cx=dp.x+dp.w/2, cz=dp.z+dp.d/2; const dx=G[0]-cx, dz=G[1]-cz; const u=Math.abs(dx)>=Math.abs(dz)?[Math.sign(dx)||1,0,0]:[0,0,Math.sign(dz)||1]; return {P0:[cx+u[0]*dp.w/2,yA,cz+u[2]*dp.d/2],u} };
+        if(dR) addList(S.fix,'addRet').forEach((a,i)=>{ if(!RAr.has(i)) return; const G=M_.at(addSpotL(a,'r')); const g=addFaceIn(a,'r'); const yA=yT+rcs.b+3+a.d/2; const o_=out(dR,G,yA);
+          addRunDraw({P0:o_.P0,u0:o_.u,yRun:yA,G,yF:ceilY,up:false,d:a.d,kind:'r',face:g,clr:null,lbl:`+ added return Ø${fmt(a.d)}" → ${a.room||'its room'} (new — off the ${dR.plenum?'new plenum':'drop'})`,flbl:`+ added grille ${g[0]}×${g[1]} + filter (new)${a.room?' — '+a.room:''}`,slab:!house,room:addRoomOf(a),map:M_.map,drawn}) });
+        if(dS) addList(S.fix,'addSup').forEach((a,i)=>{ if(!RAs.has(i)) return; const G=M_.at(addSpotL(a,'s')); const s=addRunFace(a.d); const yA=yT+scs.b+3+a.d/2; const o_=out(dS,G,yA);
+          addRunDraw({P0:o_.P0,u0:o_.u,yRun:yA,G,yF:ceilY,up:false,d:a.d,kind:'s',face:[s,s],clr:null,lbl:`+ added Ø${fmt(a.d)}" → ${a.room||'its room'} (new — off the ${dS.plenum?'new plenum':'drop'})`,flbl:`${s}×${s} can · ${REG_FACE[regFor(S.fix)].short} register${a.room?' — '+a.room:''}`,slab:!house,room:addRoomOf(a),map:M_.map,drawn}) }) }
       // what the unit wants vs what it gets
       scene.push({marker:true,nofit:true,x:px+n.l+6,y:py+n.h*0.75,z:pz+n.w+4,dx:0,dy:0,dz:0,stat:true,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:AM.blowerBound?`gets ${CFM(AM.delivered)} CFM — all this blower can push${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
     }
@@ -6104,7 +6151,7 @@ function buildScene(){
       const pcC=!!(C&&C.pc&&cfg==='plenum_coil'); const plenLenFor=(k,cl,tl,pl)=> k==='trunk'? tl : (k==='plenum_coil'? (pcC&&k===cfg?cl:Math.max(cl+6,pl)) : pl);   /* the Aspen DP is its own length */
       const band=len=>Math.max(len-TKHEAD-TKTAIL,6); // take-off band: start TKHEAD off the discharge (never on the coil's face), leave the last foot of the plenum clear
       const r=dsz(cR,14); const rpl=retPlenLen();
-      let tkBase=null, retOut=null, armBase=null, deferRuns=null; const RT=fcRetL(); // in the unit's own frame · RT = the return filter grille on the plan (centre, feet), or null when there is no plan / grid to place it on
+      let tkBase=null, retOut=null, armBase=null, deferRuns=null; const addStubs=[]; const RT=fcRetL(); // in the unit's own frame · RT = the return filter grille on the plan (centre, feet), or null when there is no plan / grid to place it on
       // the new duct system is decided BEFORE the supply draws — as on a split system, all the trunk lines come right to the plenum, nothing in
       // between: with it on, a round main is drawn as the square plenum the arms come off, and the coil-face box goes away
       const cT0=comp('takeoff'); let tk0=(cT0&&cT0.spec&&cT0.spec.items)?cT0.spec.items.filter(it=>!it.hide).slice(0,12):[]; if(cT0&&!tk0.length&&cT0.area){ const k=Math.max(2,Math.min(8,Math.round(cT0.area/roundArea(10)))); for(let i=0;i<k;i++) tk0.push({d:10,syn:true}) }
@@ -6200,8 +6247,8 @@ function buildScene(){
         tkItems.forEach((it,i)=>{ const d=it.d||Math.max(it.w,it.h); const side=i%2?1:-1; const slot=Math.floor(i/2); const nw=(!it.syn&&isAdd(it,i))||!!it.rbr;
           const lbl= it.down?`Ø${fmt(d)}" down to floor ${it.down} (${RM&&RM.down?CFM((RM.down.find(x=>x.fl+1===it.down)||{}).cfm||0):''} CFM)`:i===0||(rbrTk&&!tkItems.slice(0,i).some(q=>!q.down))?(rbrTk?`Take-offs — ${(RM&&RM.vents)||tkItems.length} runs, room by room (new)`:`Take-offs ${cT?cT.size:''}${tag(cT)}`):(nw&&!it.rbr?`+ added ${it.d?'Ø'+fmt(it.d)+'"':fmt(it.w)+'×'+fmt(it.h)} (new — off the plenum)`:null);
           const zz= side>0? tkBase.z : tkBase.z-2*tkBase.half-18;
-          if(tkBase.along==='x'){ const bx=tkBase.x0+maxD/2+slot*step; fl(put(bx-d/2,tkBase.y-d/2,zz,d,d,18,cT,lbl,'z',[0.5,side>0?1:0,0.5]),'z',side,'s'); if(bx-tkBase.x0>FITRUN) scene[scene.length-1].nofit=true; }
-          else { const by=tkBase.startY+maxD/2+slot*step; fl(put(tkBase.x0-d/2,by-d/2,zz,d,d,18,cT,lbl,'z',[0.5,side>0?1:0,0.5]),'z',side,'s'); } });   // the duct down is a take-off, not a run to a register
+          if(tkBase.along==='x'){ const bx=tkBase.x0+maxD/2+slot*step; fl(put(bx-d/2,tkBase.y-d/2,zz,d,d,18,cT,lbl,'z',[0.5,side>0?1:0,0.5]),'z',side,'s'); if(bx-tkBase.x0>FITRUN) scene[scene.length-1].nofit=true; if(it.addRun) addStubs.push({ai:it.addI,P:[bx,tkBase.y,side>0?zz+18:zz],u:[0,0,side],d}) }
+          else { const by=tkBase.startY+maxD/2+slot*step; fl(put(tkBase.x0-d/2,by-d/2,zz,d,d,18,cT,lbl,'z',[0.5,side>0?1:0,0.5]),'z',side,'s'); if(it.addRun) addStubs.push({ai:it.addI,P:[tkBase.x0,by,side>0?zz+18:zz],u:[0,0,side],d}) } });   /* v2.97: an added run's collar — its run to the room starts at the collar's end */   // the duct down is a take-off, not a run to a register
         if(tree){ const nAll=tree.runs, per=tree.per; const cans=fanCans(nAll,per,8); const arms=tree.arms.length; const off=tkItems.length?maxD+16:0; // the full new duct system: a reducing trunk arm off each side of the plenum, past any duct down, the branches teeing off it, every leg down to its can
           const plane= down?{y:flrY-4,up:true}:{y:ceilY,up:false};
           const mid=(!tkItems.length&&tkBase.mid!=null)?tkBase.mid:null; // the arms tee off the middle of the plenum unless a duct down already sits on it
@@ -6242,8 +6289,16 @@ function buildScene(){
       // in the new-metal green beside the return that stays. The model counts it with the return duct and the filter face.
       // The run stops short of the corner and a radiused bend turns it down onto the grille — a clean bend, like the other ducts; a ceiling too close
       // for a bend falls back to a straight drop.
+      // v2.97: with a plan or a grid every added run goes to the room it was put in (addRunDraw) — the return off the return plenum's side, the supply
+      // run off its collar; the clear band is the unit, its plenums and the collars
+      const addMap=addRunMap(armBase?armBase.x:0,zc); const addDrawn=new Set(); const addHouse=!!(treeS&&treeS.rbr);
+      const addClr=(()=>{ const B=[rpG,tkBase&&tkBase.box?{x:tkBase.box.x0,dx:tkBase.box.x1-tkBase.box.x0,z:tkBase.box.z0,dz:tkBase.box.z1-tkBase.box.z0}:null].filter(Boolean); if(!B.length) return null;
+        const x0=Math.min(...B.map(b=>b.x),0), x1=Math.max(...B.map(b=>b.x+b.dx),F.d||0), z0=Math.min(...B.map(b=>b.z),zc-(F.w||F.d||20)/2)-18, z1=Math.max(...B.map(b=>b.z+b.dz),zc+(F.w||F.d||20)/2)+18; return {x0:x0-4,x1:x1+4,z0,z1} })();
+      const addYRun=(y0,d)=>attic?Math.max(y0,ceilY+d/2+2):ceilY+16+d/2;   /* in an attic the run stays at the plenum's height, clear of the insulation; a garage / closet unit's run goes up into the attic */
       { const adds=addList(S.fix,'addRet'); if(adds.length&&rpG){ const n=Math.min(adds.length,3);
         adds.slice(0,n).forEach((a,i)=>{ const D=a.d, g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(D); const csA={a:D,b:D,round:true};
+          const q=addSpotL(a,'r'); if(q){ const G=addMap.at(q); const side=G[1]>=rpG.z+rpG.dz/2?1:-1; const yR=addYRun(rpG.y+rpG.dy/2,D); const y0=Math.max(rpG.y+D/2,Math.min(rpG.y+rpG.dy-D/2,yR));
+            addRunDraw({P0:[rpG.x+rpG.dx/2,y0,side>0?rpG.z+rpG.dz:rpG.z],u0:[0,0,side],yRun:yR,G,yF:ceilY,up:false,d:D,kind:'r',face:g,clr:addClr,lbl:`+ added return Ø${fmt(D)}" → ${a.room||'its room'} (new — off the return plenum)`,flbl:`+ added grille ${g[0]}×${g[1]} + filter (new)${a.room?' — '+a.room:''}`,slab:!addHouse,room:addRoomOf(a),map:addMap.map,drawn:addDrawn}); return }
           const xc=rpG.x+rpG.dx/2+(i-(n-1)/2)*(D+6), yc=rpG.y+rpG.dy/2, z0=rpG.z+rpG.dz, L=30+i*6, zc2=z0+L; // zc2 = the corner where the run's centreline meets the drop's
           const gy2=ceilY-4, dn=gy2<yc; let R=bendR(csA,L,Math.abs(yc-gy2)); if(Math.abs(yc-gy2)<R+2||L<R+4) R=0;
           fl(sceneAdd({x:xc-D/2,y:yc-D/2,z:z0,dx:D,dy:D,dz:Math.max(L-R,2),cyl:'z',color:RET_NEW,alpha:.82,noshadow:true,cls:'ok',nw:true,la:[0.5,1,0.7],label:`+ added return Ø${fmt(D)}" (new — off the return plenum)`}),'z',-1,'r');
@@ -6251,6 +6306,9 @@ function buildScene(){
           const zd=R?zc2:zc2-D/2; const yTop=dn?(R?yc-R:yc):gy2, yBot=dn?gy2:(R?yc+R:yc);
           if(yTop-yBot>1) fl(sceneAdd({x:xc-D/2,y:yBot,z:zd-D/2,dx:D,dy:yTop-yBot,dz:D,cyl:'y',color:RET_NEW,alpha:.82,noshadow:true,cls:'ok',nw:true}),'y',dn?1:-1,'r');
           flV(sceneAdd({x:xc-g[0]/2,y:gy2-1.4,z:zd-g[1]/2,dx:g[0],dy:1.2,dz:g[1],color:RET_NEW,alpha:.95,noshadow:true,cls:'ok',nw:true,la:[0.5,0,0.5],label:`+ added grille ${g[0]}×${g[1]} + filter (new)`}),'in',[0,-1,0],'r','') }) } }
+      addList(S.fix,'addSup').forEach((a,i)=>{ const q=addSpotL(a,'s'); if(!q||!tkBase||!tkBase.box) return; const G=addMap.at(q); const B=tkBase.box;
+        const st=addStubs.find(x=>x.ai===i)||(()=>{ const sd=G[1]>=(B.z0+B.z1)/2?1:-1; const zf=sd>0?B.z1:B.z0; return tkBase.along==='x'?{P:[Math.max(B.x0+a.d,B.x1-12-i*(a.d+4)),tkBase.y,zf],u:[0,0,sd]}:{P:[(B.x0+B.x1)/2,Math.max(B.y0+a.d,(B.y0+B.y1)/2-i*(a.d+4)),zf],u:[0,0,sd]} })();   /* no take-offs on the job: it leaves the plenum's side, toward its room */ const s=addRunFace(a.d); const plane=down?{y:flrY-4,up:true}:{y:ceilY,up:false};
+        addRunDraw({P0:st.P,u0:st.u,yRun:down?st.P[1]:addYRun(st.P[1],a.d),G,yF:plane.y,up:plane.up,d:a.d,kind:'s',face:[s,s],clr:addClr,lbl:`+ added supply Ø${fmt(a.d)}" → ${a.room||'its room'} (new)`,flbl:`${s}×${s} can · ${REG_FACE[regFor(S.fix)].short} register${a.room?' — '+a.room:''}`,slab:!addHouse,room:addRoomOf(a),map:addMap.map,drawn:addDrawn}) });   /* v2.97: the added supply run, collar → its room */
       if(deferRuns){ try{ deferRuns() }catch(e){ try{ console.error('Fit Check: supply runs',e) }catch(_){} } }   // the new duct system, laid now the return is in place
       scene.push({marker:true,nofit:true,x:Lx+8,y:Hy*0.8,z:zc+Wz/2+6,dx:0,dy:0,dz:0,stat:true,cls:AM.ratioNeed>=1?'ok':(AM.ratioNeed>=0.956?'warn':'bad'),label:AM.blowerBound?`gets ${CFM(AM.delivered)} CFM — all this blower can push${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`:`needs ${CFM(AM.needs)} CFM · gets ≈ ${CFM(AM.delivered)}${AM.perTon!=null?` (${AM.perTon}/ton)`:''} · score ${AM.score.total}`});
     } }
@@ -6284,6 +6342,39 @@ function addRunFrom(kind){ const r=kind==='r'; if(isPkg()&&S.setup!=='separate'&
   return isPkg()?(r?'the return drop':'the supply drop'):(r?'the return plenum':'the supply plenum') } // with new plenums the added duct runs from the new plenum
 function addRetGrille(d){ const L=[[14,14],[20,20],[20,30],[20,40],[20,50]]; const need=2*roundArea(d); return (L.find(([w,h])=>w*h>=need-0.5)||L[L.length-1]).slice() } // the face at 300 fpm carries what its duct does at 600
 function addRunFace(d){ const L=[[8,7],[9,8],[10,9],[12,11],[14,13]]; return (L.find(([s,nk])=>nk>=d)||L[L.length-1])[0] } // the Goettl square face that takes the run's neck (REG_SQ)
+// v2.97 — WHERE AN ADDED RUN GOES (Stephen 2026-11-01: "allow me to customize where my new return or supply go … when we place a new vent into a
+// room, it should reflect that on the 2d, and 3d layout, and in the proposed changes and installer plans, it will say … add a return, to X room").
+// Every added supply run and return carries its room (a.room) and its spot on the plan (a.pos — the corner of its tile on the Rooms grid, plan feet;
+// a.fl its floor). With a scan or a grid it lands in a room the moment it is added — a return in the biggest room with no return, a supply run in the
+// room with the most air per vent it has — and the SM moves it: the Plan chip's room list, or a drag on the Rooms grid. The 3D runs it from the plenum
+// to that spot, the installer plan draws it there at its true size, and every page says "to <room>". No scan and no grid: no spot, the stub as before.
+const ADD_M=0.3;   // the dashed handle round the face on the grid, ft
+function addFaceIn(a,kind){ if(kind==='r') return (Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); const s=addRunFace(a.d); return [s,s] }   // the grille / register face, inches
+function addTileFt(a,kind){ const f=addFaceIn(a,kind); return {w:f[0]/12+2*ADD_M,d:f[1]/12+2*ADD_M} }
+function addRoomsOn(){ const top=fcTop(); return (S.rooms||[]).filter(r=>r.fl===top&&!r.nr&&!r.oz) }
+function addRoomOf(a){ const n=a&&a.room?String(a.room).trim().toLowerCase():''; return n?addRoomsOn().find(r=>String(r.n).trim().toLowerCase()===n)||null:null }
+function addSpotC(a,kind){ if(!a||!a.pos||typeof a.pos.x!=='number'||!isFinite(a.pos.x)||!isFinite(a.pos.y)) return null; if(a.fl!=null&&a.fl!==fcTop()) return null; const f=addFaceIn(a,kind); return [a.pos.x+ADD_M+f[0]/24,a.pos.y+ADD_M+f[1]/24] }   // the face's centre, plan feet
+function addSpotL(a,kind){ if(typeof fcRetC!=='function'||!fcRetC()) return null; const c=addSpotC(a,kind); if(!c) return null; const rr=unitRot(); return rr?uUnrotP([S.unitPos.x+3,S.unitPos.y+3],c,rr):c }   // in the unit's own frame (the 3D's), only where there is a plan or a grid
+function addPlaceIn(a,kind,r){ const f=addFaceIn(a,kind), T=addTileFt(a,kind);
+  // the open ceiling of the room: clear of its vents, its name and any other run added to it — the spot nearest the middle that keeps 4 ft from all of
+  // them (or as near to that as the room allows), with the tile wholly inside the room
+  const busy=[]; try{ (r.taps||[]).forEach(tp=>(tp.regs||[]).forEach(g=>{ if(g.x!=null) busy.push([g.x,g.y!=null?g.y:rbrCy(r)]) })); if(!busy.length) rbrVentSpots(r,Math.max(1,r.nReg||r.vn||1)).forEach(q=>busy.push([q.x,q.y])) }catch(e){}
+  const name=[rbrCx(r),rbrCy(r)], nw=Math.max(2,String(r.n).length*0.3);   /* the room's name and CFM on the grid, a box round its middle */ ['addRet','addSup'].forEach(k=>(S.fix[k]||[]).forEach(x=>{ if(x===a||addRoomOf(x)!==r) return; const c=addSpotC(x,k==='addRet'?'r':'s'); if(c) busy.push(c) }));
+  const inR=(x,y)=>r.poly?fcPtIn(r.poly,x,y):(x>r.x&&x<r.x+r.w&&y>r.y&&y<r.y+r.d); const hw=T.w/2+0.4, hd=T.d/2+0.4;
+  const xs=r.poly?r.poly.map(p=>p[0]):[r.x,r.x+r.w], ys=r.poly?r.poly.map(p=>p[1]):[r.y,r.y+r.d]; let best=null;
+  for(let x=Math.min(...xs)+hw;x<=Math.max(...xs)-hw;x+=0.5) for(let y=Math.min(...ys)+hd;y<=Math.max(...ys)-hd;y+=0.5){ if(!(inR(x-hw,y-hd)&&inR(x+hw,y-hd)&&inR(x-hw,y+hd)&&inR(x+hw,y+hd)&&inR(x,y))) continue;
+    const dB=Math.min(4,...busy.map(q=>Math.hypot(q[0]-x,q[1]-y)),Math.hypot(Math.max(0,Math.abs(name[0]-x)-nw-hw),Math.max(0,Math.abs(name[1]-y)-1.4-hd))+1); const sc=dB*10-Math.hypot(x-name[0],y-name[1]); if(!best||sc>best.sc) best={x,y,sc} }
+  let cx, cy; if(best){ cx=best.x; cy=best.y } else { cx=rbrCx(r); cy=rbrCy(r)+1.5; if(r.poly){ const q=fcInside(r,cx,cy); cx=q[0]; cy=q[1] } }
+  a.pos={x:+(cx-ADD_M-f[0]/24).toFixed(2),y:+(cy-ADD_M-f[1]/24).toFixed(2)}; a.room=r.n; a.fl=fcTop() }
+function addRetRooms(){ const out=new Set(); const top=fcTop(); const at=(x,y)=>{ const r=rbrRoomAt(x,y); if(r) out.add(r) };
+  try{ ((S.plan&&S.plan.rets)||[]).forEach(q=>at(q.x,q.y)) }catch(e){} try{ const c=fcRetC(); if(c) at(c[0],c[1]) }catch(e){}
+  return out }
+function addPickRoom(kind,a){ const R=addRoomsOn(); if(!R.length) return null; const key=kind==='r'?'addRet':'addSup'; const taken=new Set((S.fix[key]||[]).filter(x=>x!==a).map(x=>addRoomOf(x)).filter(Boolean));
+  if(kind==='r'){ const has=addRetRooms(); const free=R.filter(r=>!has.has(r)&&!taken.has(r)); return (free.length?free:R).slice().sort((x,y)=>(y.cfm||0)-(x.cfm||0))[0] }   // the biggest room with no return of its own
+  const per=r=>(r.cfm||0)/Math.max(1,r.vn||r.nReg||1); const free=R.filter(r=>!taken.has(r)); return (free.length?free:R).slice().sort((x,y)=>per(y)-per(x))[0] }   // the room with the most air per vent it has
+// every added run on this floor has a room and a spot: one the SM named is put in that room, one with neither goes where addPickRoom says
+function addRoomsSync(){ try{ if(S.rbrOpen&&S.rooms&&S.rooms.length) rbrRender() }catch(e){} }   // the Rooms tab shows the added runs in their rooms (tiles and row chips)
+function addPlaceAll(){ if(!addRoomsOn().length) return; [['addRet','r'],['addSup','s']].forEach(([key,kind])=>(S.fix[key]||[]).forEach(a=>{ if(!a||addSpotC(a,kind)) return; if(a.fl!=null&&a.fl!==fcTop()) return; const r=addRoomOf(a)||(!a.room?addPickRoom(kind,a):null); if(r) addPlaceIn(a,kind,r) })) }
 function addRunSize(o,kind){ const key=kind==='r'?'addRet':'addSup', list=kind==='r'?ADD_RET_D:ADD_SUP_D, slots=kind==='r'?['grille','ret']:['sup','takeoff','regs'];
   const had=Object.prototype.hasOwnProperty.call(S.fix,key), cur=(S.fix[key]||[]).slice(); let pick=null;
   const clear=M=>!!M&&M.comps.filter(c=>slots.includes(c.slot)&&!c.newMetal&&!c.rbr).every(c=>c.cls==='ok');
@@ -6368,9 +6459,9 @@ function proposedChanges(o){ const M=flowModel(o,S.fix), M0=flowModel(o,TODAY); 
     L.push({k:'regs',txt:`Supply registers: ${a?a.size.replace(/ \(assumed.*\)$/,'')+' ('+spotTxt(a,M0,true)+')':'none'} → <b>${b.size}</b> (${spotTxt(b,M,true)}${per?`, ${per} CFM per face`:''}) <span class="note" style="text-transform:none;letter-spacing:0">— Goettl square faces, one per run, ${MD_REG_REC} fpm through the free area</span>`,undo:()=>{ delete S.fix.regs }}) } }
   // the added runs: one line each, with what the run carries on its own
   addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d);
-    L.push({k:'addsup',txt:`Add a supply run: one new <b>Ø${fmt(a.d)}"</b> off ${addRunFrom('s')} to its own <b>${s}×${s}</b> ${REG_FACE[regFor(S.fix)].short} register${addRoomTxt(a,true)} — the ducts that are there stay <span class="note" style="text-transform:none;letter-spacing:0">— ${(r=>r!=null?`${CFM(r)} CFM of the start-up air through it, `:'')(addRunAt(M,'s',a))}less static on the rest</span><div class="obal" style="margin-top:6px"><b>Not fully balanced.</b> ${addSupNote(M,true)}</div>`,undo:()=>{ S.fix.addSup=(S.fix.addSup||[]).filter(x=>x!==a); if(!S.fix.addSup.length) delete S.fix.addSup }}) });
+    L.push({k:'addsup',room:a.room||'',txt:`Add a supply run${addToTxt(a,true)}: one new <b>Ø${fmt(a.d)}"</b> off ${addRunFrom('s')} to its own <b>${s}×${s}</b> ${REG_FACE[regFor(S.fix)].short} register — the ducts that are there stay <span class="note" style="text-transform:none;letter-spacing:0">— ${(r=>r!=null?`${CFM(r)} CFM of the start-up air through it, `:'')(addRunAt(M,'s',a))}less static on the rest</span><div class="obal" style="margin-top:6px"><b>Not fully balanced.</b> ${addSupNote(M,true)}</div>`,undo:()=>{ S.fix.addSup=(S.fix.addSup||[]).filter(x=>x!==a); if(!S.fix.addSup.length) delete S.fix.addSup }}) });
   addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d);
-    L.push({k:'addret',txt:`Add a return: one new <b>Ø${fmt(a.d)}"</b> return duct with its own <b>${g[0]}×${g[1]}</b> filter grille${addRoomTxt(a,true)}, into ${addRunFrom('r')} — the return that is there stays <span class="note" style="text-transform:none;letter-spacing:0">— ${(r=>r!=null?`${CFM(r)} CFM of the start-up air through it, `:'')(addRunAt(M,'r',a))}less static</span>`,undo:()=>{ S.fix.addRet=(S.fix.addRet||[]).filter(x=>x!==a); if(!S.fix.addRet.length) delete S.fix.addRet }}) });
+    L.push({k:'addret',room:a.room||'',txt:`Add a return${addToTxt(a,true)}: one new <b>Ø${fmt(a.d)}"</b> return duct with its own <b>${g[0]}×${g[1]}</b> filter grille, into ${addRunFrom('r')} — the return that is there stays <span class="note" style="text-transform:none;letter-spacing:0">— ${(r=>r!=null?`${CFM(r)} CFM of the start-up air through it, `:'')(addRunAt(M,'r',a))}less static</span>`,undo:()=>{ S.fix.addRet=(S.fix.addRet||[]).filter(x=>x!==a); if(!S.fix.addRet.length) delete S.fix.addRet }}) });
   if(S.fix.insul&&S.fix.insul!=='none'&&M.ins.known&&M.ins.R<M.ins.Rf) L.push({k:'insul',txt:`Top up attic insulation R-${fmtR(M.ins.R)} → <b>R-${fmtR(M.ins.Rf)}</b> (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`,undo:()=>{S.fix.insul='none'}});
   if(regNew()!==regOld()&&!S.fix.regs){ const a=REG_FACE[regOld()], b=REG_FACE[regNew()]; const ca=c0('regs'), cb=c1('regs'); // the register face is part of the design; it reads last, after the install, the metal and the insulation
     L.push({k:'reg',txt:`Supply registers: ${a.short} → <b>${b.short}</b> (${b.name})${b.free>a.free?` — about ${Math.round((b.free/a.free-1)*100)}% more free area and ≈${Math.round((1-b.dp/a.dp)*100)}% less drop at the face: more air out of every vent`:''}${ca&&cb?` <span class="note" style="text-transform:none;letter-spacing:0">— the ${cb.spec.n} faces there: ${spotTxt(ca,M0,true)} → ${spotTxt(cb,M,true)} at start-up</span>`:''}`,undo:()=>{ delete S.fix.reg; if(regNew()!==regOld()) S.fix.reg=regOld() }}) } // undo = back to the faces as found, no override left behind
@@ -6733,6 +6824,7 @@ function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); i
     const sub=!P?'':(cur==='trunk'?lenChips('tft',[8,12,16,20,30],num('new_trunk_ft'),' ft','Length'):lenChips('plen',[24,36,48,60],num('new_splen'),'″','Plenum'));
     g1=G(P?'pgDesign':'','Design',`<div class="xtg ptg">${tiles}</div>${sub}`) }
   // 2 · DUCTS
+  try{ addPlaceAll() }catch(e){}   /* v2.97: an added run from an earlier version gets its room and spot */
   const addOkS=addRunsOk(S.fix,'s'), addOkR=addRunsOk(S.fix,'r'); const addS=addList(S.fix,'addSup'), addR=addList(S.fix,'addRet');
   let dt='';
   if(rooms) dt+=T(' data-pact="rbrnew"','i-nds','New duct system',S.rbrNew?rbrVentCount()+' runs':'',S.rbrNew?'on':'',false,'Replace the supply ducts, room by room','#0f8b8b');
@@ -6776,7 +6868,7 @@ function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); i
     else if(k==='enlret'){ holdClear(); if(S.fix.ret||S.fix.grille){ delete S.fix.ret; delete S.fix.grille; if(S.scope){ delete S.scope.rdrop; delete S.scope.grille } } else enlargeReturn(o) }
     else if(k==='clear'){ S.fix={install:'reuse',insul:'none'}; S.scope={}; S.rbrNew=false }
     else if(k==='rbrnew'){ S.rbrNew=!S.rbrNew; if(S.rbrNew) holdClear(); if(!isPkg()){ S.scope=S.scope||{}; S.scope.ducts=S.rbrNew } if(S.rbrNew) rbrModel(); }   // one tile — off takes the split's duct-system tick off with it
-    else if(k==='addsup'||k==='addret'){ const kind=k==='addret'?'r':'s'; if(!addRunsOk(S.fix,kind)) return; const key=kind==='r'?'addRet':'addSup'; const z=addRunSize(o,kind); S.fix[key]=(S.fix[key]||[]).concat([kind==='r'?{d:z.d,g:addRetGrille(z.d)}:{d:z.d}]) }
+    else if(k==='addsup'||k==='addret'){ const kind=k==='addret'?'r':'s'; if(!addRunsOk(S.fix,kind)) return; const key=kind==='r'?'addRet':'addSup'; const z=addRunSize(o,kind); const nu=kind==='r'?{d:z.d,g:addRetGrille(z.d)}:{d:z.d}; S.fix[key]=(S.fix[key]||[]).concat([nu]); try{ const r=addPickRoom(kind,nu); if(r) addPlaceIn(nu,kind,r) }catch(e){} addRoomsSync() }   /* v2.97: it lands in a room the moment it is added — the SM moves it */
     else if(k==='psave'){ const p=planSaveNew(); if(p){ try{ flash('Saved as '+planName(p)+' — see it on 3 · Options') }catch(e){} } }
     else if(k==='pupd'){ const p=planUpdate(btn.dataset.pid); if(p){ try{ flash(planName(p)+' updated') }catch(e){} } }
     else if(k==='popts'){ go(9); return }
@@ -6785,9 +6877,11 @@ function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); i
   el.querySelectorAll('[data-lay]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.lay; if(k==='auto') delete S.layout; else S.layout=k; if(S.rooms&&S.rooms.length){ try{ rbrModel() }catch(e){} } try{ assumeAirflow(true) }catch(e){} done() });   /* the layout can change the pick, and the assumed plenum face follows the pick */
   el.querySelectorAll('[data-pvm]').forEach(btn=>btn.onclick=()=>{ rbrSetVm(btn.dataset.vmid,btn.dataset.pvm); try{ rbrModel() }catch(e){} save(); renderCompare(); try{ if(S.rbrOpen) rbrRender() }catch(e){} if(typeof packStoryRefresh==='function') packStoryRefresh() });
   el.querySelectorAll('[data-insulr]').forEach(btn=>btn.onclick=()=>{ const k=btn.dataset.insulr; S.fix.insul=(S.fix.insul===k)?'none':k; done() });
-  el.querySelectorAll('[data-addstep]').forEach(btn=>btn.onclick=()=>{ const [kind,i,dir]=btn.dataset.addstep.split(':'); addRunStep(kind,+i,+dir); done() });
-  el.querySelectorAll('[data-addrm]').forEach(btn=>btn.onclick=()=>{ const [kind,i]=btn.dataset.addrm.split(':'); addRunRemove(kind,+i); done() });
-  el.querySelectorAll('[data-addroom]').forEach(inp=>{ inp.onchange=()=>{ const [kind,i]=inp.dataset.addroom.split(':'); const key=kind==='r'?'addRet':'addSup'; const a=(S.fix[key]||[])[+i]; if(!a) return; const v=String(inp.value||'').trim(); if(v) a.room=v; else delete a.room; save(); try{ renderCompare(true) }catch(e){} if(typeof packStoryRefresh==='function') packStoryRefresh() }; inp.onclick=e=>e.stopPropagation() });   /* which room the added run feeds */
+  el.querySelectorAll('[data-addstep]').forEach(btn=>btn.onclick=()=>{ const [kind,i,dir]=btn.dataset.addstep.split(':'); addRunStep(kind,+i,+dir); addRoomsSync(); done() });
+  el.querySelectorAll('[data-addrm]').forEach(btn=>btn.onclick=()=>{ const [kind,i]=btn.dataset.addrm.split(':'); addRunRemove(kind,+i); addRoomsSync(); done() });
+  el.querySelectorAll('[data-addroom]').forEach(inp=>{ inp.onchange=()=>{ const [kind,i]=inp.dataset.addroom.split(':'); const key=kind==='r'?'addRet':'addSup'; const a=(S.fix[key]||[])[+i]; if(!a) return; const v=String(inp.value||'').trim(); if(v) a.room=v; else delete a.room;
+      try{ const r=addRoomOf(a); const c=addSpotC(a,kind); if(r){ if(!c||rbrRoomAt(c[0],c[1])!==r) addPlaceIn(a,kind,r) } else if(!v&&c){ const r2=rbrRoomAt(c[0],c[1]); if(r2) a.room=r2.n } }catch(e){}   /* v2.97: a room off the list moves it there — the Rooms grid, the 3D and the installer plan follow */
+      save(); addRoomsSync(); try{ renderCompare(true) }catch(e){} if(typeof packStoryRefresh==='function') packStoryRefresh() }; inp.onclick=e=>e.stopPropagation() });   /* which room the added run feeds */
   el.querySelectorAll('[data-pload]').forEach(btn=>btn.onclick=()=>{ if(!planGuard(planById(btn.dataset.pload))) return; const p=planUse(btn.dataset.pload,false); if(!p) return; renderCompare(); if(typeof packStoryRefresh==='function') packStoryRefresh(); try{ flash(planName(p)+' is back up on the 3D') }catch(e){} });
   el.querySelectorAll('[data-plen],[data-tft]').forEach(btn=>btn.onclick=()=>{ const tr=btn.dataset.tft!=null; set(tr?'new_trunk_ft':'new_splen',tr?btn.dataset.tft:btn.dataset.plen); syncSupCfg(); renderCompare() });
   // the design tiles (a split's coil and plenum, the split's New duct system) are buttons; the package's replace chips are checkboxes
@@ -6879,8 +6973,8 @@ function designDetailsHtml(o){
     add(plenAns('ret')==='sq'?'Return plenum':'Return duct', retPlenWords());
   }
   const tk=takeoffSpec(tkAddVal()); if(tk) add('Supply take-offs added', tk.size+' — on top of what is there');
-  addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d); add('Added supply run', `Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}×${s} register${addRoomTxt(a)} — the ducts that are there stay. ${addSupNote(M)}`) });
-  addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); add('Added return', `Ø${fmt(a.d)}" return duct + ${g[0]}×${g[1]} filter grille${addRoomTxt(a)} into ${addRunFrom('r')} — the return that is there stays`) });
+  addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d); add('Added supply run', `${a.room?'To '+a.room+': ':''}Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}×${s} register — the ducts that are there stay. ${addSupNote(M)}`) });
+  addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); add('Added return', `${a.room?'To '+a.room+': ':''}Ø${fmt(a.d)}" return duct + ${g[0]}×${g[1]} filter grille into ${addRunFrom('r')} — the return that is there stays`) });
   if(M) [['grille'],['ret'],['sup'],['takeoff'],['regs'],['penR'],['penS']].forEach(([sl])=>{ const c=M.comps.find(x=>x.slot===sl); if(!c) return;
     if(!(S.fix[sl]||c.newMetal||c.scopeNew||(sl==='regs'&&regNew()!==regOld()))) return; add(c.name, `${c.size} — ${spotTxt(c,M)} at start-up`) });
   if(M&&M.ins&&M.ins.known&&M.ins.Rf>M.ins.R) add('Attic insulation', `top up R-${fmtR(M.ins.R)} → R-${fmtR(M.ins.Rf)} (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`);
@@ -7072,6 +7166,7 @@ function optScoresHtml(M){ const s=optScores(M);
 // an ADDED SUPPLY instead of new ducts: the air is there, but it is not fully balanced — one added run carries the extra, so the customer gets to say
 // where it goes: a room that never got enough air, or the kitchen, or the master.
 function addRoomTxt(a,html){ const r=a&&a.room?String(a.room).trim():''; return r?(html?` → <b>${tpEsc(r)}</b>`:` → ${r}`):'' }   /* the room the designer wrote on an added run */
+function addToTxt(a,html){ const r=a&&a.room?String(a.room).trim():''; return r?(html?` to <b>${tpEsc(r)}</b>`:` to ${r}`):'' }   /* v2.97: "add a return, to X room" — the room leads the line */
 function addSupNote(M,short){ const got=M&&M.delivered>=(M.need2!=null?M.need2:M.needs)-0.5;
   return short?`${got?'The airflow it needs':'More airflow'}, not fully balanced — one added run carries the extra air. You pick where it goes: a room that never got enough air, the kitchen, or the master.`
     :`${got?'This reaches the airflow the system needs':'This adds airflow'}, but the house will not be fully balanced — we are adding one run, not redoing the ducts, so the extra air all goes to one place. The trade-off: you get to tell us where. We would put it in a room that never got enough air, or the kitchen, or the master bedroom.` }
@@ -7113,8 +7208,8 @@ function planChangeList(o,M,M0){ const out=[]; const inst=S.fix.install||'reuse'
     if(k==='rbrnew'){ out.push({k,cat:'rbr',t:'New duct system, designed room by room'}); return }
     if(k.indexOf('scope:')===0){ const l=(SCOPE_SPLIT.find(x=>'scope:'+x[0]===k)||[k,k.slice(6)])[1]; let cat=k; try{ if(k.indexOf('scope:cfg:')===0&&supNew()===supOld()) cat='layout' }catch(e){} out.push({k,cat,t:l.replace(/ — .*$/,'')}); return }
     if(k==='tkadd'){ const a=takeoffSpec(tkAddVal()); out.push({k,cat:'takeoff',t:'Add supply take-offs'+(a?' '+a.size:'')}); return }
-    if(k==='addsup'){ const a=((it.txt||'').match(/Ø[\d½¼¾.]+"/)||[''])[0]; const rm=((it.txt||'').match(/→ ([^<—]+?)(?= —|<|$)/)||[])[1]; out.push({k,cat:'addsup',t:`Add a supply run ${a}${rm?' → '+rm.trim():''}`.trim()}); return }
-    if(k==='addret'){ const a=((it.txt||'').match(/Ø[\d½¼¾.]+"/)||[''])[0], g=((it.txt||'').match(/\d+×\d+/)||[''])[0]; out.push({k,cat:'addret',t:`Add a return ${a}${g?' + '+g+' filter grille':''}`.trim()}); return }
+    if(k==='addsup'){ const a=((it.txt||'').match(/Ø[\d½¼¾.]+"/)||[''])[0]; const rm=it.room?String(it.room).trim():''; out.push({k,cat:'addsup',t:`Add a supply run${rm?' to '+rm:''} ${a}`.trim()}); return }
+    if(k==='addret'){ const a=((it.txt||'').match(/Ø[\d½¼¾.]+"/)||[''])[0], g=((it.txt||'').match(/\d+×\d+/)||[''])[0]; const rm=it.room?String(it.room).trim():''; out.push({k,cat:'addret',t:`Add a return${rm?' to '+rm:''} ${a}${g?' + '+g+' filter grille':''}`.trim()}); return }
     if(k==='insul'){ out.push({k,cat:'insul',t:`Attic insulation R-${fmtR(M.ins.R)} → R-${fmtR(M.ins.Rf)}`}); return }
     if(k==='reg'){ out.push({k,cat:'regs',t:`${REG_FACE[regNew()].short.replace(/^./,x=>x.toUpperCase())} registers`}); return }
     if(k==='regs'){ const b=c1('regs'); out.push({k,cat:'regs',t:`New register faces${b?' '+strip(b.spec.size):''}`}); return }
@@ -7677,8 +7772,8 @@ function woWhat(o,M){ const L=[]; L.push(`New ${tons1(M.tons)} ton ${WO_UNIT[S.s
     else if(k==='insul') ins=`Blow attic insulation to R-${fmtR(M.ins.Rf)}`;
     else t=woShort(x.txt);
     if(t) L.push(t) });
-  addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d); L.push(`Add a supply run: Ø${fmt(a.d)}″ + ${s}×${s} register → ${a.room?a.room:'room: ________ (ask the designer)'}`) });
-  addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); L.push(`Add a return: Ø${fmt(a.d)}″ + ${g[0]}×${g[1]} grille${addRoomTxt(a)}`) });
+  addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d); L.push(a.room?`Add a supply run to ${a.room}: Ø${fmt(a.d)}″ + ${s}×${s} register`:`Add a supply run: Ø${fmt(a.d)}″ + ${s}×${s} register → room: ________ (ask the designer)`) });
+  addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); L.push(a.room?`Add a return to ${a.room}: Ø${fmt(a.d)}″ + ${g[0]}×${g[1]} grille`:`Add a return: Ø${fmt(a.d)}″ + ${g[0]}×${g[1]} grille → room: ________ (ask the designer)`) });
   if(isPkg()){ try{ scopeState().items.filter(i=>i.on).forEach(i=>L.push(i.l.replace(/ — required for this setup$/,''))) }catch(e){} }
   if(ins) L.push(ins);   /* the attic last — the duct work reads first */
   return [...new Set(L)] }
@@ -8275,6 +8370,7 @@ function crPlanSvg(opt){ opt=opt||{}; const rooms=(S.rooms||[]).filter(r=>r.fl==
   if(S.plan){ const pd=S.plan.pad||0; grow(pd,pd); grow(pd+S.plan.w,pd+S.plan.d) }
   if(opt.unit!==false&&S.unitPos&&rooms.length){ grow(S.unitPos.x,S.unitPos.y); grow(S.unitPos.x+6,S.unitPos.y+6) }
   if(S.retPos&&rooms.length){ grow(S.retPos.x+0.5,S.retPos.y+0.5); grow(S.retPos.x+3.5,S.retPos.y+3.5) }
+  const adds=[]; if(rooms.length&&opt.regs!==false) try{ [['addRet','r'],['addSup','s']].forEach(([key,kind])=>addList(S.fix,key).forEach(a=>{ const c=addSpotC(a,kind); if(c){ adds.push({a,kind,c,f:addFaceIn(a,kind)}); grow(c[0],c[1]) } })) }catch(e){}   /* v2.97: the runs the plan adds, where they go */
   bx1-=1.5; by1-=1.5; bx2+=1.5; by2+=1.5; const fw=bx2-bx1, fd=by2-by1; const land=fw>fd*1.15;
   const W=opt.w||(land?1000:760), SC=Math.min((W-20)/fw,((land?640:900)-20)/fd); const H=Math.round(fd*SC+20+34); const ML=10, MT=44;
   const map=(x,y)=>[ML+(x-bx1)*SC, MT+(y-by1)*SC]; const f1=v=>(+v).toFixed(1); const fs=Math.max(9,Math.min(13,SC*0.75));
@@ -8297,6 +8393,8 @@ function crPlanSvg(opt){ opt=opt||{}; const rooms=(S.rooms||[]).filter(r=>r.fl==
       if(!pts.length){ try{ pts=rbrVentSpots(r,r.nReg||1).map(p=>[p.x,p.y]) }catch(e){ pts=[] } }
       pts.forEach(p=>{ const q=map(p[0],p[1]); s+=`<rect x="${f1(q[0]-rr)}" y="${f1(q[1]-rr)}" width="${f1(rr*2)}" height="${f1(rr*2)}" fill="${CR_TEAL}" stroke="#fff" stroke-width="1.2"/>` }) });
     if(S.retPos&&rooms.length){ const a=map(S.retPos.x+0.5,S.retPos.y+0.5), b=map(S.retPos.x+3.5,S.retPos.y+3.5); s+=`<rect x="${f1(a[0])}" y="${f1(a[1])}" width="${f1(b[0]-a[0])}" height="${f1(b[1]-a[1])}" fill="${CR_RET}" fill-opacity=".85" stroke="#fff" stroke-width="1.2"/><text x="${f1((a[0]+b[0])/2)}" y="${f1((a[1]+b[1])/2+3)}" text-anchor="middle" font-size="9" font-weight="700" fill="#fff">RETURN</text>` } }
+  adds.forEach(x=>{ const ret=x.kind==='r'; const q=map(x.c[0],x.c[1]); const hw=Math.max(5,x.f[0]/24*SC), hh=Math.max(5,x.f[1]/24*SC); const col=ret?CR_RET:CR_TEAL;
+    s+=`<rect x="${f1(q[0]-hw)}" y="${f1(q[1]-hh)}" width="${f1(hw*2)}" height="${f1(hh*2)}" fill="#fff" stroke="${col}" stroke-width="2" stroke-dasharray="3 2"/><text x="${f1(q[0])}" y="${f1(q[1]+3.5)}" text-anchor="middle" font-size="11" font-weight="800" fill="${col}">+</text><text x="${f1(q[0])}" y="${f1(q[1]+hh+11)}" text-anchor="middle" font-size="9" font-weight="800" fill="${col}" stroke="#fff" stroke-width="3" paint-order="stroke">NEW ${ret?'RETURN':'SUPPLY'}</text>` });
   if(opt.unit!==false&&S.unitPos&&rooms.length){ const a=map(S.unitPos.x,S.unitPos.y), b=map(S.unitPos.x+6,S.unitPos.y+6); s+=`<rect x="${f1(a[0])}" y="${f1(a[1])}" width="${f1(b[0]-a[0])}" height="${f1(b[1]-a[1])}" rx="3" fill="${CR_NAVY}" fill-opacity=".9"/><text x="${f1((a[0]+b[0])/2)}" y="${f1((a[1]+b[1])/2+4)}" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">UNIT</text>` }
   if(S.plan&&S.plan.north&&S.plan.north.deg!=null){ try{ s+=fcNorthSvg(W-30,MT+22,18,S.plan.north.deg,{fs:12,ink:CR_NAVY}) }catch(e){} }
   /* the key, one line */
@@ -8584,8 +8682,8 @@ function summaryText(o){
     { const sc=scopeState(); if(sc.lines.length) L.push(`INSTALL SCOPE: ${sc.lines.join(' · ')}`); }
     if(M.bal&&M.bal.ratio!=null) L.push(`Supply vs return: the return side's tightest spot at ${M.bal.rPct}% of its NCI max velocity vs the supply's ${M.bal.sPct}% → ${M.bal.ratio>=1?'return leads (good)':'MORE SUPPLY THAN RETURN — open the return side'}`);
     { const add=takeoffSpec(tkAddVal()); if(add&&!S.fix.takeoff) L.push(`Proposed added supply take-offs: ${add.size}`) }
-    addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d); L.push(`ADDED SUPPLY RUN: Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}x${s} register${a.room?' IN '+String(a.room).toUpperCase():' (room: ________)'} (${(r=>r!=null?CFM(r)+' CFM of the start-up air':'a parallel path')(addRunAt(M,'s',a))}) — existing ducts stay. NOT FULLY BALANCED: one added run carries the extra air — customer picks where it goes (a room that never got enough air, the kitchen or the master)`) });
-    addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); L.push(`ADDED RETURN${a.room?' → '+a.room.toUpperCase():''}: Ø${fmt(a.d)}" return duct + ${g[0]}x${g[1]} filter grille into ${addRunFrom('r')} (${(r=>r!=null?CFM(r)+' CFM of the start-up air':'a parallel path')(addRunAt(M,'r',a))}) — existing return stays`) });
+    addList(S.fix,'addSup').forEach(a=>{ const s=addRunFace(a.d); L.push(`ADDED SUPPLY RUN${a.room?' TO '+String(a.room).toUpperCase():''}: Ø${fmt(a.d)}" off ${addRunFrom('s')} to a new ${s}x${s} register${a.room?'':' (room: ________)'} (${(r=>r!=null?CFM(r)+' CFM of the start-up air':'a parallel path')(addRunAt(M,'s',a))}) — existing ducts stay. NOT FULLY BALANCED: one added run carries the extra air — customer picks where it goes (a room that never got enough air, the kitchen or the master)`) });
+    addList(S.fix,'addRet').forEach(a=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); L.push(`ADDED RETURN${a.room?' TO '+String(a.room).toUpperCase():''}: Ø${fmt(a.d)}" return duct + ${g[0]}x${g[1]} filter grille into ${addRunFrom('r')} (${(r=>r!=null?CFM(r)+' CFM of the start-up air':'a parallel path')(addRunAt(M,'r',a))}) — existing return stays`) });
     M.comps.forEach(c=>L.push(`  ${c.name}: ${strip(c.size)} · ${sqinTxt(c.area)}${c.newMetal?' · manufacturer connection, sized to the unit → OK':` · ${spotTxt(c,M)} at start-up → ${statusTxt(c,M).toUpperCase()}`}${c.neck?` (smaller than the ${strip(c.feed.size)} duct through it — must be enlarged)`:''}${c.fixed?' (PROPOSED)':''}${c.newMetal?' (NEW)':''}`));
     if(M.ins.known) L.push(`Insulation: R-${fmtR(M.ins.R)}${M.ins.src&&M.ins.src!=='entered'?' ('+M.ins.src+')':''}${M.ins.R<R_MIN?' — UNDER R-38 minimum':''}${M.ins.target?` → top up to R-${M.ins.target} (cuts ceiling heat gain ≈ ${Math.round(M.ins.gain*100)}%)`:''}`); } }
   { const P=issuePairs(o); if(P.length){ L.push(''); L.push('WHAT WAS WRONG → HOW THIS DESIGN FIXES IT');
@@ -10912,6 +11010,7 @@ function rbrInstallPlanSvg(SC,o){
   if(S.plan){ const pd=S.plan.pad||0; bx1=Math.min(bx1,pd); by1=Math.min(by1,pd); bx2=Math.max(bx2,pd+S.plan.w); by2=Math.max(by2,pd+S.plan.d) }
   { const rp=S.retPos; if(rp){ bx1=Math.min(bx1,rp.x+0.5); by1=Math.min(by1,rp.y+0.5); bx2=Math.max(bx2,rp.x+3.5); by2=Math.max(by2,rp.y+3.5) } }
   { const h=S.hatch; if(h&&h.set){ bx1=Math.min(bx1,h.x); by1=Math.min(by1,h.y); bx2=Math.max(bx2,h.x+3); by2=Math.max(by2,h.y+3) } }
+  try{ [['addRet','r'],['addSup','s']].forEach(([key,kind])=>addList(S.fix,key).forEach(a=>{ const c=addSpotC(a,kind); if(c){ bx1=Math.min(bx1,c[0]-1); by1=Math.min(by1,c[1]-1); bx2=Math.max(bx2,c[0]+1); by2=Math.max(by2,c[1]+1) } })) }catch(e){}   /* v2.97: the added runs' spots */
   bx1=Math.min(bx1,S.unitPos.x)-1.5; by1=Math.min(by1,S.unitPos.y)-1.5; bx2=Math.max(bx2,S.unitPos.x+6)+1.5; by2=Math.max(by2,S.unitPos.y+6)+1.5;
   if(N&&N.edges) N.edges.forEach(e=>{ (e.segs||[]).forEach(g=>{ const ps=g.t==='L'?[g.p0,g.p1]:[[g.c[0]-g.r,g.c[1]-g.r],[g.c[0]+g.r,g.c[1]+g.r]]; ps.forEach(q=>{ bx1=Math.min(bx1,q[0]-1); by1=Math.min(by1,q[1]-1); bx2=Math.max(bx2,q[0]+1); by2=Math.max(by2,q[1]+1) }) }) });
   const side=o.side!==false, strip=o.strip!==false; const SBW=side?236:0, ML=30, MT=46, MR=30, MB=strip?130:30, PW=(bx2-bx1)*SC, PH=Math.max((by2-by1)*SC,330), W=PW+ML+MR+SBW, H=PH+MT+MB;
@@ -10958,17 +11057,17 @@ function rbrInstallPlanSvg(SC,o){
     const cands=[[0,0],[0,-16],[0,16],[0,-32],[0,32]]; let pos=null; for(const c_ of cands){ const b={x1:c[0]+c_[0]-w/2,x2:c[0]+c_[0]+w/2,y1:c[1]+c_[1]-fs,y2:c[1]+c_[1]+4}; if(!hit(b,placed)){ pos=[c[0]+c_[0],c[1]+c_[1]]; placed.push(Object.assign(b,{k:'room'})); break } }
     if(!pos) pos=c; s+=`<text x="${f1(pos[0])}" y="${f1(pos[1]+fs*0.36)}" text-anchor="middle" font-size="${fs}" font-weight="800" fill="${IP_NAME}" letter-spacing=".04em">${t}</text>` });
   /* 2 · the unit and the plenum, dark. Read off the same keep-out rectangles the runs route round */
-  let EQB=null, plenRect=null, unitRect=null; const eqLbl=[];
+  let EQB=null, plenRect=null, unitRect=null, retRect=null; const eqLbl=[];
   if(N){ const PKQ=(N.pl&&(N.pl.kind==='drop'||N.pl.kind==='pk'))?rbrEqParts():null;
     if(PKQ){ const U0=N.U; let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
       PKQ.parts.forEach(R=>{ const a=p(U0[0]+R.x0,U0[1]+R.y0), b=p(U0[0]+R.x1,U0[1]+R.y1); const x=Math.min(a[0],b[0]), y=Math.min(a[1],b[1]), w=Math.abs(b[0]-a[0]), h=Math.abs(b[1]-a[1]); x0=Math.min(x0,x); y0=Math.min(y0,y); x1=Math.max(x1,x+w); y1=Math.max(y1,y+h);
         if(R.k==='roof') s+=`<rect class="pkroof" x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="2" fill="rgba(0,57,99,.06)" stroke="${IP_DARK}" stroke-width="1.3" stroke-dasharray="5 3"/>`;
-        else { const ret=R.k==='rpl'; s+=`<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="2" fill="${ret?IP_RET:IP_DARK}" stroke="#fff" stroke-width="1"/>`; placed.push({x1:x,x2:x+w,y1:y,y2:y+h,k:'eq'}); eqLbl.push([x+w/2,y+h/2,ret?'RETURN':'PLENUM',w,h]); if(!ret) plenRect={x,y,w,h} } });
+        else { const ret=R.k==='rpl'; s+=`<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="2" fill="${ret?IP_RET:IP_DARK}" stroke="#fff" stroke-width="1"/>`; placed.push({x1:x,x2:x+w,y1:y,y2:y+h,k:'eq'}); eqLbl.push([x+w/2,y+h/2,ret?'RETURN':'PLENUM',w,h]); if(!ret) plenRect={x,y,w,h}; else retRect={x,y,w,h} } });
       EQB={x0,y0,x1,y1}; eqLbl.push([(x0+x1)/2,y0-10,N.pl.kind==='pk'?'UNIT ON THE ROOF · NEW CURB':'UNIT ON THE ROOF · DROPS',0,0,'roof']) }
     else if(N.pl&&N.pl.kind!=='drop'){ const EQ=dnObs(N,{pl:N.pl,U:N.U,r:N.r||0}).filter(R=>!R.soft); if(EQ.length){ let x0=1e9,y0=1e9,x1=-1e9,y1=-1e9;
       EQ.forEach(R=>{ const a=p(R.x0,R.y0), b=p(R.x1,R.y1); const x=Math.min(a[0],b[0]), y=Math.min(a[1],b[1]), w=Math.abs(b[0]-a[0]), h=Math.abs(b[1]-a[1]); x0=Math.min(x0,x); y0=Math.min(y0,y); x1=Math.max(x1,x+w); y1=Math.max(y1,y+h);
         const ret=R.k==='ret'; s+=`<rect x="${f1(x)}" y="${f1(y)}" width="${f1(w)}" height="${f1(h)}" rx="2" fill="${ret?IP_RET:IP_DARK}" stroke="#fff" stroke-width="1"/>`; placed.push({x1:x,x2:x+w,y1:y,y2:y+h,k:'eq'});
-        if(R.k==='unit'){ unitRect={x,y,w,h}; eqLbl.push([x+w/2,y+h/2,'UNIT',w,h]) } else if(R.k==='plen'){ plenRect={x,y,w,h}; eqLbl.push([x+w/2,y+h/2,'PLENUM',w,h]) } else if(ret) eqLbl.push([x+w/2,y+h/2,'RETURN',w,h]) });
+        if(R.k==='unit'){ unitRect={x,y,w,h}; eqLbl.push([x+w/2,y+h/2,'UNIT',w,h]) } else if(R.k==='plen'){ plenRect={x,y,w,h}; eqLbl.push([x+w/2,y+h/2,'PLENUM',w,h]) } else if(ret){ retRect={x,y,w,h}; eqLbl.push([x+w/2,y+h/2,'RETURN',w,h]) } });
       EQB={x0,y0,x1,y1} } }
     if(N.pl&&N.pl.kind==='h'&&!plenRect){ const pw=(N.pl.W||20)/12, ph=(N.pl.L||24)/12; const a=p(N.U[0]-pw/2,N.U[1]-ph/2); s+=`<rect x="${f1(a[0])}" y="${f1(a[1])}" width="${f1(pw*SC)}" height="${f1(ph*SC)}" fill="${IP_DARK}"/>`; plenRect={x:a[0],y:a[1],w:pw*SC,h:ph*SC}; eqLbl.push([a[0]+pw*SC/2,a[1]+ph*SC/2,'PLENUM',pw*SC,ph*SC]) } }
   if(!EQB){ const u=p(S.unitPos.x,S.unitPos.y); s+=`<rect x="${f1(u[0])}" y="${f1(u[1])}" width="${6*SC}" height="${6*SC}" rx="4" fill="${IP_DARK}"/>`; placed.push({x1:u[0],x2:u[0]+6*SC,y1:u[1],y2:u[1]+6*SC,k:'eq'}); eqLbl.push([u[0]+3*SC,u[1]+3*SC,'UNIT · PLENUM',6*SC,6*SC]); EQB={x0:u[0],y0:u[1],x1:u[0]+6*SC,y1:u[1]+6*SC} }
@@ -10988,12 +11087,26 @@ function rbrInstallPlanSvg(SC,o){
       B.forEach(g=>{ s+=`<rect x="${f1(gx)}" y="${f1(c[1]-g.h*SC/2)}" width="${f1(g.w*SC)}" height="${f1(g.h*SC)}" rx="1.5" fill="${IP_RET}" stroke="#fff" stroke-width="1"/>`; gx+=(g.w+gap)*SC });
       placed.push({x1:c[0]-Wg*SC/2-2,x2:c[0]+Wg*SC/2+2,y1:c[1]-Hg*SC/2-2,y2:c[1]+Hg*SC/2+2,k:'ret'});
       const gh=Hg*SC/2; pill(c[0],c[1],['RETURN GRILLE '+esc(rbrGrilleSize(B))+(rp.set?'':' · spot assumed')],{s:IP_MINFS,c:[[0,gh+14],[0,-gh-14],[Wg*SC/2+70,0],[-Wg*SC/2-70,0],[0,gh+32],[0,-gh-32]],stroke:IP_RET,f:IP_RET}) }
-    // v2.95: the added returns, each at the spot the SM dragged it to on the Rooms grid (a.pos), its grille at its size, the room on the pill
-    let adds=[]; try{ adds=addList(S.fix,'addRet') }catch(e){ adds=[] }
-    adds.forEach((a,i)=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); const pos=(a.pos&&typeof a.pos.x==='number')?a.pos:null; if(!pos) return; const m=0.3; const c=p(pos.x+m+g[0]/24,pos.y+m+g[1]/24);
-      s+=`<rect x="${f1(c[0]-g[0]*SC/2)}" y="${f1(c[1]-g[1]*SC/2)}" width="${f1(g[0]*SC)}" height="${f1(g[1]*SC)}" rx="1.5" fill="${IP_RET}" stroke="#fff" stroke-width="1" stroke-dasharray="4 3"/>`;
-      placed.push({x1:c[0]-g[0]*SC/2-2,x2:c[0]+g[0]*SC/2+2,y1:c[1]-g[1]*SC/2-2,y2:c[1]+g[1]*SC/2+2,k:'ret'});
-      const gh=g[1]*SC/2; pill(c[0],c[1],['ADDED RETURN '+g[0]+'×'+g[1]+' · Ø'+ipIn(a.d)+(a.room?' · '+esc(a.room).toUpperCase():'')],{s:IP_MINFS,c:[[0,gh+14],[0,-gh-14],[g[0]*SC/2+70,0],[-g[0]*SC/2-70,0]],stroke:IP_RET,f:IP_RET}) }) }
+  }
+  /* the run back to the unit: off the side of the return (or the supply plenum) nearest the spot, square, and never across the equipment — the
+     shortest of the L's and the lanes round it that clears it */
+  let RP0=null; try{ const RP=N?dnRetPath({pl:N.pl,U:N.U,r:N.r||0}):null; if(RP&&RP.pts&&RP.pts.length) RP0=P2(RP.pts[0]) }catch(e){}   /* where the return that is there leaves the unit — an added return tees in there */
+  const ipAddPath=(R,c)=>{ const S0=[Math.max(R.x,Math.min(R.x+R.w,c[0])),Math.max(R.y,Math.min(R.y+R.h,c[1]))]; const bx={x1:EQB.x0+1,x2:EQB.x1-1,y1:EQB.y0+1,y2:EQB.y1-1};
+    const segHit=(a,b)=>{ for(let k=1;k<=24;k++){ const t=k/24, x=a[0]+(b[0]-a[0])*t, y=a[1]+(b[1]-a[1])*t; if(x>bx.x1&&x<bx.x2&&y>bx.y1&&y<bx.y2) return true } return false };
+    const ok=P=>P.every((q,i)=>!i||!segHit(P[i-1],q)), len=P=>P.reduce((s_,q,i)=>s_+(i?Math.hypot(q[0]-P[i-1][0],q[1]-P[i-1][1]):0),0); const pad=14;
+    const C=[[S0,[c[0],S0[1]],c],[S0,[S0[0],c[1]],c]]; [EQB.y0-pad,EQB.y1+pad].forEach(ly=>C.push([S0,[S0[0],ly],[c[0],ly],c])); [EQB.x0-pad,EQB.x1+pad].forEach(lx=>C.push([S0,[lx,S0[1]],[lx,c[1]],c]));
+    const tidy=P=>P.filter((q,i)=>!i||Math.hypot(q[0]-P[i-1][0],q[1]-P[i-1][1])>0.5); const good=C.map(tidy).filter(ok).sort((a,b)=>len(a)-len(b)); return good[0]||tidy(C[0]) };
+  /* 3b · v2.97 — THE ADDED RUNS, each where the SM put it (a.pos): its grille or register at its TRUE size (inches ÷ 12 × the sheet's scale — v2.95
+     drew a 14×14 grille fourteen FEET wide), a dashed run back to the unit, and the pill says what to do and where: ADD A RETURN TO MASTER BEDROOM */
+  { [['addRet','r'],['addSup','s']].forEach(([key,kind])=>{ let adds=[]; try{ adds=addList(S.fix,key) }catch(e){ adds=[] }
+      adds.forEach(a=>{ const sp=addSpotC(a,kind); if(!sp) return; const f=addFaceIn(a,kind), ret=kind==='r'; const c=p(sp[0],sp[1]), fw=f[0]/12*SC, fh=f[1]/12*SC; const col=ret?IP_RET:ipCol(a.d);
+        if(EQB){ const R=(ret?(retRect||(RP0?{x:RP0[0]-2,y:RP0[1]-2,w:4,h:4}:unitRect)):plenRect)||{x:EQB.x0,y:EQB.y0,w:EQB.x1-EQB.x0,h:EQB.y1-EQB.y0}; const pts=ipAddPath(R,c);
+          const d='M'+pts.map(q=>f1(q[0])+' '+f1(q[1])).join(' L'); s+=`<path d="${d}" fill="none" stroke="#fff" stroke-width="${f1(wd(a.d)+2.5)}" stroke-linecap="round" stroke-linejoin="round"/><path class="ipadd" data-kind="${kind}" d="${d}" fill="none" stroke="${col}" stroke-width="${f1(wd(a.d))}" stroke-linejoin="round" stroke-dasharray="12 7"/>`;
+          for(let i=1;i<pts.length;i++){ const A=pts[i-1], B=pts[i]; const n=Math.max(2,Math.ceil(Math.hypot(B[0]-A[0],B[1]-A[1])/14)); for(let k=0;k<=n;k++){ const q=[A[0]+(B[0]-A[0])*k/n,A[1]+(B[1]-A[1])*k/n]; ductBoxes.push({x1:q[0]-wd(a.d)/2,x2:q[0]+wd(a.d)/2,y1:q[1]-wd(a.d)/2,y2:q[1]+wd(a.d)/2,e:'add'+kind}) } } }
+        s+=`<rect class="ipaddface" data-kind="${kind}" x="${f1(c[0]-fw/2)}" y="${f1(c[1]-fh/2)}" width="${f1(fw)}" height="${f1(fh)}" rx="1.5" fill="${ret?IP_RET:'#fff'}" stroke="${ret?'#fff':col}" stroke-width="${ret?1:2}"/>`;
+        placed.push({x1:c[0]-fw/2-2,x2:c[0]+fw/2+2,y1:c[1]-fh/2-2,y2:c[1]+fh/2+2,k:'ret'});
+        const room=a.room?esc(String(a.room).toUpperCase()):''; const l1=(ret?'ADD A RETURN':'ADD A SUPPLY')+(room?' TO '+room:''), l2=ret?`${f[0]}×${f[1]} grille · Ø${ipIn(a.d)} flex`:`${f[0]}×${f[1]} register · Ø${ipIn(a.d)} flex`; const gh=fh/2;
+        pill(c[0],c[1],[l1,l2],{s:11,s2:IP_MINFS,c:[[0,gh+20],[0,-gh-20],[fw/2+90,0],[-fw/2-90,0],[0,gh+38],[0,-gh-38]],stroke:col,f:col,own:'add'+kind}) }) }) }
   /* 4 · the ducts: every piece in the colour of its size, fat by its size. Kept duct grey and dashed (their boxes were registered above) */
   edges.forEach(e=>{ const col=e.keep?IP_KEEP:ipCol(e.d); s+=`<path d="${pathD(e.segs)}" fill="none" stroke="#fff" stroke-width="${f1(wd(e.d)+2.5)}" stroke-linecap="round" stroke-linejoin="round"/>` });
   edges.forEach(e=>{ const col=e.keep?IP_KEEP:ipCol(e.d); s+=`<path d="${pathD(e.segs)}" fill="none" stroke="${col}" stroke-width="${f1(wd(e.d))}" stroke-linecap="round" stroke-linejoin="round"${e.keep?' stroke-dasharray="9 6"':''}/>`;
@@ -11434,6 +11547,7 @@ function rbrVentChips(r){ // the registers the room has today: one chip per supp
   const out=[]; const n=r.nr?0:(r.vn||0); const sz=(r.vsz&&r.vsz.length)?r.vsz:null;
   for(let j=0;j<n;j++){ const s=sz&&sz[j]?sz[j].w+'×'+sz[j].h+(sz[j].asm?' ?':''):(r.vs?String(r.vs).replace(/\s*[x*]\s*/i,'×'):''); out.push(`<span class="rchip sup"><i></i>Supply${s?' '+s:''}</span>`) }
   try{ const rets=(S.plan&&S.plan.rets)||[]; if(r.poly) rets.forEach(q=>{ if(fcPtIn(r.poly,q.x,q.y)) out.push(`<span class="rchip ret"><i></i>Return${q.nom?' '+q.nom[0]+'×'+q.nom[1]:''}</span>`) }) }catch(e){}
+  try{ [['addSup','s','Supply'],['addRet','r','Return']].forEach(([key,kind,nm])=>addList(S.fix,key).forEach(a=>{ if(addRoomOf(a)!==r) return; const f=addFaceIn(a,kind); out.push(`<span class="rchip add ${kind==='r'?'ret':'sup'}"><i></i>+ ${nm} ${f[0]}×${f[1]} · new</span>`) })) }catch(e){}   /* v2.97: the runs the plan adds, in the room they go in */
   if(!out.length&&!r.nr&&r.needMore) out.push('<span class="rchip warn"><i></i>needs more air</span>');
   if(r.nr) out.push(`<span class="rchip none"><i></i>${r.ns?'other system':'no register'}</span>`);
   return out.length?`<span class="rchips">${out.join('')}</span>`:'' }
@@ -11515,16 +11629,19 @@ function rbrGrid(){
     t.appendChild(h); rbrResize(h,t,r,px); });
   rbrUnitTile(G,px); rbrRetTile(G,px); rbrAddRetTiles(G,px); rbrHatchTile(G,px); rbrVentDots(G,px);
 }
-// v2.95 — ADDED RETURNS ON THE GRID (Stephen 2026-10-31: "place new returns in the room they are needed"). Each + Return & grille off the Plan is a
-// tile at its grille size: it starts beside the main return and the SM drags it into the room it goes in — the room under it is written on the run
-// (the Plan chip, the work order, the installer plan read it), and the spot is kept (a.pos, grid feet).
-function rbrAddRetPos(a,i){ if(a.pos&&typeof a.pos.x==='number') return a.pos; const R=S.retPos||{x:4,y:4}; a.pos={x:R.x+5+i*3,y:R.y}; return a.pos }
-function rbrAddRetTiles(G,px){ let adds=[]; try{ adds=addList(S.fix,'addRet') }catch(e){ adds=[] } if(!adds.length) return;
-  adds.forEach((a,i)=>{ const g=(Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); const pos=rbrAddRetPos(a,i); const m=0.3, w=g[0]/12+2*m, d=g[1]/12+2*m;
-    const t=mkTile(G,px,'ret sc radd',pos.x,pos.y,w,d,'RETURN +',a.room?rbrEsc(a.room):'drag it to its room');
-    const e=document.createElement('div'); e.className='gbx add'; e.style.left=(m*px).toFixed(1)+'px'; e.style.top=(m*px).toFixed(1)+'px'; e.style.width=(g[0]/12*px).toFixed(1)+'px'; e.style.height=(g[1]/12*px).toFixed(1)+'px'; t.appendChild(e);
-    t.title=`Added return — Ø${fmt(a.d)}″ with a ${g[0]}×${g[1]} filter grille${a.room?' in '+a.room:''} · drag it into the room it goes in`;
-    rbrDrag(t,pos,px,0,()=>{ const B=rbrRoomAt(pos.x+w/2,pos.y+d/2); if(B) a.room=B.n; else delete a.room; t.querySelector('.tc').textContent=a.room||'drag it to its room'; try{ renderPlanStripOnly() }catch(e){} if(typeof packStoryRefresh==='function') packStoryRefresh() },{ox:0,oy:0,w,d}) }) }
+// v2.95 — ADDED RETURNS ON THE GRID (Stephen 2026-10-31: "place new returns in the room they are needed"); v2.97 — and the added supply runs
+// (Stephen 2026-11-01: "allow me, to customize where my new return or supply go"). Each + Return & grille and + Supply off the Plan is a tile at its
+// face's true size — the grille, or the register — sitting in the room it was put in (addPlaceAll): drag it into another room and the room under
+// it is written on the run (the room lights up on the way); the Plan chip, the 3D, the installer plan, the work order and the ST text read it.
+function rbrAddRetTiles(G,px){ try{ addPlaceAll() }catch(e){} const top=fcTop();
+  [['addRet','r'],['addSup','s']].forEach(([key,kind])=>{ let adds=[]; try{ adds=addList(S.fix,key) }catch(e){ adds=[] }
+    adds.forEach(a=>{ if(!a.pos||typeof a.pos.x!=='number'||(a.fl!=null&&a.fl!==top)) return; const f=addFaceIn(a,kind); const pos=a.pos; const m=ADD_M, T=addTileFt(a,kind), w=T.w, d=T.d; const sup=kind==='s';
+      const t=mkTile(G,px,sup?'sc sadd':'ret sc radd',pos.x,pos.y,w,d,sup?'SUPPLY +':'RETURN +',a.room?rbrEsc(a.room):'drag it to its room');
+      const e=document.createElement('div'); e.className='gbx add'; e.style.left=(m*px).toFixed(1)+'px'; e.style.top=(m*px).toFixed(1)+'px'; e.style.width=(f[0]/12*px).toFixed(1)+'px'; e.style.height=(f[1]/12*px).toFixed(1)+'px'; t.appendChild(e);
+      t.title=sup?`Added supply run — Ø${fmt(a.d)}″ to a ${f[0]}×${f[1]} register${a.room?' in '+a.room:''} · drag it into the room it goes in`:`Added return — Ø${fmt(a.d)}″ with a ${f[0]}×${f[1]} filter grille${a.room?' in '+a.room:''} · drag it into the room it goes in`;
+      t.dataset.add=kind;
+      const at=()=>rbrRoomAt(pos.x+w/2,pos.y+d/2);
+      rbrDrag(t,pos,px,0,()=>{ rbrDropHint(px,null); const B=at(); if(B) a.room=B.n; else delete a.room; a.fl=top; t.querySelector('.tc').textContent=a.room||'drag it to its room'; try{ renderPlanStripOnly() }catch(e){} if(typeof packStoryRefresh==='function') packStoryRefresh(); try{ if(B) flash((sup?'Supply run':'Return')+' moved to '+B.n) }catch(e){} },{ox:0,oy:0,w,d,mv:()=>rbrDropHint(px,at())}) }) }) }
 // THE VENTS ON THE GRID. Each register is a small square where the design has it (assumed: 2 ft off the outside wall, by the glass). Drag one to
 // where it really is — it stays there (r.vp, feet from the room's corner) and the layout routes to it; double-tap puts it back to assumed.
 function rbrVentDots(G,px){ const top=fcTop();
@@ -11629,7 +11746,7 @@ function rbrDrag(el,obj,px,isUnit,onUp,geo){ const fw=isUnit===true?6:(isUnit||0
     const FD=fcField();
     const mv=ev=>{ const x=Math.round((ev.clientX-gx.left-ox)/px-gx0), y=Math.round((ev.clientY-gx.top-oy)/px-gy0);
       obj.x=Math.max(Math.ceil(-gx0),Math.min(Math.floor(FD.w-w-gx0),x)); obj.y=Math.max(Math.ceil(-gy0),Math.min(Math.floor(FD.d-d-gy0),y));
-      el.style.left=((obj.x+gx0)*px)+'px'; el.style.top=((obj.y+gy0)*px)+'px' };
+      el.style.left=((obj.x+gx0)*px)+'px'; el.style.top=((obj.y+gy0)*px)+'px'; if(geo&&geo.mv) geo.mv() };   /* v2.97: an added run's tile lights the room it is over */
     const up=()=>{ el.classList.remove('drag');
       el.removeEventListener('pointermove',mv); el.removeEventListener('pointerup',up); el.removeEventListener('pointercancel',up);
       // §6 — the drop and the rooms ARE the run lengths, so moving one re-measures them
