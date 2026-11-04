@@ -943,5 +943,118 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-10-31"
+ },
+ "adj|2026-11-02|3365|Warranty Units HVAC": {
+  "note": "EOM inventory count adjustment",
+  "ts": 1793718217294,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3407|Vegas Plumbing Warehouse": {
+  "note": "EOM inventory count adjustment",
+  "ts": 1793718216797,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3408|Vegas HVAC Warehouse": {
+  "note": "EOM inventory count adjustment",
+  "ts": 1793718215907,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3409|Plumbing Equipment": {
+  "note": "EOM inventory count adjustment",
+  "ts": 1793718215232,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3410|Vegas Safety Stock": {
+  "note": "EOM inventory count adjustment",
+  "ts": 1793718210885
+ },
+ "adj|2026-11-02|3308|LAS-114003-SVC-H_100 Sam Yockey": {
+  "note": "truck inventory count",
+  "ts": 1793718285176,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3413|LAS-543096-SVC-H_134 Joe Murillo": {
+  "note": "truck inventory count",
+  "ts": 1793718386489,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3353|LAS-509668-SVC-H_178 Alberto Martinez": {
+  "note": "truck inventory count",
+  "ts": 1793718402528,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3361|LAS-543112-SVC-P_405 RET": {
+  "note": "Template removal on van being retired, product was previously returned but not tracked to vehicle",
+  "ts": 1793718422579,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3357|LAS-A94365-INS-P_545 Jonathan Diaz": {
+  "note": "truck stock inventory count",
+  "ts": 1793718448245,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3398|LAS-131541-SVC-P_428 RET": {
+  "note": "truck being retired return was never tracked but product was removed",
+  "ts": 1793718473001,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3355|LAS-116698-INS-P_550 Roman Castellanos": {
+  "note": "truck stock inventory count",
+  "ts": 1793718493233,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3359|LAS-114072-INS-P_552 Jose Herrera Alvarado": {
+  "note": "truck stock inventory count",
+  "ts": 1793718518383,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3358|LAS-543095-SVC-H_133 RET": {
+  "note": "after truck return, adjustment made for truck being retired all inventory removed",
+  "ts": 1793718535543,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3298|LAS-177295-SVC-H_112 Gabe Santos": {
+  "note": "truck stock inventory count",
+  "ts": 1793718563494
+ },
+ "adj|2026-11-02|3364|LAS-502199-INS-P_502 N/A": {
+  "note": "Vehicle was retired in July 2026 return was untracked but template never removed, removing template",
+  "ts": 1793718583655,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "fleet|anom|2026-11-02|543096": {
+  "note": "truck stock inventory count adjustment and subsequent replenishment",
+  "ts": 1793718769607,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
  }
 }
