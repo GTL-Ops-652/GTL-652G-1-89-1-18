@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-11-04 v1.2 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-11-04 v1.3 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -3246,6 +3246,8 @@ function scanSysOne(z,G){ const SY=(G&&Array.isArray(G.systems))?G.systems:[]; i
 function seg(id,key,cb){ $$('#'+id+' button').forEach(b=>{ b.classList.toggle('on',S[key]===b.dataset.v); b.onclick=()=>{S[key]=b.dataset.v;save();seg(id,key,cb);cb&&cb()} }) }
 const isPkg=()=>S.sys&&S.sys.startsWith('pkg');
 const isHoriz=()=>S.orient==='horiz';
+/* an Easy Load job (no scan): the ducts that are there stay — no new duct system, no room-by-room tab; the design adds runs, enlarges the return and fixes faces */
+function isEasy(){ return !!(S&&S.plan&&S.plan.easy) }
 function applySys(){
   $('#splitLoc').classList.toggle('hidden',!!isPkg()); $('#pkgSetup').classList.toggle('hidden',!isPkg());
   $('#oldSplit').classList.toggle('hidden',!!isPkg()); $('#oldPkg').classList.toggle('hidden',!isPkg());
@@ -3978,7 +3980,7 @@ function regOld(){ return REG_FACE[S.regOld]?S.regOld:'stamped' }               
 // when the register faces are the tight spot (it is the cheapest one; it gets more flow, especially on the higher tonnage systems) — or the SM's own
 // toggle.
 // A whole new duct system is new registers anyway, and bar type is what Goettl installs, so that design reads bar type.
-function newDuctSystem(){ return !!((S.rbrNew&&S.rooms&&S.rooms.length)||(S.sys&&!S.sys.startsWith('pkg')&&S.scope&&S.scope.ducts)) } // room by room's New duct system, or the split crew-scope tick — new runs end in new faces
+function newDuctSystem(){ if(isEasy()) return false; return !!((S.rbrNew&&S.rooms&&S.rooms.length)||(S.sys&&!S.sys.startsWith('pkg')&&S.scope&&S.scope.ducts)) } // room by room's New duct system, or the split crew-scope tick — new runs end in new faces
 function regFor(fix){ if(fix&&fix.__noScope) return regOld(); const k=fix&&fix.reg; if(REG_FACE[k]) return k;
   if(S.rbrNew&&S.rooms&&S.rooms.length) return REG_FACE[S.rbrFace]?S.rbrFace:regOld();   // the room design keeps the faces the rooms have — a room flips on its own
   if(newDuctSystem()) return 'bar'; return regOld() }
@@ -6502,7 +6504,8 @@ function addRunFace(d){ const L=[[8,7],[9,8],[10,9],[12,11],[14,13]]; return (L.
 const ADD_M=0.3;   // the dashed handle round the face on the grid, ft
 function addFaceIn(a,kind){ if(kind==='r') return (Array.isArray(a.g)&&a.g[0]>0)?a.g:addRetGrille(a.d); const s=addRunFace(a.d); return [s,s] }   // the grille / register face, inches
 function addTileFt(a,kind){ const f=addFaceIn(a,kind); return {w:f[0]/12+2*ADD_M,d:f[1]/12+2*ADD_M} }
-function addRoomsOn(){ const top=fcTop(); return (S.rooms||[]).filter(r=>r.fl===top&&!r.nr&&!r.oz) }
+function addRoomsOn(){ if(isEasy()) return [];   /* an Easy Load's block box is the load's footprint, not a room — the SM names the room an added run goes in */
+  const top=fcTop(); return (S.rooms||[]).filter(r=>r.fl===top&&!r.nr&&!r.oz) }
 function addRoomOf(a){ const n=a&&a.room?String(a.room).trim().toLowerCase():''; return n?addRoomsOn().find(r=>String(r.n).trim().toLowerCase()===n)||null:null }
 function addSpotC(a,kind){ if(!a||!a.pos||typeof a.pos.x!=='number'||!isFinite(a.pos.x)||!isFinite(a.pos.y)) return null; if(a.fl!=null&&a.fl!==fcTop()) return null; const f=addFaceIn(a,kind); return [a.pos.x+ADD_M+f[0]/24,a.pos.y+ADD_M+f[1]/24] }   // the face's centre, plan feet
 function addSpotL(a,kind){ if(typeof fcRetC!=='function'||!fcRetC()) return null; const c=addSpotC(a,kind); if(!c) return null; const rr=unitRot(); return rr?uUnrotP([S.unitPos.x+3,S.unitPos.y+3],c,rr):c }   // in the unit's own frame (the 3D's), only where there is a plan or a grid
@@ -6987,7 +6990,8 @@ function renderPlanActions(o,target,mode){ const el=$(target||'#planActions'); i
   try{ addPlaceAll() }catch(e){}   /* v2.97: an added run from an earlier version gets its room and spot */
   const addOkS=addRunsOk(S.fix,'s'), addOkR=addRunsOk(S.fix,'r'); const addS=addList(S.fix,'addSup'), addR=addList(S.fix,'addRet');
   let dt='';
-  if(rooms) dt+=T(' data-pact="rbrnew"','i-nds','New duct system',S.rbrNew?rbrVentCount()+' runs':'',S.rbrNew?'on':'',false,'Replace the supply ducts, room by room','#0f8b8b');
+  if(isEasy()){ if(S.rbrNew) S.rbrNew=false; if(S.scope&&S.scope.ducts) S.scope.ducts=false }   /* an Easy Load keeps the ducts that are there: no New duct system tile */
+  else if(rooms) dt+=T(' data-pact="rbrnew"','i-nds','New duct system',S.rbrNew?rbrVentCount()+' runs':'',S.rbrNew?'on':'',false,'Replace the supply ducts, room by room','#0f8b8b');
   else if(!pkgAny){ const on=!!(S.scope&&S.scope.ducts); dt+=T(' data-scope="ducts"','i-nds','New duct system',on?'new runs':'',on?'on':'',false,'Replace the supply duct system — plenum, trunks and take-offs','#0f8b8b') }
   else if(P) dt+=T(' data-pact="rooms"','i-nds','New duct system','rooms first','',false,'A package\'s new duct system is laid out room by room — this opens the Rooms tab','#0f8b8b');   // a package needs the rooms to lay one out
   { const on=!!(S.fix.ret||S.fix.grille); const can=on||retCanGrow(o); const sz=on?[S.fix.grille&&fixSpec(S.fix.grille),S.fix.ret&&fixSpec(S.fix.ret)].filter(Boolean).map(s=>s.size).join(' · '):(can?'too small':'passes');
@@ -8646,7 +8650,7 @@ function crDuctHtml(o,M){ if(!(S.rbrNew&&S.rooms&&S.rooms.length&&RM&&RM.net)) r
 function crSystemHtml(o,M,k,n,F){ const name=mzOn()?mzName(k):'The system'; const R=crLoadFull(); const col=WO_C[(k||0)%WO_C.length];
   const pg=(no,t,body,cls)=>`<section class="crpg ${cls||''}"><div class="crph"><b>${crEsc(name)}${n>1?' · system '+(k+1)+' of '+n:''}</b><span>${no} · ${t}</span><span>${crEsc(F.addr)}</span></div>${body}</section>`;
   const planSub=S.plan?`${crN(S.plan.sf)} sq ft served · ${(S.rooms||[]).filter(r=>!r.oz).length} rooms`:(F.sf?crN(F.sf)+' sq ft':'');
-  const plan=crPlanSvg({title:'Area served by this system',sub:planSub});
+  const plan=isEasy()?'':crPlanSvg({title:'Area served by this system',sub:planSub});   /* an Easy Load has no floor plan — its box is the load's assumed footprint */
   const shot=(function(){ try{ return ensureCleanShot(o) }catch(e){ return null } })();
   const D=crDuctHtml(o,M);
   const parts=[];
@@ -11529,7 +11533,7 @@ function rbrRender(){
 function rbrTile(l,v,s,cls){ return `<div class="dim ${cls||''}"><div class="lbl">${l}</div><div class="val">${v}</div>${s?`<span class="mth">${s}</span>`:''}</div>` }   /* the number only — the working stays in the page (.mth), never on show */
 // the switch at the top of the tool and the Rooms tab follow S.rbrOpen
 function roomsTabSync(){ const on=!!S.rbrOpen;   /* the Rooms tab is off the header button, never in the step strip */
-  const b=$('#rbrBtn'); if(b){ b.setAttribute('aria-checked',on?'true':'false'); b.setAttribute('aria-expanded',on?'true':'false'); let c=0; try{ c=cur }catch(e){} b.classList.toggle('cur',c===10) } }
+  const b=$('#rbrBtn'); if(b){ b.setAttribute('aria-checked',on?'true':'false'); b.setAttribute('aria-expanded',on?'true':'false'); let c=0; try{ c=cur }catch(e){} b.classList.toggle('cur',c===10); b.classList.toggle('hidden',isEasy()) } }
 // the two folded ways in carry their state on the fold itself, so a closed fold still says what it holds
 function fcFoldSums(){ const P=S.prop;
   const a=$('#fcFoldSum'); if(a){ const fl=P&&Array.isArray(P.floorSqFt)&&P.floorSqFt.length?P.floorSqFt:null; const rec=!!(P&&(P.apn||P.address||P.yearBuilt||P.conditionedSqFt||fl));
@@ -12017,7 +12021,7 @@ function fcPlanApply(P,name){
     outline:P.outline.map(p=>[r2(p[0]),r2(p[1])]),furn:P.furniture.map(f=>({k:f.kind,x:r2(f.c[0]),y:r2(f.c[1])})),
     prevSf:(prev&&Math.abs(prev-P.totalSf)>P.totalSf*0.1)?Math.round(prev):null,at:Date.now(),pad:FC_PLAN_PAD,src:P.src||'dxf',
     north:(P.north&&P.north.deg!=null)?{deg:+(+P.north.deg).toFixed(1),acc:P.north.acc||null}:null,g:G};
-  if(P.easy) S.plan.easy=true;   /* v1.2 — an Easy Load (no scan): the rooms are the app's block boxes, an assumed footprint */
+  if(P.easy){ S.plan.easy=true; S.rbrNew=false; if(S.scope) S.scope.ducts=false }   /* v1.2 — an Easy Load (no scan): the rooms are the app's block boxes, an assumed footprint */
   S.rooms=[]; S.blocks=[]; S.rbrHand=false; const rets=[];
   P.rooms.forEach(r=>{ const bb=window.FCDxf.bbox(r.poly); const wins=P.windows.filter(w=>{ const m=fcWinMid(w); return fcSegNear(r.poly,m[0],m[1],0.6) });
     const sup=(r.regs||[]).filter(q=>q.type==='supply'); (r.regs||[]).filter(q=>q.type==='return').forEach(q=>rets.push(q));
@@ -12578,6 +12582,7 @@ function go(n){
   // the bare tool with "Pick a system type first" in the footer.
   if(n===3) n=5; // panel 3 (Equipment) is gone — its chips live at the top of 2 · Plan
   if(n===2) n=4; // the Space tab is gone — its measurements are on Will it Fit (panel 4)
+  if(n===10&&isEasy()) n=(cur&&cur!==10)?cur:1;   /* an Easy Load has no rooms to grade — the Rooms tab is not offered */
   if(n===10&&cur!==10) ROOMS_FROM=cur;   // the Rooms tab opens off the header; Back returns to the tab it came from
   const rooms = n===10; if(rooms&&!S.rbrOpen){ S.rbrOpen=true; save(); try{ rbrRender() }catch(e){} } // the Rooms tab — landing on it turns the switch on
   const flow = n<=6||n===9; // 6 · Options is panel 9 — part of the flow, never a pack-only tab
