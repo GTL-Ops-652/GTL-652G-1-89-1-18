@@ -13,7 +13,7 @@
 <meta name="apple-mobile-web-app-title" content="Fit Check">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="description" content="Fit Check — replacement equipment fit, airflow and design check for Goettl Las Vegas Service Managers.">
-<!-- DEPLOY: fit-check/index.html · generated 2026-11-04 v1.3 -->
+<!-- DEPLOY: fit-check/index.html · generated 2026-11-04 v1.4 -->
 <style>
 :root{
   --db:#003963;--navy:#000426;--mb:#3678A0;--lb:#77B2D0;--red:#CD1E1F;--gray:#C0B8B6;--white:#fff;
@@ -4488,18 +4488,28 @@ function mdBudget(md){ if(!md) return null; const d=md.dpd, rated=spGoal(); cons
   const total=it.reduce((s,x)=>s+x.dp,0);
   return {items:it,total,esp:md.over?md.espP:md.espD,aim:spGoal(),cap:md.unitMax?md.unitMax.v:spLimit(),over:!!md.over,stepped:!!md.stepped,Q:md.over?md.Qp:md.Qd,rated,bad:it.filter(x=>x.cls==='bad').length,wetAdd:md.wet?md.wet.add:0,short:!!md.short} }
 // the size Manual D gives a spot, in the shape S.fix stores (never smaller than what the spot hands off to)
+// The runs the SM added (+ Supply, + Return) stay where they are and are a share of Manual D's area — a fix sizes only what the house's own metal
+// still has to carry, so the added run is never counted twice (Manual D's whole set laid in with the added run on top of it).
+function mdAddArea(M,key){ try{ return addList(M&&M.fix?M.fix:S.fix,key).reduce((t,a)=>t+roundArea(a.d),0) }catch(e){ return 0 } }
+function mdOwnRuns(M){ const md=M&&M.md; if(!md) return null; const addA=mdAddArea(M,'addSup'); if(!(addA>0)) return null; const br=md.sizes.br;
+  const own=Math.max(0,br.nRuns*(br.n||1)*roundArea(br.d)-addA); const tk=M.comps.find(c=>c.slot==='takeoff');
+  const have=Math.max(1,((tk&&tk.spec&&tk.spec.items)||[]).filter(x=>!x.addRun).length);   /* the house's own branches, today's count */
+  const d=MD_ROUND.find(x=>x<=br.d&&have*roundArea(x)>=own*0.97);
+  return d?{k:have,d}:{k:Math.max(have,Math.ceil(own*0.97/roundArea(br.d)-1e-9)),d:br.d} }
+function mdLessAdd(x,addA){ const tot=roundArea(x.d)*(x.n||1)+(x.add||[]).reduce((t,a)=>t+roundArea(a.d),0); const need=Math.max(0,tot-addA);
+  const d=MD_ROUND.find(v=>v<=MD_MAX_D&&roundArea(v)>=need*0.97); return d?{d,n:1}:null }
 function mdFixSpec(slot,M){ const md=M&&M.md; if(!md) return null; const s=md.sizes;
   if(slot==='grille') return s.grille.list?{list:s.grille.list.map(a=>({w:a.w,h:a.h}))}:{w:s.grille.w,h:s.grille.h,n:s.grille.n};
   const rd=x=>{ const f={d:x.d,n:x.n}; if(x.add&&x.add.length) f.add=x.add.map(a=>({d:a.d})); return f }; // past 20" the added run rides along
-  if(slot==='ret') return rd(s.ret); if(slot==='sup') return rd(s.sup);
-  if(slot==='takeoff') return {list:Array.from({length:s.br.nRuns},()=>({d:s.br.d}))};
-  if(slot==='regs') return s.regs?{list:Array.from({length:s.regs.n},()=>({w:s.regs.w,h:s.regs.h}))}:null; // one Goettl square face per run
+  if(slot==='ret'||slot==='sup'){ const x=slot==='ret'?s.ret:s.sup; const addA=mdAddArea(M,slot==='ret'?'addRet':'addSup'); return (addA>0&&mdLessAdd(x,addA))||rd(x) }
+  if(slot==='takeoff'){ const own=mdOwnRuns(M); if(own) return {list:Array.from({length:own.k},()=>({d:own.d}))}; return {list:Array.from({length:s.br.nRuns},()=>({d:s.br.d}))} }
+  if(slot==='regs'){ if(!s.regs) return null; const own=mdOwnRuns(M); return {list:Array.from({length:own?own.k*(s.br.n||1):s.regs.n},()=>({w:s.regs.w,h:s.regs.h}))} } // one Goettl square face per run
   const up={penR:'ret',elbR:'penR',elbS:'penS',penS:'sup'}; const f=M.comps.find(c=>c.slot===up[slot]); const ductArea=slot.endsWith('R')?s.ret.area:s.sup.area; const feedArea=Math.max(f?f.area:0,ductArea); // a hole is sized to the duct the design gives it (never smaller than what is already there)
   const cur=currentFixOrBase(slot)||{};
   if(slot==='penR'||slot==='penS'){ if(cur.w&&!cur.d){ const h=cur.h||16; return {w:Math.ceil(feedArea/h*2)/2,h,n:1} } const one=MD_ROUND.find(d=>d<=MD_MAX_D&&roundArea(d)>=feedArea-0.5); return one?{d:one,n:1}:{w:Math.ceil(feedArea/20*2)/2,h:20,n:1} }
   if(slot==='elbR'||slot==='elbS'){ const h=cur.h||14; return {w:Math.ceil(feedArea/h*2)/2,h,n:1} }
   return null }
-function mdAreaFor(slot,M){ const f=mdFixSpec(slot,M); const sp=f?fixSpec(f):null; return sp?sp.area:null }
+function mdAreaFor(slot,M){ const f=mdFixSpec(slot,M); const sp=f?fixSpec(f):null; if(!sp) return null; const k={ret:'addRet',sup:'addSup',takeoff:'addSup'}[slot]; return sp.area+(k?mdAddArea(M,k):0) }   /* the spot carries its added runs too — the area it should have is the fix plus them */
 // ---- what the customer is told, in words (no inches of static anywhere)
 const mdBand=(pt)=>pt>=cptAim()-2?'aim':(pt>=cptFloor()?'band':'under');
 function mdStatementTxt(M){ const md=M&&M.md; if(!md) return ''; const b=md.bud||{sup:NCI.sup*spGoal(),ret:NCI.ret*spGoal()}; return `Designed to ${espBandTxt(md,'"')} on NCI's static budget (sized at ${md.espD.toFixed(2)}" ESP) on ${md.vs?'setting':'tap'} ${md.tap}: ${CFM(md.Qd)} CFM (${md.perTonD}/ton) — filter ${md.dpd.filter.toFixed(2)} + coil ${md.dpd.coil.toFixed(2)} + supply ducts ${b.sup.toFixed(2)} + return ducts ${b.ret.toFixed(2)}${md.over?` · OVER THE ${(md.eqName||'unit').toUpperCase()}'S ${(md.unitMax?md.unitMax.v:spLimit()).toFixed(2)}" MAX: the system needs ${md.espP.toFixed(2)}", ${CFM(md.Qp)} CFM (${md.perTonP}/ton)`:''}${md.short?` · SHORT of the condenser's ${CFM(md.Qreq)} CFM`:''} — the design point the ducts are sized to and the number quoted${md.stepped&&!md.over?` · stepped up from the ${spGoal().toFixed(2)}" aim`:''}${md.blowerLimit?' · BLOWER IS THE LIMIT: '+md.tapNote:''}` }
