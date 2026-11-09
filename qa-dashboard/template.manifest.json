@@ -1,0 +1,7 @@
+{
+  "design_v": "qa_v1_4",
+  "plaintext_sha256": "bcae4e04b5150b6b4f4e1b727017c230954f1d5c40bdb36fb16ddcf9e578e526",
+  "frozen": "2026-10-15",
+  "data_marker": "/*QC_DATA_START*/ ... /*QC_DATA_END*/ (exactly one pair; baseline jobs:[])",
+  "notes": "QA Dashboard v1.4 \u2014 INVOICE COMPLIANCE (Signed / Paid) added on top of v1.3. Data: optional per-job fields g (1 signed / 0 unsigned) and ps (Paid Status text) joined from the ServiceTitan 'Invoice Compliance' export by Invoice # == Job # (job invoice only; 9-digit adjustment invoices never match), invoices with Subtotal < $130 ignored; QC_DATA.inv = {file,min,rows,matched} or null when the report is missing (soft degrade: Signed/Paid UI hidden + amber note). UI: card 'Invoice' chip row \u2014 Signed % graded vs 100% target (green 100 / amber >=80 / red), Paid % informational; every detail table gets Signed (check/x/'\u2014') and Paid (Paid/Overdue/'\u2014') columns; per-panel exception filter All / Unsigned / Overdue (composes with bucket bar + search). Footer documents the source. v1.3 base unchanged: view toggle Install/Service/All (Install default), Install view Full Systems / Partials / Warranty with two stacked panels, Service view Demand / Maintenance / Callback, All view classic four cards, ServiceTitan click-through, header-name column resolution, sections by Job Class, Install headline = Full Systems only. Published as PLAINTEXT (no login)."
+}

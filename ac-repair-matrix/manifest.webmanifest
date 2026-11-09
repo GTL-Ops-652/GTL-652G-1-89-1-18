@@ -1,0 +1,17 @@
+{
+  "name": "AC Repair Matrix — Goettl",
+  "short_name": "Repair Matrix",
+  "description": "Step-by-step diagnosis and repair for straight-cool split air conditioners, with a PT chart.",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#003963",
+  "theme_color": "#003963",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

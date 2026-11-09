@@ -1,0 +1,1095 @@
+{
+ "adj|2026-08-25|3245|Vegas HVAC Warehouse": {
+  "note": "adjusting for r32 sensors not tracked to jobs correctly to reflect current inventory",
+  "ts": 1787761347587,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-26"
+ },
+ "adj|2026-08-25|3243|LAS-578101-SVC-P_403 Alex Denny": {
+  "note": "adjustment to reflect truck stock",
+  "ts": 1787761417684,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-26"
+ },
+ "adj|2026-08-25|3244|Vegas Safety Stock": {
+  "note": "adding unused pad back in",
+  "ts": 1787761444046,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-26"
+ },
+ "adj|2026-08-25|3246|Open Box Warehouse HVAC": {
+  "note": "wrong equipment purchased, original skus not tracked or serialized so making adjustment",
+  "ts": 1787761475666,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-26"
+ },
+ "adj|2026-08-27|3249|Plumbing Equipment": {
+  "note": "small parts taken out of plumbing cage without being tracked to jobs correctly",
+  "ts": 1787927404288,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-28"
+ },
+ "adj|2026-08-11|3209|Open Box Warehouse HVAC": {
+  "note": "wrong equipment sold/purchased for job",
+  "ts": 1787928242668,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-28"
+ },
+ "adj|2026-08-19|3235|Open Box Warehouse HVAC": {
+  "note": "wrong equipment sold/purchased for job 554988",
+  "ts": 1787928901885,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-08-28"
+ },
+ "adj|2026-08-28|3249|Plumbing Equipment": {
+  "note": "plumbing equipment count Variance is (63.40)",
+  "ts": 1788560395412,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-04"
+ },
+ "adj|2026-08-31|3251|Vegas HVAC Warehouse": {
+  "note": "hvac warehouse count variance",
+  "ts": 1788560486983,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-04"
+ },
+ "adj|2026-08-31|3252|Vegas Safety Stock": {
+  "note": "vegas safety stock warehouse count variance, missing curb",
+  "ts": 1788560534107,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-04"
+ },
+ "adj|2026-09-08|3257|LAS-177293-CFT-H_122 Kalif Silva-Giersdorf": {
+  "note": "adjustment for inventory count performed by kalif on 122, stated warranty jobs wont let him attach materials to jobs correctly",
+  "ts": 1788971107099,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-09"
+ },
+ "adj|2026-09-08|3256|Vegas HVAC Warehouse": {
+  "note": "Adjusting Negative Quantity Before Updating to Physical Count",
+  "ts": 1788971151545,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-09"
+ },
+ "adj|2026-09-09|3258|Vegas HVAC Warehouse": {
+  "note": "adjusting count to reflect physical inventory",
+  "ts": 1789050455992,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-09-09|3262|Default Truck - Kdyn Johnson": {
+  "note": "adjustment to deactivate default truck location",
+  "ts": 1789050489070,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-09-09|3259|Default Truck - Alberto Escobedo Quinones": {
+  "note": "adjustment to deactivate default truck location",
+  "ts": 1789050492788,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-09-09|3263|Default Truck - Mason Staten": {
+  "note": "adjustment to deactivate default truck location",
+  "ts": 1789050496534,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-08-04|3180|LAS-502205-EMT-P_439 N/A": {
+  "note": "removal of truck template",
+  "ts": 1789050736464,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-08-04|3185|Open Box Warehouse HVAC": {
+  "note": "adjustment to reflect physical inventory, units given to tech out of openbox",
+  "ts": 1789050787750,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-08-04|3190|Vegas Safety Stock": {
+  "note": "Eom count adjustment to reflect physical inventory",
+  "ts": 1789050834216,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-09-03|3218|LAS-115351-SVC-P_446 Logan Nester": {
+  "note": "removed ghost items to reflect physical inventory",
+  "ts": 1789050877590,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-10"
+ },
+ "adj|2026-09-10|3262|Default Truck - Kdyn Johnson": {
+  "note": "ghost inventory adjustment",
+  "ts": 1789417778413,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-09-10|3259|Default Truck - Alberto Escobedo Quinones": {
+  "note": "ghost inventory adjustment",
+  "ts": 1789417799247,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-09-10|3263|Default Truck - Mason Staten": {
+  "note": "ghost inventory adjustment",
+  "ts": 1789417815774,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-09-11|3267|Open Box Warehouse HVAC": {
+  "note": "packaged unit replaced on job 555637 high limit switch repaired and put in open box, serial 2607245101",
+  "ts": 1789417844243,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3130|LAS-113926-CFT-H_125 Rodney Hendree": {
+  "note": "removed template to move tech to a different template",
+  "ts": 1789417941811,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3131|LAS-543113-SVC-P_420 Zach Wells": {
+  "note": "Adjustment for truck 420, count 964. Truck has a positive variance of $114.38, mainly due to having an extra shower trim kit and extra flood stop kit",
+  "ts": 1789417972706,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3141|LAS-129193-DRW-P_194 RET": {
+  "note": "retired vehicle removing ghost inventory",
+  "ts": 1789418360077,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3143|LAS-B57663-RET-H_291 RET": {
+  "note": "Retired Vehicle Wash out",
+  "ts": 1789418374384,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3146|LAS-124749-RET-H_177 RET": {
+  "note": "Retired Vehicle Wash out",
+  "ts": 1789418420432,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3145|LAS-512081-RET-H_124 RET": {
+  "note": "Retired Vehicle Wash out",
+  "ts": 1789418453311,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3144|LAS-122306-INS-P_511 RET": {
+  "note": "Retired Vehicle Wash out",
+  "ts": 1789418491712,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3148|LAS-546016-SVC-H_138 N/A": {
+  "note": "inventory count for Leo",
+  "ts": 1789418619753,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3149|LAS-177288-SVC-H_126 Ricardo Salas": {
+  "note": "stock adjustment for 126 ricardo",
+  "ts": 1789418655509,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3152|LAS-578184-SVC-P_409 Martelvious Jones": {
+  "note": "Adjustment for count 968, truck 409. Total variance is ($1242.55. ). $526 of this is a water heater that showed up in the count but was not found on the truck",
+  "ts": 1789418674925,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-14"
+ },
+ "adj|2026-08-04|3151|LAS-502180-SVC-H_131 Colby Radel": {
+  "note": ".",
+  "ts": 1789515895046,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "fleet|anom|2026-09-14|557038": {
+  "note": "Inventory Count, truck was passed between multiple techs without counts in-between due to break downs",
+  "ts": 1789496206959,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3182|Warranty Units HVAC": {
+  "note": ".",
+  "ts": 1789511133384,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3153|Open Box Warehouse HVAC": {
+  "note": ".",
+  "ts": 1789515897379,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3154|LAS-543296-INS-P_414 Jason Krauth": {
+  "note": ".",
+  "ts": 1789515899642,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3157|LAS-578153-SVC-P_402 Joc Kalili": {
+  "note": ".",
+  "ts": 1789515903215,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3161|LAS-543296-INS-P_414 Jason Krauth": {
+  "note": ".",
+  "ts": 1789515907127,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3167|LAS-A94362-SVC-P_444 Chris Hanson": {
+  "note": ".",
+  "ts": 1789515910626,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3169|LAS-114012-SVC-P_451 Jasmine Jones": {
+  "note": ".",
+  "ts": 1789515914003,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3183|Vegas Plumbing Warehouse": {
+  "note": ".",
+  "ts": 1789515917352,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3187|Vegas HVAC Warehouse": {
+  "note": ".",
+  "ts": 1789515920593,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3195|LAS-A94362-SVC-P_444 Chris Hanson": {
+  "note": "truck count",
+  "ts": 1789515973598,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3198|LAS-113220-INS-P_424 Christian Fisher": {
+  "note": "truck count",
+  "ts": 1789516000259,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3197|LAS-177295-SVC-H_112 Gabe Santos": {
+  "note": "truck count",
+  "ts": 1789516004974,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3202|Open Box Warehouse HVAC": {
+  "note": ".",
+  "ts": 1789516121729,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3206|LAS-543116-SVC-P_430 Tristen Till": {
+  "note": ".",
+  "ts": 1789516138099,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3219|LAS-115351-SVC-P_446 Logan Nester": {
+  "note": ".",
+  "ts": 1789516159088,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3221|LAS-578189-SVC-P_410 Michael Hadley": {
+  "note": ".",
+  "ts": 1789516161994,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3229|LAS-177291-SVC-P_404 Stanley Heath II": {
+  "note": ".",
+  "ts": 1789516166046,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3231|LAS-113220-INS-P_424 Christian Fisher": {
+  "note": ".",
+  "ts": 1789516170083,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3233|LAS-113220-INS-P_424 Christian Fisher": {
+  "note": ".",
+  "ts": 1789516173870,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3236|LAS-502179-SVC-H_101 Daniel Stewart": {
+  "note": ".",
+  "ts": 1789516191389,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3242|Vegas Safety Stock": {
+  "note": ".",
+  "ts": 1789516198778,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3245|Vegas HVAC Warehouse": {
+  "note": ".",
+  "ts": 1789516202008,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3246|Open Box Warehouse HVAC": {
+  "note": ".",
+  "ts": 1789516205382,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3249|Plumbing Equipment": {
+  "note": ".",
+  "ts": 1789516208472,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3251|Vegas HVAC Warehouse": {
+  "note": ".",
+  "ts": 1789516218358,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-08-04|3158|Open Box Warehouse HVAC": {
+  "note": ".",
+  "ts": 1789516224057,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-03|3235|Open Box Warehouse HVAC": {
+  "note": ".",
+  "ts": 1789516227108,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-14|3267|Open Box Warehouse HVAC": {
+  "note": "packaged unit replaced on job 555637 high limit switch repaired and put in open box",
+  "ts": 1789516378036,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "adj|2026-09-14|3268|LAS-557038-SVC-H_127 Leo Bermudez III": {
+  "note": "cycle count, vehicle was passed through more than one tech without a count due to vehicle break downs",
+  "ts": 1789516428605,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "standing|openbox|2026-07": {
+  "note": "packaged unit replaced on job 555637 high limit switch repaired and put in open box adj 3267",
+  "ts": 1789516540635,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-15"
+ },
+ "standing|deadloc|Goettl Air Conditioning & Plumbing": {
+  "note": "wrong inventory location used, like jobholding",
+  "ts": 1789571939450,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-15|113931": {
+  "note": "replenishment due to truck stock being off",
+  "ts": 1789573262817,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-15|177287": {
+  "note": "negative on hand value adjusted today, empty vehicle that was used when techs truck was being repaired",
+  "ts": 1789585689369,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-15|598279": {
+  "note": "ghost inventory adjusted",
+  "ts": 1789587403477,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-15|578108": {
+  "note": "ghost inventory adjusted",
+  "ts": 1789587442470,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-15|Default Truck - Luis Sanchez Lopez": {
+  "note": "dectivated location",
+  "ts": 1789587534728,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-16"
+ },
+ "fleet|anom|2026-09-16|D06948": {
+  "note": "insulation transfer",
+  "ts": 1789655284648,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-17"
+ },
+ "fleet|anom|2026-09-16|D06767": {
+  "note": "insulation transfer",
+  "ts": 1789655308502,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-17"
+ },
+ "fleet|anom|2026-09-16|Default Truck - Luis Sanchez Lopez": {
+  "note": "deactivated truck location",
+  "ts": 1789655473184,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-17"
+ },
+ "fleet|removed|2026-09-16|578108": {
+  "note": "ghost inventory",
+  "ts": 1789655520508,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-17"
+ },
+ "adj|2026-09-16|3269|LAS-177287-EMT-H_111 N/A": {
+  "note": "ghost inventory",
+  "ts": 1789655534980,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-17"
+ },
+ "adj|2026-09-17|3272|LAS-535396-SVC-P_433 Halbert Castro-Galaviz": {
+  "note": "Adjustment for 433 Halbert, count 1016",
+  "ts": 1789741572201,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-18"
+ },
+ "adj|2026-09-17|3269|LAS-177287-EMT-H_111 N/A": {
+  "note": "ghost inventory adjustment for empty truck",
+  "ts": 1789741625749,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-18"
+ },
+ "fleet|anom|2026-09-17|Default Truck - Luis Sanchez Lopez": {
+  "note": "deactivated inventory location, reactivated and adjusted for ghost inventory, then deactivated again",
+  "ts": 1789746545229,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-18"
+ },
+ "fleet|anom|2026-09-21|113923": {
+  "note": "truck stock PO",
+  "ts": 1790086998571,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-22"
+ },
+ "fleet|anom|2026-09-21|578161": {
+  "note": "adjustment for truck stock inventory count",
+  "ts": 1790087095595,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-22"
+ },
+ "adj|2026-09-21|3275|LAS-578161-SVC-H_104 David Guerrero": {
+  "note": "adjustment for truck stock inventory count 1021",
+  "ts": 1790087134916,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-22"
+ },
+ "fleet|anom|2026-09-22|509668": {
+  "note": "truck stock PO",
+  "ts": 1790261617289,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-24"
+ },
+ "adj|2026-09-22|3275|LAS-578161-SVC-H_104 David Guerrero": {
+  "note": "inventory count Adjustment",
+  "ts": 1790261915461,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-24"
+ },
+ "fleet|anom|2026-09-28|578161": {
+  "note": "truck replenishment after inventory count",
+  "ts": 1790694849038,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-29"
+ },
+ "fleet|anom|2026-09-28|113923": {
+  "note": "truck replenishment",
+  "ts": 1790694896479,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-29"
+ },
+ "adj|2026-09-17|3269|LAS-177287-EMT-H_111 Owen Thomas": {
+  "note": "truck inventory count",
+  "ts": 1790798423003,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-09-30"
+ },
+ "adj|2026-09-29|3288|Vegas Plumbing Warehouse": {
+  "note": "EOM count adjustment",
+  "ts": 1790819619132,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-01"
+ },
+ "adj|2026-09-29|3289|Plumbing Equipment": {
+  "note": "EOM count adjustment",
+  "ts": 1790819628904,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-01"
+ },
+ "adj|2026-10-02|3256|Vegas HVAC Warehouse": {
+  "note": "Adjusting Negative Quantity Before Updating to Physical Count",
+  "ts": 1791210698614,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3258|Vegas HVAC Warehouse": {
+  "note": "13 on cage as of 9/8/26 adjusting for physical inventory",
+  "ts": 1791210779932,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3267|Open Box Warehouse HVAC": {
+  "note": "packaged unit replaced on job 555637 high limit switch repaired and put in open box 9/11",
+  "ts": 1791210835791,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3288|Vegas Plumbing Warehouse": {
+  "note": "Adjustment for Vegas Plumbing Warehouse count #1023",
+  "ts": 1791210867062,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3289|Plumbing Equipment": {
+  "note": "Adjustment for plumbing equipment count",
+  "ts": 1791210970732,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3291|Vegas HVAC Warehouse": {
+  "note": "EOM warehouse count",
+  "ts": 1791210998304,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3294|Vegas Safety Stock": {
+  "note": "inventory count 1029 curbs flipped on previous count",
+  "ts": 1791211018406,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-03|561585-004|Open Box Warehouse HVAC": {
+  "note": "wrong warehouse location used, corrected",
+  "ts": 1791211105426,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3268|LAS-557038-SVC-H_127 Leo Bermudez III": {
+  "note": "Inventory Count for Leo 9/14",
+  "ts": 1791211141038,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3275|LAS-578161-SVC-H_104 David Guerrero": {
+  "note": "Adjustment for 104, David Guerrero 9/21",
+  "ts": 1791211163475,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3257|LAS-177293-CFT-H_122 Kalif Silva-Giersdorf": {
+  "note": "Inventory count for Kalif 9/8",
+  "ts": 1791211183155,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3272|LAS-535396-SVC-P_433 Halbert Castro-Galaviz": {
+  "note": "Adjustment for 433 Halvert, count 1016 9/17",
+  "ts": 1791211208646,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "adj|2026-10-02|3269|LAS-177287-EMT-H_111 Kevin Urrutia": {
+  "note": "Count performed by Dallin 9/16",
+  "ts": 1791211251224,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "fleet|anom|2026-10-04|578097": {
+  "note": "change in valuation",
+  "ts": 1791215056386,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-05"
+ },
+ "fleet|anom|2026-10-11|D06948": {
+  "note": "insulation adjustment",
+  "ts": 1791817980626,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-12"
+ },
+ "adj|2026-10-09|3298|LAS-177295-SVC-H_112 Gabe Santos": {
+  "note": "truck count adjustment",
+  "ts": 1791818032068,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-12"
+ },
+ "fleet|anom|2026-10-15|D06948": {
+  "note": "insulation transfer",
+  "ts": 1792160765685,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-16"
+ },
+ "adj|2026-10-20|3308|LAS-114003-SVC-H_100 Sam Yockey": {
+  "note": "truck count adjustment of ghost inventory count 1034",
+  "ts": 1792592789847,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-21"
+ },
+ "fleet|anom|2026-10-20|114003": {
+  "note": "truck count adjustment of ghost inventory count 1034",
+  "ts": 1792592795949,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-21"
+ },
+ "adj|2026-10-21|3308|LAS-114003-SVC-H_100 Sam Yockey": {
+  "note": "inventory count adjustment",
+  "ts": 1792765030640,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-23"
+ },
+ "adj|2026-10-22|3353|LAS-509668-SVC-H_178 Alberto Martinez": {
+  "note": "inventory count adjustment",
+  "ts": 1792765031654,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-23"
+ },
+ "adj|2026-10-02|3269|LAS-177287-SVC-H_111 Kevin Urrutia": {
+  "note": "inventory count from 9/16",
+  "ts": 1792765091758,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-23"
+ },
+ "fleet|anom|2026-10-22|509668": {
+  "note": "inventory count adjustment",
+  "ts": 1792765161429,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-23"
+ },
+ "fleet|anom|2026-10-26|543095": {
+  "note": "see return 12347 and adjustment 3358, vehicle being retired",
+  "ts": 1793134181120,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "fleet|anom|2026-10-26|A94365": {
+  "note": "inventory count performed",
+  "ts": 1793134373822,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "fleet|anom|2026-10-26|D06767": {
+  "note": "insulation transfers for EOM",
+  "ts": 1793134427128,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "fleet|anom|2026-10-26|116698": {
+  "note": "performed inventory count",
+  "ts": 1793134553289,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "fleet|anom|2026-10-26|114072": {
+  "note": "performed inventory count",
+  "ts": 1793134740112,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "fleet|anom|2026-10-26|D06948": {
+  "note": "insulation transfers for end of month",
+  "ts": 1793134890471,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "adj|2026-10-26|3361|LAS-543112-SVC-P_405 RET": {
+  "note": "template removed for vehicle being Retired, no return to reference items previously returned",
+  "ts": 1793134937574,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "adj|2026-10-26|3357|LAS-A94365-INS-P_545 Jonathan Diaz": {
+  "note": "inventory count performed",
+  "ts": 1793134969342,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "adj|2026-10-26|3355|LAS-116698-INS-P_550 Roman Castellanos": {
+  "note": "performed inventory count",
+  "ts": 1793134981972,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "adj|2026-10-26|3359|LAS-114072-INS-P_552 Jose Herrera Alvarado": {
+  "note": "performed inventory count",
+  "ts": 1793135016806,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "adj|2026-10-26|3358|LAS-543095-SVC-H_133 RET": {
+  "note": "see return 12347 and adjustment 3358, vehicle being retired",
+  "ts": 1793135131892,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-27"
+ },
+ "adj|2026-10-27|3361|LAS-543112-SVC-P_405 RET": {
+  "note": "Template removal on van being retired, product was previously returned but not tracked to vehicle",
+  "ts": 1793200989365,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-28"
+ },
+ "fleet|anom|2026-10-27|116698": {
+  "note": "replenishment after an inventory count",
+  "ts": 1793201171720,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-28"
+ },
+ "adj|2026-10-28|3365|Warranty Units HVAC": {
+  "note": "Condenser fan motor taken out",
+  "ts": 1793283589705,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-29"
+ },
+ "adj|2026-10-28|3364|LAS-502199-INS-P_502 N/A": {
+  "note": "Vehicle was retired in July 2026 return was untracked but template never removed, removing template",
+  "ts": 1793286362464,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-29"
+ },
+ "adj|2026-10-29|3407|Vegas Plumbing Warehouse": {
+  "note": "adjustment for EOM inventory count",
+  "ts": 1793411468370,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "adj|2026-10-29|3408|Vegas HVAC Warehouse": {
+  "note": "adjustment for EOM inventory count 1051",
+  "ts": 1793411494872,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "adj|2026-10-29|3409|Plumbing Equipment": {
+  "note": "adjustment for EOM inventory count 1052",
+  "ts": 1793411519628,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "fleet|anom|2026-10-29|509668": {
+  "note": "replenishment PO",
+  "ts": 1793411580269,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "fleet|anom|2026-10-29|502179": {
+  "note": "replenishment PO",
+  "ts": 1793411647620,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "fleet|anom|2026-10-29|546019": {
+  "note": "replenishment PO",
+  "ts": 1793411685988,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "adj|2026-10-29|3398|LAS-131541-SVC-P_428 RET": {
+  "note": "truck being retired return was never tracked but product was removed",
+  "ts": 1793411712430,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-10-31"
+ },
+ "adj|2026-11-02|3365|Warranty Units HVAC": {
+  "note": "EOM inventory count adjustment",
+  "ts": 1793718217294,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3407|Vegas Plumbing Warehouse": {
+  "note": "EOM inventory count adjustment",
+  "ts": 1793718216797,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3408|Vegas HVAC Warehouse": {
+  "note": "EOM inventory count adjustment",
+  "ts": 1793718215907,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3409|Plumbing Equipment": {
+  "note": "EOM inventory count adjustment",
+  "ts": 1793718215232,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3410|Vegas Safety Stock": {
+  "note": "EOM inventory count adjustment",
+  "ts": 1793718210885
+ },
+ "adj|2026-11-02|3308|LAS-114003-SVC-H_100 Sam Yockey": {
+  "note": "truck inventory count",
+  "ts": 1793718285176,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3413|LAS-543096-SVC-H_134 Joe Murillo": {
+  "note": "truck inventory count",
+  "ts": 1793718386489,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3353|LAS-509668-SVC-H_178 Alberto Martinez": {
+  "note": "truck inventory count",
+  "ts": 1793718402528,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3361|LAS-543112-SVC-P_405 RET": {
+  "note": "Template removal on van being retired, product was previously returned but not tracked to vehicle",
+  "ts": 1793718422579,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3357|LAS-A94365-INS-P_545 Jonathan Diaz": {
+  "note": "truck stock inventory count",
+  "ts": 1793718448245,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3398|LAS-131541-SVC-P_428 RET": {
+  "note": "truck being retired return was never tracked but product was removed",
+  "ts": 1793718473001,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3355|LAS-116698-INS-P_550 Roman Castellanos": {
+  "note": "truck stock inventory count",
+  "ts": 1793718493233,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3359|LAS-114072-INS-P_552 Jose Herrera Alvarado": {
+  "note": "truck stock inventory count",
+  "ts": 1793718518383,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3358|LAS-543095-SVC-H_133 RET": {
+  "note": "after truck return, adjustment made for truck being retired all inventory removed",
+  "ts": 1793718535543,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "adj|2026-11-02|3298|LAS-177295-SVC-H_112 Gabe Santos": {
+  "note": "truck stock inventory count",
+  "ts": 1793718563494
+ },
+ "adj|2026-11-02|3364|LAS-502199-INS-P_502 N/A": {
+  "note": "Vehicle was retired in July 2026 return was untracked but template never removed, removing template",
+  "ts": 1793718583655,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "fleet|anom|2026-11-02|543096": {
+  "note": "truck stock inventory count adjustment and subsequent replenishment",
+  "ts": 1793718769607,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-03"
+ },
+ "fleet|anom|2026-11-03|543096": {
+  "note": "replenishment after truck inventory count adjustment",
+  "ts": 1793804977935,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-04"
+ },
+ "fleet|anom|2026-11-05|D06954": {
+  "note": "inventory truck count adjustment",
+  "ts": 1793989150433,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-06"
+ },
+ "fleet|added|2026-11-05|204240": {
+  "note": "new truck template added",
+  "ts": 1793989276922,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-06"
+ },
+ "fleet|reassign|2026-11-05|D06668": {
+  "note": "truck inventory count adjustment and replenishment",
+  "ts": 1793989327667,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-06"
+ },
+ "adj|2026-11-05|3420|LAS-D06954-INS-H_283 Marcos Flores Sandoval": {
+  "note": "truck inventory count adjustment",
+  "ts": 1793989360046,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-06"
+ }
+}

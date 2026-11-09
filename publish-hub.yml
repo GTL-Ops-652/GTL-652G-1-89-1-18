@@ -1,0 +1,44 @@
+name: Publish LV Performance Hub
+on:
+  repository_dispatch:
+    types: [hub-template, hub-data]
+permissions:
+  contents: write
+concurrency:
+  group: publish-lv-hub
+  cancel-in-progress: false
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Write hub file
+        env:
+          PAYLOAD: ${{ toJSON(github.event.client_payload) }}
+          EVENT: ${{ github.event.action }}
+        run: |
+          python3 - <<'PY'
+          import os, json, base64, bz2, pathlib, re, sys
+          p = json.loads(os.environ["PAYLOAD"])
+          blob = bz2.decompress(base64.b64decode("".join(p[k] for k in sorted(k for k in p if re.fullmatch(r"b\d", k)))))
+          src = pathlib.Path("hub-src"); src.mkdir(exist_ok=True)
+          if os.environ["EVENT"] == "hub-template":
+              (src / "hub_template.html").write_bytes(blob)
+              sys.exit(0)
+          path = p.get("path", "hub/index.html")
+          if not re.fullmatch(r"[A-Za-z0-9_\-/]+\.html", path) or ".." in path:
+              sys.exit("Refusing unsafe path: " + path)
+          tpl = (src / "hub_template.html").read_text(encoding="utf-8")
+          if "/*__DATA__*/null" not in tpl:
+              sys.exit("Template marker missing")
+          out = pathlib.Path(path); out.parent.mkdir(parents=True, exist_ok=True)
+          out.write_text(tpl.replace("/*__DATA__*/null", blob.decode("utf-8")), encoding="utf-8")
+          PY
+      - name: Commit and push
+        run: |
+          git config user.name "LV Hub Publisher"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "No changes"; exit 0; fi
+          git commit -m "Publish LV Performance Hub (${{ github.event.action }})"
+          git push
