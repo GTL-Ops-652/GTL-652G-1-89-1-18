@@ -1091,5 +1091,12 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-11-06"
+ },
+ "adj|2026-11-06|3422|Vegas Safety Stock": {
+  "note": "pads added to inventory from install truck",
+  "ts": 1794240838569,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-09"
  }
 }
