@@ -1123,5 +1123,19 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-11-10"
+ },
+ "fleet|anom|2026-11-10|A94365": {
+  "note": "replenishment",
+  "ts": 1794416360694,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-11"
+ },
+ "fleet|anom|2026-11-10|177290": {
+  "note": "adjustments for extinguisher, cones and first aid kit, plus replenishment",
+  "ts": 1794416453392,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-11"
  }
 }
