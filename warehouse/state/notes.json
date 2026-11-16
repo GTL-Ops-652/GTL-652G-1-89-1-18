@@ -1137,5 +1137,33 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-11-11"
+ },
+ "adj|2026-11-11|12392|Open Box Warehouse HVAC": {
+  "note": "dented unit added to open box, returned in exchange for new unit",
+  "ts": 1794503345948,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-12"
+ },
+ "fleet|anom|2026-11-11|D06948": {
+  "note": "insulation transfer",
+  "ts": 1794503697245,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-12"
+ },
+ "fleet|anom|2026-11-11|578097": {
+  "note": "truck replenishment PO",
+  "ts": 1794503715658,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-12"
+ },
+ "fleet|reassign|2026-11-11|177292": {
+  "note": "Technician given brand new van",
+  "ts": 1794503756270,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-12"
  }
 }
