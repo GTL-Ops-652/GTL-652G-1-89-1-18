@@ -1165,5 +1165,33 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-11-12"
+ },
+ "adj|2026-11-12|12392|Open Box Warehouse HVAC": {
+  "note": "open box swapped for new unit",
+  "ts": 1794929124704,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-17"
+ },
+ "fleet|anom|2026-11-16|114003": {
+  "note": "truck replenishment order",
+  "ts": 1794929228861,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-17"
+ },
+ "adj|2026-11-12|3457|LAS-D31734-INS-H_290 Ardian Ceroni": {
+  "note": "inventory truck count adjustment",
+  "ts": 1794929264785,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-17"
+ },
+ "adj|2026-11-10|3446|GOETTL WAREHOUSE JOB HOLDING": {
+  "note": "Victoria Russell adjustment, probably for sku price book update",
+  "ts": 1794930130911,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-17"
  }
 }
