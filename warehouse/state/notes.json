@@ -1193,5 +1193,47 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-11-17"
+ },
+ "adj|2026-11-17|3463|Vegas HVAC Warehouse": {
+  "note": "adjustment for used integration kit not tracked to job",
+  "ts": 1795024765666,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-18"
+ },
+ "fleet|anom|2026-11-17|578184": {
+  "note": "replenishment order",
+  "ts": 1795024812701,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-18"
+ },
+ "fleet|anom|2026-11-17|D06948": {
+  "note": "insulation adjustments",
+  "ts": 1795024839857,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-18"
+ },
+ "fleet|anom|2026-11-17|113220": {
+  "note": "truck count adjustment after tech turned in and replenishment order",
+  "ts": 1795024860674,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-18"
+ },
+ "adj|2026-11-17|3465|LAS-578184-SVC-P_409 Martelvious Jones": {
+  "note": "truck count adjustment after truck turned in and replenishment order",
+  "ts": 1795024880560,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-18"
+ },
+ "adj|2026-11-17|3464|LAS-113220-INS-P_424 Christian Fisher": {
+  "note": "truck count adjustment after truck turned in and replenishment order",
+  "ts": 1795024918508,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-18"
  }
 }
