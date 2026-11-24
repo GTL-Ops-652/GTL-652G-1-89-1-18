@@ -1235,5 +1235,12 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-11-18"
+ },
+ "adj|2026-11-19|3468|LAS-114029-INS-P_548 Tirso Dominguez": {
+  "note": "template was removed from truck stock returned/adjusted off",
+  "ts": 1795452433347,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-23"
  }
 }
