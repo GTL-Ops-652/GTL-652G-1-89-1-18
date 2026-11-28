@@ -1242,5 +1242,68 @@
   "approved": true,
   "by": "unsigned",
   "at": "2026-11-23"
+ },
+ "adj|2026-11-25|3494|Plumbing Equipment": {
+  "note": "victoria adjusting archived sku for ghost inventory",
+  "ts": 1795826850348,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-28"
+ },
+ "adj|2026-11-25|3507|Vegas HVAC Warehouse": {
+  "note": "EOM count adjustment",
+  "ts": 1795826881061,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-28"
+ },
+ "adj|2026-11-25|3509|Vegas Safety Stock": {
+  "note": "EOM count adjustment pad in wrong warehouse location",
+  "ts": 1795826934149,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-28"
+ },
+ "fleet|anom|2026-11-26|D06767": {
+  "note": "insulation adjustments",
+  "ts": 1795826963012,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-28"
+ },
+ "adj|2026-11-19|3468|LAS-114029-EMT-P_548 Tirso Dominguez": {
+  "note": "return and adjustment for truck template removal",
+  "ts": 1795826985446,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-28"
+ },
+ "adj|2026-11-17|3465|LAS-578184-SVC-P_409 N/A": {
+  "note": "inventory count adjustment after vehicle turned in",
+  "ts": 1795827019390,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-28"
+ },
+ "adj|2026-11-17|3464|LAS-113220-INS-P_424 N/A": {
+  "note": "truck adjustment after vehicle turned in",
+  "ts": 1795827152101,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-28"
+ },
+ "adj|2026-11-25|3477|LAS-546038-INS-P_501 Austyn Wood": {
+  "note": "Victoria archive skus being adjusted off for ghost inventory",
+  "ts": 1795827256067,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-28"
+ },
+ "adj|2026-11-25|3479|GOETTL WAREHOUSE JOB HOLDING": {
+  "note": "Victoria adjustment for archived skus for ghost inventory",
+  "ts": 1795827356703,
+  "approved": true,
+  "by": "unsigned",
+  "at": "2026-11-28"
  }
 }
